@@ -3,14 +3,11 @@ from django.db import models
 class Users(models.Model):
     id = models.TextField()
     email = models.TextField()
-    username = models.CharField(max_length=255)
     real_name = models.CharField(max_length=255)
     website = models.URLField()
     bio = models.TextField()
     picture = models.ImageField()
     cover_photo = models.ImageField()
-    password = models.TextField()
-    topic_defs_json = models.JSONField()
     resources = models.TextField()
 
 class Officials(models.Model):

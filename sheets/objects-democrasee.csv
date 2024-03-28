@@ -1,22 +1,19 @@
 TYPES,Field Label,Field Name,Field Type,HowMany,Required,Relationship,Example
 Users,,,,,,,
-,ID,id,User (custom),1,1,Users,
-,Email,,Email,1,1,,"{""type"" : ""string"", ""format"" : ""email""}"
-,Username,,Text,1,1,,
+,ID,id,User (cms),1,1,Users,
+,Email,,Email,1,1,,
 ,Real Name,,Text,1,0,,
-,Website,,URL,1,0,,"{""type"" :""'array"", ""uniqueItems"" : true, ""items"" : [{""type"" : ""string"", ""format"":""uri""}]}"
+,Website,,URL,1,0,,
 ,Bio,,TextArea,1,0,,
-,Picture,,Image,1,0,,number
-,Cover Photo,,Image,1,0,,number
-,Password,,Password,1,1,,string
-,Topic Definitions JSON,topic_defs_json,JSON,unlimited,0,,
+,Picture,,Image,1,0,,
+,Cover Photo,,Image,1,0,,
 ,Resources,,Type Reference,unlimited,0,Resources,
 ,,,,,,,
 Officials,,,,,,,
 ,Job Title,,Text,1,1,,
 ,Office Phone,,Phone,1,0,,
 ,Office Email,,Email,1,0,,
-,Social Media links,social_links,URL,unlimited,0,,"{""type"" :""'array"", ""uniqueItems"" : true, ""items"" : [{""type"" : ""string"", ""format"":""uri""}]}"
+,Social Media links,social_links,URL,unlimited,0,,
 ,Party,party_affiliation,Vocabulary Reference,1,0,Parties,
 ,City,,Type Reference,unlimited,1,Cities,
 ,,,,,,,

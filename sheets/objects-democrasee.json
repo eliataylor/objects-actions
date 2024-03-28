@@ -3,7 +3,7 @@
     {
       "Field Label": "ID",
       "Field Name": "id",
-      "Field Type": "User (custom)",
+      "Field Type": "User (cms)",
       "HowMany": "1",
       "Required": "1",
       "Relationship": "Users",
@@ -13,15 +13,6 @@
       "Field Label": "Email",
       "Field Name": "",
       "Field Type": "Email",
-      "HowMany": "1",
-      "Required": "1",
-      "Relationship": "",
-      "Example": "{\"type\" : \"string\", \"format\" : \"email\"}"
-    },
-    {
-      "Field Label": "Username",
-      "Field Name": "",
-      "Field Type": "Text",
       "HowMany": "1",
       "Required": "1",
       "Relationship": "",
@@ -43,7 +34,7 @@
       "HowMany": "1",
       "Required": "0",
       "Relationship": "",
-      "Example": "{\"type\" :\"'array\", \"uniqueItems\" : true, \"items\" : [{\"type\" : \"string\", \"format\":\"uri\"}]}"
+      "Example": ""
     },
     {
       "Field Label": "Bio",
@@ -61,31 +52,13 @@
       "HowMany": "1",
       "Required": "0",
       "Relationship": "",
-      "Example": "number"
+      "Example": ""
     },
     {
       "Field Label": "Cover Photo",
       "Field Name": "",
       "Field Type": "Image",
       "HowMany": "1",
-      "Required": "0",
-      "Relationship": "",
-      "Example": "number"
-    },
-    {
-      "Field Label": "Password",
-      "Field Name": "",
-      "Field Type": "Password",
-      "HowMany": "1",
-      "Required": "1",
-      "Relationship": "",
-      "Example": "string"
-    },
-    {
-      "Field Label": "Topic Definitions JSON",
-      "Field Name": "topic_defs_json",
-      "Field Type": "JSON",
-      "HowMany": "unlimited",
       "Required": "0",
       "Relationship": "",
       "Example": ""
@@ -135,7 +108,7 @@
       "HowMany": "unlimited",
       "Required": "0",
       "Relationship": "",
-      "Example": "{\"type\" :\"'array\", \"uniqueItems\" : true, \"items\" : [{\"type\" : \"string\", \"format\":\"uri\"}]}"
+      "Example": ""
     },
     {
       "Field Label": "Party",
