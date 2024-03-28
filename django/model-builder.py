@@ -1,6 +1,8 @@
 import csv
 import json
 import re
+import sys
+import os
 
 def build_json_from_csv(csv_file):
     # Initialize an empty dictionary to store JSON object
@@ -102,17 +104,28 @@ def create_machine_name(label):
     machine_name = machine_name.lower()
     return machine_name
 
-# Example usage
-csv_file = "object-fields.csv"
+def main():
+    if len(sys.argv) != 2:
+        print("Missing Parameter. Try: python model-builder.py <field_types_csv>")
+        sys.exit(1)
 
-model_json = build_json_from_csv(csv_file)
-f = open("models.json", "r+")
-f.write(json.dumps(model_json, indent=2))
-f.close()
+    input = sys.argv[1]
 
-model_code = build_all_models(model_json)
-f = open("models.py", "r+")
-f.write(model_code)
-f.close()
+    if not os.path.exists(input):
+        print(f"Error: Field Types CSV '{input}' does not exist.")
+        sys.exit(1)
 
-# You can save the generated code to a file named 'models.py' in your app directory
+    basename = os.path.splitext(input)[0]
+
+    model_json = build_json_from_csv(input)
+    f = open(basename + '.json', "w")
+    f.write(json.dumps(model_json, indent=2))
+    f.close()
+
+    model_code = build_all_models(model_json)
+    f = open(basename + ".py", "w")
+    f.write(model_code)
+    f.close()
+
+if __name__ == "__main__":
+    main()
