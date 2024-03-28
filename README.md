@@ -1,7 +1,7 @@
 # Object-Actions Worksheet
 ----
 
-This worksheet can be used for:
+Use this worksheet for:
 - [x] Outlining application functionality and permissions
 - [x] Scaffolding Content Management Systems (drupal, django, keystone)
 - [x] API documentation
