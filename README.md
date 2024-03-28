@@ -20,5 +20,5 @@ This [example version](https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7a
 ![Permissions Matrix](docs/permissions-matrix-democrasee.png)
 
 
-Use column A in the "selectors" sheet to modify available field types. The checkboxes roughly describe what Fields are support by the different CMS config builders in this repository
+All Select options under Fields Types (Column D) in the Object Fields sheet come from column A in the "selectors" sheet. If you have special field types, add them here. The checkboxes roughly describe what Fields are support by the different CMS config builders in this repository.
 ![Field Types](docs/field-types.png)
