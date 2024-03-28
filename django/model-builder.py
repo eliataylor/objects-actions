@@ -62,6 +62,14 @@ def build_all_models(json):
 
 def infer_field_type(field_type, field):
     field_type = field_type.lower()
+    cardinality = field['HowMany']
+    is_required = field['Required']
+    default_value = field['Example']
+
+    params = []
+    if not is_required:
+        params.append("default=dict, blank=True")
+
     if field_type == "text":
         return "models.CharField(max_length=255)"  # Adjust max_length as needed
     elif field_type == "textarea":
