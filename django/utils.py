@@ -1,7 +1,6 @@
 import csv
 import json
 import re
-import sys
 import os
 
 def build_json_from_csv(csv_file):
@@ -39,37 +38,62 @@ def build_json_from_csv(csv_file):
                 json_data[cur_type] = [row]
 
     return json_data
+def inject_generated_code(output_file_path, code, prefix):
+    start_delim = f"###OBJECT-ACTIONS-{prefix}-STARTS###"
+    end_delim = f"###OBJECT-ACTIONS-{prefix}-ENDS###"
 
-def build_all_models(json):
-    model_code = "from django.db import models\n"
-    if 'user' not in json and 'User' not in json and 'Users' not in json:
-        model_code += f"from django.contrib.auth.models import User\n"
-    for object_type in json:
-        model_name = object_type
-        model_code += f"\nclass {model_name}(models.Model):\n"
+    if os.path.exists(output_file_path) is False:
+        html = start_delim + "\n" + code + "\n" + end_delim
+    else:
 
-        for field in json[object_type]:
-            field_type = field['Field Type']
-            field_name = field['Field Name']
-            if field_name is None or field_name == '':
-                field_name = create_machine_name(field['Field Label'])
-            if field_type is None:
-                field_type = 'text'
-            model_type = infer_field_type(field_type, field)
-            model_code += f"    {field_name} = {model_type}\n"
+        with open(output_file_path, 'r', encoding='utf-8') as file:
+            html = file.read()
 
-    return model_code
+        start = html.find(start_delim)
+        if start < 0:
+            start = len(html) - 1 #append to end of file
+            code = f"\n\n{start_delim}n" + code
+        else:
+            start += len(start_delim)
+
+        end = html.find(end_delim)
+        if end < 0:
+            end = len(code)
+            code = code + end_delim
+
+        start_html = html[:start]
+        end_html = html[end:]
+        html = start_html + code + end_html
+
+    with open(output_file_path, 'w', encoding='utf-8') as file:
+        file.write(html)
+
+    print(f"{prefix} built. ")
+
+def addArgs(target, new_args):
+    # Split the target string into function name and arguments
+    func_name, args_str = target.split('(')
+
+    # Remove trailing parenthesis from args string and split the arguments
+    args = args_str.rstrip(')').split(',')
+
+    # Add non-empty new arguments to the existing arguments list
+    args.extend(new_args)
+
+    # Filter out empty strings from new_args
+    args = [arg for arg in args if arg != '']
+
+    # Combine function name and modified arguments
+    if len(args) == 1:  # If there is only one argument, no need for a comma
+        modified_target = f"{func_name}({args[0]})"
+    else:
+        modified_target = f"{func_name}({', '.join(args)})"
+
+    return modified_target
+
 
 def infer_field_type(field_type, field):
     field_type = field_type.lower()
-    cardinality = field['HowMany']
-    is_required = field['Required']
-    default_value = field['Example']
-
-    params = []
-    if not is_required:
-        params.append("default=dict, blank=True")
-
     if field_type == "text":
         return "models.CharField(max_length=255)"  # Adjust max_length as needed
     elif field_type == "textarea":
@@ -96,44 +120,24 @@ def infer_field_type(field_type, field):
         return "models.JSONField()"  # Store both as JSON array
     elif field_type == "json":
         return "models.JSONField()"  # Store both as JSON array
-    elif field_type == "reference":
+    elif field_type == "enum":
+        return f"models.CharField(max_length=20, choices=MealTimes.choices)"
+    elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
         # return "models.ManyToManyField()"
         # return "models.OneToOneField()"
-        return f"models.ForeignKey({field['Relationship']}, on_delete=models.CASCADE)"
+        model_name = create_object_name(field['Relationship'])
+        return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
     elif field_type == "address":
         return "models.CharField(max_length=2555)"  # Adjust max_length as needed
     else:
         return "models.TextField()"
 
-def create_machine_name(label):
+def create_object_name(label):
+    return re.sub(r'[^a-zA-Z0-9\s]', '', label).replace(' ', '')
+
+def create_machine_name(label, lower=True):
     # Remove special characters and spaces, replace them with underscores
     machine_name = re.sub(r'[^a-zA-Z0-9\s]', '', label).strip().replace(' ', '_')
-    # Convert to lowercase
-    machine_name = machine_name.lower()
+    if lower is True:
+        machine_name = machine_name.lower()
     return machine_name
-
-def main():
-    if len(sys.argv) != 2:
-        print("Missing Parameter. Try: python model-builder.py <field_types_csv>")
-        sys.exit(1)
-
-    input = sys.argv[1]
-
-    if not os.path.exists(input):
-        print(f"Error: Field Types CSV '{input}' does not exist.")
-        sys.exit(1)
-
-    basename = os.path.splitext(input)[0]
-
-    model_json = build_json_from_csv(input)
-    f = open(basename + '.json', "w")
-    f.write(json.dumps(model_json, indent=2))
-    f.close()
-
-    model_code = build_all_models(model_json)
-    f = open(basename + ".py", "w")
-    f.write(model_code)
-    f.close()
-
-if __name__ == "__main__":
-    main()

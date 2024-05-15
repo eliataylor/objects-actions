@@ -6,7 +6,7 @@ Use this worksheet for:
 - [x] API documentation
 - [x] SQL database schema design
 - [x] Scaffolding Content Management Systems 
-  - django ex: `python3 django/model-builder.py sheets/objects-democrasee.csv`
+  - django ex: `python django/project-builder.py examples/object-fields-nod.csv examples/generated`
   - drupal ex: coming soon 
   - keystone ex: coming soon
 
