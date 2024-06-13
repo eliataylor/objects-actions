@@ -24,7 +24,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         
 
 class SupplierViewSet(viewsets.ModelViewSet):
@@ -51,7 +51,7 @@ class SupplierViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -78,7 +78,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         
 
 class MealViewSet(viewsets.ModelViewSet):
@@ -105,7 +105,7 @@ class MealViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         
 
 class OrderItemsViewSet(viewsets.ModelViewSet):
@@ -132,7 +132,7 @@ class OrderItemsViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         
 
 class PlanViewSet(viewsets.ModelViewSet):
@@ -159,7 +159,7 @@ class PlanViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -186,6 +186,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         
 ###OBJECT-ACTIONS-VIEWSETS-ENDS###

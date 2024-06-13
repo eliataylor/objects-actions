@@ -1,7 +1,6 @@
 import os
-import sys
-import argparse
 from utils import inject_generated_code, create_machine_name, create_object_name, addArgs, infer_field_type, build_json_from_csv
+from loguru import logger
 
 class DjangoBuilder:
     def __init__(self, csv_file, output_dir):

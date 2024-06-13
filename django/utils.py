@@ -2,6 +2,7 @@ import csv
 import json
 import re
 import os
+from loguru import logger
 
 def build_json_from_csv(csv_file):
     # Initialize an empty dictionary to store JSON object
@@ -68,7 +69,7 @@ def inject_generated_code(output_file_path, code, prefix):
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write(html)
 
-    print(f"{prefix} built. ")
+    logger.info(f"{prefix} built. ")
 
 def addArgs(target, new_args):
     # Split the target string into function name and arguments

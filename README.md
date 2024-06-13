@@ -1,11 +1,15 @@
 # Object-Actions Worksheet
 ----
 
-Use this worksheet for:
+## PURPOSE
 - [x] Outlining application functionality and permissions
 - [x] API documentation
 - [x] SQL database schema design
-- [x] Scaffolding Content Management Systems 
+- [x] Scaffolding Content Management Systems
+- [x] Scaffolding API & CMS Authentication and Access Permissions
+- [x] Scaffolding Web App interface and API connectivity
+- [x] Scaffolding Cypress.io test suites
+- [x] Generating unlimited numbers of fake data entries to test with
 
 ## USAGE:
 - `git clone git@github.com:eliataylor/object-actions.git`
@@ -14,8 +18,8 @@ Use this worksheet for:
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/generated`
-- `python django/generate.py admin --matrix=examples/permissions-matrix-nod.csv --output_dir=examples/generated`
 
+## Getting Started
 
 Copy and start your own from this [empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing).
 
@@ -31,7 +35,7 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
 ![Field Types](docs/field-types.png)
 
 
-## ROADMAP
+## DEVELOPMENT ROADMAP
 - [x] Generate Django Admin CMS 
 - [x] Generate Django Restfull API with Swagger Docs
 - [ ] Generate Fake Data builder
