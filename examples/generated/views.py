@@ -108,16 +108,16 @@ class MealViewSet(viewsets.ModelViewSet):
 
         
 
-class OrderItemsViewSet(viewsets.ModelViewSet):
-    queryset = OrderItems.objects.all()
-    serializer_class = OrderItemsSerializer
+class OrderItemViewSet(viewsets.ModelViewSet):
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     # Add pagination
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        return OrderItems.objects.all()
+        return OrderItem.objects.all()
 
     @action(detail=True, methods=['get'])
     @method_decorator(cache_page(60 * 3))

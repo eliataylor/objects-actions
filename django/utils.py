@@ -95,7 +95,11 @@ def addArgs(target, new_args):
 
 def infer_field_type(field_type, field):
     field_type = field_type.lower()
-    if field_type == "text":
+    if field_type == 'User (custom)':
+        logger.info('implement custom user reference')
+    elif field_type == 'User (cms)':
+        logger.info('implement internal django user reference')
+    elif field_type == "text":
         return "models.CharField(max_length=255)"  # Adjust max_length as needed
     elif field_type == "textarea":
         return "models.TextField()"
@@ -104,7 +108,26 @@ def infer_field_type(field_type, field):
     elif field_type == "decimal":
         return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
     elif field_type == "date":
+        # TODO: implement format handlers
         return "models.DateField()"
+    elif field_type == "date time":
+        # TODO: implement format handlers
+        return "models.DateField()"
+    elif field_type == "email":
+        return "models.EmailField()"
+    elif field_type == "phone":
+        # TODO: implement and inject validation
+        """
+        def validate_phone_number(value):
+            phone_regex = re.compile(r'^\+?1?\d{9,15}$')
+            if not phone_regex.match(value):
+                raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+        """
+        return "models.CharField(validators=[validate_phone_number], max_length=16)"
+    elif field_type == "address":
+        # TODO: implement `django-address` package and print instructions to pip install and add to settings
+        # from address.models import AddressField
+        return "AddressField()"
     elif field_type == "url":
         return "models.URLField()"
     elif field_type == "id":
@@ -120,12 +143,13 @@ def infer_field_type(field_type, field):
     elif field_type == "media":
         # TODO: use "Example" column to control target directory
         return "models.FileField(upload_to='media/')"
-    elif field_type == "list_of_strings":
+    elif field_type == "flat list":
         # TODO: implement data validation based on "Example" column
         return "models.JSONField()"  # Store both as JSON array
     elif field_type == "json":
         return "models.JSONField()"  # Store both as JSON array
     elif field_type == "enum":
+        # TODO: parse Example to create choices
         return f"models.CharField(max_length=20, choices=MealTimes.choices)"
     elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
         # TODO: implement "HowMany" column

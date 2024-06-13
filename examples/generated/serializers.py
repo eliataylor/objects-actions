@@ -24,9 +24,9 @@ class MealSerializer(serializers.ModelSerializer):
         fields = '__all__'    
         
 
-class OrderItemsSerializer(serializers.ModelSerializer):
+class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OrderItems
+        model = OrderItem
         fields = '__all__'    
         
 

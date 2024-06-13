@@ -2,17 +2,17 @@
 
 class Customer(SuperModel):
     user_id = models.TextField(blank=True, null=True)
-    email = models.TextField()
+    email = models.EmailField()
     billing_name = models.CharField(max_length=255, blank=True, null=True)
-    billing_address = models.CharField(max_length=2555, blank=True, null=True)
+    billing_address = AddressField(blank=True, null=True)
     delivery_name = models.CharField(max_length=255, blank=True, null=True)
-    delivery_address = models.CharField(max_length=2555, blank=True, null=True)
+    delivery_address = AddressField(blank=True, null=True)
 admin.site.register(Customer)
 
 class Supplier(SuperModel):
     name = models.CharField(max_length=255)
     photo = models.ImageField(blank=True, null=True)
-    address = models.CharField(max_length=2555, blank=True, null=True)
+    address = AddressField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
 admin.site.register(Supplier)
 
@@ -36,12 +36,12 @@ class Meal(SuperModel):
     suppliers = models.ForeignKey('Supplier',  on_delete=models.CASCADE, blank=True, null=True)
 admin.site.register(Meal)
 
-class OrderItems(SuperModel):
+class OrderItem(SuperModel):
     date = models.DateField()
     delivery_date = models.DateField()
     meal = models.ForeignKey('Meal',  on_delete=models.CASCADE, blank=True, null=True)
     servings = models.IntegerField(default=1)
-admin.site.register(OrderItems)
+admin.site.register(OrderItem)
 
 class Plan(SuperModel):
     customer = models.TextField()
@@ -49,7 +49,7 @@ class Plan(SuperModel):
     start_date = models.DateField()
     customizations = models.CharField(max_length=255)
     glass_containers = models.BooleanField(blank=True,  null=True, default=0)
-    order_items = models.ForeignKey('OrderItems', on_delete=models.CASCADE)
+    order_items = models.ForeignKey('OrderItem', on_delete=models.CASCADE)
 admin.site.register(Plan)
 
 class Order(SuperModel):
