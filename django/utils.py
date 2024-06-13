@@ -92,6 +92,7 @@ def addArgs(target, new_args):
     return modified_target
 
 
+# TODO: implement many other field types, foreign keys, constraints, etc...
 def infer_field_type(field_type, field):
     field_type = field_type.lower()
     if field_type == "text":
@@ -123,6 +124,7 @@ def infer_field_type(field_type, field):
     elif field_type == "enum":
         return f"models.CharField(max_length=20, choices=MealTimes.choices)"
     elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
+        # TODO: implement "HowMany" column
         # return "models.ManyToManyField()"
         # return "models.OneToOneField()"
         model_name = create_object_name(field['Relationship'])
