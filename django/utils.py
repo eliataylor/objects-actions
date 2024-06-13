@@ -135,8 +135,11 @@ def infer_field_type(field_type, field):
     elif field_type == "boolean":
         return "models.BooleanField()"
     elif field_type == "image":
-        # TODO: use "Example" column to control target directory
-        return "models.ImageField()"
+        target_directory = field.get('Example', None)
+        if target_directory is None:
+            raise ValueError("The 'Example' column is required to determine the target directory")
+
+        return f"models.ImageField(upload_to='{target_directory}')"
     elif field_type == "video":
         # TODO: use "Example" column to control target directory
         return "models.FileField(upload_to='videos/')"
