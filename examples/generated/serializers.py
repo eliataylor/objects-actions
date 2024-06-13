@@ -1,6 +1,5 @@
 ###OBJECT-ACTIONS-SERIALIZERS-STARTS###
 
-
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
@@ -42,5 +41,4 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = '__all__'    
         
-
 ###OBJECT-ACTIONS-SERIALIZERS-ENDS###

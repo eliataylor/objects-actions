@@ -1,9 +1,9 @@
 import os
 import sys
+import argparse
 from utils import inject_generated_code, create_machine_name, create_object_name, addArgs, infer_field_type, build_json_from_csv
 
-
-class DjangoGenerator:
+class DjangoBuilder:
     def __init__(self, csv_file, output_dir):
         self.output_dir = output_dir
 
@@ -13,6 +13,8 @@ class DjangoGenerator:
         fields = '__all__'    
         """
 
+        # TODO: implement `permission_classes` via Roles from Permissions Matrix
+        # TODO: generate CRUD query methods based on Permissions Matrix
         self.viewsetTpl = """class __CLASSNAME__ViewSet(viewsets.ModelViewSet):
     queryset = __CLASSNAME__.objects.all()
     serializer_class = __CLASSNAME__Serializer
@@ -37,10 +39,8 @@ class DjangoGenerator:
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
-        """
 
+        """
 
         self.json = build_json_from_csv(csv_file)
         self.build_models()
@@ -115,21 +115,3 @@ class DjangoGenerator:
         outpath = os.path.join(self.output_dir, 'views.py')
         inject_generated_code(outpath, code, 'VIEWSETS')
 
-
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Missing Parameter. Try: python django/project-builder.py <field_types_csv> <output_directory>")
-        sys.exit(1)
-
-    input = sys.argv[1]
-
-    if not os.path.exists(input):
-        print(f"Error: Field Types CSV '{input}' does not exist.")
-        sys.exit(1)
-
-    dir = sys.argv[2]
-    if not os.path.exists(dir):
-        print(f"Error: Directory '{input}' does not exist.")
-        sys.exit(1)
-
-    DjangoGenerator(input, dir)

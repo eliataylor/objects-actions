@@ -1,6 +1,5 @@
 ###OBJECT-ACTIONS-MODELS-STARTS###
 
-
 class Customer(SuperModel):
     user_id = models.TextField(blank=True, null=True)
     email = models.TextField()
@@ -59,5 +58,4 @@ class Order(SuperModel):
     recurring = models.BooleanField(blank=True,  null=True, default=0)
     delivery_instructions = models.TextField(blank=True, null=True)
 admin.site.register(Order)
-
 ###OBJECT-ACTIONS-MODELS-ENDS###

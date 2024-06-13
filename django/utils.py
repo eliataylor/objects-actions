@@ -92,7 +92,6 @@ def addArgs(target, new_args):
     return modified_target
 
 
-# TODO: implement many other field types, foreign keys, constraints, etc...
 def infer_field_type(field_type, field):
     field_type = field_type.lower()
     if field_type == "text":
@@ -112,12 +111,16 @@ def infer_field_type(field_type, field):
     elif field_type == "boolean":
         return "models.BooleanField()"
     elif field_type == "image":
+        # TODO: use "Example" column to control target directory
         return "models.ImageField()"
     elif field_type == "video":
+        # TODO: use "Example" column to control target directory
         return "models.FileField(upload_to='videos/')"
     elif field_type == "media":
+        # TODO: use "Example" column to control target directory
         return "models.FileField(upload_to='media/')"
     elif field_type == "list_of_strings":
+        # TODO: implement data validation based on "Example" column
         return "models.JSONField()"  # Store both as JSON array
     elif field_type == "json":
         return "models.JSONField()"  # Store both as JSON array
