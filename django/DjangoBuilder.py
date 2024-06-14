@@ -23,6 +23,7 @@ class DjangoBuilder:
                         }
         self.requirements = []
 
+        # TODO: on CREATE / UPDATE, upsert any Foreign Key relationships when the full object is passed
         self.serializerTpl = """class __CLASSNAME__Serializer(serializers.ModelSerializer):
     class Meta:
         model = __CLASSNAME__
