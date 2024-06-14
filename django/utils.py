@@ -53,7 +53,7 @@ def inject_generated_code(output_file_path, code, prefix):
         start = html.find(start_delim)
         if start < 0:
             start = len(html) - 1 #append to end of file
-            code = f"\n\n{start_delim}n" + code
+            code = f"\n\n{start_delim}\n" + code
         else:
             start += len(start_delim)
 
@@ -64,7 +64,7 @@ def inject_generated_code(output_file_path, code, prefix):
 
         start_html = html[:start]
         end_html = html[end:]
-        html = start_html + code + end_html
+        html = f"{start_html}\n{code}{end_html}"
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write(html)

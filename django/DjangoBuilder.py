@@ -9,13 +9,16 @@ class DjangoBuilder:
         self.output_dir = output_dir
 
         # TODO: build list dynamically and inject add the end
-        self.imports = [
-            "from django.db import models",
-            "from django.contrib.auth.models import User",
-            "from django.contrib import admin",
-            "from django.utils import timezone",
-            "from django.contrib.auth import get_user_model"
-        ]
+        self.imports = {"models": ["from django.db import models",
+                                   "from django.contrib.auth.models import User",
+                                   "from django.contrib import admin",
+                                   "from django.utils import timezone",
+                                   "from django.contrib.auth import get_user_model"
+                                   ],
+                        "serializers": ["from rest_framework import serializers"],
+                        "urls": ["from rest_framework.routers import DefaultRouter"],
+                        "viewsets": ["from rest_framework import viewsets"]
+                        }
 
         self.serializerTpl = """class __CLASSNAME__Serializer(serializers.ModelSerializer):
     class Meta:
@@ -52,7 +55,7 @@ class DjangoBuilder:
 
         """
 
-        self.modelTpl = """"
+        self.modelTpl = """
 class SuperModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -80,14 +83,14 @@ class SuperModel(models.Model):
         """
 
         self.json = build_json_from_csv(csv_file)
-        self.build_models()
-        self.build_serializers()
-        self.build_viewsets()
-        self.build_urls()
+        self.build_models(self.imports['models'])
+        self.build_serializers(self.imports['serializers'])
+        self.build_viewsets(self.imports['viewsets'])
+        self.build_urls(self.imports['urls'])
 
-    def build_models(self):
+    def build_models(self, imports_list):
 
-        code = self.modelTpl + "\n"
+        code = "{0}\n{1}\n".format('\n'.join(imports_list), self.modelTpl)
         for class_name in self.json:
             title_field = False
             model_name = create_object_name(class_name)
@@ -124,8 +127,8 @@ class SuperModel(models.Model):
 
 
 
-    def build_serializers(self):
-        code = "\n"
+    def build_serializers(self, imports_list):
+        code = "{0}\n".format('\n'.join(imports_list))
         for class_name in self.json:
             model_name = create_object_name(class_name)
             code += "\n"
@@ -135,8 +138,8 @@ class SuperModel(models.Model):
         outpath = os.path.join(self.output_dir, 'serializers.py')
         inject_generated_code(outpath, code, 'SERIALIZERS')
 
-    def build_urls(self):
-        code = "\nrouter = DefaultRouter()\n"
+    def build_urls(self, imports_list):
+        code = "{0}\n{1}\n".format('\n'.join(imports_list), "\nrouter = DefaultRouter()\n")
         for class_name in self.json:
             path_name = create_machine_name(class_name)
             model_name = create_object_name(class_name)
@@ -145,8 +148,8 @@ class SuperModel(models.Model):
         outpath = os.path.join(self.output_dir, 'urls.py')
         inject_generated_code(outpath, code, 'URLS')
 
-    def build_viewsets(self):
-        code = "\n"
+    def build_viewsets(self, imports_list):
+        code = "{0}\n".format('\n'.join(imports_list))
         for class_name in self.json:
             model_name = create_object_name(class_name)
             code += "\n"
