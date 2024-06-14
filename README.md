@@ -1,10 +1,9 @@
 # Object-Actions Worksheet
-----
+
+--------
 
 ## PURPOSE
-- [x] Outlining application functionality and permissions
-- [x] API documentation
-- [x] SQL database schema design
+- [x] Relational Database Schema Design
 - [x] Scaffolding Content Management Systems
 - [x] Scaffolding API & CMS Authentication and Access Permissions
 - [x] Scaffolding Web App interface and API connectivity
@@ -12,12 +11,23 @@
 - [x] Generating unlimited numbers of fake data entries to test with
 
 ## USAGE:
+### Generate a Django Admin CMS and API:
 - `git clone git@github.com:eliataylor/object-actions.git`
 - `cd object-actions`
 - `python3.9 -m venv .venv` (pretty much any version of python should work)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/generated`
+
+### Run Generated CMS and API
+- `cd examples/generated`
+- `python3.9 -m venv .venv` (pretty much any version of python should work)
+- `source .venv/bin/activate`
+- `pip install -r requirements.txt`
+- `python manage.py createsuperuser` (create your )
+- `python manage.py makemigrations`
+- `python manage.py migrate`
+- `python manage.py runserver`
 
 ## Getting Started
 
@@ -43,3 +53,4 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
   - [ ] TypeScript interface and object types defined 
   - [ ] Material-UI Drawer of Permissions Matrix Paths
 - [ ] Generate Cypress.io test suite
+- [ ] AppScrips to generate full Worksheet for given Object-Actions list

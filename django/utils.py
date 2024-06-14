@@ -138,7 +138,7 @@ def infer_field_type(field_type, field):
     elif field_type == "phone":
         return "models.CharField(validators=[validate_phone_number], max_length=16)"
     elif field_type == "address":
-        return "AddressField()"
+        return "AddressField(related_name='+')"
     elif field_type == "url":
         return "models.URLField()"
     elif field_type == "uuid":
@@ -174,12 +174,16 @@ def infer_field_type(field_type, field):
         return f"models.CharField(max_length=20)"
     elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
         # TODO: implement "HowMany" column
-        # return "models.ManyToManyField()"
-        # return "models.OneToOneField()"
         model_name = create_object_name(field['Relationship'])
-        return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
-    elif field_type == "address":
-        return "models.CharField(max_length=2555)"  # Adjust max_length as needed
+        if field['HowMany'] == 1:
+            return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"
+        elif field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
+            # return f"models.ManyToManyField('{model_name}', on_delete=models.CASCADE)"
+            return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
+        else:
+            # maybe add convention to apply reverse reference >
+            # f"models.ForeignKey(OtherModel, on_delete=models.CASCADE, related_name='{create_machine_name(field['Field Label'])}')"
+            return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
     else:
         return "models.TextField()"
 
