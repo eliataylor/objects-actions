@@ -3,6 +3,7 @@ import json
 import re
 import os
 from loguru import logger
+import ast
 
 def build_json_from_csv(csv_file):
     # Initialize an empty dictionary to store JSON object
@@ -44,7 +45,7 @@ def inject_generated_code(output_file_path, code, prefix):
     end_delim = f"###OBJECT-ACTIONS-{prefix}-ENDS###"
 
     if os.path.exists(output_file_path) is False:
-        html = start_delim + "\n" + code + "\n" + end_delim
+        html = "\n" + start_delim + "\n" + code + "\n" + end_delim + "\n"
     else:
 
         with open(output_file_path, 'r', encoding='utf-8') as file:
@@ -53,18 +54,18 @@ def inject_generated_code(output_file_path, code, prefix):
         start = html.find(start_delim)
         if start < 0:
             start = len(html) - 1 #append to end of file
-            code = f"\n\n{start_delim}\n" + code
+            code = f"\n\n{start_delim}\n" + code + "\n"
         else:
             start += len(start_delim)
 
         end = html.find(end_delim)
         if end < 0:
             end = len(code)
-            code = code + end_delim
+            code = code + "\n" + end_delim + "\n"
 
         start_html = html[:start]
         end_html = html[end:]
-        html = f"{start_html}\n{code}{end_html}"
+        html = f"{start_html}\n{code}\n{end_html}\n"
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write(html)
@@ -92,6 +93,23 @@ def addArgs(target, new_args):
 
     return modified_target
 
+def build_choices(field_name, field):
+    list = field['Example'].strip()
+    if list == '':
+        logger.warning(f"Field {field['Field Label']} has no list of structure of choices. Please list them as a flat json array.")
+        return ""
+
+    try:
+        list = ast.literal_eval(list)
+        code = f"\n\nclass {field_name}Choices(models.TextChoices):"
+        for name in list:
+            code += f'\n\t{name} = ("{capitalize(name)}", "{name}")'
+    except Exception as e:
+        logger.warning(f"{field['Field Label']} has invalid structure of choices: {field['Example'].strip()}  \nPlease list them as a flat json array. {str(e)}")
+        return ""
+
+    return code
+
 
 def infer_field_type(field_type, field):
     field_type = field_type.lower()
@@ -106,8 +124,7 @@ def infer_field_type(field_type, field):
     elif field_type == "integer":
         return "models.IntegerField()"
     elif field_type == "price":
-        # TODO: store selected currency somewhere ?
-        return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
+        return "MoneyField(decimal_places=2, default_currency='USD', max_digits=11)"
     elif field_type == "decimal":
         return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
     elif field_type == "date":
@@ -119,22 +136,14 @@ def infer_field_type(field_type, field):
     elif field_type == "email":
         return "models.EmailField()"
     elif field_type == "phone":
-        # TODO: implement and inject validation
-        """
-        def validate_phone_number(value):
-            phone_regex = re.compile(r'^\+?1?\d{9,15}$')
-            if not phone_regex.match(value):
-                raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-        """
         return "models.CharField(validators=[validate_phone_number], max_length=16)"
     elif field_type == "address":
-        # from address.models import AddressField
-        return "AddressField()"
+        return "AddressField(related_name='+')"
     elif field_type == "url":
         return "models.URLField()"
-    elif field_type == "UUID":
+    elif field_type == "uuid":
         return "models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)"
-    elif field_type == "Slug":
+    elif field_type == "slug":
         """ 
             TODO: implement save method
             def save(self, *args, **kwargs):
@@ -162,18 +171,24 @@ def infer_field_type(field_type, field):
     elif field_type == "json":
         return "models.JSONField()"  # Store both as JSON array
     elif field_type == "enum":
-        # TODO: parse Example to create choices
-        return f"models.CharField(max_length=20, choices=MealTimes.choices)"
+        return f"models.CharField(max_length=20)"
     elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
         # TODO: implement "HowMany" column
-        # return "models.ManyToManyField()"
-        # return "models.OneToOneField()"
         model_name = create_object_name(field['Relationship'])
-        return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
-    elif field_type == "address":
-        return "models.CharField(max_length=2555)"  # Adjust max_length as needed
+        if field['HowMany'] == 1:
+            return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"
+        elif field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
+            # return f"models.ManyToManyField('{model_name}', on_delete=models.CASCADE)"
+            return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
+        else:
+            # maybe add convention to apply reverse reference >
+            # f"models.ForeignKey(OtherModel, on_delete=models.CASCADE, related_name='{create_machine_name(field['Field Label'])}')"
+            return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
     else:
         return "models.TextField()"
+
+def capitalize(string):
+    return string[:1].upper() + string[1:] if string else string
 
 def create_object_name(label):
     return re.sub(r'[^a-zA-Z0-9\s]', '', label).replace(' ', '')
