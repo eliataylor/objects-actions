@@ -5,7 +5,6 @@ interface NavItem {
 
 export const NAVITEMS:NavItem[] = []
 
-
 export interface ListView {
     meta: object;
     data: object[];

@@ -1,4 +1,4 @@
-import React, {createContext, useEffect, useState} from 'react';
+import React, {createContext, useState} from 'react';
 import {EntityView, ListView} from "./types/object-actions";
 
 interface ObjectActionsContextProps {
@@ -15,20 +15,18 @@ const ObjectActionsContext = createContext<ObjectActionsContextProps>({
     entityData: {meta:{}, data:[]},
 });
 
-interface CartProviderProps {
+interface ObjectActionsProviderProps {
     children: React.ReactNode;
     initialState?: ObjectActionsContextProps
 }
 
-const ObjectActionsProvider: React.FC<CartProviderProps> = ({children, initialState}) => {
+const ObjectActionsProvider: React.FC<ObjectActionsProviderProps> = ({children, initialState}) => {
     const [listView, updateLisView] = useState<ListView>(null);
     const [entityView, updateEntityView] = useState<EntityView>(null);
 
-    return (
-        <ObjectActionsContext.Provider value={{listData, updateListView, entityData, upateEntityView}}>
+    return <ObjectActionsContext.Provider value={{listData, updateListView, entityData, upateEntityView}} >
             {children}
         </ObjectActionsContext.Provider>
-    );
 };
 
 export {ObjectActionsProvider, ObjectActionsContext};
