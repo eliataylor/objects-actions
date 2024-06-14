@@ -1,21 +1,18 @@
 import React, {createContext, useEffect, useState} from 'react';
-
+import {EntityView, ListView} from "./types/object-actions";
 
 interface ObjectActionsContextProps {
-    updateCart: (meal: Meal, ObjectActions: number) => void;
-    updateFoodMenu: (menu: MenuData) => void;
-    weeklyMenu: MenuData;
-    cartItems: OrderItems;
-    program:Program;
-    setProgram: (program:Program) => void;
+    updateListView: (response: ListView) => void;
+    listData: ListView;
+    upateEntityView: (response: EntityView) => void;
+    entityData: EntityView;
 }
 
 const ObjectActionsContext = createContext<ObjectActionsContextProps>({
-    weeklyMenu: null,
-    updateFoodMenu: (menu: MenuData) => [],
-    cartItems: [],
-    program: defaultProgram,
-    setProgram: (program:Program) => null
+    updateListView: (response: ListView) => null,
+    listData: {meta:{}, data:[]},
+    upateEntityView: (response: EntityView) => null,
+    entityData: {meta:{}, data:[]},
 });
 
 interface CartProviderProps {
@@ -24,20 +21,11 @@ interface CartProviderProps {
 }
 
 const ObjectActionsProvider: React.FC<CartProviderProps> = ({children, initialState}) => {
-    const [cartPrice, setPrice] = useState<number>(0);
-    const [cartItems, setCartItems] = useState<Meal[]>([]);
-    const [weeklyMenu, updateFoodMenu] = useState<MenuData>(null);
-    const [program, setProgram] = useState<Program>(null);
-
-    useEffect(() => {
-
-
-    }, [cartPrice, cartItems]);
-
-
+    const [listView, updateLisView] = useState<ListView>(null);
+    const [entityView, updateEntityView] = useState<EntityView>(null);
 
     return (
-        <ObjectActionsContext.Provider value={{cartPrice, cartItems, weeklyMenu, updateFoodMenu, program, setProgram}}>
+        <ObjectActionsContext.Provider value={{listData, updateListView, entityData, upateEntityView}}>
             {children}
         </ObjectActionsContext.Provider>
     );

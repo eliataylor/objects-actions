@@ -6,7 +6,6 @@ interface NavDrawerContextType {
     setNavDrawerWidth: (width: number) => void;
     isMounted: boolean;
     setMounting: (isOpen: boolean) => void;
-
     keyword: string;
     setKeyword: (keyword: string) => void;
 }
