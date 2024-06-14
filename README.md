@@ -1,6 +1,6 @@
 # Object-Actions Worksheet
 
---------
+--------------------------------------------------------------------------------
 
 ## PURPOSE
 - [x] Relational Database Schema Design
@@ -11,7 +11,7 @@
 - [x] Generating unlimited numbers of fake data entries to test with
 
 ## USAGE:
-### Generate a Django Admin CMS and API:
+### Generate your Django Admin CMS and API:
 - `git clone git@github.com:eliataylor/object-actions.git`
 - `cd object-actions`
 - `python3.9 -m venv .venv` (pretty much any version of python should work)
@@ -20,13 +20,14 @@
 - `python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/generated`
 
 ### Run Generated CMS and API
-- `cd examples/generated`
+- Follow [django/README.md](django/README.md) to setup a new project or make a few changes to your settings.py 
+- `cd examples/generated` (the root of your project with the output above)
 - `python3.9 -m venv .venv` (pretty much any version of python should work)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `python manage.py createsuperuser` (create your )
 - `python manage.py makemigrations`
-- `python manage.py migrate`
+- `python manage.py migrate --run-syncdb`
 - `python manage.py runserver`
 
 ## Getting Started
@@ -39,7 +40,6 @@ This [example version](https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7a
 ![Object Fields](docs/objects-democrasee.png)
 ![Vocabulary Fields](docs/vocabularies-democrasee.png)
 ![Permissions Matrix](docs/permissions-matrix-democrasee.png)
-
 
 All Select options under Fields Types (Column D) in the Object Fields sheet come from column A in the "selectors" sheet. If you have special field types, add them here. The checkboxes roughly describe what Fields are support by the different CMS config builders in this repository.
 ![Field Types](docs/field-types.png)
