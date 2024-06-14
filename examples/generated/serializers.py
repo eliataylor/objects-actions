@@ -24,15 +24,15 @@ class MealSerializer(serializers.ModelSerializer):
         fields = '__all__'    
         
 
-class OrderItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
-        fields = '__all__'    
-        
-
 class PlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plan
+        fields = '__all__'    
+        
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
         fields = '__all__'    
         
 

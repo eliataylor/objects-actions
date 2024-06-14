@@ -1,10 +1,21 @@
 import os
-from utils import inject_generated_code, create_machine_name, create_object_name, addArgs, infer_field_type, build_json_from_csv
-from loguru import logger
+
+from utils import inject_generated_code, create_machine_name, create_object_name, addArgs, infer_field_type, \
+    build_json_from_csv
+
 
 class DjangoBuilder:
     def __init__(self, csv_file, output_dir):
         self.output_dir = output_dir
+
+        # TODO: build list dynamically and inject add the end
+        self.imports = [
+            "from django.db import models",
+            "from django.contrib.auth.models import User",
+            "from django.contrib import admin",
+            "from django.utils import timezone",
+            "from django.contrib.auth import get_user_model"
+        ]
 
         self.serializerTpl = """class __CLASSNAME__Serializer(serializers.ModelSerializer):
     class Meta:
@@ -41,6 +52,33 @@ class DjangoBuilder:
 
         """
 
+        self.modelTpl = """"
+class SuperModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True)
+    class Meta:
+        abstract = True
+    def __str__(self):
+        if hasattr(self, "title"):
+            return self.title
+        elif hasattr(self, "name"):
+            return self.name
+        return self.__class__
+
+
+    def get_current_user(self, request):
+        if hasattr(request, 'user') and request.user.is_authenticated:
+            return request.user
+        return None
+    def save(self, *args, **kwargs):
+        if not self.id and hasattr(self, 'author') and not self.author_id:
+            request = kwargs.pop('request', None)  # Remove 'request' from kwargs
+            if request:
+                self.author = self.get_current_user(request)
+        super().save(*args, **kwargs)
+        """
+
         self.json = build_json_from_csv(csv_file)
         self.build_models()
         self.build_serializers()
@@ -49,7 +87,7 @@ class DjangoBuilder:
 
     def build_models(self):
 
-        code = "\n"
+        code = self.modelTpl + "\n"
         for class_name in self.json:
             title_field = False
             model_name = create_object_name(class_name)
@@ -82,6 +120,10 @@ class DjangoBuilder:
         model_file_path = os.path.join(self.output_dir, f'models.py')
         inject_generated_code(model_file_path, code, 'MODELS')
 
+
+
+
+
     def build_serializers(self):
         code = "\n"
         for class_name in self.json:
@@ -113,4 +155,3 @@ class DjangoBuilder:
 
         outpath = os.path.join(self.output_dir, 'views.py')
         inject_generated_code(outpath, code, 'VIEWSETS')
-
