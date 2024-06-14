@@ -3,6 +3,7 @@ import json
 import re
 import os
 from loguru import logger
+import ast
 
 def build_json_from_csv(csv_file):
     # Initialize an empty dictionary to store JSON object
@@ -92,6 +93,23 @@ def addArgs(target, new_args):
 
     return modified_target
 
+def build_choices(field_name, field):
+    list = field['Example'].strip()
+    if list == '':
+        logger.warning(f"Field {field['Field Label']} has no list of structure of choices. Please list them as a flat json array.")
+        return ""
+
+    try:
+        list = ast.literal_eval(list)
+        code = f"\n\nclass {field_name}Choices(models.TextChoices):"
+        for name in list:
+            code += f'\n\t{name} = "{name}" "{name}"'
+    except Exception as e:
+        logger.warning(f"{field['Field Label']} has invalid structure of choices: {field['Example'].strip()}  \nPlease list them as a flat json array. {str(e)}")
+        return ""
+
+    return code
+
 
 def infer_field_type(field_type, field):
     field_type = field_type.lower()
@@ -163,8 +181,7 @@ def infer_field_type(field_type, field):
     elif field_type == "json":
         return "models.JSONField()"  # Store both as JSON array
     elif field_type == "enum":
-        # TODO: parse Example to create choices
-        return f"models.CharField(max_length=20, choices=MealTimes.choices)"
+        return f"models.CharField(max_length=20)"
     elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
         # TODO: implement "HowMany" column
         # return "models.ManyToManyField()"

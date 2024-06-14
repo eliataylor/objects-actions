@@ -1,7 +1,7 @@
 import os
 
 from utils import inject_generated_code, create_machine_name, create_object_name, addArgs, infer_field_type, \
-    build_json_from_csv
+    build_json_from_csv, build_choices
 
 
 class DjangoBuilder:
@@ -107,11 +107,23 @@ class SuperModel(models.Model):
 
                 if field_type is None:
                     field_type = 'text'
+                if field_type == 'Address':
+                    # TODO: inject "address" to INSTALLED_APPS
+                    self.imports.append("from address.models import AddressField")
+
                 model_type = infer_field_type(field_type, field)
                 if field['Required'].strip() == '' or int(field['Required']) < 1:
                     model_type = addArgs(model_type, ['blank=True', 'null=True'])
                 if field['Default'].strip() != '':
-                    model_type = addArgs(model_type, [f"default={field['Default']}"])
+                    if field_type == "integer" or field_type == 'decimal':
+                        model_type = addArgs(model_type, [f"default={field['Default']}"])
+                    else:
+                        model_type = addArgs(model_type, [f"default=\"{field['Default']}\""])
+
+                if field_type == 'enum':
+                    capitalized = field_name[:1].upper() + field_name[1:] if field_name else field_name
+                    code = build_choices(capitalized, field) + '\n' + code
+                    model_type = addArgs(model_type, [f"choices={capitalized}Choices.choices"])
 
                 code += f"    {field_name} = {model_type}\n"
 

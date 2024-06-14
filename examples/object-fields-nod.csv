@@ -26,7 +26,7 @@ Meal,,,,,,,,
 ,Slug,,Slug,,,,,
 ,Title,,text,1,1,,,
 ,Description,,text,1,1,,,
-,BLD,,enum,1,1,,,"['breakfast, 'lunch', 'dinner', 'desert', 'snack']"
+,BLD,,enum,1,1,,,"['breakfast', 'lunch', 'dinner', 'desert', 'snack']"
 ,Photo,,media,3,1,,,media/calendar
 ,Internal Cost,,decimal,,,,,
 ,Public Price,,decimal,,,,16,
@@ -58,4 +58,4 @@ Order,,,,,,,,
 ,Glass Containers,,boolean,1,,,0,
 ,Recurring,,boolean,,,,0,
 ,Order Items,,type reference,unlimited,1,Order Item,,
-,Status,,enum,1,1,,unpaid,"['paid, 'cancelled', 'unpaid']"
+,Status,,enum,1,1,,unpaid,"['paid', 'cancelled', 'unpaid']"
