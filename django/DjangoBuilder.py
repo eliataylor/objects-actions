@@ -10,6 +10,7 @@ class DjangoBuilder:
 
         # TODO: build list dynamically and inject add the end
         self.imports = [
+            "\n",
             "from django.db import models",
             "from django.contrib.auth.models import User",
             "from django.contrib import admin",
@@ -85,6 +86,7 @@ class SuperModel(models.Model):
         self.build_viewsets()
         self.build_urls()
 
+
     def build_models(self):
 
         code = self.modelTpl + "\n"
@@ -122,6 +124,9 @@ class SuperModel(models.Model):
                 code += f"    {field_name} = {model_type}\n"
 
             code += f"admin.site.register({model_name})\n"
+
+        model_file_path = os.path.join(self.output_dir, f'models.py')
+        inject_generated_code(model_file_path, "\n".join(self.imports), 'MODEL_IMPORTS')
 
         model_file_path = os.path.join(self.output_dir, f'models.py')
         inject_generated_code(model_file_path, code, 'MODELS')
