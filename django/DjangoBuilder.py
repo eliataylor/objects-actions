@@ -52,7 +52,7 @@ class DjangoBuilder:
 
         """
 
-        self.modelTpl = """"
+        self.modelTpl = """\n
 class SuperModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -76,7 +76,7 @@ class SuperModel(models.Model):
             request = kwargs.pop('request', None)  # Remove 'request' from kwargs
             if request:
                 self.author = self.get_current_user(request)
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs)\n
         """
 
         self.json = build_json_from_csv(csv_file)
@@ -89,7 +89,6 @@ class SuperModel(models.Model):
 
         code = self.modelTpl + "\n"
         for class_name in self.json:
-            title_field = False
             model_name = create_object_name(class_name)
 
             code += f"\nclass {model_name}(SuperModel):\n"
@@ -99,11 +98,6 @@ class SuperModel(models.Model):
                 field_name = field['Field Name']
                 if field_name is None or field_name == '':
                     field_name = create_machine_name(field['Field Label'])
-
-                if field_name == 'title':
-                    title_field = field_name
-                elif field_name == 'name':
-                    title_field = field_name
 
                 if field_type is None:
                     field_type = 'text'
