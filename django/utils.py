@@ -128,7 +128,6 @@ def infer_field_type(field_type, field):
         """
         return "models.CharField(validators=[validate_phone_number], max_length=16)"
     elif field_type == "address":
-        # TODO: implement `django-address` package and print instructions to pip install and add to settings
         # from address.models import AddressField
         return "AddressField()"
     elif field_type == "url":
