@@ -1,7 +1,8 @@
 import os
 
 from utils import inject_generated_code, create_machine_name, create_object_name, addArgs, infer_field_type, \
-    build_json_from_csv, build_choices
+    build_json_from_csv, build_choices, capitalize
+from loguru import logger
 
 
 class DjangoBuilder:
@@ -10,13 +11,13 @@ class DjangoBuilder:
 
         # TODO: build list dynamically and inject add the end
         self.imports = [
-            "\n",
             "from django.db import models",
             "from django.contrib.auth.models import User",
             "from django.contrib import admin",
             "from django.utils import timezone",
             "from django.contrib.auth import get_user_model"
         ]
+        self.requirements = []
 
         self.serializerTpl = """class __CLASSNAME__Serializer(serializers.ModelSerializer):
     class Meta:
@@ -103,9 +104,18 @@ class SuperModel(models.Model):
 
                 if field_type is None:
                     field_type = 'text'
-                if field_type == 'Address':
+                elif field_type == 'address':
                     # TODO: inject "address" to INSTALLED_APPS
-                    self.imports.append("from address.models import AddressField")
+                    if "from address.models import AddressField" not in self.imports:
+                        self.imports.append("from address.models import AddressField")
+                    if "pip install django-address" not in self.requirements:
+                        self.requirements.append("pip install django-address")
+                elif field_type == 'price':
+                    # TODO: inject "djmoney" to INSTALLED_APPS
+                    if "from djmoney.models.fields import MoneyField" not in self.imports:
+                        self.imports.append("from djmoney.models.fields import MoneyField")
+                    if "pip install django-money" not in self.requirements:
+                        self.requirements.append("pip install django-money")
 
                 model_type = infer_field_type(field_type, field)
                 if field['Required'].strip() == '' or int(field['Required']) < 1:
@@ -117,9 +127,20 @@ class SuperModel(models.Model):
                         model_type = addArgs(model_type, [f"default=\"{field['Default']}\""])
 
                 if field_type == 'enum':
-                    capitalized = field_name[:1].upper() + field_name[1:] if field_name else field_name
+                    capitalized = capitalize(field_name)
                     code = build_choices(capitalized, field) + '\n' + code
                     model_type = addArgs(model_type, [f"choices={capitalized}Choices.choices"])
+                elif field_type == 'phone' and "validate_phone_number" not in code:
+
+                    if "import re" not in self.imports:
+                        self.imports.append("import re")
+                    if "from django.core.exceptions import ValidationError" not in self.imports:
+                        self.imports.append("from django.core.exceptions import ValidationError")
+
+                    code = """\ndef validate_phone_number(value):
+    phone_regex = re.compile(r'^\+?1?\d{9,15}$')
+    if not phone_regex.match(value):
+        raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")""" + '\n' + code
 
                 code += f"    {field_name} = {model_type}\n"
 
@@ -131,8 +152,9 @@ class SuperModel(models.Model):
         model_file_path = os.path.join(self.output_dir, f'models.py')
         inject_generated_code(model_file_path, code, 'MODELS')
 
-
-
+        if len(self.requirements) > 0:
+            cmds = "\n".join(self.requirements)
+            logger.warning(f"You must run these commands at the root of your project {self.output_dir} \n\n {cmds}\n")
 
 
     def build_serializers(self):
