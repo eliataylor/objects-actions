@@ -1,4 +1,5 @@
 ###OBJECT-ACTIONS-VIEWSETS-STARTS###
+from rest_framework import viewsets
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
