@@ -9,6 +9,7 @@ class DjangoBuilder:
         self.output_dir = output_dir
 
         # TODO: build list dynamically and inject add the end
+        # List of import lines for each file
         self.imports = {"models": ["from django.db import models",
                                    "from django.contrib.auth.models import User",
                                    "from django.contrib import admin",
