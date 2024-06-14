@@ -10,13 +10,18 @@ class DjangoBuilder:
         self.output_dir = output_dir
 
         # TODO: build list dynamically and inject add the end
-        self.imports = [
-            "from django.db import models",
-            "from django.contrib.auth.models import User",
-            "from django.contrib import admin",
-            "from django.utils import timezone",
-            "from django.contrib.auth import get_user_model"
-        ]
+        # List of import lines for each file
+        self.imports = {"models": ["from django.db import models",
+                                   "from django.contrib.auth.models import User",
+                                   "from django.contrib import admin",
+                                   "from django.utils import timezone",
+                                   "from django.contrib.auth import get_user_model",
+                                   "from address.models import AddressField"
+                                   ],
+                        "serializers": ["from rest_framework import serializers"],
+                        "urls": ["from rest_framework.routers import DefaultRouter"],
+                        "viewsets": ["from rest_framework import viewsets"]
+                        }
         self.requirements = []
 
         self.serializerTpl = """class __CLASSNAME__Serializer(serializers.ModelSerializer):
@@ -82,15 +87,13 @@ class SuperModel(models.Model):
         """
 
         self.json = build_json_from_csv(csv_file)
-        self.build_models()
-        self.build_serializers()
-        self.build_viewsets()
-        self.build_urls()
+        self.build_models(self.imports['models'])
+        self.build_serializers(self.imports['serializers'])
+        self.build_viewsets(self.imports['viewsets'])
+        self.build_urls(self.imports['urls'])
 
-
-    def build_models(self):
-
-        code = self.modelTpl + "\n"
+    def build_models(self, imports_list):
+        code = "{0}\n{1}\n".format('\n'.join(imports_list), self.modelTpl)
         for class_name in self.json:
             model_name = create_object_name(class_name)
 
@@ -157,8 +160,8 @@ class SuperModel(models.Model):
             logger.warning(f"You must run these commands at the root of your project {self.output_dir} \n\n {cmds}\n")
 
 
-    def build_serializers(self):
-        code = "\n"
+    def build_serializers(self, imports_list):
+        code = "{0}\n".format('\n'.join(imports_list))
         for class_name in self.json:
             model_name = create_object_name(class_name)
             code += "\n"
@@ -168,8 +171,8 @@ class SuperModel(models.Model):
         outpath = os.path.join(self.output_dir, 'serializers.py')
         inject_generated_code(outpath, code, 'SERIALIZERS')
 
-    def build_urls(self):
-        code = "\nrouter = DefaultRouter()\n"
+    def build_urls(self, imports_list):
+        code = "{0}\n{1}\n".format('\n'.join(imports_list), "\nrouter = DefaultRouter()\n")
         for class_name in self.json:
             path_name = create_machine_name(class_name)
             model_name = create_object_name(class_name)
@@ -178,8 +181,8 @@ class SuperModel(models.Model):
         outpath = os.path.join(self.output_dir, 'urls.py')
         inject_generated_code(outpath, code, 'URLS')
 
-    def build_viewsets(self):
-        code = "\n"
+    def build_viewsets(self, imports_list):
+        code = "{0}\n".format('\n'.join(imports_list))
         for class_name in self.json:
             model_name = create_object_name(class_name)
             code += "\n"

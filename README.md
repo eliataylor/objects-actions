@@ -18,6 +18,14 @@
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/generated`
+The program uses the django-address package to provide the Address field type. That package is already included in the requirements.txt file. If you want to use the Address field type, you will need to add the 'address' entry to the INSTALLED_APPS list in your settings.py file:
+```python
+INSTALLED_APPS = [
+    # ... 
+    'address',
+    # ... 
+]
+```
 
 ### Run Generated CMS and API
 - Follow [django/README.md](django/README.md) to setup a new project or make a few changes to your settings.py 

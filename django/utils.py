@@ -65,7 +65,7 @@ def inject_generated_code(output_file_path, code, prefix):
 
         start_html = html[:start]
         end_html = html[end:]
-        html = "\n" + start_html + "\n" + code + "\n" + end_html + "\n"
+        html = f"{start_html}\n{code}\n{end_html}\n"
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write(html)

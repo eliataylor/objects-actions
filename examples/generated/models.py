@@ -1,4 +1,11 @@
-###OBJECT-ACTIONS-MODELS-STARTS###"
+###OBJECT-ACTIONS-MODELS-STARTS###
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib import admin
+from django.utils import timezone
+from django.contrib.auth import get_user_model
+from address.models import AddressField
+
 class SuperModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
