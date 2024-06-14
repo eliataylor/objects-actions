@@ -105,6 +105,9 @@ def infer_field_type(field_type, field):
         return "models.TextField()"
     elif field_type == "integer":
         return "models.IntegerField()"
+    elif field_type == "price":
+        # TODO: store selected currency somewhere ?
+        return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
     elif field_type == "decimal":
         return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
     elif field_type == "date":
@@ -130,7 +133,18 @@ def infer_field_type(field_type, field):
         return "AddressField()"
     elif field_type == "url":
         return "models.URLField()"
-    elif field_type == "id":
+    elif field_type == "UUID":
+        return "models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)"
+    elif field_type == "Slug":
+        """ 
+            TODO: implement save method
+            def save(self, *args, **kwargs):
+                if not self.slug:
+                    self.slug = slugify(self.name)
+                super(SuperModel, self).save(*args, **kwargs)
+        """
+        return "models.SlugField(unique=True, max_length=100)"
+    elif field_type == "ID (auto increment)":
         return "models.AutoField(primary_key=True)"
     elif field_type == "boolean":
         return "models.BooleanField()"
