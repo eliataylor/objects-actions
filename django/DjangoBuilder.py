@@ -13,7 +13,8 @@ class DjangoBuilder:
                                    "from django.contrib.auth.models import User",
                                    "from django.contrib import admin",
                                    "from django.utils import timezone",
-                                   "from django.contrib.auth import get_user_model"
+                                   "from django.contrib.auth import get_user_model",
+                                   "from address.models import AddressField"
                                    ],
                         "serializers": ["from rest_framework import serializers"],
                         "urls": ["from rest_framework.routers import DefaultRouter"],
