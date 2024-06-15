@@ -115,8 +115,10 @@ def build_choices(field_name, field):
 def infer_field_type(field_type, field):
     field_type = field_type.lower()
     if field_type == 'User (custom)':
+        # TODO: create and connect to internal user
         logger.info('implement custom user reference')
     elif field_type == 'User (cms)':
+        # TODO: how should extra fields be handled here?
         logger.info('implement internal django user reference')
     elif field_type == "text":
         return "models.CharField(max_length=255)"  # Adjust max_length as needed
@@ -129,10 +131,10 @@ def infer_field_type(field_type, field):
     elif field_type == "decimal":
         return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
     elif field_type == "date":
-        # TODO: implement format handlers
+        # TODO: implement data validation / format handlers onsave
         return "models.DateField()"
     elif field_type == "date time":
-        # TODO: implement format handlers
+        # TODO: implement data validation / format handlers onsave
         return "models.DateField()"
     elif field_type == "email":
         return "models.EmailField()"
@@ -174,7 +176,7 @@ def infer_field_type(field_type, field):
     elif field_type == "enum":
         return f"models.CharField(max_length=20)"
     elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
-        # TODO: implement "HowMany" column
+        # TODO: when is `related_name` needed?
         model_name = create_object_name(field['Relationship'])
         if field['HowMany'] == 1:
             return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"

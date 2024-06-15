@@ -58,7 +58,7 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
 ## DEVELOPMENT ROADMAP
 - [x] Generate Django Admin CMS
 - [x] Generate Django Restful API with Swagger Docs
-- [ ] Generate Fake Data builder
+- [ ] Generate Fake Data builder via HTTP (https://mockaroo.com/?)
 - [ ] Generate ReactJS app
   - [ ] TypeScript interface and object types defined 
   - [ ] Material-UI Drawer of Permissions Matrix Paths
