@@ -1,7 +1,14 @@
 
 ###OBJECT-ACTIONS-VIEWSETS-STARTS###
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions, status, pagination
 from . import models, serializers
+from rest_framework.response import Response
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from rest_framework.decorators import action
+class CustomPagination(pagination.PageNumberPagination):
+            pass
+
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = models.Customer.objects.all()
     serializer_class = serializers.CustomerSerializer

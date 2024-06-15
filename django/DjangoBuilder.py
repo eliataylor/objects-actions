@@ -13,15 +13,17 @@ class DjangoBuilder:
         # List of import lines for each file
         self.imports = {"models": [],
                         "serializers": ["from rest_framework import serializers", "from . import models"],
-                        "views": ["from rest_framework import viewsets", "from . import models, serializers"],
+                        "views": ["from rest_framework import viewsets, permissions, status, pagination", "from . import models, serializers", "from rest_framework.response import Response", "from django.utils.decorators import method_decorator", "from django.views.decorators.cache import cache_page", "from rest_framework.decorators import action"],
                         "urls": ["from . import views", "from rest_framework.routers import DefaultRouter"]}
-        self.functions_and_classes = {"models": []}
+        self.functions_and_classes = {"models": [], "serializers": [], "views": ["""class CustomPagination(pagination.PageNumberPagination):
+            pass"""], "urls": []}
         self.requirements = []
 
         # TODO: on CREATE / UPDATE, upsert any Foreign Key relationships when the full object is passed
 
         # TODO: implement `permission_classes` via Roles from Permissions Matrix
         # TODO: generate CRUD query methods based on Permissions Matrix
+        # TODO: personalize the CustomPagination class
 
         self.json = build_json_from_csv(csv_file)
         self.build_models()
@@ -137,6 +139,9 @@ class DjangoBuilder:
         with open(templates_path / 'views.py', 'r') as fm:
             viewsetTpl = fm.read()
         code = '\n'.join(self.imports['views'])
+        code += '\n'
+        code += '\n'.join(self.functions_and_classes['views'])
+        code += '\n'
         for class_name in self.json:
             model_name = create_object_name(class_name)
             code += "\n"
