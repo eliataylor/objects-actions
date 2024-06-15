@@ -149,10 +149,10 @@ class SuperModel(models.Model):
             code += f"admin.site.register({model_name})\n"
 
         model_file_path = os.path.join(self.output_dir, f'models.py')
-        inject_generated_code(model_file_path, "\n".join(self.imports), 'MODEL_IMPORTS')
+        inject_generated_code(model_file_path, "\n".join(self.imports["models"]), 'MODEL_IMPORTS')
 
         model_file_path = os.path.join(self.output_dir, f'models.py')
-        inject_generated_code(model_file_path, code, 'MODELS')
+        inject_generated_code(model_file_path, code, 'MODELS', read_file=True)
 
         if len(self.requirements) > 0:
             cmds = "\n".join(self.requirements)
