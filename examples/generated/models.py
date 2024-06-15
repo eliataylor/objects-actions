@@ -1,11 +1,12 @@
-###OBJECT-ACTIONS-MODELS-STARTS###
+import re
+from django.core.exceptions import ValidationError
+from address.models import AddressField
+from djmoney.models.fields import MoneyField
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from address.models import AddressField
-
 class SuperModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -30,22 +31,40 @@ class SuperModel(models.Model):
             if request:
                 self.author = self.get_current_user(request)
         super().save(*args, **kwargs)
-        
+def validate_phone_number(value):
+    phone_regex = re.compile(r'^\+?1?\d{9,15}$')
+    if not phone_regex.match(value):
+        raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+
+
+class BldChoices(models.TextChoices):
+	breakfast = ("Breakfast", "breakfast")
+	lunch = ("Lunch", "lunch")
+	dinner = ("Dinner", "dinner")
+	desert = ("Desert", "desert")
+	snack = ("Snack", "snack")
+
+
+class StatusChoices(models.TextChoices):
+	paid = ("Paid", "paid")
+	cancelled = ("Cancelled", "cancelled")
+	unpaid = ("Unpaid", "unpaid")
 
 class Customer(SuperModel):
     user_id = models.TextField(blank=True, null=True)
+    phone = models.CharField(validators=[validate_phone_number], max_length=16)
     email = models.EmailField()
     billing_name = models.CharField(max_length=255, blank=True, null=True)
-    billing_address = AddressField(blank=True, null=True)
+    billing_address = AddressField(related_name='+', blank=True, null=True)
     delivery_name = models.CharField(max_length=255, blank=True, null=True)
-    delivery_address = AddressField(blank=True, null=True)
+    delivery_address = AddressField(related_name='+', blank=True, null=True)
 admin.site.register(Customer)
 
 class Supplier(SuperModel):
-    slug = models.TextField(blank=True, null=True)
+    slug = models.SlugField(unique=True,  max_length=100, blank=True, null=True)
     name = models.CharField(max_length=255)
     photo = models.ImageField(blank=True, null=True)
-    address = AddressField(blank=True, null=True)
+    address = AddressField(related_name='+', blank=True, null=True)
     website = models.URLField(blank=True, null=True)
 admin.site.register(Supplier)
 
@@ -59,10 +78,10 @@ class Ingredient(SuperModel):
 admin.site.register(Ingredient)
 
 class Meal(SuperModel):
-    slug = models.TextField(blank=True, null=True)
+    slug = models.SlugField(unique=True,  max_length=100, blank=True, null=True)
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
-    bld = models.CharField(max_length=20, choices=MealTimes.choices)
+    bld = models.CharField(max_length=20, choices=BldChoices.choices)
     photo = models.FileField(upload_to='media/')
     internal_cost = models.DecimalField(max_digits=10,  decimal_places=2, blank=True, null=True)
     public_price = models.DecimalField(max_digits=10,   decimal_places=2,  blank=True,  null=True, default=16)
@@ -71,11 +90,11 @@ class Meal(SuperModel):
 admin.site.register(Meal)
 
 class Plan(SuperModel):
-    slug = models.TextField()
+    slug = models.SlugField(unique=True, max_length=100)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     meals = models.ForeignKey('Meal', on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=10,  decimal_places=2, blank=True, null=True)
+    price = MoneyField(decimal_places=2,  default_currency='USD',  max_digits=11, blank=True, null=True)
     date = models.DateField(blank=True, null=True)
 admin.site.register(Plan)
 
@@ -94,9 +113,8 @@ class Order(SuperModel):
     final_price = models.DecimalField(max_digits=10, decimal_places=2)
     delivery_instructions = models.TextField(blank=True, null=True)
     customizations = models.CharField(max_length=255)
-    glass_containers = models.BooleanField(blank=True,  null=True, default=0)
-    recurring = models.BooleanField(blank=True,  null=True, default=0)
+    glass_containers = models.BooleanField(blank=True,  null=True, default="0")
+    recurring = models.BooleanField(blank=True,  null=True, default="0")
     order_items = models.ForeignKey('OrderItem', on_delete=models.CASCADE)
-    status = models.CharField(max_length=20,  choices=MealTimes.choices, default=unpaid)
+    status = models.CharField(max_length=20,  default="unpaid", choices=StatusChoices.choices)
 admin.site.register(Order)
-###OBJECT-ACTIONS-MODELS-ENDS###

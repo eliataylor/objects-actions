@@ -50,7 +50,7 @@ def inject_generated_code(output_file_path, code, prefix, read_file=False):
         with open(output_file_path, 'r', encoding='utf-8') as file:
             html = file.read()
 
-    if True:
+    #if True:
         start = html.find(start_delim)
         if start < 0:
             #Start delimiter not found, append to end of file
@@ -66,7 +66,7 @@ def inject_generated_code(output_file_path, code, prefix, read_file=False):
 
         start_html = html[:start]
         end_html = html[end:]
-        html = f"{code}\n{start_html}{end_html}"
+        html = f"{start_html}\n{code}\n{end_html}"
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write(html)
