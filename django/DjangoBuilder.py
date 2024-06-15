@@ -14,9 +14,12 @@ class DjangoBuilder:
         self.imports = {"models": [],
                         "serializers": ["from rest_framework import serializers", "from . import models"],
                         "views": ["from rest_framework import viewsets, permissions, status, pagination", "from . import models, serializers", "from rest_framework.response import Response", "from django.utils.decorators import method_decorator", "from django.views.decorators.cache import cache_page", "from rest_framework.decorators import action"],
-                        "urls": ["from . import views", "from rest_framework.routers import DefaultRouter"]}
+                        "urls": ["from . import views", "from rest_framework.routers import DefaultRouter", "from django.urls import include, path"]}
         self.functions_and_classes = {"models": [], "serializers": [], "views": ["""class CustomPagination(pagination.PageNumberPagination):
             pass"""], "urls": []}
+        self.code_at_end = {"models": [], "serializers": [], "views": [], "urls": ["""urlpatterns = [
+    path('', include(router.urls)),
+]"""]}
         self.requirements = []
 
         # TODO: on CREATE / UPDATE, upsert any Foreign Key relationships when the full object is passed
@@ -132,6 +135,8 @@ class DjangoBuilder:
             model_name = create_object_name(class_name)
             code += f"router.register(r'api/{path_name}', views.{model_name}ViewSet, basename='{path_name}')\n"
 
+        code += "\n".join(self.code_at_end["urls"])
+        code += "\n"
         outpath = os.path.join(self.output_dir, 'urls.py')
         inject_generated_code(outpath, code, 'URLS')
 
