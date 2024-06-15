@@ -40,21 +40,22 @@ def build_json_from_csv(csv_file):
                 json_data[cur_type] = [row]
 
     return json_data
-def inject_generated_code(output_file_path, code, prefix):
+def inject_generated_code(output_file_path, code, prefix, read_file=False):
     start_delim = f"###OBJECT-ACTIONS-{prefix}-STARTS###"
     end_delim = f"###OBJECT-ACTIONS-{prefix}-ENDS###"
 
-    if os.path.exists(output_file_path) is False:
+    if (not read_file) or os.path.exists(output_file_path) is False:
         html = "\n" + start_delim + "\n" + code + "\n" + end_delim + "\n"
     else:
-
         with open(output_file_path, 'r', encoding='utf-8') as file:
             html = file.read()
 
+    #if True:
         start = html.find(start_delim)
         if start < 0:
+            #Start delimiter not found, append to end of file
             start = len(html) - 1 #append to end of file
-            code = f"\n\n{start_delim}\n" + code + "\n"
+            code = f"{start_delim}\n{code}\n"
         else:
             start += len(start_delim)
 
@@ -65,7 +66,7 @@ def inject_generated_code(output_file_path, code, prefix):
 
         start_html = html[:start]
         end_html = html[end:]
-        html = f"{start_html}\n{code}\n{end_html}\n"
+        html = f"{start_html}\n{code}\n{end_html}"
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write(html)

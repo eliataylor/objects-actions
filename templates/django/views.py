@@ -1,13 +1,13 @@
 class __CLASSNAME__ViewSet(viewsets.ModelViewSet):
-    queryset = __CLASSNAME__.objects.all()
-    serializer_class = __CLASSNAME__Serializer
+    queryset = models.__CLASSNAME__.objects.all()
+    serializer_class = serializers.__CLASSNAME__Serializer
     permission_classes = [permissions.IsAuthenticated]
 
     # Add pagination
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        return __CLASSNAME__.objects.all()
+        return models.__CLASSNAME__.objects.all()
 
     @action(detail=True, methods=['get'])
     @method_decorator(cache_page(60 * 3))
@@ -22,3 +22,5 @@ class __CLASSNAME__ViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
