@@ -50,7 +50,6 @@ def inject_generated_code(output_file_path, code, prefix, read_file=False):
         with open(output_file_path, 'r', encoding='utf-8') as file:
             html = file.read()
 
-    #if True:
         start = html.find(start_delim)
         if start < 0:
             #Start delimiter not found, append to end of file
@@ -147,13 +146,6 @@ def infer_field_type(field_type, field):
     elif field_type == "uuid":
         return "models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)"
     elif field_type == "slug":
-        """ 
-            TODO: implement save method
-            def save(self, *args, **kwargs):
-                if not self.slug:
-                    self.slug = slugify(self.name)
-                super(SuperModel, self).save(*args, **kwargs)
-        """
         return "models.SlugField(unique=True, max_length=100)"
     elif field_type == "ID (auto increment)":
         return "models.AutoField(primary_key=True)"

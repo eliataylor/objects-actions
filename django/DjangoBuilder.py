@@ -32,6 +32,7 @@ class DjangoBuilder:
         self.build_urls()
 
     def build_models(self):
+        model_file_path = os.path.join(self.output_dir, f'models.py')
 
         code=""
         for class_name in self.json:
@@ -63,7 +64,26 @@ class DjangoBuilder:
                 model_type = infer_field_type(field_type, field)
                 if field['Required'].strip() == '' or int(field['Required']) < 1:
                     model_type = addArgs(model_type, ['blank=True', 'null=True'])
-                if field['Default'].strip() != '':
+
+                default_value = field['Default'].strip()
+
+                if field_name == 'id' and field_type == 'slug':
+                    model_type = addArgs(model_type, ['primary_key=True'])
+                    if default_value == '':
+                        logger.warning("Use the Default column to tell which other field to slugify")
+                    else:
+
+                        self.imports['models'].append("from django.utils.text import slugify")
+                        self.imports['models'].append("from django.db.models.signals import pre_save")
+                        self.imports['models'].append("from django.dispatch import receiver")
+
+                        onsave = f"@receiver(pre_save, sender={class_name}) \
+def generate_slug(sender, instance, **kwargs): \
+    if not instance.{field_name}:  \
+        instance.{field_name} = slugify(instance.{default_value})"
+                        inject_generated_code(model_file_path, onsave, f'SLUGIFY-{class_name}')
+
+                elif default_value != '':
                     if field_type == "integer" or field_type == 'decimal':
                         model_type = addArgs(model_type, [f"default={field['Default']}"])
                     else:
@@ -74,6 +94,7 @@ class DjangoBuilder:
                     bc = build_choices(capitalized, field)
                     self.functions_and_classes['models'].append(bc)
                     model_type = addArgs(model_type, [f"choices={capitalized}Choices.choices"])
+
                 elif field_type == 'phone' and "validate_phone_number" not in code:
 
                     if "from django.core.exceptions import ValidationError" not in self.imports['models']:
@@ -89,8 +110,8 @@ class DjangoBuilder:
             code += f"admin.site.register({model_name})\n"
 
         functions_and_classes = "\n".join(self.functions_and_classes["models"])
+
         imports = "\n".join(self.imports["models"])
-        model_file_path = os.path.join(self.output_dir, f'models.py')
         with open(model_file_path, 'w') as f:
             if len(imports) > 0:
                 f.write(imports)

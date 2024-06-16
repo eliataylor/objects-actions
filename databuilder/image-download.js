@@ -5,7 +5,7 @@ const http = require('http');
 
 
 function downloadPixelBay() {
-    // https://pixabay.com/images/search/person/
+    // use in browser console on https://pixabay.com/images/search/person/
     // Select all elements with the class 'link--WHWzm'
     const linkElements = document.querySelectorAll('.link--WHWzm');
 
@@ -23,6 +23,7 @@ function downloadPixelBay() {
         }
     });
 
+    // copied to imgSrcArray below
     console.log(imgSrcArray);
 }
 

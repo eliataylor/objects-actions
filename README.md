@@ -5,10 +5,10 @@
 ## PURPOSE
 - [x] Relational Database Schema Design
 - [x] Scaffolding Content Management Systems
-- [x] Scaffolding API & CMS Authentication and Access Permissions
+- [x] Scaffolding Authentication and Access Permissions
 - [x] Scaffolding Web App interface and API connectivity
 - [x] Scaffolding Cypress.io test suites
-- [x] Generating unlimited numbers of fake data entries to test with
+- [x] Generating unlimited numbers of fake data entries to test
 
 ## USAGE:
 ### Generate your Django Admin CMS and API:
@@ -18,7 +18,7 @@
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/generated`
-The program uses the django-address and django-money package to provide the Address and MoneyField field types, respectively. That packages are already included in the requirements.txt file. If you want to use such field types, you will need to add the 'address' and 'django-money' entries to the INSTALLED_APPS list in your settings.py file:
+If you use Address or Price field types, you'll need to add the 'address' and 'django-money' entries to the INSTALLED_APPS list in your settings.py file:
 ```python
 INSTALLED_APPS = [
     # ... 
