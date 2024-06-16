@@ -91,42 +91,33 @@ def generate_slug(sender, instance, **kwargs): \
 
                 if field_type == 'enum':
                     capitalized = capitalize(field_name)
-                    bc = build_choices(capitalized, field)
-                    self.functions_and_classes['models'].append(bc)
+                    code = build_choices(capitalized, field) + '\n' + code
                     model_type = addArgs(model_type, [f"choices={capitalized}Choices.choices"])
+                    self.functions_and_classes['models'].append(bc)
 
                 elif field_type == 'phone' and "validate_phone_number" not in code:
-
-                    if "from django.core.exceptions import ValidationError" not in self.imports['models']:
-                        #The presence of "from django.core.exceptions import ValidationError" is the flag to add or not the phone code
+                    if "import re" not in self.imports:
                         self.imports['models'].append("import re")
+                    if "from django.core.exceptions import ValidationError" not in self.imports:
                         self.imports['models'].append("from django.core.exceptions import ValidationError")
-                        self.functions_and_classes['models'].append("""def validate_phone_number(value):
-    phone_regex = re.compile(r'^\+?1?\d{9,15}$')
-    if not phone_regex.match(value):
-        raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")""")
+
+                    code = """\ndef validate_phone_number(value):
+                    phone_regex = re.compile(r'^\+?1?\d{9,15}$')
+                    if not phone_regex.match(value):
+                        raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")""" + '\n' + code
+
                 code += f"    {field_name} = {model_type}\n"
 
             code += f"admin.site.register({model_name})\n"
 
-        functions_and_classes = "\n".join(self.functions_and_classes["models"])
+        inject_generated_code(model_file_path, "\n".join(self.imports), 'MODEL_IMPORTS')
 
-        imports = "\n".join(self.imports["models"])
-        with open(model_file_path, 'w') as f:
-            if len(imports) > 0:
-                f.write(imports)
-                f.write("\n")
-            with open(templates_path / 'models.py', 'r') as fm:
-                f.writelines(fm.readlines())
-            f.write("\n")
-            if len(functions_and_classes) > 0:
-                f.write(functions_and_classes)
-                f.write("\n")
-            f.write(code)
+        model_file_path = os.path.join(self.output_dir, f'models.py')
+        inject_generated_code(model_file_path, code, 'MODELS')
 
         if len(self.requirements) > 0:
             cmds = "\n".join(self.requirements)
-            logger.warning(f"You must run these commands at the root of your project {self.output_dir} \n\n {cmds}\n")
+            logger.warning(f"Do not forget to run these commands at the root of your project {self.output_dir} \n\n {cmds}\n")
 
 
     def build_serializers(self):
