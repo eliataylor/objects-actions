@@ -40,44 +40,53 @@ def build_json_from_csv(csv_file):
                 json_data[cur_type] = [row]
 
     return json_data
-def inject_generated_code(output_file_path, code, prefix, read_file=False):
+
+def inject_generated_code(output_file_path, code, prefix):
     start_delim = f"###OBJECT-ACTIONS-{prefix}-STARTS###"
     end_delim = f"###OBJECT-ACTIONS-{prefix}-ENDS###"
 
-    if (not read_file) or os.path.exists(output_file_path) is False:
-        html = "\n" + start_delim + "\n" + code + "\n" + end_delim + "\n"
+    if output_file_path == "" or os.path.exists(output_file_path) is False:
+        html = start_delim + "\n" + code + "\n" + end_delim
     else:
-        with open(output_file_path, 'r', encoding='utf-8') as file:
-            html = file.read()
+
+        if ".py" in output_file_path:
+            with open(output_file_path, 'r', encoding='utf-8') as file:
+                html = file.read()
+        else:
+            html = output_file_path
+
+        start = 0
+        end = len(html)
 
         start = html.find(start_delim)
         if start < 0:
-            #Start delimiter not found, append to end of file
-            start = len(html) - 1 #append to end of file
-            code = f"{start_delim}\n{code}\n"
+            start = len(html) # append to END of file
+            code = f"\n{start_delim}\n{code}\n{end_delim}"
         else:
             start += len(start_delim)
-
-        end = html.find(end_delim)
-        if end < 0:
-            end = len(code)
-            code = code + "\n" + end_delim + "\n"
+            end = html.find(end_delim)
+            if end < 0:
+                logger.critical(f"unbalanced deliminators {start_delim} for {prefix}")
+                return html
 
         start_html = html[:start]
         end_html = html[end:]
-        html = f"{start_html}\n{code}\n{end_html}"
+        html = f"{start_html}\n{code}\n{end_html}\n"
 
-    with open(output_file_path, 'w', encoding='utf-8') as file:
-        file.write(html)
+    if ".py" in output_file_path:
+        with open(output_file_path, 'w', encoding='utf-8') as file:
+            file.write(html)
 
     logger.info(f"{prefix} built. ")
+    return html
+
 
 def addArgs(target, new_args):
     # Split the target string into function name and arguments
-    func_name, args_str = target.split('(')
-
-    # Remove trailing parenthesis from args string and split the arguments
-    args = args_str.rstrip(')').split(',')
+    start = target.find('(')
+    func_name = target[:start]
+    args_str = target[start+1:len(target)-1]
+    args = args_str.split(',')
 
     # Add non-empty new arguments to the existing arguments list
     args.extend(new_args)
@@ -111,14 +120,13 @@ def build_choices(field_name, field):
     return code
 
 
-def infer_field_type(field_type, field):
+def infer_field_type(field_type, field_name, field):
     field_type = field_type.lower()
-    if field_type == 'User (custom)':
-        # TODO: create and connect to internal user
-        logger.info('implement custom user reference')
-    elif field_type == 'User (cms)':
-        # TODO: how should extra fields be handled here?
-        logger.info('implement internal django user reference')
+    if field_type == 'user (custom)':
+        model_name = create_object_name(field['Relationship'])
+        return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE, related_name='+')"
+    elif field_type == 'user (cms)':
+        return "models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='+')"
     elif field_type == "text":
         return "models.CharField(max_length=255)"  # Adjust max_length as needed
     elif field_type == "textarea":
@@ -144,22 +152,25 @@ def infer_field_type(field_type, field):
     elif field_type == "url":
         return "models.URLField()"
     elif field_type == "uuid":
-        return "models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)"
+        return "models.UUIDField(default=uuid.uuid4, editable=False)"
     elif field_type == "slug":
-        return "models.SlugField(unique=True, max_length=100)"
-    elif field_type == "ID (auto increment)":
+        if field_name == 'id':
+            return "models.SlugField(primary_key=True, unique=True)"
+        else:
+            return "models.SlugField(unique=True)"
+    elif field_type == "id (auto increment)":
         return "models.AutoField(primary_key=True)"
     elif field_type == "boolean":
         return "models.BooleanField()"
     elif field_type == "image":
-        # TODO: use "Example" column to control target directory
-        return "models.ImageField()"
+        target_directory = field.get('Example', "images")
+        return f"models.ImageField(upload_to='{target_directory}')"
     elif field_type == "video":
-        # TODO: use "Example" column to control target directory
-        return "models.FileField(upload_to='videos/')"
+        target_directory = field.get('Example', "videos")
+        return f"models.FileField(upload_to='{target_directory}')"
     elif field_type == "media":
-        # TODO: use "Example" column to control target directory
-        return "models.FileField(upload_to='media/')"
+        target_directory = field.get('Example', "media")
+        return f"models.FileField(upload_to='{target_directory}')"
     elif field_type == "flat list":
         # TODO: implement data validation based on "Example" column
         return "models.JSONField()"  # Store both as JSON array
@@ -180,6 +191,7 @@ def infer_field_type(field_type, field):
             # f"models.ForeignKey(OtherModel, on_delete=models.CASCADE, related_name='{create_machine_name(field['Field Label'])}')"
             return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
     else:
+        logger.warning(f"UNSUPPORTED FILE TYPE {field_type}")
         return "models.TextField()"
 
 def capitalize(string):
