@@ -182,7 +182,7 @@ def infer_field_type(field_type, field):
             return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"
         elif field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
             # return f"models.ManyToManyField('{model_name}', on_delete=models.CASCADE)"
-            return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
+            return f"models.ManyToManyField('{model_name}')"
         else:
             # maybe add convention to apply reverse reference >
             # f"models.ForeignKey(OtherModel, on_delete=models.CASCADE, related_name='{create_machine_name(field['Field Label'])}')"

@@ -15,7 +15,39 @@ class DjangoBuilder:
                         "serializers": ["from rest_framework import serializers", "from . import models"],
                         "views": ["from rest_framework import viewsets, permissions, status, pagination", "from . import models, serializers", "from rest_framework.response import Response", "from django.utils.decorators import method_decorator", "from django.views.decorators.cache import cache_page", "from rest_framework.decorators import action"],
                         "urls": ["from django.conf import settings", "from . import views", "from rest_framework.routers import DefaultRouter", "from django.urls import include, path", "from django.contrib import admin", "from rest_framework.schemas import get_schema_view"]}
-        self.functions_and_classes = {"models": [], "serializers": [], "views": ["""class CustomPagination(pagination.PageNumberPagination):
+        self.functions_and_classes = {"models": [], "serializers": ["""
+class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
+    def __init__(self, **kwargs):
+        self.model = kwargs.pop('model', None)
+        self.slug_field = kwargs.pop('slug_field', None)
+        super(SubFieldRelatedField, self).__init__(**kwargs)
+    def to_internal_value(self, data):
+        if self.pk_field is not None:
+            field_label = self.pk_field.label
+            if isinstance(data, dict):
+                if field_label in data:
+                    datag = data[field_label]
+                    data = self.pk_field.to_internal_value(datag)
+                else:
+                    data = self.model.objects.create(**data)
+                    data.save()
+                return data
+            elif self.slug_field is not None and isinstance(data, str):
+                queryset = self.get_queryset()
+                args = {self.slug_field: data}
+                return queryset.get(**args)
+            else:
+                data = self.pk_field.to_internal_value(data)
+        queryset = self.get_queryset()
+        try:
+            if isinstance(data, bool):
+                raise TypeError
+            return queryset.get(pk=data)
+        except ObjectDoesNotExist:
+            self.fail('does_not_exist', pk_value=data)
+        except (TypeError, ValueError):
+            self.fail('incorrect_type', data_type=type(data).__name__)
+"""], "views": ["""class CustomPagination(pagination.PageNumberPagination):
             pass"""], "urls": []}
         self.code_at_end = {"models": [], "serializers": [], "views": [], "urls": ["""
 
