@@ -155,7 +155,7 @@ def infer_field_type(field_type, field_name, field):
         return "models.UUIDField(default=uuid.uuid4, editable=False)"
     elif field_type == "slug":
         if field_name == 'id':
-            return "models.SlugField(primary_key=True, unique=True)"
+            return "models.SlugField(primary_key=True, unique=True, editable=False)"
         else:
             return "models.SlugField(unique=True)"
     elif field_type == "id (auto increment)":

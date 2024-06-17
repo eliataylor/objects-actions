@@ -20,6 +20,8 @@ class SuperModel(models.Model):
         # indexes = []  # Default: empty list, no indexes defined
         # ordering = ()  # Default: empty tuple, no ordering defined
 
+
+
     def __str__(self):
         if hasattr(self, "title"):
             return self.title

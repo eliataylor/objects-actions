@@ -23,6 +23,7 @@ class DjangoBuilder:
                                         ],
                         "views": ["from rest_framework import viewsets, permissions, status, pagination",
                                   "from rest_framework.response import Response",
+                                  "from rest_framework.exceptions import ValidationError",
                                   "from django.utils.decorators import method_decorator",
                                   "from django.views.decorators.cache import cache_page",
                                   "from rest_framework.decorators import action"],
@@ -65,6 +66,7 @@ class DjangoBuilder:
 
         for class_name in self.json:
             model_name = create_object_name(class_name)
+            id_field = False
 
             code = f"""\nclass {model_name}(SuperModel):\n\
     class Meta:
@@ -75,6 +77,10 @@ class DjangoBuilder:
                 field_name = field['Field Name']
                 if field_name is None or field_name == '':
                     field_name = create_machine_name(field['Field Label'])
+
+                if field_type == 'id (auto increment)' or field_name == 'id':
+                    id_field = field_name
+                    logger.info(f"using explicit id field {field_name}")
 
                 if field_type is None:
                     field_type = 'text'
@@ -134,7 +140,13 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
 
                 code += f"    {field_name} = {model_type}\n"
 
-            code += f"\nadmin.site.register({model_name})\n"
+            if id_field:
+                code += f"class {model_name}Admin(admin.ModelAdmin):\n\
+                    readonly_fields = ('{id_field}',)"
+                code += f"\nadmin.site.register({model_name}, {model_name}Admin)\n"
+            else:
+                code += f"\nadmin.site.register({model_name})\n"
+
             parts.append(code)
 
         inject_generated_code(model_file_path, "\n".join(self.imports['models']), 'MODEL_IMPORTS')
@@ -181,6 +193,7 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
         for class_name in self.json:
             model_name = create_object_name(class_name)
             parts.append(tpl.replace('__CLASSNAME__', model_name))
+            # read_only_fields = ('id',)
             self.append_import("serializers", f"from .models import {model_name}")
 
         inject_generated_code(outpath, '\n'.join(self.imports["serializers"]), 'SERIALIZER-IMPORTS')
