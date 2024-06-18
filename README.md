@@ -35,7 +35,7 @@ INSTALLED_APPS = [
 - `python3.9 -m venv .venv` (pretty much any version of python should work)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
-- `python manage.py createsuperuser` (create your )
+- `python manage.py createsuperuser` (create your admin login)
 - `python manage.py makemigrations`
 - `python manage.py migrate --run-syncdb`
 - `python manage.py runserver`
