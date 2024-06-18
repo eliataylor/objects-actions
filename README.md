@@ -64,3 +64,5 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
   - [ ] Material-UI Drawer of Permissions Matrix Paths
 - [ ] Generate Cypress.io test suite
 - [ ] AppScrips to generate full Worksheet for given Object-Actions list
+
+To contribute read: [CONTRIBUTING.md](CONTRIBUTING.md)
