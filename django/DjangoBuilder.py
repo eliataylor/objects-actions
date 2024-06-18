@@ -147,7 +147,8 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
             #    fields_code += f"\nadmin.site.register({model_name}, {model_name}Admin)\n"
             #else:
             #    fields_code += f"\nadmin.site.register({model_name})\n"
-            code = code_source.replace('###FIELDS_OVERRIDE###', fields_code)
+            code = code_source.replace('###FIELDS_OVERRIDE###', fields_code[4:])#the [4:] slicing is to remove the first 4 characters,
+            # which are the 4 spaces in the beginning of the string, not to over-indent the first field of the class
 
             parts.append(code)
 

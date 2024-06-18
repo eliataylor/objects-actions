@@ -110,7 +110,7 @@ def build_choices(field_name, field):
 
     try:
         list = ast.literal_eval(list)
-        code = f"\n    class {field_name}Choices(models.TextChoices):"
+        code = f"    class {field_name}Choices(models.TextChoices):"
         for name in list:
             code += f'\n        {name} = ("{capitalize(name)}", "{name}")'
     except Exception as e:
