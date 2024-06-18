@@ -17,10 +17,10 @@ class DjangoBuilder:
                                    "from django.contrib.auth.models import User",
                                    "from django.contrib import admin",
                                    "from django.utils import timezone",
-                                   "from django.contrib.auth import get_user_model",
-                                   "from django.db import models"],
+                                   "from django.contrib.auth import get_user_model"],
                         "serializers": ["from rest_framework import serializers",
-                                        ],
+                                        "from django.core.exceptions import ObjectDoesNotExist",
+                                        "from django.db.models import ManyToManyField"],
                         "views": ["from rest_framework import viewsets, permissions, status, pagination",
                                   "from rest_framework.response import Response",
                                   "from rest_framework.exceptions import ValidationError",
@@ -63,14 +63,15 @@ class DjangoBuilder:
         parts = []
         with open(self.templates_dir + '/models.py', 'r') as fm:
             parts.append(fm.read())
+        with open(self.templates_dir + '/model.py', 'r') as fm:
+            model_template = fm.read()
 
         for class_name in self.json:
             model_name = create_object_name(class_name)
             id_field = False
+            code_source = model_template.replace('__CLASSNAME__', model_name)
 
-            code = f"""\nclass {model_name}(SuperModel):\n\
-    class Meta:
-        abstract = False\n"""
+            fields_code = ""
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
@@ -125,7 +126,7 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
 
                     if field_type == 'enum':
                         capitalized = capitalize(field_name)
-                        code = build_choices(capitalized, field) + '\n' + code
+                        fields_code = build_choices(capitalized, field) + '\n' + fields_code
                         model_type = addArgs(model_type, [f"choices={capitalized}Choices.choices"])
 
                     elif field_type == 'phone':
@@ -138,14 +139,16 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
                         if not phone_regex.match(value):
                             raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")""")
 
-                code += f"    {field_name} = {model_type}\n"
+                fields_code += f"    {field_name} = {model_type}\n"
 
-            if id_field:
-                code += f"class {model_name}Admin(admin.ModelAdmin):\n\
-                    readonly_fields = ('{id_field}',)"
-                code += f"\nadmin.site.register({model_name}, {model_name}Admin)\n"
-            else:
-                code += f"\nadmin.site.register({model_name})\n"
+            #if id_field:
+            #    fields_code += f"class {model_name}Admin(admin.ModelAdmin):\n\
+            #        readonly_fields = ('{id_field}',)"
+            #    fields_code += f"\nadmin.site.register({model_name}, {model_name}Admin)\n"
+            #else:
+            #    fields_code += f"\nadmin.site.register({model_name})\n"
+            code = code_source.replace('###FIELDS_OVERRIDE###', fields_code[4:])#the [4:] slicing is to remove the first 4 characters,
+            # which are the 4 spaces in the beginning of the string, not to over-indent the first field of the class
 
             parts.append(code)
 
@@ -154,7 +157,7 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
         if len(self.helpers['before']) > 0:
             inject_generated_code(model_file_path, "\n".join(self.helpers['before']), f'PRE-HELPERS')
 
-        inject_generated_code(model_file_path, "\n".join(parts), 'MODELS')
+        inject_generated_code(model_file_path, "\n\n".join(parts), 'MODELS')
 
         if len(self.helpers['after']) > 0:
             inject_generated_code(model_file_path, "\n".join(self.helpers['after']), f'POST-HELPERS')
@@ -188,6 +191,8 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
 
         with open(self.templates_dir + '/serializer.py', 'r') as fm:
             tpl = fm.read()
+        with open(self.templates_dir + '/serializers.py', 'r') as fm:
+            serializers_helpers = fm.read()
 
         parts = []
         for class_name in self.json:
@@ -197,7 +202,7 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
             self.append_import("serializers", f"from .models import {model_name}")
 
         inject_generated_code(outpath, '\n'.join(self.imports["serializers"]), 'SERIALIZER-IMPORTS')
-        inject_generated_code(outpath, "\n".join(parts), 'SERIALIZERS')
+        inject_generated_code(outpath, serializers_helpers+"\n"+"\n".join(parts), 'SERIALIZERS')
 
     def build_viewsets(self):
         outpath = os.path.join(self.output_dir, 'views.py')

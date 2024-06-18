@@ -16,7 +16,7 @@ class ReactBuilder:
         for class_name in self.json:
             model_name = create_object_name(class_name)
 
-            code += f"\ninterface {model_name} { \n"
+            code += f"\ninterface {model_name} {{ \n"
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']

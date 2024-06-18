@@ -110,9 +110,9 @@ def build_choices(field_name, field):
 
     try:
         list = ast.literal_eval(list)
-        code = f"\n\nclass {field_name}Choices(models.TextChoices):"
+        code = f"    class {field_name}Choices(models.TextChoices):"
         for name in list:
-            code += f'\n\t{name} = ("{capitalize(name)}", "{name}")'
+            code += f'\n        {name} = ("{capitalize(name)}", "{name}")'
     except Exception as e:
         logger.warning(f"{field['Field Label']} has invalid structure of choices: {field['Example'].strip()}  \nPlease list them as a flat json array. {str(e)}")
         return ""
@@ -185,7 +185,7 @@ def infer_field_type(field_type, field_name, field):
             return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"
         elif field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
             # return f"models.ManyToManyField('{model_name}', on_delete=models.CASCADE)"
-            return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
+            return f"models.ManyToManyField('{model_name}')"
         else:
             # maybe add convention to apply reverse reference >
             # f"models.ForeignKey(OtherModel, on_delete=models.CASCADE, related_name='{create_machine_name(field['Field Label'])}')"
