@@ -110,9 +110,9 @@ def build_choices(field_name, field):
 
     try:
         list = ast.literal_eval(list)
-        code = f"\n\nclass {field_name}Choices(models.TextChoices):"
+        code = f"\n    class {field_name}Choices(models.TextChoices):"
         for name in list:
-            code += f'\n\t{name} = ("{capitalize(name)}", "{name}")'
+            code += f'\n        {name} = ("{capitalize(name)}", "{name}")'
     except Exception as e:
         logger.warning(f"{field['Field Label']} has invalid structure of choices: {field['Example'].strip()}  \nPlease list them as a flat json array. {str(e)}")
         return ""
