@@ -72,7 +72,7 @@ class Customer(SuperModel):
     class Meta:
         abstract = False
 
-        id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(get_user_model(),  on_delete=models.CASCADE,  related_name='+', blank=True, null=True)
     phone = models.CharField(validators=[validate_phone_number], max_length=16)
     email = models.EmailField()
@@ -97,7 +97,7 @@ class Supplier(SuperModel):
     class Meta:
         abstract = False
 
-        id = models.SlugField(primary_key=True, unique=True, editable=False)
+    id = models.SlugField(primary_key=True, unique=True, editable=False)
     name = models.CharField(max_length=255)
     photo = models.ImageField(upload_to='media/suppliers', blank=True, null=True)
     address = AddressField(related_name='+', blank=True, null=True)
@@ -119,7 +119,7 @@ class Ingredient(SuperModel):
     class Meta:
         abstract = False
 
-        id = models.SlugField(primary_key=True, unique=True, editable=False)
+    id = models.SlugField(primary_key=True, unique=True, editable=False)
     title = models.CharField(max_length=255)
     image = models.ImageField(upload_to='media/ingredients', blank=True, null=True)
     supplier = models.ForeignKey('Supplier',  on_delete=models.CASCADE, blank=True, null=True)
@@ -143,7 +143,6 @@ class Meal(SuperModel):
     class Meta:
         abstract = False
 
-    
     class BldChoices(models.TextChoices):
         breakfast = ("Breakfast", "breakfast")
         lunch = ("Lunch", "lunch")
@@ -176,7 +175,7 @@ class Plan(SuperModel):
     class Meta:
         abstract = False
 
-        id = models.SlugField(primary_key=True, unique=True, editable=False)
+    id = models.SlugField(primary_key=True, unique=True, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     meals = models.ManyToManyField('Meal')
@@ -199,7 +198,7 @@ class OrderItem(SuperModel):
     class Meta:
         abstract = False
 
-        id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     date = models.DateField()
     delivery_date = models.DateField()
     meal = models.ForeignKey('Meal',  on_delete=models.CASCADE, blank=True, null=True)
@@ -222,7 +221,6 @@ class Order(SuperModel):
     class Meta:
         abstract = False
 
-    
     class StatusChoices(models.TextChoices):
         paid = ("Paid", "paid")
         cancelled = ("Cancelled", "cancelled")
@@ -280,6 +278,14 @@ def generate_slug_plan_id(sender, instance, **kwargs):
         instance.id = slugify(instance.name)
 
 ###OBJECT-ACTIONS-POST-HELPERS-ENDS###
+
+
+
+
+
+
+
+
 
 
 
