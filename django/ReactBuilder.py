@@ -1,3 +1,4 @@
+import json
 import os
 from utils import inject_generated_code, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize
 from loguru import logger
@@ -14,11 +15,14 @@ class ReactBuilder:
 
         types = []
         interfaces = []
+        urlItems = []
         for class_name in self.json:
             model_name = create_object_name(class_name)
 
             code = [f"interface {model_name} {{"]
             types.append(model_name)
+
+            urlItems.append({"name":class_name, "class":model_name, "path":f"/api/{model_name}"})
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
@@ -28,10 +32,12 @@ class ReactBuilder:
                 if field_type == '':
                     field_type = 'text'
 
+                field_def = "\t"
+
                 if field_name == 'id':
-                    field_def = f"readonly {field_name}"
+                    field_def += f"readonly {field_name}"
                 else:
-                    field_def = field_name
+                    field_def += field_name
 
                 if field['Required'].strip() == '' or int(field['Required']) < 1:
                     field_def += "?: "
@@ -66,6 +72,9 @@ export interface EntityView {{
 }}
 """
         inject_generated_code(types_file_path, type_defintions, 'API-RESP')
+
+        navItems = f"export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"
+        inject_generated_code(types_file_path, navItems, 'NAV-ITEMS')
 
 
 
