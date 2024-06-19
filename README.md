@@ -62,7 +62,7 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
 - [x] Generate Django Restful API with Swagger Docs
 - [ ] Generate Fake Data builder via HTTP (https://mockaroo.com/?)
 - [ ] Generate ReactJS app
-  - [ ] TypeScript interface and object types defined 
+  - [x] TypeScript interface and object types defined 
   - [ ] Material-UI Drawer of Permissions Matrix Paths
 - [ ] Generate Cypress.io test suite
 - [ ] AppScrips to generate full Worksheet for given Object-Actions list

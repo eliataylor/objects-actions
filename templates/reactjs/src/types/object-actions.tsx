@@ -1,3 +1,4 @@
+// TODO: generate NavItems
 interface NavItem {
     name: string;
     path: string;
@@ -5,21 +6,17 @@ interface NavItem {
 
 export const NAVITEMS: NavItem[] = []
 
+
+// TODO: generate API response structures
 export interface ListView {
     meta: object;
-    data: object[];
+    data: Array<Supplier | Ingredient>
 }
 
 export interface EntityView {
     meta: object;
-    data: object;
+    data: Supplier | Ingredient;
 }
-
-// TODO: generate NavItems
-
-
-// TODO: generate Object Types
-
 
 //---OBJECT-ACTIONS-SCHEMA-STARTS---//
 interface Customer {
