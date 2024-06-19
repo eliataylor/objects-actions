@@ -12,11 +12,13 @@ class ReactBuilder:
     def build_types(self):
         types_file_path = os.path.join(self.react_dir, 'src/types/object-actions.tsx')
 
-        blocks = []
+        types = []
+        interfaces = []
         for class_name in self.json:
             model_name = create_object_name(class_name)
 
             code = [f"interface {model_name} {{"]
+            types.append(model_name)
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
@@ -49,9 +51,23 @@ class ReactBuilder:
                 code.append(field_def)
 
             code.append("}")
-            blocks.append("\n".join(code))
+            interfaces.append("\n".join(code))
 
-        inject_generated_code(types_file_path, "\n".join(blocks), 'SCHEMA')
+        inject_generated_code(types_file_path, "\n".join(interfaces), 'SCHEMA')
+
+        type_defintions = f"""export interface ListView {{
+    meta: object;
+    data: Array<{" | ".join(types)}>
+}}
+
+export interface EntityView {{
+    meta: object;
+    data: {" | ".join(types)};
+}}
+"""
+        inject_generated_code(types_file_path, type_defintions, 'API-RESP')
+
+
 
     def build_navigation(self):
         test = 1
