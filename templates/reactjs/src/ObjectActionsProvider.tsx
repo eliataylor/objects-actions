@@ -4,14 +4,14 @@ import {EntityView, ListView} from "./types/object-actions";
 interface ObjectActionsContextProps {
     updateListView: (response: ListView) => void;
     listData: ListView;
-    upateEntityView: (response: EntityView) => void;
+    updateEntityView: (response: EntityView) => void;
     entityData: EntityView;
 }
 
 const ObjectActionsContext = createContext<ObjectActionsContextProps>({
     updateListView: (response: ListView) => null,
     listData: {meta:{}, data:[]},
-    upateEntityView: (response: EntityView) => null,
+    updateEntityView: (response: EntityView) => null,
     entityData: {meta:{}, data:[]},
 });
 
@@ -21,8 +21,14 @@ interface ObjectActionsProviderProps {
 }
 
 const ObjectActionsProvider: React.FC<ObjectActionsProviderProps> = ({children, initialState}) => {
-    const [listView, updateLisView] = useState<ListView>(null);
+    const [listView, updateListView] = useState<ListView>(null);
     const [entityView, updateEntityView] = useState<EntityView>(null);
+
+
+    useEffect(() => {
+        fetch(/)
+    }, []);
+
 
     return <ObjectActionsContext.Provider value={{listData, updateListView, entityData, upateEntityView}} >
             {children}

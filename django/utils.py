@@ -120,6 +120,60 @@ def build_choices(field_name, field):
     return code
 
 
+def infer_field_datatype(field_type, field_name, field):
+    if field_type == 'user (custom)':
+        return field['Relationship']
+    elif field_type == 'user (cms)':
+        return field['Relationship']
+    elif field_type == "text":
+        return "string"
+    elif field_type == "textarea":
+        return "string"
+    elif field_type == "integer":
+        return "number"
+    elif field_type == "price":
+        return "number"
+    elif field_type == "decimal":
+        return "number"
+    elif field_type == "date":
+        return "string"
+    elif field_type == "date time":
+        return "string"
+    elif field_type == 'coordinates':
+        return "string"
+    elif field_type == "email":
+        return "string"
+    elif field_type == "phone":
+        return "string"
+    elif field_type == "address":
+        return "string" # TODO: create address object
+    elif field_type == "url":
+        return "string"
+    elif field_type == "uuid":
+        return "string"
+    elif field_type == "slug":
+        return "string"
+    elif field_type == "id (auto increment)":
+        return "number"
+    elif field_type == "boolean":
+        return "boolean"
+    elif field_type == "image":
+        return "string"
+    elif field_type == "video":
+        return "string"
+    elif field_type == "media":
+        return "string"
+    elif field_type == "flat list":
+        return "string[]"
+    elif field_type == "json":
+        return "object"
+    elif field_type == "enum":
+        return "string[]"
+    elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
+        return "string[]"
+    else:
+        return "string"
+
 def infer_field_type(field_type, field_name, field):
     field_type = field_type.lower()
     if field_type == 'user (custom)':

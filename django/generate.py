@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 from DjangoBuilder import DjangoBuilder
+from ReactBuilder import ReactBuilder
 from loguru import logger
 
 logger.add("runnerlogs.log", level="DEBUG")
@@ -9,7 +10,7 @@ logger.add(sys.stdout, level="INFO")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate project files based on field types CSV.")
-    parser.add_argument('command', choices=['admin', 'fake-data', 'reactjs', 'cypress-tests'],
+    parser.add_argument('command', choices=['admin', 'fake-data', 'typescript', 'reactjs', 'cypress'],
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--matrix', required=False, help="Path to the Permissions Matrix CSV file.")
@@ -19,6 +20,7 @@ if __name__ == "__main__":
 
     command = args.command
     types_path = args.types
+    matrix_path = args.matrix
     output_dir = args.output_dir
 
     if not os.path.exists(types_path):
@@ -35,6 +37,13 @@ if __name__ == "__main__":
 
     if command == 'admin':
         DjangoBuilder(types_path, output_dir)
+    elif command == 'reactjs' or command == 'typescript':
+        reactor = ReactBuilder(types_path, matrix_path, output_dir)
+        if command == 'typescript':
+            reactor.build_types()
+        else:
+            reactor.build_navigation()
+
     else:
         logger.warning(f"Command '{command}' not yet implemented")
         sys.exit(1)
