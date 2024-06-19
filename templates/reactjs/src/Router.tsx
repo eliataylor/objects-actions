@@ -13,7 +13,7 @@ const App = () => {
             <Layout>
                 <Routes>
                     <Route path="/" element={<Home/>}/>
-                    {NAVITEMS.map(item => <Route path={`/${item.class}`} element={<ApiViewer />}/>)}
+                    {NAVITEMS.map(item => <Route path={`/${item.screen}`} element={<ApiViewer />}/>)}
                     <Route path="*" element={<NotReady title={'Missing this page'}/>}/>
                 </Routes>
             </Layout>

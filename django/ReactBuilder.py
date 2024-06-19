@@ -17,12 +17,14 @@ class ReactBuilder:
         interfaces = []
         urlItems = []
         for class_name in self.json:
-            model_name = create_object_name(class_name)
+            type_name = capitalize(create_object_name(class_name))
+            machine_name = create_machine_name(class_name)
 
-            code = [f"interface {model_name} {{"]
-            types.append(model_name)
 
-            urlItems.append({"name":class_name, "class":model_name, "path":f"/api/{model_name}"})
+            code = [f"interface {type_name} {{"]
+            types.append(type_name)
+
+            urlItems.append({"name":class_name, "class":machine_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}"})
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
@@ -73,7 +75,7 @@ export interface EntityView {{
 """
         inject_generated_code(types_file_path, type_defintions, 'API-RESP')
 
-        navItems = f"""interface NavItem {{
+        navItems = f"""export interface NavItem {{
     name: string;
     class: string;
     path: string;

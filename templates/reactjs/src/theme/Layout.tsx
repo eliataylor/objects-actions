@@ -11,6 +11,7 @@ import Logo from "./Logo";
 import {useNavDrawer} from "../NavDrawerProvider";
 import NavMenu from "../components/NavMenu";
 import {useObjectActions} from "../ObjectActionsProvider";
+import {NAVITEMS} from "../types/object-actions";
 
 const DrawerHeader = styled('div')(({theme}) => ({
     display: 'flex',
@@ -25,7 +26,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({children}) => {
     const location = useLocation();
-    const { navDrawerWidth, setNavDrawerWidth,  isMounted } = useNavDrawer();
+    const {navDrawerWidth, setNavDrawerWidth, isMounted} = useNavDrawer();
     const {updateEntityView, updateListView} = useObjectActions()
 
     const handleDrawerOpen = () => {
@@ -36,20 +37,31 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
         setNavDrawerWidth(0);
     };
 
-
-    useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const response = await fetch(`/api${location.pathname}${location.search}`);
-            const result = await response.json();
-            //  updateListView(result);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+    const isPathEndingWithNumber = (path: string) => {
+        const regex = /\/\d+$/;
+        return regex.test(path);
     };
 
-    fetchData();
-}, [location.pathname, location.search]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const hasUrl = NAVITEMS.find( nav => nav.screen === location.pathname );
+                if (hasUrl) {
+                    const response = await fetch(`${hasUrl.api}${location.search}`);
+                    const result = await response.json();
+                    if (isPathEndingWithNumber(location.pathname)) {
+                        updateEntityView(result)
+                    } else {
+                        updateListView(result);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, [location.pathname, location.search]);
 
 
     const appBar = <AppBar position="fixed" color={'default'}>
@@ -77,18 +89,23 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
         <React.Fragment>
             <Grid container justifyContent={'space-around'} flexWrap={'nowrap'}>
                 {isMounted === true &&
-                    <Grid item sx={{ml:2, mt:3}} style={{maxWidth:240}}>
+                    <Grid item sx={{ml: 2, mt: 3}} style={{maxWidth: 240}}>
                         {(location.pathname.length > 1) &&
-                            <Box sx={{pl:2}}>
-                                <Logo height={100} />
+                            <Box sx={{pl: 2}}>
+                                <Logo height={100}/>
                             </Box>
                         }
-                        <NavMenu />
+                        <NavMenu/>
                     </Grid>
                 }
                 <Grid item flexGrow={1}>
                     {isMounted === false && appBar}
-                    <Box style={{width: '100%', margin:`${isMounted ? 0 : '100px'} auto 0 auto`, padding: '1%', maxWidth: 1024}}>
+                    <Box style={{
+                        width: '100%',
+                        margin: `${isMounted ? 0 : '100px'} auto 0 auto`,
+                        padding: '1%',
+                        maxWidth: 1024
+                    }}>
                         {children}
                     </Box>
                 </Grid>
@@ -104,16 +121,16 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
                 }}
                 onClose={handleDrawerClose}
                 sx={{
-                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: navDrawerWidth },
+                    '& .MuiDrawer-paper': {boxSizing: 'border-box', width: navDrawerWidth},
                 }}
             >
                 <DrawerHeader>
-                    <Logo height={80} />
+                    <Logo height={80}/>
                     <IconButton onClick={handleDrawerClose}>
-                        <ChevronRightIcon />
+                        <ChevronRightIcon/>
                     </IconButton>
                 </DrawerHeader>
-                <DrawerMenu />
+                <DrawerMenu/>
             </Drawer>
         </React.Fragment>
     );

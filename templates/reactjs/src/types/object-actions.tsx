@@ -87,47 +87,61 @@ export interface EntityView {
 
 
 //---OBJECT-ACTIONS-NAV-ITEMS-STARTS---//
-interface NavItem {
+export interface NavItem {
     name: string;
     class: string;
-    path: string;
+    api: string;
+	screen: string;
 }
 export const NAVITEMS: NavItem[] = [
   {
     "name": "Customer",
-    "class": "Customer",
-    "path": "/api/Customer"
+    "class": "customer",
+    "api": "/api/customer",
+    "screen": "/customer"
   },
   {
     "name": "Supplier",
-    "class": "Supplier",
-    "path": "/api/Supplier"
+    "class": "supplier",
+    "api": "/api/supplier",
+    "screen": "/supplier"
   },
   {
     "name": "Ingredient",
-    "class": "Ingredient",
-    "path": "/api/Ingredient"
+    "class": "ingredient",
+    "api": "/api/ingredient",
+    "screen": "/ingredient"
   },
   {
     "name": "Meal",
-    "class": "Meal",
-    "path": "/api/Meal"
+    "class": "meal",
+    "api": "/api/meal",
+    "screen": "/meal"
   },
   {
     "name": "Plan",
-    "class": "Plan",
-    "path": "/api/Plan"
+    "class": "plan",
+    "api": "/api/plan",
+    "screen": "/plan"
   },
   {
     "name": "Order Item",
-    "class": "OrderItem",
-    "path": "/api/OrderItem"
+    "class": "order_item",
+    "api": "/api/order_item",
+    "screen": "/order_item"
   },
   {
     "name": "Order",
-    "class": "Order",
-    "path": "/api/Order"
+    "class": "order",
+    "api": "/api/order",
+    "screen": "/order"
   }
 ]
 //---OBJECT-ACTIONS-NAV-ITEMS-ENDS---//
+
+
+
+
+
+
 
