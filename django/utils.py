@@ -143,6 +143,8 @@ def infer_field_type(field_type, field_name, field):
     elif field_type == "date time":
         # TODO: implement data validation / format handlers onsave
         return "models.DateField()"
+    elif field_type == 'coordinates':
+        return "gis_models.PointField()"
     elif field_type == "email":
         return "models.EmailField()"
     elif field_type == "phone":

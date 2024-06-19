@@ -18,12 +18,14 @@
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/generated`
-If you use Address or Price field types, you'll need to add the 'address' and 'django-money' entries to the INSTALLED_APPS list in your settings.py file:
+- 
+If you use Address, Price, or Coordinates field types, you'll need to add the respective entries to the INSTALLED_APPS list in your settings.py file:
 ```python
 INSTALLED_APPS = [
     # ... 
     'address',
     'django-money',
+    'django.contrib.gis',
     # ... 
 ]
 ```

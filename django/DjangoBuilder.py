@@ -124,6 +124,8 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
                     if field['Required'].strip() == '' or int(field['Required']) < 1:
                         model_type = addArgs(model_type, ['blank=True', 'null=True'])
 
+                    if field_type == 'coordinates':
+                        self.append_import("models", "from django.contrib.gis.db import models as gis_models")
                     if field_type == 'enum':
                         capitalized = capitalize(field_name)
                         fields_code = build_choices(capitalized, field) + '\n' + fields_code
