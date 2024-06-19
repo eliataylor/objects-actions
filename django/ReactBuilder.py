@@ -38,7 +38,7 @@ class ReactBuilder:
 
                 field_def += infer_field_datatype(field_type, field_name, field)
 
-                if field_type == "flat list" or field['HowMany'] != 1:
+                if field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
                     field_def += '[]'
 
                 if field['Required'].strip() == '' or int(field['Required']) < 1:

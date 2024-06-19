@@ -42,18 +42,17 @@ def build_json_from_csv(csv_file):
     return json_data
 
 def inject_generated_code(output_file_path, code, prefix):
-    start_delim = f"###OBJECT-ACTIONS-{prefix}-STARTS###"
-    end_delim = f"###OBJECT-ACTIONS-{prefix}-ENDS###"
+    comments = "####" if "py." in output_file_path else "//---"
+    commentend = "####" if "py." in output_file_path else "---//"
+    start_delim = f"{comments}OBJECT-ACTIONS-{prefix}-STARTS{commentend}"
+    end_delim = f"{comments}OBJECT-ACTIONS-{prefix}-ENDS{commentend}"
 
     if output_file_path == "" or os.path.exists(output_file_path) is False:
         html = start_delim + "\n" + code + "\n" + end_delim
     else:
 
-        if ".py" in output_file_path:
-            with open(output_file_path, 'r', encoding='utf-8') as file:
-                html = file.read()
-        else:
-            html = output_file_path
+        with open(output_file_path, 'r', encoding='utf-8') as file:
+            html = file.read()
 
         start = 0
         end = len(html)
@@ -73,9 +72,8 @@ def inject_generated_code(output_file_path, code, prefix):
         end_html = html[end:]
         html = f"{start_html}\n{code}\n{end_html}\n"
 
-    if ".py" in output_file_path:
-        with open(output_file_path, 'w', encoding='utf-8') as file:
-            file.write(html)
+    with open(output_file_path, 'w', encoding='utf-8') as file:
+        file.write(html)
 
     logger.info(f"{prefix} built. ")
     return html
@@ -164,13 +162,13 @@ def infer_field_datatype(field_type, field_name, field):
     elif field_type == "media":
         return "string"
     elif field_type == "flat list":
-        return "string[]"
+        return "string"
     elif field_type == "json":
         return "object"
     elif field_type == "enum":
-        return "string[]"
+        return "string"
     elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
-        return "string[]"
+        return "string"
     else:
         return "string"
 
