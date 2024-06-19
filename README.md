@@ -67,4 +67,4 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
 - [ ] Generate Cypress.io test suite
 - [ ] AppScrips to generate full Worksheet for given Object-Actions list
 
-To contribute read: [CONTRIBUTING.md](CONTRIBUTING.md)
+To contribute: [CONTRIBUTING.md](CONTRIBUTING.md)
