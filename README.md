@@ -35,7 +35,7 @@ INSTALLED_APPS = [
 - `python3.9 -m venv .venv` (pretty much any version of python should work)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
-- `python manage.py createsuperuser` (create your )
+- `python manage.py createsuperuser` (create your admin login)
 - `python manage.py makemigrations`
 - `python manage.py migrate --run-syncdb`
 - `python manage.py runserver`
@@ -64,3 +64,5 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
   - [ ] Material-UI Drawer of Permissions Matrix Paths
 - [ ] Generate Cypress.io test suite
 - [ ] AppScrips to generate full Worksheet for given Object-Actions list
+
+To contribute read: [CONTRIBUTING.md](CONTRIBUTING.md)
