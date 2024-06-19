@@ -73,7 +73,12 @@ export interface EntityView {{
 """
         inject_generated_code(types_file_path, type_defintions, 'API-RESP')
 
-        navItems = f"export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"
+        navItems = f"""interface NavItem {{
+    name: string;
+    class: string;
+    path: string;
+}}
+export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"""
         inject_generated_code(types_file_path, navItems, 'NAV-ITEMS')
 
 

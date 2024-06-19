@@ -1,8 +1,4 @@
-interface NavItem {
-    name: string;
-    class: string;
-    path: string;
-}
+
 
 //---OBJECT-ACTIONS-SCHEMA-STARTS---//
 interface Customer {
@@ -74,6 +70,7 @@ interface Order {
 //---OBJECT-ACTIONS-SCHEMA-ENDS---//
 
 
+
 //---OBJECT-ACTIONS-API-RESP-STARTS---//
 export interface ListView {
     meta: object;
@@ -88,7 +85,13 @@ export interface EntityView {
 //---OBJECT-ACTIONS-API-RESP-ENDS---//
 
 
+
 //---OBJECT-ACTIONS-NAV-ITEMS-STARTS---//
+interface NavItem {
+    name: string;
+    class: string;
+    path: string;
+}
 export const NAVITEMS: NavItem[] = [
   {
     "name": "Customer",
@@ -127,10 +130,4 @@ export const NAVITEMS: NavItem[] = [
   }
 ]
 //---OBJECT-ACTIONS-NAV-ITEMS-ENDS---//
-
-
-
-
-
-
 
