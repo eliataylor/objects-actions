@@ -14,6 +14,7 @@ class ReactBuilder:
         types_file_path = os.path.join(self.react_dir, 'src/types/object-actions.tsx')
 
         types = []
+        constants = {}
         interfaces = []
         urlItems = []
         for class_name in self.json:
@@ -22,6 +23,8 @@ class ReactBuilder:
 
 
             code = [f"interface {type_name} {{"]
+            constant = {}
+
             types.append(type_name)
 
             urlItems.append({"name":class_name, "class":machine_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}"})
@@ -32,7 +35,10 @@ class ReactBuilder:
                 if field_name == '':
                     field_name = create_machine_name(field['Field Label'])
                 if field_type == '':
-                    field_type = 'text'
+                    field_type = 'string'
+
+                field_js = {}
+                field_js['field_name'] = field_name
 
                 field_def = "\t"
 
@@ -46,7 +52,15 @@ class ReactBuilder:
                 else:
                     field_def += ": "
 
-                field_def += infer_field_datatype(field_type, field_name, field)
+                data_type = infer_field_datatype(field_type, field_name, field)
+                field_def += data_type
+                field_js['data_type'] = data_type
+                field_js['field_type'] = field_type
+                field_js['cardinality'] = field['HowMany']
+                field_js['relationship'] = field['Relationship']
+                field_js['default'] = field['Default']
+                field_js['example'] = field['Example']
+                constant[field_name] = field_js
 
                 if field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
                     field_def += '[]'
@@ -58,10 +72,11 @@ class ReactBuilder:
 
                 code.append(field_def)
 
+            constants[machine_name] = constant
             code.append("}")
             interfaces.append("\n".join(code))
 
-        inject_generated_code(types_file_path, "\n".join(interfaces), 'SCHEMA')
+        inject_generated_code(types_file_path, "\n".join(interfaces), 'TYPE-SCHEMA')
 
         type_defintions = f"""export interface ListView {{
     meta: object;
@@ -78,10 +93,26 @@ export interface EntityView {{
         navItems = f"""export interface NavItem {{
     name: string;
     class: string;
-    path: string;
+    api: string;
+    screen: string;
 }}
 export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"""
         inject_generated_code(types_file_path, navItems, 'NAV-ITEMS')
+
+        inject_generated_code(types_file_path, f"""export interface FieldTypeDefinition {{
+    field_name: string;
+    data_type: string;
+    field_type: string;
+    cardinality?: string | number;
+    relationship?: string;
+    default?: string;
+    example?: string;
+}}
+interface ObjectOfObjects {{
+    [key: string]: {{ [key: string]: FieldTypeDefinition }};
+}}
+export const TypeFieldSchema: ObjectOfObjects = {json.dumps(constants, indent=2)}""", 'TYPE-CONSTANTS')
+
 
 
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import {Grid, Typography} from "@mui/material";
 
-interface NotReady {
+interface NotReadyProps {
     title: string;
 }
 
-const NotReady: React.FC<NotReady> = ({ title }) => {
+const NotReady: React.FC<NotReadyProps> = ({ title }) => {
     return (
         <Grid container direction={'column'} gap={2} sx={{textAlign: 'center', maxWidth:400, margin:'50px auto'}}>
             <Typography variant={'h5'} >
