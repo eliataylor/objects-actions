@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState} from 'react';
-import {EntityView, ListView} from "./types/object-actions";
+import {EntityView, ListView} from "./types/types";
 
 interface ObjectActionsContextProps {
     updateListView: (response: ListView) => void;

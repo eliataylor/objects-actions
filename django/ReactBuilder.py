@@ -11,7 +11,7 @@ class ReactBuilder:
         self.json = build_json_from_csv(field_csv)
 
     def build_types(self):
-        types_file_path = os.path.join(self.react_dir, 'src/types/object-actions.tsx')
+        types_file_path = os.path.join(self.react_dir, 'src/object-actions/types/types.tsx')
 
         types = []
         constants = {}
@@ -38,7 +38,8 @@ class ReactBuilder:
                     field_type = 'string'
 
                 field_js = {}
-                field_js['field_name'] = field_name
+                field_js['machine'] = field_name
+                field_js['label'] = field['Field Label']
 
                 field_def = "\t"
 
@@ -47,7 +48,7 @@ class ReactBuilder:
                 else:
                     field_def += field_name
 
-                if field['Required'].strip() == '' or int(field['Required']) < 1:
+                if field['Required'] < 1:
                     field_def += "?: "
                 else:
                     field_def += ": "
@@ -59,13 +60,14 @@ class ReactBuilder:
                 field_js['cardinality'] = field['HowMany']
                 field_js['relationship'] = field['Relationship']
                 field_js['default'] = field['Default']
+                field_js['required'] = True if field['Required'] else False
                 field_js['example'] = field['Example']
                 constant[field_name] = field_js
 
                 if field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
                     field_def += '[]'
 
-                if field['Required'].strip() == '' or int(field['Required']) < 1:
+                if field['Required'] < 1:
                     field_def += ' | null;'
                 else:
                     field_def += ';'
@@ -79,15 +81,14 @@ class ReactBuilder:
         inject_generated_code(types_file_path, "\n".join(interfaces), 'TYPE-SCHEMA')
 
         type_defintions = f"""export interface ListView {{
-    meta: object;
-    data: Array<{" | ".join(types)}>
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: Array<{" | ".join(types)}>
 }}
 
-export interface EntityView {{
-    meta: object;
-    data: {" | ".join(types)};
-}}
-"""
+export type EntityView = {" | ".join(types)}; """
+
         inject_generated_code(types_file_path, type_defintions, 'API-RESP')
 
         navItems = f"""export interface NavItem {{
@@ -100,11 +101,13 @@ export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"""
         inject_generated_code(types_file_path, navItems, 'NAV-ITEMS')
 
         inject_generated_code(types_file_path, f"""export interface FieldTypeDefinition {{
-    field_name: string;
+    name: string;
+    label: string;
     data_type: string;
     field_type: string;
-    cardinality?: string | number;
+    cardinality?: number;
     relationship?: string;
+    required?: boolean;
     default?: string;
     example?: string;
 }}

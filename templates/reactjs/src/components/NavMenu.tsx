@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {List, ListItem, ListItemText} from '@mui/material';
-import {NAVITEMS} from "../types/object-actions";
+import {NAVITEMS} from "../object-actions/types/types";
 
 const NavMenu = () => {
     const location = useLocation();

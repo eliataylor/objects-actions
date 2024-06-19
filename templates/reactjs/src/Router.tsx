@@ -3,7 +3,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Home from './screens/Home';
 import Layout from "./theme/Layout";
 import NotReady from "./screens/NotReady";
-import {NAVITEMS} from "./types/object-actions";
+import {NAVITEMS} from "./object-actions/types/types";
 import ApiViewer from "./screens/ApiViewer"
 
 const App = () => {
@@ -13,7 +13,13 @@ const App = () => {
             <Layout>
                 <Routes>
                     <Route path="/" element={<Home/>}/>
-                    {NAVITEMS.map(item => <Route path={`/${item.screen}`} element={<ApiViewer />}/>)}
+                    {NAVITEMS.map(item => {
+                        return <React.Fragment>
+                            <Route path={`/${item.screen}`} element={<ApiViewer />}/>
+                            <Route path={`/forms/${item.class}/:id/edit`} element={<ApiViewer />}/>
+                            <Route path={`/forms/${item.class}/add`} element={<ApiViewer />}/>
+                        </React.Fragment>
+                    })}
                     <Route path="*" element={<NotReady title={'Missing this page'}/>}/>
                 </Routes>
             </Layout>

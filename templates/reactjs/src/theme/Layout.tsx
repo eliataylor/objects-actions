@@ -10,8 +10,8 @@ import {styled} from "@mui/material/styles";
 import Logo from "./Logo";
 import {useNavDrawer} from "../NavDrawerProvider";
 import NavMenu from "../components/NavMenu";
-import {useObjectActions} from "../ObjectActionsProvider";
-import {NAVITEMS} from "../types/object-actions";
+import {useObjectActions} from "../object-actions/ObjectActionsProvider";
+import {NAVITEMS} from "../object-actions/types/types";
 
 const DrawerHeader = styled('div')(({theme}) => ({
     display: 'flex',

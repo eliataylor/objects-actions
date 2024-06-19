@@ -1,6 +1,6 @@
 import React from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {useObjectActions} from '../ObjectActionsProvider';
+import {useObjectActions} from '../object-actions/ObjectActionsProvider';
 import {Box, Fab} from "@mui/material";
 import {Add, Edit} from "@mui/icons-material";
 
