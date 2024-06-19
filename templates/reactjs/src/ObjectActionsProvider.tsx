@@ -1,38 +1,39 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useContext, useState} from 'react';
 import {EntityView, ListView} from "./types/object-actions";
 
 interface ObjectActionsContextProps {
     updateListView: (response: ListView) => void;
-    listData: ListView;
+    listData: ListView | null;
     updateEntityView: (response: EntityView) => void;
-    entityData: EntityView;
+    entityData: EntityView | null;
 }
 
 const ObjectActionsContext = createContext<ObjectActionsContextProps>({
     updateListView: (response: ListView) => null,
-    listData: {meta:{}, data:[]},
+    listData: null,
     updateEntityView: (response: EntityView) => null,
-    entityData: {meta:{}, data:[]},
+    entityData: null,
 });
 
 interface ObjectActionsProviderProps {
     children: React.ReactNode;
-    initialState?: ObjectActionsContextProps
 }
 
-const ObjectActionsProvider: React.FC<ObjectActionsProviderProps> = ({children, initialState}) => {
-    const [listView, updateListView] = useState<ListView>(null);
-    const [entityView, updateEntityView] = useState<EntityView>(null);
+const ObjectActionsProvider: React.FC<ObjectActionsProviderProps> = ({children}) => {
+    const [listData, updateListView] = useState<ListView | null>(null);
+    const [entityData, updateEntityView] = useState<EntityView | null>(null);
 
-
-    useEffect(() => {
-        fetch(/)
-    }, []);
-
-
-    return <ObjectActionsContext.Provider value={{listData, updateListView, entityData, upateEntityView}} >
+    return <ObjectActionsContext.Provider value={{listData, updateListView, entityData, updateEntityView}} >
             {children}
         </ObjectActionsContext.Provider>
 };
 
-export {ObjectActionsProvider, ObjectActionsContext};
+export const useObjectActions = (): ObjectActionsContextProps => {
+    const context = useContext(ObjectActionsContext);
+    if (!context) {
+        throw new Error('useObjectActions must be used within a ObjectActionsProvider');
+    }
+    return context;
+};
+
+export default ObjectActionsProvider;

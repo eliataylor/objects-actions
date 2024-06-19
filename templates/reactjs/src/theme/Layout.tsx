@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useLocation} from 'react-router-dom';
 import {AppBar, Box, Grid} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -10,6 +10,7 @@ import {styled} from "@mui/material/styles";
 import Logo from "./Logo";
 import {useNavDrawer} from "../NavDrawerProvider";
 import NavMenu from "../components/NavMenu";
+import {useObjectActions} from "../ObjectActionsProvider";
 
 const DrawerHeader = styled('div')(({theme}) => ({
     display: 'flex',
@@ -25,6 +26,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({children}) => {
     const location = useLocation();
     const { navDrawerWidth, setNavDrawerWidth,  isMounted } = useNavDrawer();
+    const {updateEntityView, updateListView} = useObjectActions()
 
     const handleDrawerOpen = () => {
         setNavDrawerWidth(300);
@@ -33,6 +35,21 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
     const handleDrawerClose = () => {
         setNavDrawerWidth(0);
     };
+
+
+    useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`/api${location.pathname}${location.search}`);
+            const result = await response.json();
+            //  updateListView(result);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    fetchData();
+}, [location.pathname, location.search]);
 
 
     const appBar = <AppBar position="fixed" color={'default'}>
