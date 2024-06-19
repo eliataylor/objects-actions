@@ -82,16 +82,14 @@ class Customer(SuperModel):
     delivery_address = AddressField(related_name='+', blank=True, null=True)
 
 
-    ###SAVE_OVERRIDE###
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = slugify(self.title)
         super().save(*args, **kwargs)
-
 class CustomerAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-
+                    readonly_fields = ('id',)
 admin.site.register(Customer, CustomerAdmin)
+
 
 class Supplier(SuperModel):
     class Meta:
@@ -104,16 +102,14 @@ class Supplier(SuperModel):
     website = models.URLField(blank=True, null=True)
 
 
-    ###SAVE_OVERRIDE###
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = slugify(self.title)
         super().save(*args, **kwargs)
-
 class SupplierAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-
+                    readonly_fields = ('id',)
 admin.site.register(Supplier, SupplierAdmin)
+
 
 class Ingredient(SuperModel):
     class Meta:
@@ -128,16 +124,14 @@ class Ingredient(SuperModel):
     out_of_season_price = models.DecimalField(max_digits=10,  decimal_places=2, blank=True, null=True)
 
 
-    ###SAVE_OVERRIDE###
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = slugify(self.title)
         super().save(*args, **kwargs)
-
 class IngredientAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-
+                    readonly_fields = ('id',)
 admin.site.register(Ingredient, IngredientAdmin)
+
 
 class Meal(SuperModel):
     class Meta:
@@ -160,16 +154,14 @@ class Meal(SuperModel):
     suppliers = models.ManyToManyField('Supplier', blank=True, null=True)
 
 
-    ###SAVE_OVERRIDE###
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = slugify(self.title)
         super().save(*args, **kwargs)
-
 class MealAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-
+                    readonly_fields = ('id',)
 admin.site.register(Meal, MealAdmin)
+
 
 class Plan(SuperModel):
     class Meta:
@@ -183,16 +175,14 @@ class Plan(SuperModel):
     date = models.DateField(blank=True, null=True)
 
 
-    ###SAVE_OVERRIDE###
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = slugify(self.title)
         super().save(*args, **kwargs)
-
 class PlanAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-
+                    readonly_fields = ('id',)
 admin.site.register(Plan, PlanAdmin)
+
 
 class OrderItem(SuperModel):
     class Meta:
@@ -206,16 +196,14 @@ class OrderItem(SuperModel):
     servings = models.IntegerField(default=1)
 
 
-    ###SAVE_OVERRIDE###
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = slugify(self.title)
         super().save(*args, **kwargs)
-
 class OrderItemAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-
+                    readonly_fields = ('id',)
 admin.site.register(OrderItem, OrderItemAdmin)
+
 
 class Order(SuperModel):
     class Meta:
@@ -238,16 +226,14 @@ class Order(SuperModel):
     status = models.CharField(max_length=20,  default="unpaid", choices=StatusChoices.choices)
 
 
-    ###SAVE_OVERRIDE###
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = slugify(self.title)
         super().save(*args, **kwargs)
-
 class OrderAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-
+                    readonly_fields = ('id',)
 admin.site.register(Order, OrderAdmin)
+
 ###OBJECT-ACTIONS-MODELS-ENDS###
 
 
@@ -278,6 +264,10 @@ def generate_slug_plan_id(sender, instance, **kwargs):
         instance.id = slugify(instance.name)
 
 ###OBJECT-ACTIONS-POST-HELPERS-ENDS###
+
+
+
+
 
 
 

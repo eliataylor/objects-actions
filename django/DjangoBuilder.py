@@ -143,15 +143,19 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
 
                 fields_code += f"    {field_name} = {model_type}\n"
 
-            #if id_field:
-            #    fields_code += f"class {model_name}Admin(admin.ModelAdmin):\n\
-            #        readonly_fields = ('{id_field}',)"
-            #    fields_code += f"\nadmin.site.register({model_name}, {model_name}Admin)\n"
-            #else:
-            #    fields_code += f"\nadmin.site.register({model_name})\n"
+            if id_field:
+                admin_code = f"class {model_name}Admin(admin.ModelAdmin):\n\
+                    readonly_fields = ('{id_field}',)"
+                admin_code += f"\nadmin.site.register({model_name}, {model_name}Admin)\n"
+                save_code = f"def save(self, *args, **kwargs):\n        if not self.{id_field}:\n            self.{id_field} = slugify(self.title)\n        super().save(*args, **kwargs)"
+            else:
+                admin_code = f"\nadmin.site.register({model_name})\n"
+                #save_code = f"def save(self, *args, **kwargs):\n    super().save(*args, **kwargs)"
+                save_code = ""
             code = code_source.replace('###FIELDS_OVERRIDE###', fields_code[4:])#the [4:] slicing is to remove the first 4 characters,
             # which are the 4 spaces in the beginning of the string, not to over-indent the first field of the class
-
+            code = code.replace('###SAVE_OVERRIDE###', save_code)
+            code = code.replace('###ADMIN_OVERRIDE###', admin_code)
             parts.append(code)
 
         inject_generated_code(model_file_path, "\n".join(self.imports['models']), 'MODEL_IMPORTS')
