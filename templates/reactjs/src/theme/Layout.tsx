@@ -47,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
             try {
                 const hasUrl = NAVITEMS.find(nav => nav.screen === location.pathname);
                 if (hasUrl) {
-                    const response = await fetch(`${process.env.REACT_APP_API_HOST}${hasUrl.api}${location.search}`, {
+                    const response = await fetch(`//${process.env.REACT_APP_API_HOST}${hasUrl.api}${location.search}`, {
                         headers: {
 //                            'Authorization': 'Bearer YOUR_TOKEN_HERE',
                             'Content-Type': 'application/json'
