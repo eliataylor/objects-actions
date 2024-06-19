@@ -42,8 +42,8 @@ def build_json_from_csv(csv_file):
     return json_data
 
 def inject_generated_code(output_file_path, code, prefix):
-    comments = "####" if "py." in output_file_path else "//---"
-    commentend = "####" if "py." in output_file_path else "---//"
+    comments = "####" if ".py" in output_file_path else "//---"
+    commentend = "####" if ".py" in output_file_path else "---//"
     start_delim = f"{comments}OBJECT-ACTIONS-{prefix}-STARTS{commentend}"
     end_delim = f"{comments}OBJECT-ACTIONS-{prefix}-ENDS{commentend}"
 

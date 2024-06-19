@@ -1,7 +1,7 @@
 class __CLASSNAME__ViewSet(viewsets.ModelViewSet):
     queryset = __CLASSNAME__.objects.all()
     serializer_class = __CLASSNAME__Serializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         return __CLASSNAME__.objects.all()
