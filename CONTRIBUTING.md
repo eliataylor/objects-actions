@@ -28,3 +28,10 @@ python manage.py migrate --run-syncdb
 python manage.py createsuperuser
 python manage.py runserver
 ```
+
+4. **Run the demo front end**
+```sh
+cd ../object-actions/templates/reactjs # move to react template project inside object-actions
+npm install
+npm start
+```
