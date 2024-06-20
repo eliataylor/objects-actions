@@ -17,6 +17,7 @@ cd '..' # move back to /Users/user/Developer
 git clone git@github.com:eliataylor/object-actions.git object-actions
 cd object-actions
 python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=/Users/user/Developer/nod_backend/nod_backend
+python django/generate.py typescript --types=examples/object-fields-nod.csv --output_dir=templates/reactjs
 ```
 
 3. **Build and Test that target**
