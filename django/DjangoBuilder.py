@@ -69,6 +69,7 @@ class DjangoBuilder:
         for class_name in self.json:
             model_name = create_object_name(class_name)
             id_field = False
+            slugified = False
             code_source = model_template.replace('__CLASSNAME__', model_name)
 
             fields_code = ""
@@ -76,11 +77,14 @@ class DjangoBuilder:
             for field in self.json[class_name]:
                 field_type = field['Field Type']
                 field_name = field['Field Name']
+                default_value = field['Default'].strip()
+
                 if field_name is None or field_name == '':
                     field_name = create_machine_name(field['Field Label'])
 
                 if field_type == 'id (auto increment)' or field_name == 'id':
                     id_field = field_name
+                    slugified = default_value
                     logger.info(f"using explicit id field {field_name}")
 
                 if field_type is None:
@@ -96,7 +100,6 @@ class DjangoBuilder:
 
                 model_type = infer_field_type(field_type, field_name, field)
 
-                default_value = field['Default'].strip()
 
                 if field_type == 'slug':
                     if default_value == '':
@@ -147,10 +150,9 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
                 admin_code = f"class {model_name}Admin(admin.ModelAdmin):\n\
                     readonly_fields = ('{id_field}',)"
                 admin_code += f"\nadmin.site.register({model_name}, {model_name}Admin)\n"
-                save_code = f"def save(self, *args, **kwargs):\n        if not self.{id_field}:\n            self.{id_field} = slugify(self.title)\n        super().save(*args, **kwargs)"
+                save_code = f"def save(self, *args, **kwargs):\n        if not self.{id_field}:\n            self.{id_field} = slugify(self{slugified})\n        super().save(*args, **kwargs)"
             else:
                 admin_code = f"\nadmin.site.register({model_name})\n"
-                #save_code = f"def save(self, *args, **kwargs):\n    super().save(*args, **kwargs)"
                 save_code = ""
             code = code_source.replace('###FIELDS_OVERRIDE###', fields_code[4:])#the [4:] slicing is to remove the first 4 characters,
             # which are the 4 spaces in the beginning of the string, not to over-indent the first field of the class
