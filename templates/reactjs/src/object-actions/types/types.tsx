@@ -192,7 +192,7 @@ export const NAVITEMS: NavItem[] = [
 
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-STARTS---//
 export interface FieldTypeDefinition {
-    name: string;
+    machine: string;
     label: string;
     data_type: string;
     field_type: string;
@@ -783,6 +783,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
 
 
 

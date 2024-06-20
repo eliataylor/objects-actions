@@ -101,7 +101,7 @@ export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"""
         inject_generated_code(types_file_path, navItems, 'NAV-ITEMS')
 
         inject_generated_code(types_file_path, f"""export interface FieldTypeDefinition {{
-    name: string;
+    machine: string;
     label: string;
     data_type: string;
     field_type: string;
