@@ -1,6 +1,6 @@
 import React from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {useObjectActions} from '../ObjectActionsProvider';
+import {useObjectActions} from '../object-actions/ObjectActionsProvider';
 import {Box, Fab} from "@mui/material";
 import {Add, Edit} from "@mui/icons-material";
 
@@ -16,6 +16,8 @@ const ApiViewer: React.FC = () => {
 
     if (!listData && !entityData) return null;
 
+
+
     return (
         <Box sx={{padding: 2}}>
             {isPathEndingWithNumber(location.pathname) ?
@@ -24,7 +26,7 @@ const ApiViewer: React.FC = () => {
                     <Fab color="secondary"
                          size="small"
                          sx={{position: 'absolute', right: 20, bottom: 20}}
-                         onClick={() => navigate(location.pathname + '/edit')}>
+                         onClick={() => navigate(`/forms${location.pathname}/edit`)}>
 
                         <Edit/>
                     </Fab>
@@ -35,7 +37,7 @@ const ApiViewer: React.FC = () => {
                     <Fab color="secondary"
                          size="small"
                          sx={{position: 'absolute', right: 20, bottom: 20}}
-                         onClick={() => navigate(location.pathname + '/add')}>
+                         onClick={() => navigate(`/forms${location.pathname}/0/add`)}>
                         <Add/>
                     </Fab>
                 </React.Fragment>

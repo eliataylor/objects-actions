@@ -31,6 +31,20 @@ def build_json_from_csv(csv_file):
             # Remove 'Type' from the row since we don't need it in the JSON object
             del row['TYPES']
 
+
+            if row['HowMany'] == '' or row['HowMany'] == '1':
+                row['HowMany'] = 1
+            elif row['HowMany'] == 'unlimited':
+                row['HowMany'] = float('inf')
+            else:
+                row['HowMany'] = int(row['HowMany'])
+
+            if row['Required'].isdigit():
+                row['Required'] = int(row['Required'])
+            else:
+                row['Required'] = 0
+
+
             # Check if the type already exists in the JSON object
             if cur_type in json_data:
                 # Append the row to the existing array

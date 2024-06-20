@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {List, ListItem, ListItemText} from '@mui/material';
-import {NAVITEMS} from "../types/object-actions";
+import {NAVITEMS} from "../object-actions/types/types";
 
 const NavMenu = () => {
     const location = useLocation();
@@ -11,7 +11,7 @@ const NavMenu = () => {
             <ListItemText primary="Home"/>
         </ListItem>
         {NAVITEMS.map(item => {
-            return <ListItem component={Link} to={item.screen} selected={location.pathname === item.screen}>
+            return <ListItem key={`navmenu-${item.screen}`} component={Link} to={item.screen} selected={location.pathname === item.screen}>
                 <ListItemText primary={item.name}/>
             </ListItem>
         })}

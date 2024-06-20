@@ -121,7 +121,7 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
                         else:
                             model_type = addArgs(model_type, [f"default=\"{field['Default']}\""])
 
-                    if field['Required'].strip() == '' or int(field['Required']) < 1:
+                    if field['Required'] < 1:
                         model_type = addArgs(model_type, ['blank=True', 'null=True'])
 
                     if field_type == 'coordinates':
