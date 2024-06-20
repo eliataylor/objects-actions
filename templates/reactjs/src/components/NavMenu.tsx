@@ -11,7 +11,7 @@ const NavMenu = () => {
             <ListItemText primary="Home"/>
         </ListItem>
         {NAVITEMS.map(item => {
-            return <ListItem component={Link} to={item.screen} selected={location.pathname === item.screen}>
+            return <ListItem key={`navmenu-${item.screen}`} component={Link} to={item.screen} selected={location.pathname === item.screen}>
                 <ListItemText primary={item.name}/>
             </ListItem>
         })}
