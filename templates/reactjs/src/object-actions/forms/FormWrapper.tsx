@@ -1,14 +1,15 @@
 import React, {ChangeEvent, FormEvent} from 'react';
-import {useFormContext} from './FormContext'; // Adjust the path if needed
 import Input from '@mui/material/Input';
 import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import LinkIcon from '@mui/icons-material/Link';
-
+import {EntityView, FieldTypeDefinition, parseFormURL, TypeFieldSchema} from "../types/types";
+import {useLocation, useNavigate} from "react-router-dom";
+import {Typography} from "@mui/material";
+/*
 function settingsToProps(field) {
     var obj = {};
     obj.name = field.field_name;
@@ -39,13 +40,21 @@ function getDefaultValue(field, entry, index) {
   }
   return '';
  }
+ */
 
 interface FormWrapperProps {
     onSubmit?: (e: FormEvent) => void;
+    entityData: EntityView;
 }
 
-const FormWrapper: React.FC<FormWrapperProps> = ({onSubmit}) => {
-    const {state, dispatch} = useFormContext();
+const FormWrapper: React.FC<FormWrapperProps> = ({onSubmit, entityData}) => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const target = parseFormURL(location.pathname)
+    if (!target) {
+        return <Typography variant={'h6'}>Invalid URL pattern</Typography>
+    }
+    const fields = Object.values(TypeFieldSchema[target.object])
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
@@ -54,14 +63,14 @@ const FormWrapper: React.FC<FormWrapperProps> = ({onSubmit}) => {
         }
     };
 
-    const handleFieldChange = (value: any, fieldName: string, index: number, propName: string) => {
-        dispatch({type: 'changeFieldVal', payload: {value, fieldName, index, propName}});
+    const handleFieldChange = (value: any, fieldName: string, index: number) => {
+        // dispatch({type: 'changeFieldVal', payload: {value, fieldName, index}});
     };
 
-    const renderLinkField = (field: any, entry: any, index: number, sourceName: string) => {
-        const inpProps = {}; // Adjust based on Form2Json.settingsToProps(field, entry, index)
+    const renderLinkField = (field: FieldTypeDefinition, entry: any, index: number, sourceName: string) => {
+        const inpProps = {id:'test'}; // Adjust based on Form2Json.settingsToProps(field, entry, index)
         return (
-            <Grid key={`${field.field_name}_${index}_${sourceName}`} item xs={12} sm={6} md={4}>
+            <Grid key={`${field.machine}_${index}_${sourceName}`} item xs={12} sm={6} md={4}>
                 <FormControl fullWidth>
                     <InputLabel htmlFor={inpProps.id}>{field.label}</InputLabel>
                     <Input
@@ -72,13 +81,12 @@ const FormWrapper: React.FC<FormWrapperProps> = ({onSubmit}) => {
                                 <LinkIcon/>
                             </InputAdornment>
                         }
-                        onFocus={() => console.log('onFocused', sourceName, field.field_name, entry)} // Implement onFocused logic
+                        onFocus={() => console.log('onFocused', sourceName, field.machine, entry)} // Implement onFocused logic
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            handleFieldChange(e.currentTarget.value, field.field_name, index, field['data-propname'])
+                            handleFieldChange(e.currentTarget.value, field.machine, index)
                         }
-                        value={entry[index] ? entry[index][field['data-propname']] : ''}
+                        value={entry[field.machine]}
                     />
-                    {field.description ? <FormHelperText>{field.description}</FormHelperText> : ''}
                 </FormControl>
             </Grid>
         );
@@ -89,7 +97,7 @@ const FormWrapper: React.FC<FormWrapperProps> = ({onSubmit}) => {
             <form onSubmit={handleSubmit}>
                 {/* Render other fields */}
                 {/* Example of rendering link field */}
-                {state.fields?.map((field, index) => renderLinkField(field, state.entries, index, 'sourceName'))}
+                {fields?.map((field, index) => renderLinkField(field, entityData, index, 'sourceName'))}
                 <Grid item xs={12}>
                     <Button variant="contained" color="primary" type="submit">
                         Submit

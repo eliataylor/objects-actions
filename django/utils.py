@@ -40,9 +40,9 @@ def build_json_from_csv(csv_file):
                 row['HowMany'] = int(row['HowMany'])
 
             if row['Required'].isdigit():
-                row['Required'] = int(row['Required'])
+                row['Required'] = True if int(row['Required']) > 0 else False
             else:
-                row['Required'] = 0
+                row['Required'] = False
 
 
             # Check if the type already exists in the JSON object
@@ -124,7 +124,7 @@ def build_choices(field_name, field):
         list = ast.literal_eval(list)
         code = f"    class {field_name}Choices(models.TextChoices):"
         for name in list:
-            code += f'\n        {name} = ("{capitalize(name)}", "{name}")'
+            code += f'\n        {create_machine_name(name, True)} = ("{capitalize(name)}", "{create_machine_name(name, True)}")'
     except Exception as e:
         logger.warning(f"{field['Field Label']} has invalid structure of choices: {field['Example'].strip()}  \nPlease list them as a flat json array. {str(e)}")
         return ""
@@ -210,7 +210,8 @@ def infer_field_type(field_type, field_name, field):
         # TODO: implement data validation / format handlers onsave
         return "models.DateField()"
     elif field_type == 'coordinates':
-        return "gis_models.PointField()"
+        return "models.JSONField()"
+        # return "gis_models.PointField()" # too much overhead to install the libaries
     elif field_type == "email":
         return "models.EmailField()"
     elif field_type == "phone":
@@ -251,13 +252,13 @@ def infer_field_type(field_type, field_name, field):
         model_name = create_object_name(field['Relationship'])
         if field['HowMany'] == 1:
             return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"
-        elif field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
+        elif field['HowMany'] > 1:
             # return f"models.ManyToManyField('{model_name}', on_delete=models.CASCADE)"
             return f"models.ManyToManyField('{model_name}')"
         else:
             # maybe add convention to apply reverse reference >
-            # f"models.ForeignKey(OtherModel, on_delete=models.CASCADE, related_name='{create_machine_name(field['Field Label'])}')"
-            return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
+            return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE, related_name='{create_machine_name(field['Field Label'])}')"
+            # return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
     else:
         logger.warning(f"UNSUPPORTED FILE TYPE {field_type}")
         return "models.TextField()"
