@@ -1,5 +1,9 @@
 .idea
-.gitignore examples/**djmote.csv
+examples/**djmote.csv
 databuilder/profilepics
 private.txt
 templates/reactjs/.env
+.DS_Store
+__pycache__
+runnerlogs.log
+node_modules

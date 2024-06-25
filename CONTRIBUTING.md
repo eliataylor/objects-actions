@@ -17,6 +17,7 @@ cd '..' # move back to /Users/user/Developer
 git clone git@github.com:eliataylor/object-actions.git object-actions
 cd object-actions
 python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=/Users/user/Developer/nod_backend/nod_app
+python django/generate.py typescript --types=examples/object-fields-nod.csv --output_dir=templates/reactjs
 ```
 
 3. **Build and Test that target**
@@ -26,4 +27,11 @@ python manage.py makemigrations
 python manage.py migrate --run-syncdb
 python manage.py createsuperuser
 python manage.py runserver
+```
+
+4. **Run the demo front end**
+```sh
+cd ../object-actions/templates/reactjs # move to react template project inside object-actions
+npm install
+npm start
 ```

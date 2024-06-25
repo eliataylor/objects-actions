@@ -11,7 +11,7 @@
 - [x] Generating unlimited numbers of fake data entries to test
 
 ## USAGE:
-### Generate your Django Admin CMS and API:
+### Generate your Django models, views, serializers and urls:
 - `git clone git@github.com:eliataylor/object-actions.git`
 - `cd object-actions`
 - `python3.9 -m venv .venv` (pretty much any version of python should work)
@@ -30,17 +30,8 @@ INSTALLED_APPS = [
 ]
 ```
 
+#### To run a complete CMS, API, with connected ReactJS app follow [CONTRIBUTING.md](CONTRIBUTING.md)
 
-### Run Generated CMS and API
-- Follow [django/README.md](django/README.md) to setup a new project or make a few changes to your settings.py 
-- `cd examples/generated` (the root of your project with the output above)
-- `python3.9 -m venv .venv` (pretty much any version of python should work)
-- `source .venv/bin/activate`
-- `pip install -r requirements.txt`
-- `python manage.py createsuperuser` (create your admin login)
-- `python manage.py makemigrations`
-- `python manage.py migrate --run-syncdb`
-- `python manage.py runserver`
 
 ## Getting Started
 

@@ -1,7 +1,7 @@
 class SuperModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True)
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     class Meta:
         abstract = True
         # verbose_name = 'My Model'  # Default: model's verbose name in singular form
@@ -20,8 +20,6 @@ class SuperModel(models.Model):
         # indexes = []  # Default: empty list, no indexes defined
         # ordering = ()  # Default: empty tuple, no ordering defined
 
-
-
     def __str__(self):
         if hasattr(self, "title"):
             return self.title
@@ -35,7 +33,7 @@ class SuperModel(models.Model):
         return None
 
     def save(self, *args, **kwargs):
-        if not self.id and hasattr(self, 'author') and not self.author_id:
+        if hasattr(self, 'author') and not self.author:
             request = kwargs.pop('request', None)  # Remove 'request' from kwargs
             if request:
                 self.author = self.get_current_user(request)

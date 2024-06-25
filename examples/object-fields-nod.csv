@@ -29,7 +29,7 @@ Meal,,,,,,,,
 ,Title,,text,1,1,,,
 ,Description,,text,1,1,,,
 ,BLD,,enum,1,1,,,"['breakfast', 'lunch', 'dinner', 'desert', 'snack']"
-,Photo,,media,3,1,,,media/calendar
+,Photo,,media,3,0,,,media/calendar
 ,Internal Cost,,decimal,,,,,
 ,Public Price,,decimal,,,,16,
 ,Ingredients,,type reference,unlimited,,Ingredient,,

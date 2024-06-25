@@ -26,13 +26,14 @@ class DjangoBuilder:
                                   "from rest_framework.exceptions import ValidationError",
                                   "from django.utils.decorators import method_decorator",
                                   "from django.views.decorators.cache import cache_page",
-                                  "from rest_framework.decorators import action"],
+                                  "from rest_framework.decorators import action",
+                                  "from django.http import JsonResponse",
+                                  "from django.core.management import call_command"
+                                  ],
                         "urls": [
                             "from rest_framework.routers import DefaultRouter",
-                            "from django.conf import settings",
                             "from django.urls import include, path",
-                            "from django.contrib import admin",
-                            "from rest_framework.schemas import get_schema_view"
+                            "from .views import migrate, collectstatic"
                         ]}
 
         self.requirements = []
@@ -69,18 +70,23 @@ class DjangoBuilder:
         for class_name in self.json:
             model_name = create_object_name(class_name)
             id_field = False
+            slugified = False
             code_source = model_template.replace('__CLASSNAME__', model_name)
 
             fields_code = ""
+            save_code = []
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
                 field_name = field['Field Name']
+                default_value = field['Default'].strip()
+
                 if field_name is None or field_name == '':
                     field_name = create_machine_name(field['Field Label'])
 
                 if field_type == 'id (auto increment)' or field_name == 'id':
                     id_field = field_name
+                    slugified = default_value
                     logger.info(f"using explicit id field {field_name}")
 
                 if field_type is None:
@@ -95,8 +101,6 @@ class DjangoBuilder:
                         self.requirements.append("pip install django-money")
 
                 model_type = infer_field_type(field_type, field_name, field)
-
-                default_value = field['Default'].strip()
 
                 if field_type == 'slug':
                     if default_value == '':
@@ -121,11 +125,16 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
                         else:
                             model_type = addArgs(model_type, [f"default=\"{field['Default']}\""])
 
-                    if field['Required'] < 1:
-                        model_type = addArgs(model_type, ['blank=True', 'null=True'])
+                    if not field['Required']:
+                        if "ManyToManyField" in model_type or "OneToManyField" in model_type:
+                            model_type = addArgs(model_type, ['blank=True'])
+                        else:
+                            model_type = addArgs(model_type, ['blank=True', 'null=True'])
 
                     if field_type == 'coordinates':
-                        self.append_import("models", "from django.contrib.gis.db import models as gis_models")
+                        save_code.append(f"""def get_lat_lng(self): 
+        return self.{field_name}['lat'], self.{field_name}['lng']""")
+                        # self.append_import("models", "from django.contrib.gis.db import models as gis_models")
                     if field_type == 'enum':
                         capitalized = capitalize(field_name)
                         fields_code = build_choices(capitalized, field) + '\n' + fields_code
@@ -144,17 +153,19 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
                 fields_code += f"    {field_name} = {model_type}\n"
 
             if id_field:
-                admin_code = f"class {model_name}Admin(admin.ModelAdmin):\n\
-                    readonly_fields = ('{id_field}',)"
-                admin_code += f"\nadmin.site.register({model_name}, {model_name}Admin)\n"
-                save_code = f"def save(self, *args, **kwargs):\n        if not self.{id_field}:\n            self.{id_field} = slugify(self.title)\n        super().save(*args, **kwargs)"
+                admin_code = f"\n\nclass {model_name}Admin(admin.ModelAdmin):\n\
+    readonly_fields = ('{id_field}',)"
+                admin_code += f"\n\nadmin.site.register({model_name}, {model_name}Admin)\n"
             else:
-                admin_code = f"\nadmin.site.register({model_name})\n"
-                #save_code = f"def save(self, *args, **kwargs):\n    super().save(*args, **kwargs)"
-                save_code = ""
-            code = code_source.replace('###FIELDS_OVERRIDE###', fields_code[4:])#the [4:] slicing is to remove the first 4 characters,
+                admin_code = f"\n\nadmin.site.register({model_name})\n"
+
+            if slugified:
+                save_code.append(f"def save(self, *args, **kwargs):\n        if not self.{id_field}:\n            self.{id_field} = slugify(self.{slugified})\n        super().save(*args, **kwargs)")
+
+            code = code_source.replace('###FIELDS_OVERRIDE###',
+                                       fields_code[4:])  # the [4:] slicing is to remove the first 4 characters,
             # which are the 4 spaces in the beginning of the string, not to over-indent the first field of the class
-            code = code.replace('###SAVE_OVERRIDE###', save_code)
+            code = code.replace('###SAVE_OVERRIDE###', "\n".join(save_code))
             code = code.replace('###ADMIN_OVERRIDE###', admin_code)
             parts.append(code)
 
@@ -186,11 +197,13 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
 
         inject_generated_code(outpath, '\n'.join(self.imports["urls"]), 'URL-IMPORTS')
 
-        with open(self.templates_dir + '/urls.py', 'r') as fm:
-            code += "\n" + fm.read()
+        code += """urlpatterns = [
+    path('migrate/', migrate, name='migrate'),
+    path('collectstatic/', collectstatic, name='collectstatic'),
+    path('', include(router.urls)),
+]"""
 
         inject_generated_code(outpath, code, 'URLS')
-
 
     def build_serializers(self):
         outpath = os.path.join(self.output_dir, 'serializers.py')
@@ -208,7 +221,7 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
             self.append_import("serializers", f"from .models import {model_name}")
 
         inject_generated_code(outpath, '\n'.join(self.imports["serializers"]), 'SERIALIZER-IMPORTS')
-        inject_generated_code(outpath, serializers_helpers+"\n"+"\n".join(parts), 'SERIALIZERS')
+        inject_generated_code(outpath, serializers_helpers + "\n" + "\n".join(parts), 'SERIALIZERS')
 
     def build_viewsets(self):
         outpath = os.path.join(self.output_dir, 'views.py')
@@ -224,4 +237,9 @@ def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):
             self.append_import("views", f"from .serializers import {model_name}Serializer")
 
         inject_generated_code(outpath, '\n'.join(self.imports["views"]), 'VIEWSET-IMPORTS')
+
+        with open(self.templates_dir + '/views.py', 'r') as fm:
+            core = fm.read()
+            inject_generated_code(outpath, core, 'CORE')
+
         inject_generated_code(outpath, "\n".join(parts), 'VIEWSETS')

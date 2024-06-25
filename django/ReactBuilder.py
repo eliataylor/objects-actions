@@ -48,7 +48,7 @@ class ReactBuilder:
                 else:
                     field_def += field_name
 
-                if field['Required'] < 1:
+                if not field['Required']:
                     field_def += "?: "
                 else:
                     field_def += ": "
@@ -67,7 +67,7 @@ class ReactBuilder:
                 if field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
                     field_def += '[]'
 
-                if field['Required'] < 1:
+                if not field['Required']:
                     field_def += ' | null;'
                 else:
                     field_def += ';'
