@@ -27,15 +27,8 @@ class SuperModel(models.Model):
             return self.name
         return self.__class__
 
-    def get_current_user(self, request):
+    @classmethod
+    def get_current_user(cls, request):
         if hasattr(request, 'user') and request.user.is_authenticated:
             return request.user
         return None
-
-    def save(self, *args, **kwargs):
-        if hasattr(self, 'author') and not self.author:
-            request = kwargs.pop('request', None)  # Remove 'request' from kwargs
-            if request:
-                self.author = self.get_current_user(request)
-
-        super().save(*args, **kwargs)

@@ -65,7 +65,7 @@ def inject_generated_code(output_file_path, code, prefix):
         html = start_delim + "\n" + code + "\n" + end_delim
     else:
 
-        with open(output_file_path, 'r', encoding='utf-8') as file:
+        with open(output_file_path, 'r') as file:
             html = file.read()
 
         start = 0
@@ -86,7 +86,7 @@ def inject_generated_code(output_file_path, code, prefix):
         end_html = html[end:]
         html = f"{start_html}\n{code}\n{end_html}\n"
 
-    with open(output_file_path, 'w', encoding='utf-8') as file:
+    with open(output_file_path, 'w') as file:
         file.write(html)
 
     logger.info(f"{prefix} built. ")

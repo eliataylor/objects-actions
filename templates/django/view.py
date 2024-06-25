@@ -14,6 +14,8 @@ class __CLASSNAME__ViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
+        if hasattr(self.serializer_class.Meta.model, 'author') and not request.data.get('author'):
+            request.data['author'] = self.serializer_class.Meta.model.get_current_user(request).id
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             raise ValidationError(serializer.errors)
