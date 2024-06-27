@@ -71,7 +71,7 @@ interface Meal {
 	title: string;
 	description: string;
 	bld: string;
-	photo: string[];
+	photo?: string[] | null;
 	internal_cost?: number | null;
 	public_price?: number | null;
 	ingredients?: string | null;
@@ -211,7 +211,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "id",
       "label": "ID",
       "data_type": "string",
-      "field_type": "ID (auto increment)",
+      "field_type": "id_auto_increment",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -222,7 +222,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "user_id",
       "label": "User ID",
       "data_type": "string",
-      "field_type": "User (cms)",
+      "field_type": "user_account",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -334,7 +334,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "website",
       "label": "Website",
       "data_type": "string",
-      "field_type": "URL",
+      "field_type": "url",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -380,7 +380,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "supplier",
       "label": "Supplier",
       "data_type": "string",
-      "field_type": "type reference",
+      "field_type": "type_reference",
       "cardinality": 1,
       "relationship": "Supplier",
       "default": "",
@@ -474,7 +474,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "cardinality": 3,
       "relationship": "",
       "default": "",
-      "required": true,
+      "required": false,
       "example": "media/calendar"
     },
     "internal_cost": {
@@ -503,7 +503,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "ingredients",
       "label": "Ingredients",
       "data_type": "string",
-      "field_type": "type reference",
+      "field_type": "type_reference",
       "cardinality": Infinity,
       "relationship": "Ingredient",
       "default": "",
@@ -514,7 +514,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "suppliers",
       "label": "Suppliers",
       "data_type": "string",
-      "field_type": "type reference",
+      "field_type": "type_reference",
       "cardinality": Infinity,
       "relationship": "Supplier",
       "default": "",
@@ -560,7 +560,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "meals",
       "label": "Meals",
       "data_type": "string",
-      "field_type": "type reference",
+      "field_type": "type_reference",
       "cardinality": Infinity,
       "relationship": "Meal",
       "default": "",
@@ -595,7 +595,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "id",
       "label": "ID",
       "data_type": "string",
-      "field_type": "ID (auto increment)",
+      "field_type": "id_auto_increment",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -628,7 +628,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "meal",
       "label": "Meal",
       "data_type": "string",
-      "field_type": "type reference",
+      "field_type": "type_reference",
       "cardinality": 1,
       "relationship": "Meal",
       "default": "",
@@ -639,7 +639,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "meal_menu",
       "label": "Meal Menu",
       "data_type": "string",
-      "field_type": "type reference",
+      "field_type": "type_reference",
       "cardinality": 1,
       "relationship": "Plan",
       "default": "",
@@ -663,7 +663,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "id",
       "label": "ID",
       "data_type": "string",
-      "field_type": "ID (auto increment)",
+      "field_type": "id_auto_increment",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -674,7 +674,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "customer",
       "label": "Customer",
       "data_type": "string",
-      "field_type": "User (custom)",
+      "field_type": "user_account",
       "cardinality": 1,
       "relationship": "Customer",
       "default": "",
@@ -762,7 +762,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "order_items",
       "label": "Order Items",
       "data_type": "string",
-      "field_type": "type reference",
+      "field_type": "type_reference",
       "cardinality": Infinity,
       "relationship": "Order Item",
       "default": "",
@@ -783,6 +783,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
 
 
 

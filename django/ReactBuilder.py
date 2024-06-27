@@ -33,7 +33,10 @@ class ReactBuilder:
                 field_type = field['Field Type']
                 field_name = field['Field Name']
                 if field_name == '':
-                    field_name = create_machine_name(field['Field Label'])
+                    field_name = create_machine_name(field['Field Label'], True)
+                else:
+                    field_name = create_machine_name(field_name, True)
+
                 if field_type == '':
                     field_type = 'string'
 
@@ -56,7 +59,7 @@ class ReactBuilder:
                 data_type = infer_field_datatype(field_type, field_name, field)
                 field_def += data_type
                 field_js['data_type'] = data_type
-                field_js['field_type'] = field_type
+                field_js['field_type'] = create_machine_name(field_type, True)
                 field_js['cardinality'] = field['HowMany']
                 field_js['relationship'] = field['Relationship']
                 field_js['default'] = field['Default']
