@@ -1,0 +1,15 @@
+{
+  "name": "object-actions-world-builder",
+  "version": "0.1.0",
+  "main": "src/WorldBuilder.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/WorldBuilder.ts"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2"
+  },
+  "type": "module"
+}
