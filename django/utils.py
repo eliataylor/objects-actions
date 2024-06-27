@@ -21,7 +21,7 @@ def build_json_from_csv(csv_file):
             obj_type = row['TYPES']
             if obj_type is not None and obj_type != '':
                 if row['Relationship'] == 'User Account':
-                    print 'HANDLE THIS TYPE AS INTERNAL USER MODEL!'
+                    logger.info('HANDLE THIS TYPE AS INTERNAL USER MODEL!')
 
                 cur_type = obj_type
 
