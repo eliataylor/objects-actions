@@ -20,6 +20,9 @@ def build_json_from_csv(csv_file):
             # Extract the type from the row
             obj_type = row['TYPES']
             if obj_type is not None and obj_type != '':
+                if row['Relationship'] == 'User Account':
+                    print 'HANDLE THIS TYPE AS INTERNAL USER MODEL!'
+
                 cur_type = obj_type
 
             if row['Field Label'] is None or row['Field Label'] == '':
@@ -133,9 +136,10 @@ def build_choices(field_name, field):
 
 
 def infer_field_datatype(field_type, field_name, field):
-    if field_type == 'user (custom)':
+    if field_type == 'user account':
+        # links to internal user
         return field['Relationship']
-    elif field_type == 'user (cms)':
+    elif field_type == 'user profile':
         return field['Relationship']
     elif field_type == "text":
         return "string"
@@ -188,10 +192,10 @@ def infer_field_datatype(field_type, field_name, field):
 
 def infer_field_type(field_type, field_name, field):
     field_type = field_type.lower()
-    if field_type == 'user (custom)':
+    if field_type == 'user profile':
         model_name = create_object_name(field['Relationship'])
         return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE, related_name='+')"
-    elif field_type == 'user (cms)':
+    elif field_type == 'user profile':
         return "models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='+')"
     elif field_type == "text":
         return "models.CharField(max_length=255)"  # Adjust max_length as needed
