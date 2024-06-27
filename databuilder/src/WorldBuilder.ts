@@ -1,31 +1,36 @@
 #!/usr/bin/env ts-node
 
-import { FieldTypeDefinition, TypeFieldSchema } from "../../templates/reactjs/src/object-actions/types/types";
+import { FieldTypeDefinition, TypeFieldSchema } from "./types";
+// import { FieldTypeDefinition, TypeFieldSchema } from "../../templates/reactjs/src/object-actions/types/types";
 import { fakeFieldData} from "./builder-utils";
 
 
-interface Structure {
+interface WorldCount {
     type: string;
     count: number;
 }
 
-interface ResponseData {
+interface ApiResponse {
     success: boolean;
     data: any;
     started:number;
     ended:number;
+    error?: string;
 }
 
-export class WorldBuilder {
-    private structure: Structure[];
-    private responses: ResponseData[];
+type WorldData = { [key: string]: ApiResponse[] }
 
-    constructor(structure: Structure[]) {
-        this.structure = structure;
-        this.responses = [];
+
+export class WorldBuilder {
+    private worldcounts: WorldCount[];
+    private responses: WorldData;
+
+    constructor(worldcounts: WorldCount[]) {
+        this.worldcounts = worldcounts;
+        this.responses = {};
     }
 
-    private async postData(type: string, data:any): Promise<ResponseData> {
+    private async postData(type: string, data:any): Promise<ApiResponse> {
         const started = new Date().getTime()
         try {
             const response = await fetch(`//${process.env.REACT_APP_API_HOST}/forms/${type}/-1/add`, {
@@ -37,13 +42,13 @@ export class WorldBuilder {
             });
             const result = await response.json();
             return {success: true, data: result, started: started, ended: new Date().getTime()};
-        } catch (error) {
+        } catch (error: Error | any) {
             return {success: false, data: error.response ? error.response.data : error.message, started: started, ended: new Date().getTime()};
         }
     }
 
     public async buildWorld() {
-        for (const item of this.structure) {
+        for (const item of this.worldcounts) {
             for(let i=0; i < item.count; i++) {
                 const fields:FieldTypeDefinition[] = Object.values(TypeFieldSchema[item.type])
                 const entity : any = {}
@@ -57,7 +62,7 @@ export class WorldBuilder {
         }
     }
 
-    public getResponses(): ResponseData[] {
+    public getResponses(): WorldData {
         return this.responses;
     }
 
@@ -65,12 +70,12 @@ export class WorldBuilder {
 }
 
 // Usage example:
-const structure: Structure[] = [
+const worldcounts: WorldCount[] = [
     {type: 'supplier', count: 3},
     {type: 'ingredient', count: 10},
 ];
 
-const builder = new WorldBuilder(structure);
+const builder = new WorldBuilder(worldcounts);
 builder.buildWorld().then(() => {
     console.log(builder.getResponses());
 });

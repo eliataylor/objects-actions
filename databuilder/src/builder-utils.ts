@@ -3,9 +3,9 @@ import {faker} from '@faker-js/faker';
 export function fakeFieldData(field_type: string): any {
   switch (field_type) {
     case 'user account':
-      return 1;
+      return 1; // TODO
     case 'user profile':
-      return 1;
+      return 1; // TODO
     case 'text':
       return faker.lorem.text();
     case 'textarea':
@@ -52,6 +52,7 @@ export function fakeFieldData(field_type: string): any {
       return faker.helpers.arrayElement(['option1', 'option2', 'option3']);
     case 'vocabulary reference':
     case 'type reference':
+       // TODO
       return faker.lorem.word();
     default:
       return faker.lorem.word(); // Default to a random word for unknown types

@@ -2,9 +2,10 @@
   "compilerOptions": {
     "target": "ES6",                 // Target ES6 to use newer JavaScript features
     "module": "commonjs",            // Compile to CommonJS module system
-    "outDir": "./build",              // Output directory for compiled files
+    "outDir": "./dist",              // Output directory for compiled files
     "rootDir": "./src",              // Root directory of the source files
     "strict": true,                  // Enable all strict type-checking options
+    "jsx": "preserve",
     "esModuleInterop": true,         // Enable compatibility with ES6 modules
     "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true, // Ensure consistent file casing
@@ -12,5 +13,5 @@
     "resolveJsonModule": true        // Include JSON modules
   },
   "include": ["src/**/*"],           // Include all files in the src directory
-  "exclude": ["node_modules", "build"] // Exclude node_modules and dist directories
+  "exclude": ["node_modules", "dist"] // Exclude node_modules and dist directories
 }

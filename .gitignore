@@ -1,6 +1,7 @@
 .idea
 examples/**djmote.csv
-databuilder/profilepics
+databuilder/public/profilepics
+databuilder/dist
 private.txt
 templates/reactjs/.env
 .DS_Store
