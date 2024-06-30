@@ -1,9 +1,6 @@
 class __CLASSNAME__(SuperModel):
     class Meta:
         abstract = False
-
-    ###FIELDS_OVERRIDE###
-
-    ###SAVE_OVERRIDE###
-
+###METHODS###
+###FIELDS_OVERRIDE###
 ###ADMIN_OVERRIDE###

@@ -2,8 +2,8 @@ import os
 
 from loguru import logger
 
-from utils import inject_generated_code, create_machine_name, create_object_name, addArgs, infer_field_type, \
-    build_json_from_csv, build_choices, capitalize
+from ModelBuilder import ModelBuilder
+from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv
 
 
 class DjangoBuilder:
@@ -12,7 +12,7 @@ class DjangoBuilder:
 
         self.templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django/'
 
-        self.helpers = {"before": [], "after": []}
+        self.global_function = {"models":[], "serializers": [], "views": [], "urls": []}
         self.imports = {"models": ["from django.db import models",
                                    "from django.contrib.auth.models import User",
                                    "from django.contrib import admin",
@@ -52,132 +52,42 @@ class DjangoBuilder:
 
     def append_import(self, key, val):
         if val not in self.imports[key]:
-            self.imports[key].append(val)
+            if isinstance(val, list):
+                for v in val:
+                    self.imports[key].append(v)
+            else:
+                self.imports[key].append(val)
 
-    def append_helper(self, key, val):
-        if val not in self.helpers[key]:
-            self.helpers[key].append(val)
+    def append_global(self, key, val):
+        if val not in self.global_function[key]:
+            if isinstance(val, list):
+                for v in val:
+                    self.global_function[key].append(v)
+            else:
+                self.global_function[key].append(val)
 
     def build_models(self):
 
         model_file_path = os.path.join(self.output_dir, f'models.py')
         parts = []
+
         with open(self.templates_dir + '/models.py', 'r') as fm:
             parts.append(fm.read())
-        with open(self.templates_dir + '/model.py', 'r') as fm:
-            model_template = fm.read()
 
         for class_name in self.json:
-            model_name = create_object_name(class_name)
-            id_field = False
-            slugified = False
-            code_source = model_template.replace('__CLASSNAME__', model_name)
+            mbuilder = ModelBuilder(class_name)
+            mbuilder.build_fields(self.json[class_name])
 
-            fields_code = ""
-            save_code = []
+            parts.append(mbuilder.to_string())
 
-            for field in self.json[class_name]:
-                field_type = field['Field Type']
-                field_name = field['Field Name']
-                default_value = field['Default'].strip()
+            self.append_global('models', mbuilder.get_functions())
+            self.append_import('models', mbuilder.get_imports())
 
-                if field_name is None or field_name == '':
-                    field_name = create_machine_name(field['Field Label'])
-
-                if field_type == 'id (auto increment)' or field_name == 'id':
-                    id_field = field_name
-                    slugified = default_value
-                    logger.info(f"using explicit id field {field_name}")
-
-                if field_type is None:
-                    field_type = 'text'
-                elif field_type == 'address':
-                    self.append_import("models", "from address.models import AddressField")
-                    if "pip install django-address" not in self.requirements:
-                        self.requirements.append("pip install django-address")
-                elif field_type == 'price':
-                    self.append_import("models", "from djmoney.models.fields import MoneyField")
-                    if "pip install django-money" not in self.requirements:
-                        self.requirements.append("pip install django-money")
-
-                model_type = infer_field_type(field_type, field_name, field)
-
-                if field_type == 'slug':
-                    if default_value == '':
-                        logger.critical("Use the Default column to tell which other field to slugify")
-                    else:
-
-                        self.append_import("models", "from django.utils.text import slugify")
-                        self.append_import("models", "from django.db.models.signals import pre_save")
-                        self.append_import("models", "from django.dispatch import receiver")
-
-                        self.append_helper("after", f"\n@receiver(pre_save, sender={class_name})\n\
-def generate_slug_{model_name.lower()}_{field_name}(sender, instance, **kwargs):\n\
-    if not instance.{field_name}:\n\
-        instance.{field_name} = slugify(instance.{default_value})\n")
-
-                elif field_type == 'id (auto increment)' or field_name == 'id':
-                    logger.info(f"using explicit id field {field_name}")
-                else:
-                    if default_value != '':
-                        if field_type == "integer" or field_type == 'decimal':
-                            model_type = addArgs(model_type, [f"default={field['Default']}"])
-                        else:
-                            model_type = addArgs(model_type, [f"default=\"{field['Default']}\""])
-
-                    if not field['Required']:
-                        if "ManyToManyField" in model_type or "OneToManyField" in model_type:
-                            model_type = addArgs(model_type, ['blank=True'])
-                        else:
-                            model_type = addArgs(model_type, ['blank=True', 'null=True'])
-
-                    if field_type == 'coordinates':
-                        save_code.append(f"""def get_lat_lng(self): 
-        return self.{field_name}['lat'], self.{field_name}['lng']""")
-                        # self.append_import("models", "from django.contrib.gis.db import models as gis_models")
-                    if field_type == 'enum':
-                        capitalized = capitalize(field_name)
-                        fields_code = build_choices(capitalized, field) + '\n' + fields_code
-                        model_type = addArgs(model_type, [f"choices={capitalized}Choices.choices"])
-
-                    elif field_type == 'phone':
-
-                        self.append_import("models", "import re")
-                        self.append_import("models", "from django.core.exceptions import ValidationError")
-
-                        self.append_helper("before", """\ndef validate_phone_number(value):
-                        phone_regex = re.compile(r'^\+?1?\d{9,15}$')
-                        if not phone_regex.match(value):
-                            raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")""")
-
-                fields_code += f"    {field_name} = {model_type}\n"
-
-            if id_field:
-                admin_code = f"\n\nclass {model_name}Admin(admin.ModelAdmin):\n\
-    readonly_fields = ('{id_field}',)"
-                admin_code += f"\n\nadmin.site.register({model_name}, {model_name}Admin)\n"
-            else:
-                admin_code = f"\n\nadmin.site.register({model_name})\n"
-
-            if slugified:
-                save_code.append(f"def save(self, *args, **kwargs):\n        if not self.{id_field}:\n            self.{id_field} = slugify(self.{slugified})\n        super().save(*args, **kwargs)")
-
-            code = code_source.replace('###FIELDS_OVERRIDE###',
-                                       fields_code[4:])  # the [4:] slicing is to remove the first 4 characters,
-            # which are the 4 spaces in the beginning of the string, not to over-indent the first field of the class
-            code = code.replace('###SAVE_OVERRIDE###', "\n".join(save_code))
-            code = code.replace('###ADMIN_OVERRIDE###', admin_code)
-            parts.append(code)
+        if len(self.global_function['models']) > 0:
+            parts.insert(0, "\n\t".join(self.global_function['models']))
 
         inject_generated_code(model_file_path, "\n".join(self.imports['models']), 'MODEL_IMPORTS')
-
-        if len(self.helpers['before']) > 0:
-            inject_generated_code(model_file_path, "\n".join(self.helpers['before']), f'PRE-HELPERS')
-
         inject_generated_code(model_file_path, "\n\n".join(parts), 'MODELS')
-
-        if len(self.helpers['after']) > 0:
-            inject_generated_code(model_file_path, "\n".join(self.helpers['after']), f'POST-HELPERS')
 
         if len(self.requirements) > 0:
             cmds = "\n".join(self.requirements)

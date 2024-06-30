@@ -1,5 +1,5 @@
 import {faker} from '@faker-js/faker';
-import {join} from 'path';
+import {join, resolve} from 'path';
 
 const fs = require('fs');
 
@@ -33,11 +33,11 @@ export function fakeFieldData(field_type: string): any {
         case 'textarea':
             return faker.lorem.paragraph();
         case 'integer':
-            return faker.datatype.number();
+            return faker.number.int();
         case 'price':
             return faker.commerce.price();
         case 'decimal':
-            return faker.datatype.float({min: 0, max: 10000, precision: 0.01});
+            return faker.number.float({min: 0, max: 10000, precision: 0.01});
         case 'date':
             return faker.date.past().toISOString().split('T')[0];
         case 'date_time':
@@ -57,12 +57,12 @@ export function fakeFieldData(field_type: string): any {
         case 'slug':
             return faker.lorem.slug();
         case 'id_auto_increment':
-            return faker.datatype.number({min: 1, max: 10000}); // Simulating auto increment ID
+            return faker.number.float({min: 1, max: 10000}); // Simulating auto increment ID
         case 'boolean':
             return faker.datatype.boolean();
         case 'image':
             const filePath = getRandomFile('./public/profilepics')
-            const fileStream = fs.createReadStream(filePath);
+            const fileStream = fs.createReadStream(resolve(filePath));
             return fileStream;
         case 'video':
             return faker.internet.url(); // Placeholder, could be a specific video URL generator

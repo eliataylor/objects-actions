@@ -3,12 +3,18 @@
 import * as dotenv from 'dotenv';
 import {FieldTypeDefinition, TypeFieldSchema} from "./types";
 // import { FieldTypeDefinition, TypeFieldSchema } from "../../templates/reactjs/src/object-actions/types/types";
+// import {fakeFieldData} from "./builder-utils";
+import AuthService from "./AuthService";
+import axios from 'axios';
 import {fakeFieldData} from "./builder-utils";
 
+// import FormData from 'form-data';
+// import * as FormData from 'form-data';
+
+const FormData = require('form-data');
 const fs = require('fs');
 
 dotenv.config();
-
 
 interface WorldCount {
     type: string;
@@ -29,27 +35,42 @@ type WorldData = { [key: string]: ApiResponse[] }
 export class WorldBuilder {
     private worldcounts: WorldCount[];
     private responses: WorldData;
+    private token: string = '';
 
     constructor(worldcounts: WorldCount[]) {
         this.worldcounts = worldcounts;
         this.responses = {};
     }
 
-    private async postData(type: string, headers: any, data: any): Promise<ApiResponse> {
-        const started = new Date().getTime()
-        // headers['Authorization'] = 'Bearer YOUR_TOKEN_HERE';
-        const apiUrl = `//${process.env.REACT_APP_API_HOST}/${type}/-1/add`
-        try {
-            const response = await fetch(apiUrl, {
-                body: data,
-                method: "POST",
-                headers: headers
+    async init() {
+        const authService = new AuthService();
+        const TOKEN = await authService.authenticate(process.env.REACT_APP_LOGIN_EMAIL || '', process.env.REACT_APP_LOGIN_PASS || '')
+        if (typeof TOKEN === 'string') {
+            this.token = TOKEN;
+            builder.buildWorld().then(() => {
+                console.log(builder.getResponses());
             });
-            const result = await response.json();
-            return {success: true, data: result, started: started, ended: new Date().getTime()};
-        } catch (error: Error | any) {
-            return {success: false, data: error.response ? error.response.data : error.message, started: started, ended: new Date().getTime()};
+        } else {
+            console.error(TOKEN)
         }
+    }
+
+    private async postData(type: string, data: any, headers: any): Promise<ApiResponse> {
+        headers['Authorization'] = `Bearer ${this.token}`;
+        const apiUrl = `${process.env.REACT_APP_API_HOST}/api/${type}/`
+        const resp:ApiResponse = {success: false, data: 'Unknown Error', started: new Date().getTime(), ended:0};
+        try {
+            const response = await axios.post(apiUrl, data, {headers: headers});
+            resp.data = response.data;
+            if (response.status === 200) {
+                resp['success'] = true
+            }
+        } catch (error:any) {
+            // throw new Error((error as AxiosError).message)
+            resp.data = (error as Error).message;
+        }
+        resp.ended = new Date().getTime()
+        return resp;
     }
 
     public async buildWorld() {
@@ -58,13 +79,17 @@ export class WorldBuilder {
                 const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[item.type])
                 let hasImage = false;
                 const entity: any = {};
-                const headers: any = {}
+                const headers: any = {
+                    'accept': 'application/json'
+                }
                 fields.forEach(field => {
-                    if (field.field_type === 'id (auto increment)' || field.field_type === 'slug') {
+                    if (field.field_type === 'id_auto_increment' || field.field_type === 'slug') {
                         console.log(`let server handle ${field.field_type}`)
+                    } else if (field.field_type === 'type_reference' || field.field_type === 'vocabulary_reference') {
+                        console.log("TODO: find from this.responses")
                     } else {
                         entity[field.machine] = fakeFieldData(field.field_type)
-                        if (['image', 'video', 'media'].indexOf(field.machine) > -1) {
+                        if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
                             hasImage = true;
                         }
                     }
@@ -73,15 +98,17 @@ export class WorldBuilder {
                 let formData = null;
                 if (hasImage) {
                     formData = new FormData();
-                    for(let key in entity) {
+                    for (let key in entity) {
                         formData.append(key, entity[key])
                     }
+                    // headers["Content-Type"] = `multipart/form-data`
+                    Object.assign(headers, formData.getHeaders())
                 } else {
                     headers["Content-Type"] = "application/json"
-                    formData = JSON.stringify(entity);
+                    formData = entity;
                 }
 
-                const response = await this.postData(item.type, headers, formData);
+                const response = await this.postData(item.type, formData, headers);
                 if (typeof this.responses[item.type] === 'undefined') this.responses[item.type] = [];
                 this.responses[item.type].push(response);
             }
@@ -100,8 +127,6 @@ const worldcounts: WorldCount[] = [
     {type: 'supplier', count: 3},
     {type: 'ingredient', count: 10},
 ];
-
 const builder = new WorldBuilder(worldcounts);
-builder.buildWorld().then(() => {
-    console.log(builder.getResponses());
-});
+builder.init()
+
