@@ -207,13 +207,19 @@ class ModelBuilder:
         elif field_type == "boolean":
             return "models.BooleanField()"
         elif field_type == "image":
-            target_directory = field.get('Example', "images")
+            target_directory = field.get('Example')
+            if target_directory == '':
+                target_directory = "images"
             return f"models.ImageField(upload_to='{target_directory}')"
         elif field_type == "video":
-            target_directory = field.get('Example', "videos")
+            target_directory = field.get('Example')
+            if target_directory == '':
+                target_directory = "videos"
             return f"models.FileField(upload_to='{target_directory}')"
         elif field_type == "media":
-            target_directory = field.get('Example', "media")
+            target_directory = field.get('Example')
+            if target_directory == '':
+                target_directory = "media"
             return f"models.FileField(upload_to='{target_directory}')"
         elif field_type == "flat list":
             # TODO: implement data validation based on "Example" column

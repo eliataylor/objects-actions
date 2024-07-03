@@ -75,6 +75,10 @@ class DjangoBuilder:
             parts.append(fm.read())
 
         for class_name in self.json:
+            if class_name == 'user':
+                logger.critical("TODO: Build directly to user model")
+                continue
+
             mbuilder = ModelBuilder(class_name)
             mbuilder.build_fields(self.json[class_name])
 

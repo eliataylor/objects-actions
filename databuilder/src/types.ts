@@ -41,70 +41,114 @@ export function parseFormURL(url: string): ParsedURL | null {
 
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
-interface Customer {
-	readonly id?: string | null;
-	user_id?: string | null;
-	phone: string;
-	email: string;
-	billing_name?: string | null;
-	billing_address?: string | null;
-	delivery_address?: string | null;
-}
-interface Supplier {
-	readonly id?: string | null;
-	name: string;
-	photo?: string | null;
-	address?: string | null;
-	website?: string | null;
-}
-interface Ingredient {
-	readonly id?: string | null;
-	title: string;
-	image?: string | null;
-	supplier?: string | null;
-	seasonal?: boolean | null;
-	in_season_price?: number | null;
-	out_of_season_price?: number | null;
-}
-interface Meal {
-	readonly id?: string | null;
-	title: string;
-	description: string;
-	bld: string;
-	photo?: string[] | null;
-	internal_cost?: number | null;
-	public_price?: number | null;
-	ingredients?: string | null;
-	suppliers?: string | null;
-}
-interface Plan {
-	readonly id: string;
-	name: string;
-	description?: string | null;
-	meals: string;
-	price?: number | null;
-	date?: string | null;
-}
-interface OrderItem {
-	readonly id?: string | null;
-	date: string;
-	delivery_date: string;
-	meal?: string | null;
-	meal_menu?: string | null;
-	servings: number;
-}
-interface Order {
-	readonly id?: string | null;
-	customer: string;
-	created_date: string;
-	start_date: string;
-	final_price: number;
-	delivery_instructions?: string | null;
-	customizations: string;
-	glass_containers?: boolean | null;
-	recurring?: boolean | null;
-	order_items: string;
+interface User {
+	phone?: string | null;
+	email?: string | null;
+	profilepicture?: string | null;
+	birthday?: string | null;
+	gender?: string | null;
+	locale?: string | null;
+	lastknownlocation?: string | null;
 	status: string;
+	spotifyaccesstoken?: string | null;
+	spotifyrefreshtoken?: string | null;
+	spotifytokenexpiresat?: string | null;
+	appletokendata?: object | null;
+}
+interface Song {
+	readonly id: string;
+	spotifyid?: string | null;
+	appleid?: string | null;
+	name: string;
+	artist?: string | null;
+	cover?: string | null;
+}
+interface Playlist {
+	readonly id: string;
+	author?: string | null;
+	name: string;
+	bio?: string | null;
+	image?: string | null;
+}
+interface PlaylistSongs {
+	playlist: string;
+	song: string;
+	order: number;
+	likescount?: number | null;
+	author: string;
+	matchscore?: number | null;
+}
+interface EventPlaylists {
+	playlist: string;
+	event: string;
+	order: number;
+}
+interface Venue {
+	readonly id: string;
+	author: string;
+	managers?: string[] | null;
+	name: string;
+	description: string;
+	cover?: string[] | null;
+	boundingbox: string;
+	address?: string | null;
+	privacy: string;
+}
+interface Event {
+	readonly id: string;
+	author: string;
+	cohosts?: string | null;
+	urlalias?: string | null;
+	name: string;
+	starts: string;
+	ends: string;
+	cover?: string[] | null;
+	description: string;
+	venue: string;
+}
+interface Friendship {
+	sender: string;
+	recipient: string;
+	status: string;
+}
+interface Invites {
+	sender: string;
+	recipient: string;
+	event?: string | null;
+	status: string;
+}
+interface ActivityLog {
+	readonly id: string;
+	activity: string;
+	lastnotified: string;
+	author: string;
+	location?: string | null;
+	targetuser?: string | null;
+	targetsong?: string | null;
+	targetplaylist?: string | null;
+	targetevent?: string | null;
+	targetvenue?: string | null;
+}
+interface SongRequests {
+	author: string;
+	song: string;
+	event: string;
+	playlist: string;
+	status: string;
+}
+interface EventCheckins {
+	author: string;
+	venue: string;
+	event: string;
+	coordinate: string;
+	status: string;
+}
+interface Likes {
+	author: string;
+	type: string;
+	song?: string | null;
+	event?: string | null;
+	playlist?: string | null;
 }
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
 
@@ -115,10 +159,10 @@ export interface ListView {
     count: number;
     next: string | null;
     previous: string | null;
-    results: Array<Customer | Supplier | Ingredient | Meal | Plan | OrderItem | Order>
+    results: Array<User | Song | Playlist | PlaylistSongs | EventPlaylists | Venue | Event | Friendship | Invites | ActivityLog | SongRequests | EventCheckins | Likes>
 }
 
-export type EntityView = Customer | Supplier | Ingredient | Meal | Plan | OrderItem | Order;
+export type EntityView = User | Song | Playlist | PlaylistSongs | EventPlaylists | Venue | Event | Friendship | Invites | ActivityLog | SongRequests | EventCheckins | Likes;
 //---OBJECT-ACTIONS-API-RESP-ENDS---//
 
 
@@ -132,46 +176,82 @@ export interface NavItem {
 }
 export const NAVITEMS: NavItem[] = [
   {
-    "name": "Customer",
-    "class": "customer",
-    "api": "/api/customer",
-    "screen": "/customer"
+    "name": "User",
+    "class": "user",
+    "api": "/api/user",
+    "screen": "/user"
   },
   {
-    "name": "Supplier",
-    "class": "supplier",
-    "api": "/api/supplier",
-    "screen": "/supplier"
+    "name": "Song",
+    "class": "song",
+    "api": "/api/song",
+    "screen": "/song"
   },
   {
-    "name": "Ingredient",
-    "class": "ingredient",
-    "api": "/api/ingredient",
-    "screen": "/ingredient"
+    "name": "Playlist",
+    "class": "playlist",
+    "api": "/api/playlist",
+    "screen": "/playlist"
   },
   {
-    "name": "Meal",
-    "class": "meal",
-    "api": "/api/meal",
-    "screen": "/meal"
+    "name": "Playlist Songs",
+    "class": "playlist_songs",
+    "api": "/api/playlist_songs",
+    "screen": "/playlist_songs"
   },
   {
-    "name": "Plan",
-    "class": "plan",
-    "api": "/api/plan",
-    "screen": "/plan"
+    "name": "Event Playlists",
+    "class": "event_playlists",
+    "api": "/api/event_playlists",
+    "screen": "/event_playlists"
   },
   {
-    "name": "Order Item",
-    "class": "order_item",
-    "api": "/api/order_item",
-    "screen": "/order_item"
+    "name": "Venue",
+    "class": "venue",
+    "api": "/api/venue",
+    "screen": "/venue"
   },
   {
-    "name": "Order",
-    "class": "order",
-    "api": "/api/order",
-    "screen": "/order"
+    "name": "Event",
+    "class": "event",
+    "api": "/api/event",
+    "screen": "/event"
+  },
+  {
+    "name": "Friendship",
+    "class": "friendship",
+    "api": "/api/friendship",
+    "screen": "/friendship"
+  },
+  {
+    "name": "Invites",
+    "class": "invites",
+    "api": "/api/invites",
+    "screen": "/invites"
+  },
+  {
+    "name": "Activity Log",
+    "class": "activity_log",
+    "api": "/api/activity_log",
+    "screen": "/activity_log"
+  },
+  {
+    "name": "Song Requests",
+    "class": "song_requests",
+    "api": "/api/song_requests",
+    "screen": "/song_requests"
+  },
+  {
+    "name": "Event Checkins",
+    "class": "event_checkins",
+    "api": "/api/event_checkins",
+    "screen": "/event_checkins"
+  },
+  {
+    "name": "Likes",
+    "class": "likes",
+    "api": "/api/likes",
+    "screen": "/likes"
   }
 ]
 //---OBJECT-ACTIONS-NAV-ITEMS-ENDS---//
@@ -206,29 +286,7 @@ interface ObjectOfObjects {
     [key: string]: { [key: string]: FieldTypeDefinition };
 }
 export const TypeFieldSchema: ObjectOfObjects = {
-  "customer": {
-    "id": {
-      "machine": "id",
-      "label": "ID",
-      "data_type": "string",
-      "field_type": "id_auto_increment",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "user_id": {
-      "machine": "user_id",
-      "label": "User ID",
-      "data_type": "string",
-      "field_type": "user_account",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
+  "user": {
     "phone": {
       "machine": "phone",
       "label": "Phone",
@@ -237,7 +295,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "cardinality": 1,
       "relationship": "",
       "default": "",
-      "required": true,
+      "required": false,
       "example": ""
     },
     "email": {
@@ -248,12 +306,45 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "cardinality": 1,
       "relationship": "",
       "default": "",
-      "required": true,
+      "required": false,
       "example": ""
     },
-    "billing_name": {
-      "machine": "billing_name",
-      "label": "Billing Name",
+    "profilepicture": {
+      "machine": "profilepicture",
+      "label": "Profile Picture",
+      "data_type": "string",
+      "field_type": "image",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "birthday": {
+      "machine": "birthday",
+      "label": "Birthday",
+      "data_type": "string",
+      "field_type": "date",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "gender": {
+      "machine": "gender",
+      "label": "Gender",
+      "data_type": "string",
+      "field_type": "enum",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": "[\"male\", \"female\", \"other\"]"
+    },
+    "locale": {
+      "machine": "locale",
+      "label": "Locale",
       "data_type": "string",
       "field_type": "text",
       "cardinality": 1,
@@ -262,38 +353,104 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "billing_address": {
-      "machine": "billing_address",
-      "label": "Billing Address",
+    "lastknownlocation": {
+      "machine": "lastknownlocation",
+      "label": "Last Known Location",
       "data_type": "string",
-      "field_type": "address",
-      "cardinality": Infinity,
+      "field_type": "coordinates",
+      "cardinality": 1,
       "relationship": "",
       "default": "",
       "required": false,
       "example": ""
     },
-    "delivery_address": {
-      "machine": "delivery_address",
-      "label": "Delivery Address",
+    "status": {
+      "machine": "status",
+      "label": "Status",
       "data_type": "string",
-      "field_type": "address",
-      "cardinality": Infinity,
+      "field_type": "enum",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "pending",
+      "required": true,
+      "example": "[\"invited\", \"pending\", \"verified\", \"deleted\", \"locked\"]"
+    },
+    "spotifyaccesstoken": {
+      "machine": "spotifyaccesstoken",
+      "label": "Spotify Token",
+      "data_type": "string",
+      "field_type": "text",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "spotifyrefreshtoken": {
+      "machine": "spotifyrefreshtoken",
+      "label": "Spotify Refresh Token",
+      "data_type": "string",
+      "field_type": "text",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "spotifytokenexpiresat": {
+      "machine": "spotifytokenexpiresat",
+      "label": "Spotify Expiry",
+      "data_type": "string",
+      "field_type": "date_time",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "appletokendata": {
+      "machine": "appletokendata",
+      "label": "Apple Tokens",
+      "data_type": "object",
+      "field_type": "json",
+      "cardinality": 1,
       "relationship": "",
       "default": "",
       "required": false,
       "example": ""
     }
   },
-  "supplier": {
+  "song": {
     "id": {
       "machine": "id",
       "label": "ID",
       "data_type": "string",
-      "field_type": "slug",
+      "field_type": "id_auto_increment",
       "cardinality": 1,
       "relationship": "",
-      "default": "name",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "spotifyid": {
+      "machine": "spotifyid",
+      "label": "Spotify ID",
+      "data_type": "string",
+      "field_type": "text",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "appleid": {
+      "machine": "appleid",
+      "label": "Apple ID",
+      "data_type": "string",
+      "field_type": "text",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
       "required": false,
       "example": ""
     },
@@ -308,16 +465,266 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": true,
       "example": ""
     },
-    "photo": {
-      "machine": "photo",
-      "label": "Photo",
+    "artist": {
+      "machine": "artist",
+      "label": "Artist",
+      "data_type": "string",
+      "field_type": "text",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "cover": {
+      "machine": "cover",
+      "label": "Cover",
       "data_type": "string",
       "field_type": "image",
       "cardinality": 1,
       "relationship": "",
       "default": "",
       "required": false,
-      "example": "media/suppliers"
+      "example": ""
+    }
+  },
+  "playlist": {
+    "id": {
+      "machine": "id",
+      "label": "ID",
+      "data_type": "string",
+      "field_type": "id_auto_increment",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "author": {
+      "machine": "author",
+      "label": "DJ",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "name": {
+      "machine": "name",
+      "label": "Name",
+      "data_type": "string",
+      "field_type": "text",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "bio": {
+      "machine": "bio",
+      "label": "Bio",
+      "data_type": "string",
+      "field_type": "text",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "image": {
+      "machine": "image",
+      "label": "Image",
+      "data_type": "string",
+      "field_type": "image",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "playlist_songs": {
+    "playlist": {
+      "machine": "playlist",
+      "label": "Playlist",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Playlist",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "song": {
+      "machine": "song",
+      "label": "Song",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Song",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "order": {
+      "machine": "order",
+      "label": "Order",
+      "data_type": "number",
+      "field_type": "integer",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "likescount": {
+      "machine": "likescount",
+      "label": "Likes",
+      "data_type": "number",
+      "field_type": "integer",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "0",
+      "required": false,
+      "example": ""
+    },
+    "author": {
+      "machine": "author",
+      "label": "Added By",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "matchscore": {
+      "machine": "matchscore",
+      "label": "Match Score",
+      "data_type": "number",
+      "field_type": "integer",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "event_playlists": {
+    "playlist": {
+      "machine": "playlist",
+      "label": "Playlist",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Playlist",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "event": {
+      "machine": "event",
+      "label": "Event",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Event",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "order": {
+      "machine": "order",
+      "label": "Order",
+      "data_type": "number",
+      "field_type": "integer",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    }
+  },
+  "venue": {
+    "id": {
+      "machine": "id",
+      "label": "ID",
+      "data_type": "string",
+      "field_type": "slug",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "name",
+      "required": true,
+      "example": ""
+    },
+    "author": {
+      "machine": "author",
+      "label": "Owner",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "managers": {
+      "machine": "managers",
+      "label": "Managers",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 3,
+      "relationship": "User Profile",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "name": {
+      "machine": "name",
+      "label": "Name",
+      "data_type": "string",
+      "field_type": "text",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "description": {
+      "machine": "description",
+      "label": "Description",
+      "data_type": "string",
+      "field_type": "textarea",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "cover": {
+      "machine": "cover",
+      "label": "Cover",
+      "data_type": "string",
+      "field_type": "image",
+      "cardinality": 10,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "boundingbox": {
+      "machine": "boundingbox",
+      "label": "Bounding Box",
+      "data_type": "string",
+      "field_type": "boundingbox",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
     },
     "address": {
       "machine": "address",
@@ -330,208 +737,61 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "website": {
-      "machine": "website",
-      "label": "Website",
-      "data_type": "string",
-      "field_type": "url",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "ingredient": {
-    "id": {
-      "machine": "id",
-      "label": "ID",
-      "data_type": "string",
-      "field_type": "slug",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "title",
-      "required": false,
-      "example": ""
-    },
-    "title": {
-      "machine": "title",
-      "label": "Title",
-      "data_type": "string",
-      "field_type": "text",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "image": {
-      "machine": "image",
-      "label": "Image",
-      "data_type": "string",
-      "field_type": "image",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": "media/ingredients"
-    },
-    "supplier": {
-      "machine": "supplier",
-      "label": "Supplier",
-      "data_type": "string",
-      "field_type": "type_reference",
-      "cardinality": 1,
-      "relationship": "Supplier",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "seasonal": {
-      "machine": "seasonal",
-      "label": "Seasonal",
-      "data_type": "boolean",
-      "field_type": "boolean",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "in_season_price": {
-      "machine": "in_season_price",
-      "label": "In season Price",
-      "data_type": "number",
-      "field_type": "decimal",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "out_of_season_price": {
-      "machine": "out_of_season_price",
-      "label": "Out of season price",
-      "data_type": "number",
-      "field_type": "decimal",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "meal": {
-    "id": {
-      "machine": "id",
-      "label": "ID",
-      "data_type": "string",
-      "field_type": "slug",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "title",
-      "required": false,
-      "example": ""
-    },
-    "title": {
-      "machine": "title",
-      "label": "Title",
-      "data_type": "string",
-      "field_type": "text",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "description": {
-      "machine": "description",
-      "label": "Description",
-      "data_type": "string",
-      "field_type": "text",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "bld": {
-      "machine": "bld",
-      "label": "BLD",
+    "privacy": {
+      "machine": "privacy",
+      "label": "Privacy",
       "data_type": "string",
       "field_type": "enum",
       "cardinality": 1,
       "relationship": "",
-      "default": "",
+      "default": "unlisted",
       "required": true,
-      "example": "['breakfast', 'lunch', 'dinner', 'desert', 'snack']"
-    },
-    "photo": {
-      "machine": "photo",
-      "label": "Photo",
-      "data_type": "string",
-      "field_type": "media",
-      "cardinality": 3,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": "media/calendar"
-    },
-    "internal_cost": {
-      "machine": "internal_cost",
-      "label": "Internal Cost",
-      "data_type": "number",
-      "field_type": "decimal",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "public_price": {
-      "machine": "public_price",
-      "label": "Public Price",
-      "data_type": "number",
-      "field_type": "decimal",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "16",
-      "required": false,
-      "example": ""
-    },
-    "ingredients": {
-      "machine": "ingredients",
-      "label": "Ingredients",
-      "data_type": "string",
-      "field_type": "type_reference",
-      "cardinality": Infinity,
-      "relationship": "Ingredient",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "suppliers": {
-      "machine": "suppliers",
-      "label": "Suppliers",
-      "data_type": "string",
-      "field_type": "type_reference",
-      "cardinality": Infinity,
-      "relationship": "Supplier",
-      "default": "",
-      "required": false,
-      "example": ""
+      "example": "['public', 'unlisted', 'invite-only']"
     }
   },
-  "plan": {
+  "event": {
     "id": {
       "machine": "id",
       "label": "ID",
+      "data_type": "string",
+      "field_type": "id_auto_increment",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "author": {
+      "machine": "author",
+      "label": "Host",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "cohosts": {
+      "machine": "cohosts",
+      "label": "Co-Hosts",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": Infinity,
+      "relationship": "User Profile",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "urlalias": {
+      "machine": "urlalias",
+      "label": "URL Alias",
       "data_type": "string",
       "field_type": "slug",
       "cardinality": 1,
       "relationship": "",
       "default": "name",
-      "required": true,
+      "required": false,
       "example": ""
     },
     "name": {
@@ -545,6 +805,39 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": true,
       "example": ""
     },
+    "starts": {
+      "machine": "starts",
+      "label": "Starts",
+      "data_type": "string",
+      "field_type": "date_time",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "ends": {
+      "machine": "ends",
+      "label": "Ends",
+      "data_type": "string",
+      "field_type": "date_time",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "cover": {
+      "machine": "cover",
+      "label": "Cover",
+      "data_type": "string",
+      "field_type": "image",
+      "cardinality": 10,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
     "description": {
       "machine": "description",
       "label": "Description",
@@ -553,218 +846,40 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "cardinality": 1,
       "relationship": "",
       "default": "",
-      "required": false,
-      "example": ""
-    },
-    "meals": {
-      "machine": "meals",
-      "label": "Meals",
-      "data_type": "string",
-      "field_type": "type_reference",
-      "cardinality": Infinity,
-      "relationship": "Meal",
-      "default": "",
       "required": true,
       "example": ""
     },
-    "price": {
-      "machine": "price",
-      "label": "Price",
-      "data_type": "number",
-      "field_type": "price",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": "USD"
-    },
-    "date": {
-      "machine": "date",
-      "label": "Date",
-      "data_type": "string",
-      "field_type": "date",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "order_item": {
-    "id": {
-      "machine": "id",
-      "label": "ID",
-      "data_type": "string",
-      "field_type": "id_auto_increment",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "date": {
-      "machine": "date",
-      "label": "Date",
-      "data_type": "string",
-      "field_type": "date",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "delivery_date": {
-      "machine": "delivery_date",
-      "label": "Delivery Date",
-      "data_type": "string",
-      "field_type": "date",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "meal": {
-      "machine": "meal",
-      "label": "Meal",
+    "venue": {
+      "machine": "venue",
+      "label": "Venue",
       "data_type": "string",
       "field_type": "type_reference",
       "cardinality": 1,
-      "relationship": "Meal",
+      "relationship": "Venue",
       "default": "",
-      "required": false,
-      "example": ""
-    },
-    "meal_menu": {
-      "machine": "meal_menu",
-      "label": "Meal Menu",
-      "data_type": "string",
-      "field_type": "type_reference",
-      "cardinality": 1,
-      "relationship": "Plan",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "servings": {
-      "machine": "servings",
-      "label": "Servings",
-      "data_type": "number",
-      "field_type": "integer",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "1",
       "required": true,
       "example": ""
     }
   },
-  "order": {
-    "id": {
-      "machine": "id",
-      "label": "ID",
+  "friendship": {
+    "sender": {
+      "machine": "sender",
+      "label": "Sender",
       "data_type": "string",
-      "field_type": "id_auto_increment",
+      "field_type": "user_profile",
       "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "customer": {
-      "machine": "customer",
-      "label": "Customer",
-      "data_type": "string",
-      "field_type": "user_account",
-      "cardinality": 1,
-      "relationship": "Customer",
+      "relationship": "User Profile",
       "default": "",
       "required": true,
       "example": ""
     },
-    "created_date": {
-      "machine": "created_date",
-      "label": "Created Date",
+    "recipient": {
+      "machine": "recipient",
+      "label": "Recipient",
       "data_type": "string",
-      "field_type": "date",
+      "field_type": "user_profile",
       "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "start_date": {
-      "machine": "start_date",
-      "label": "Start Date",
-      "data_type": "string",
-      "field_type": "date",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "final_price": {
-      "machine": "final_price",
-      "label": "Final Price",
-      "data_type": "number",
-      "field_type": "decimal",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "delivery_instructions": {
-      "machine": "delivery_instructions",
-      "label": "Delivery Instructions",
-      "data_type": "string",
-      "field_type": "textarea",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "customizations": {
-      "machine": "customizations",
-      "label": "Customizations",
-      "data_type": "string",
-      "field_type": "textarea",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "glass_containers": {
-      "machine": "glass_containers",
-      "label": "Glass Containers",
-      "data_type": "boolean",
-      "field_type": "boolean",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "0",
-      "required": false,
-      "example": ""
-    },
-    "recurring": {
-      "machine": "recurring",
-      "label": "Recurring",
-      "data_type": "boolean",
-      "field_type": "boolean",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "0",
-      "required": false,
-      "example": ""
-    },
-    "order_items": {
-      "machine": "order_items",
-      "label": "Order Items",
-      "data_type": "string",
-      "field_type": "type_reference",
-      "cardinality": Infinity,
-      "relationship": "Order Item",
+      "relationship": "User Profile",
       "default": "",
       "required": true,
       "example": ""
@@ -776,13 +891,354 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "enum",
       "cardinality": 1,
       "relationship": "",
-      "default": "unpaid",
+      "default": "pending",
       "required": true,
-      "example": "['paid', 'cancelled', 'unpaid']"
+      "example": "['pending', 'accepted', 'declined', 'withdrawn']"
+    }
+  },
+  "invites": {
+    "sender": {
+      "machine": "sender",
+      "label": "Sender",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "recipient": {
+      "machine": "recipient",
+      "label": "Recipient",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "event": {
+      "machine": "event",
+      "label": "Event",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Event",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "status": {
+      "machine": "status",
+      "label": "Status",
+      "data_type": "string",
+      "field_type": "enum",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "invited",
+      "required": true,
+      "example": "['invited', 'accepted', 'declined', 'withdrawn']"
+    }
+  },
+  "activity_log": {
+    "id": {
+      "machine": "id",
+      "label": "ID",
+      "data_type": "string",
+      "field_type": "id_auto_increment",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "activity": {
+      "machine": "activity",
+      "label": "Activity",
+      "data_type": "string",
+      "field_type": "enum",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": "[\"request-song\", \"like-song-request\", \"checkin\", \"leave\"]"
+    },
+    "lastnotified": {
+      "machine": "lastnotified",
+      "label": "Last Notified",
+      "data_type": "string",
+      "field_type": "date_time",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "author": {
+      "machine": "author",
+      "label": "User",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "location": {
+      "machine": "location",
+      "label": "Location",
+      "data_type": "string",
+      "field_type": "coordinates",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "targetuser": {
+      "machine": "targetuser",
+      "label": "Target User",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "targetsong": {
+      "machine": "targetsong",
+      "label": "Target Song",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Song",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "targetplaylist": {
+      "machine": "targetplaylist",
+      "label": "Target Playlist",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Playlist",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "targetevent": {
+      "machine": "targetevent",
+      "label": "Target Event",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Event",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "targetvenue": {
+      "machine": "targetvenue",
+      "label": "Target Venue",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Venue",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "song_requests": {
+    "author": {
+      "machine": "author",
+      "label": "Requester",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "song": {
+      "machine": "song",
+      "label": "Song",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Song",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "event": {
+      "machine": "event",
+      "label": "Event",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Event",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "playlist": {
+      "machine": "playlist",
+      "label": "Playlist",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Playlist Songs",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "status": {
+      "machine": "status",
+      "label": "Status",
+      "data_type": "string",
+      "field_type": "enum",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "requested",
+      "required": true,
+      "example": "['requested', 'accepted', 'declined', 'withdrawn']"
+    }
+  },
+  "event_checkins": {
+    "author": {
+      "machine": "author",
+      "label": "User",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "venue": {
+      "machine": "venue",
+      "label": "Venue",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Venue",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "event": {
+      "machine": "event",
+      "label": "Event",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Event",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "coordinate": {
+      "machine": "coordinate",
+      "label": "Coordinate",
+      "data_type": "string",
+      "field_type": "coordinates",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "status": {
+      "machine": "status",
+      "label": "Status",
+      "data_type": "string",
+      "field_type": "enum",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "entered",
+      "required": true,
+      "example": "['entered', 'left']"
+    }
+  },
+  "likes": {
+    "author": {
+      "machine": "author",
+      "label": "Requester",
+      "data_type": "string",
+      "field_type": "user_profile",
+      "cardinality": 1,
+      "relationship": "User Profile",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "type": {
+      "machine": "type",
+      "label": "Type",
+      "data_type": "string",
+      "field_type": "enum",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": "[\"song\", \"event\", \"playlist\", \"request\"]"
+    },
+    "song": {
+      "machine": "song",
+      "label": "Song",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Song",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "event": {
+      "machine": "event",
+      "label": "Event",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Event",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "playlist": {
+      "machine": "playlist",
+      "label": "Playlist",
+      "data_type": "string",
+      "field_type": "type_reference",
+      "cardinality": 1,
+      "relationship": "Playlist Songs",
+      "default": "",
+      "required": false,
+      "example": ""
     }
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -19,10 +19,11 @@ def build_json_from_csv(csv_file):
             # Extract the type from the row
             obj_type = row['TYPES']
             if obj_type is not None and obj_type != '':
-                if row['Relationship'] == 'User Account':
-                    logger.info('HANDLE THIS TYPE AS INTERNAL USER MODEL!')
-
-                cur_type = obj_type
+                if row['Field Name'] == 'user':
+                    logger.info(f'making {obj_type} the internal auth user model')
+                    cur_type = 'User'
+                else:
+                    cur_type = obj_type
 
             if row['Field Label'] is None or row['Field Label'] == '':
                 continue

@@ -22,15 +22,24 @@ function getRandomFile(directoryPath: string): string {
     return join(directoryPath, randomFile);
 }
 
-export function fakeFieldData(field_type: string): any {
+export function fakeFieldData(field_type: string, field_name: string): any {
     switch (field_type) {
         case 'user_account':
             return 1; // TODO
         case 'user_profile':
             return 1; // TODO
         case 'text':
+            if (field_name === 'name') {
+                return faker.person.fullName()
+            }
+            if (field_name === 'artist') {
+                return faker.person.middleName()
+            }
             return faker.lorem.text();
         case 'textarea':
+            if (field_name === 'bio') {
+                return faker.person.bio()
+            }
             return faker.lorem.paragraph();
         case 'integer':
             return faker.number.int();
