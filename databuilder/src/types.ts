@@ -85,7 +85,7 @@ interface EventPlaylists {
 	order: number;
 }
 interface Venue {
-	readonly id: string;
+	slug: string;
 	author: string;
 	managers?: string[] | null;
 	name: string;
@@ -99,7 +99,7 @@ interface Event {
 	readonly id: string;
 	author: string;
 	cohosts?: string | null;
-	url_alias?: string | null;
+	slug?: string | null;
 	name: string;
 	starts: string;
 	ends: string;
@@ -698,9 +698,9 @@ export const TypeFieldSchema: ObjectOfObjects = {
     }
   },
   "venue": {
-    "id": {
-      "machine": "id",
-      "label": "ID",
+    "slug": {
+      "machine": "slug",
+      "label": "URL Alias",
       "data_type": "string",
       "field_type": "slug",
       "cardinality": 1,
@@ -846,8 +846,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "url_alias": {
-      "machine": "url_alias",
+    "slug": {
+      "machine": "slug",
       "label": "URL Alias",
       "data_type": "string",
       "field_type": "slug",
@@ -1390,6 +1390,18 @@ export const TypeFieldSchema: ObjectOfObjects = {
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -35,7 +35,7 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
             if (field_name === 'artist') {
                 return faker.person.middleName()
             }
-            return faker.lorem.text();
+            return faker.lorem.sentence({min:1, max:6});
         case 'textarea':
             if (field_name === 'bio') {
                 return faker.person.bio()
@@ -48,9 +48,14 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
         case 'decimal':
             return faker.number.float({min: 0, max: 10000, precision: 0.01});
         case 'date':
-            return faker.date.past().toISOString().split('T')[0];
         case 'date_time':
-            return faker.date.past().toISOString();
+            const start_date = faker.date.recent({days:5});
+            const max_date = faker.date.soon({days:20, refDate: start_date})
+            const end_date = faker.date.between({from:start_date, to: max_date});
+            if (field_type == 'date') {
+                return end_date.toISOString().split('T')[0];
+            }
+            return end_date.toISOString()
         case 'coordinates':
             return `${faker.location.latitude()}, ${faker.location.longitude()}`;
         case 'email':

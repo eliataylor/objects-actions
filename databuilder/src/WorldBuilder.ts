@@ -32,7 +32,7 @@ export class WorldBuilder {
     async init() {
         const loginResponse = await this.apiClient.login(process.env.REACT_APP_LOGIN_EMAIL || '', process.env.REACT_APP_LOGIN_PASS || '')
         if (loginResponse.success) {
-            console.log('Login successful:', loginResponse.data);
+            console.log('Login successful, token: ', loginResponse.data.access_token);
             builder.buildWorld().then(() => {
                 const allData = builder.getResponses()
                 for (let type in allData) {
@@ -70,7 +70,6 @@ export class WorldBuilder {
                         } else {
                             console.warn(`relationship ${relType} has no data yet`)
                         }
-
                     } else {
                         entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options)
                         if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
@@ -93,7 +92,7 @@ export class WorldBuilder {
                 }
 
                 const apiUrl = `${process.env.REACT_APP_API_HOST}/api/${item.type}/`
-                const response =await this.apiClient.post(apiUrl, formData, headers);
+                const response = await this.apiClient.post(apiUrl, formData, headers);
                 if (typeof this.responses[item.type] === 'undefined') this.responses[item.type] = [];
                 this.responses[item.type].push(response);
             }
@@ -104,17 +103,14 @@ export class WorldBuilder {
         return this.responses;
     }
 
-
 }
-
-// Usage example:
 
 const worldcounts: WorldCount[] = [
 //    {type: 'user', count: 1},
-//    {type: 'song', count: 1},
+    // {type: 'song', count: 10},
     {type: 'venue', count: 1},
+    {type: 'event', count: 3},
 ];
 
 const builder = new WorldBuilder(worldcounts);
 builder.init()
-

@@ -29,12 +29,12 @@ class ApiClient {
     }
 
     public async login(email: string, password: string): Promise<HttpResponse<any>> {
-        const HttpResponse: HttpResponse<any> = {
+        const resp: HttpResponse<any> = {
             success: false,
             data: null,
             error: undefined,
             started: new Date().getTime(),
-            ended: 0,
+            ended: 0
         };
 
         const url = `${process.env.REACT_APP_API_HOST}/auth/login/`
@@ -43,9 +43,9 @@ class ApiClient {
                 email,
                 password,
             });
-            HttpResponse.ended = new Date().getTime();
-            HttpResponse.data = response.data;
-            HttpResponse.success = true;
+            resp.ended = new Date().getTime();
+            resp.data = response.data;
+            resp.success = true;
 
             const setCookieHeader = response.headers['set-cookie'];
             if (setCookieHeader) {
@@ -53,19 +53,19 @@ class ApiClient {
             }
 
         } catch (error: any) {
-            HttpResponse.ended = new Date().getTime();
-            HttpResponse.data = error.response?.data?.detail
-            if (!HttpResponse.data) {
-                HttpResponse.data = (error as Error).message;
+            resp.ended = new Date().getTime();
+            resp.data = error.response?.data
+            if (!resp.data) {
+                resp.data = (error as Error).message;
             }
             console.error('Login failed:', error.message);
         }
 
-        return HttpResponse;
+        return resp;
     }
 
     public async post<T>(url: string, data: any, headers: any = {}): Promise<HttpResponse<T>> {
-        const HttpResponse: HttpResponse<any> = {
+        const resp: HttpResponse<any> = {
             success: false,
             data: null,
             error: undefined,
@@ -80,23 +80,23 @@ class ApiClient {
             const response = await this.client.post<T>(url, data, {
                 headers: mergedHeaders,
             });
-            HttpResponse.ended = new Date().getTime();
-            HttpResponse.data = response.data;
-            HttpResponse.success = true;
+            resp.ended = new Date().getTime();
+            resp.data = response.data;
+            resp.success = true;
         } catch (error: any) {
-            HttpResponse.data = error.response?.data?.detail
-            if (!HttpResponse.data) {
-                HttpResponse.data = (error as Error).message;
+            resp.data = error.response?.data
+            if (!resp.data) {
+                resp.data = (error as Error).message;
             }
-            HttpResponse.ended = new Date().getTime();
+            resp.ended = new Date().getTime();
             console.error('Post failed:', error.message);
         }
 
-        return HttpResponse;
+        return resp;
     }
 
     public async get<T>(url: string): Promise<HttpResponse<T>> {
-        const HttpResponse: HttpResponse<any> = {
+        const resp: HttpResponse<any> = {
             success: false,
             data: null,
             error: undefined,
@@ -107,19 +107,19 @@ class ApiClient {
         try {
             const headers = await this.getCookieHeaders(url);
             const response = await this.client.get<T>(url, {headers});
-            HttpResponse.ended = new Date().getTime();
-            HttpResponse.data = response.data;
-            HttpResponse.success = true;
+            resp.ended = new Date().getTime();
+            resp.data = response.data;
+            resp.success = true;
         } catch (error: any) {
-            HttpResponse.data = error.response?.data?.detail
-            if (!HttpResponse.data) {
-                HttpResponse.data = (error as Error).message;
+            resp.data = error.response?.data
+            if (!resp.data) {
+                resp.data = (error as Error).message;
             }
-            HttpResponse.ended = new Date().getTime();
+            resp.ended = new Date().getTime();
             console.error('Post failed:', error.message);
         }
 
-        return HttpResponse;
+        return resp;
     }
 
     private async getMergedHeaders(url: string, headers: any): Promise<any> {

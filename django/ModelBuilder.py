@@ -90,7 +90,7 @@ class ModelBuilder:
             list = ast.literal_eval(list)
             code = f"\n\tclass {field_name}Choices(models.TextChoices):"
             for name in list:
-                code += f'\n\t\t{create_machine_name(name, True)} = ("{capitalize(name)}", "{create_machine_name(name, True)}")'
+                code += f'\n\t\t{create_machine_name(name, True)} = ("{create_machine_name(name, True)}", "{capitalize(name)}")'
         except Exception as e:
             logger.warning(
                 f"{field['Field Label']} has invalid structure of choices: {field['Example'].strip()}  \nPlease list them as a flat json array. {str(e)}")
@@ -119,9 +119,9 @@ class ModelBuilder:
             return "models.AutoField(primary_key=True)"
         elif field_type == 'user_profile':
             model_name = create_object_name(field['Relationship'])
-            return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE, related_name='+')"
+            return f"models.ForeignKey('{model_name}', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')"
         elif field_type == 'user_account':
-            return "models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='+')"
+            return "models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True, related_name='+')"
         elif field_type == "text":
             return "models.CharField(max_length=255)"  # Adjust max_length as needed
         elif field_type == "textarea":
@@ -137,11 +137,11 @@ class ModelBuilder:
         elif field_type == "decimal":
             return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
         elif field_type == "date":
-            # TODO: implement data validation / format handlers onsave
+            # TODO: auto_now=True ?
             return "models.DateField()"
         elif field_type == "date_time":
-            # TODO: implement data validation / format handlers onsave
-            return "models.DateField()"
+            # TODO: auto_now=True ?
+            return "models.DateTimeField()"
         elif field_type == 'bounding_box':
             # TODO: implement data validation / format handlers onsave
             return f"models.JSONField()"
@@ -238,14 +238,12 @@ class ModelBuilder:
             # TODO: when is `related_name` needed?
             model_name = create_object_name(field['Relationship'])
             if field['HowMany'] == 1:
-                return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"
+                return f"models.ForeignKey('{model_name}', related_name='{create_machine_name(field['Field Label'])}', on_delete=models.SET_NULL)"
+                # return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"
             elif field['HowMany'] > 1:
-                # return f"models.ManyToManyField('{model_name}', on_delete=models.CASCADE)"
-                return f"models.ManyToManyField('{model_name}')"
+                return f"models.ForeignKey('{model_name}', related_name='{create_machine_name(field['Field Label'])}', on_delete=models.SET_NULL)"
             else:
-                # maybe add convention to apply reverse reference >
-                return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE, related_name='{create_machine_name(field['Field Label'])}')"
-                # return f"models.ForeignKey('{model_name}', on_delete=models.CASCADE)"
+                return f"models.ForeignKey('{model_name}', related_name='{create_machine_name(field['Field Label'])}', on_delete=models.SET_NULL)"
         else:
             logger.warning(f"UNSUPPORTED FILE TYPE {field_type}")
             return "models.TextField()"
