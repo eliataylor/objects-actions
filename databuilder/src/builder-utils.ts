@@ -22,7 +22,7 @@ function getRandomFile(directoryPath: string): string {
     return join(directoryPath, randomFile);
 }
 
-export function fakeFieldData(field_type: string, field_name: string): any {
+export function fakeFieldData(field_type: string, field_name: string, options:any): any {
     switch (field_type) {
         case 'user_account':
             return 1; // TODO
@@ -79,14 +79,17 @@ export function fakeFieldData(field_type: string, field_name: string): any {
             return faker.internet.url(); // Placeholder, could be more specific
         case 'flat_list':
             return Array.from({length: 5}, () => faker.lorem.word()); // Example of a flat list
+        case 'bounding_box':
+            return `[${faker.location.latitude()},${faker.location.longitude()},${faker.location.latitude()},${faker.location.longitude()}]`;
         case 'json':
             return faker.helpers.fake('{{name.firstName}} {{name.lastName}}, {{address.city}}');
         case 'enum':
-            return faker.helpers.arrayElement(['option1', 'option2', 'option3']);
+            const opt:any = faker.helpers.arrayElement(options);
+            return opt.id
         case 'vocabulary_reference':
         case 'type_reference':
-            // TODO
-            return faker.lorem.word();
+            console.warn('This should be handled in WorldBuilder')
+            return faker.number.bigInt();
         default:
             return faker.lorem.word(); // Default to a random word for unknown types
     }

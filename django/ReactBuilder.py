@@ -2,6 +2,7 @@ import json
 import os
 from utils import inject_generated_code, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize
 from loguru import logger
+import ast
 
 
 class ReactBuilder:
@@ -61,10 +62,25 @@ class ReactBuilder:
                 field_js['data_type'] = data_type
                 field_js['field_type'] = create_machine_name(field_type, True)
                 field_js['cardinality'] = field['HowMany']
-                field_js['relationship'] = field['Relationship']
+                field_js['relationship'] = create_machine_name(field['Relationship'], True)
                 field_js['default'] = field['Default']
                 field_js['required'] = True if field['Required'] else False
-                field_js['example'] = field['Example']
+                field_js['example'] = field['Example'].strip()
+
+                if field_type == 'enum':
+                    list = field_js['example']
+                    if list == '':
+                        logger.warning(
+                            f"Field {field['Field Label']} has no list of structure of choices. Please list them as a flat json array.")
+                    try:
+                        list = ast.literal_eval(list)
+                        field_js['options'] = []
+                        for name in list:
+                            field_js['options'].append({"label":capitalize(name), "id": create_machine_name(name, True)})
+                    except Exception as e:
+                        logger.warning(
+                            f"{field['Field Label']} has invalid structure of choices: {field_js['example']}  \nPlease list them as a flat json array. {str(e)}")
+
                 constant[field_name] = field_js
 
                 if field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
@@ -74,6 +90,7 @@ class ReactBuilder:
                     field_def += ' | null;'
                 else:
                     field_def += ';'
+
 
                 code.append(field_def)
 
@@ -113,6 +130,7 @@ export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"""
     required?: boolean;
     default?: string;
     example?: string;
+    options?: object;
 }}
 interface ObjectOfObjects {{
     [key: string]: {{ [key: string]: FieldTypeDefinition }};

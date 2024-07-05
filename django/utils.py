@@ -29,7 +29,9 @@ def build_json_from_csv(csv_file):
                 continue
 
             if row['Field Name'] is None or row['Field Name'] == '':
-                row['Field Name'] = create_machine_name(row['Field Label'])
+                row['Field Name'] = create_machine_name(row['Field Label'], True)
+            else:
+                row['Field Name'] = create_machine_name(row['Field Name'], True)
 
             if cur_type is None:
                 continue
@@ -180,11 +182,11 @@ def capitalize(string):
     return string[:1].upper() + string[1:] if string else string
 
 def create_object_name(label):
-    return re.sub(r'[^a-zA-Z0-9\s]', '', label).replace(' ', '')
+    return re.sub(r'[^a-zA-Z0-9_\s]', '', label).replace(' ', '')
 
 def create_machine_name(label, lower=True):
     # Remove special characters and spaces, replace them with underscores
-    machine_name = re.sub(r'[^a-zA-Z0-9\s]', '', label).strip().replace(' ', '_')
+    machine_name = re.sub(r'[^a-zA-Z0-9_\s]', '', label).strip().replace(' ', '_')
     if lower is True:
         machine_name = machine_name.lower()
     return machine_name

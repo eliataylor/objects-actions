@@ -6,7 +6,6 @@ import ast
 class ModelBuilder:
     def __init__(self, class_name):
         self.model_name = create_object_name(class_name)
-        self.class_name = class_name
 
         self.id_field = False
 
@@ -143,7 +142,7 @@ class ModelBuilder:
         elif field_type == "date_time":
             # TODO: implement data validation / format handlers onsave
             return "models.DateField()"
-        elif field_type == 'boundingbox':
+        elif field_type == 'bounding_box':
             # TODO: implement data validation / format handlers onsave
             return f"models.JSONField()"
         elif field_type == 'coordinates':
