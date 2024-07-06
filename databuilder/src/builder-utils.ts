@@ -94,7 +94,7 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
         case 'vocabulary_reference':
         case 'type_reference':
             console.warn('This should be handled in WorldBuilder')
-            return faker.number.bigInt();
+            return faker.number.int();
         default:
             return faker.lorem.word(); // Default to a random word for unknown types
     }

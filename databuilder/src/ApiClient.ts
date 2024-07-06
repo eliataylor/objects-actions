@@ -72,12 +72,13 @@ class ApiClient {
             started: new Date().getTime(),
             ended: 0,
         };
+        let response = null;
 
         try {
             // Merge headers with cookies
             const mergedHeaders = await this.getMergedHeaders(url, headers);
 
-            const response = await this.client.post<T>(url, data, {
+            response = await this.client.post<T>(url, data, {
                 headers: mergedHeaders,
             });
             resp.ended = new Date().getTime();
@@ -89,7 +90,7 @@ class ApiClient {
                 resp.data = (error as Error).message;
             }
             resp.ended = new Date().getTime();
-            console.error('Post failed:', error.message);
+            console.error('Post failed:', resp.data);
         }
 
         return resp;

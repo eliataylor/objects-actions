@@ -109,19 +109,23 @@ def addArgs(target, new_args):
     args_str = target[start+1:len(target)-1]
     args = args_str.split(',')
 
-    # Add non-empty new arguments to the existing arguments list
-    args.extend(new_args)
+    # Remove leading and trailing whitespace from each argument
+    args = [arg.strip() for arg in args]
 
-    # Filter out empty strings from new_args
+    # Add non-empty new arguments to the existing arguments list
+    for new_arg in new_args:
+        new_arg = new_arg.strip()
+        if new_arg and new_arg not in args:
+            args.append(new_arg)
+
+    # Filter out empty strings from args
     args = [arg for arg in args if arg != '']
 
     # Combine function name and modified arguments
-    if len(args) == 1:  # If there is only one argument, no need for a comma
-        modified_target = f"{func_name}({args[0]})"
-    else:
-        modified_target = f"{func_name}({', '.join(args)})"
+    modified_target = f"{func_name}({', '.join(args)})"
 
     return modified_target
+
 
 def infer_field_datatype(field_type, field_name, field):
     if field_type == 'user account':
@@ -180,6 +184,34 @@ def infer_field_datatype(field_type, field_name, field):
 
 def capitalize(string):
     return string[:1].upper() + string[1:] if string else string
+
+def pluralize(word, count):
+    """Pluralizes a word based on the count."""
+    if count == 1:
+        if word.endswith('ies'):
+            return word[:-3] + 'y'  # Singularize 'ies' to 'y'
+        elif word.endswith('es'):
+            if word[-3] in 'sxc':
+                return word[:-2]  # Remove 'es' added for words ending in 's', 'x', 'c'
+            elif word[-4:] in ['ches', 'shes']:
+                return word[:-2]  # Remove 'es' added for words ending in 'sh', 'ch'
+            else:
+                return word[:-1]  # Remove 'es' added in general
+        elif word.endswith('s'):
+            return word[:-1]  # Remove 's' added in general
+        else:
+            return word  # Return original word if none of the above conditions are met
+    elif count > 1:
+        # Check if the word ends with common plural suffixes; if so, return the word as-is
+        if word.endswith('ies') or word.endswith('es') or word.endswith('s'):
+            return word
+        elif word[-1] in 'sx' or word[-2:] in ['sh', 'ch']:
+            return word + 'es'  # Add 'es' for words ending in 's', 'x', 'sh', 'ch'
+        else:
+            return word + 's'  # Add 's' in general for plural form
+    else:
+        return word  # Handle unexpected cases where count is less than 1
+
 
 def create_object_name(label):
     return re.sub(r'[^a-zA-Z0-9_\s]', '', label).replace(' ', '')

@@ -1,13 +1,15 @@
-from utils import create_machine_name, create_object_name, addArgs, capitalize
+from utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize
 from loguru import logger
 import os
 import ast
 
+
 class ModelBuilder:
     def __init__(self, class_name):
+        self.class_name = class_name
         self.model_name = create_object_name(class_name)
 
-        self.id_field = False
+        self.id_field = 'id'
 
         self.fields = []
         self.methods = []
@@ -22,26 +24,25 @@ class ModelBuilder:
             model_template = fm.read()
 
         code_source = model_template.replace('__CLASSNAME__', self.model_name)
+        code_source = code_source.replace('__SINGULAR__', f'"{pluralize(self.class_name, 1)}"')
+        code_source = code_source.replace('__PLURAL__', f'"{pluralize(self.class_name, 2)}"')
+
         code_source = code_source.replace(' ' * 4, '\t')
 
         code_source = code_source.replace('###FIELDS_OVERRIDE###',
-                                   "\t" + "\n\t".join(self.fields))
+                                          "\t" + "\n\t".join(self.fields))
 
         if len(self.methods) > 0:
             code_source = code_source.replace('###METHODS###', "\t" + "\n\t".join(self.methods))
         else:
             code_source = code_source.replace('###METHODS###', "")
 
-
-        if self.id_field:
-            admin_code = f"\nclass {self.model_name}Admin(admin.ModelAdmin):\n\treadonly_fields = ('{self.id_field}',)"
-            admin_code += f"\n\nadmin.site.register({self.model_name}, {self.model_name}Admin)\n"
-        else:
-            admin_code = f"\nadmin.site.register({self.model_name})\n"
+        admin_code = f"\nclass {self.model_name}Admin(admin.ModelAdmin):\n\treadonly_fields = ('{self.id_field}',)"
+        admin_code += f"\n\nadmin.site.register({self.model_name}, {self.model_name}Admin)\n"
 
         code_source = code_source.replace('###ADMIN_OVERRIDE###', admin_code)
 
-        return code_source
+        return code_source.strip()
 
     def append_import(self, val):
         if val not in self.imports:
@@ -64,7 +65,12 @@ class ModelBuilder:
 
             if field_type == 'id_auto_increment' or field_name == 'id':
                 self.id_field = field_name
-                logger.info(f"using explicit id field {field_name}")
+                logger.debug(f"using explicit id field {field_name}")
+
+            if field_name == 'author':
+                logger.debug(
+                    f"author is handled by SuperModel, but might want to change the label to {field['Field Label']}")
+                continue
 
             field_code = self.infer_field_type(field_type, field_name, field)
 
@@ -76,6 +82,7 @@ class ModelBuilder:
                 else:
                     field_code = self.apply_default(field_code, field['Default'], field_type)
                     field_code = self.apply_required(field_code, field['Required'])
+                    field_code = addArgs(field_code, [f"verbose_name='{field['Field Label']}'"])
 
             self.fields.append(field_code)
 
@@ -118,10 +125,17 @@ class ModelBuilder:
         if field_type == "id_auto_increment":
             return "models.AutoField(primary_key=True)"
         elif field_type == 'user_profile':
-            model_name = create_object_name(field['Relationship'])
-            return f"models.ForeignKey('{model_name}', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')"
+            return "models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)"
         elif field_type == 'user_account':
-            return "models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True, related_name='+')"
+            return "models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
+        elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
+            # TODO: Test OneToOneField, ManyToMany, ...
+            model_name = create_object_name(field['Relationship'])
+            model_name = 'get_user_model()' if model_name == 'UserAccount' else f"'{model_name}'"
+            if field['HowMany'] == 1:
+                return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
+            else:
+                return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, null=True)"
         elif field_type == "text":
             return "models.CharField(max_length=255)"  # Adjust max_length as needed
         elif field_type == "textarea":
@@ -133,7 +147,7 @@ class ModelBuilder:
             if "pip install django-money" not in self.requirements:
                 self.requirements.append("pip install django-money")
 
-            return "MoneyField(decimal_places=2, default_currency='USD', max_digits=11)"
+            return f"MoneyField(decimal_places=2, default_currency='USD', max_digits=11, verbose_name='{field['Field Label']}')"
         elif field_type == "decimal":
             return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
         elif field_type == "date":
@@ -142,17 +156,21 @@ class ModelBuilder:
         elif field_type == "date_time":
             # TODO: auto_now=True ?
             return "models.DateTimeField()"
+        elif field_type == "date-time-range":
+            # TODO: IMPLEMENT as two fields with validate ends is after start
+            return "models.DateField()"
         elif field_type == 'bounding_box':
             # TODO: implement data validation / format handlers onsave
             return f"models.JSONField()"
         elif field_type == 'coordinates':
             # self.append_import("from django.contrib.gis.db import models as gis_models")
 
-            field_code = f"{field_name} = models.JSONField()"
+            field_code = f"{field_name} = models.JSONField(verbose_name='{field['Field Label']}')"
             field_code = self.apply_default(field_code, field['Default'], field_type)
             field_code = self.apply_required(field_code, field['Required'])
 
-            self.methods.append(f"""\n\tdef get_lat_lng(self): \n\t\treturn self.{field_name}['lat'], self.{field_name}['lng']""")
+            self.methods.append(
+                f"""\n\tdef get_lat_lng(self): \n\t\treturn self.{field_name}['lat'], self.{field_name}['lng']""")
 
             return field_code
             # return "gis_models.PointField()" # too much overhead to install the libaries
@@ -162,7 +180,7 @@ class ModelBuilder:
             self.append_import("import re")
             self.append_import("from django.core.exceptions import ValidationError")
 
-            field_code = f"{field_name} = models.CharField(validators=[validate_phone_number], max_length=16)"
+            field_code = f"{field_name} = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='{field['Field Label']}')"
             field_code = self.apply_default(field_code, field['Default'], field_type)
             field_code = self.apply_required(field_code, field['Required'])
 
@@ -175,11 +193,13 @@ class ModelBuilder:
             return field_code
 
         elif field_type == "address":
+            return f"{field_name} = models.CharField(max_length=255)"
+        elif field_type == "address-structured":
             self.append_import("from address.models import AddressField")
             if "pip install django-address" not in self.requirements:
                 self.requirements.append("pip install django-address")
 
-            field_code = f"{field_name} = AddressField(related_name='+')"
+            field_code = f"{field_name} = AddressField(related_name='+', verbose_name='{field['Field Label']}')"
             field_code = self.apply_default(field_code, field['Default'], field_type)
             field_code = self.apply_required(field_code, field['Required'])
             return field_code
@@ -194,13 +214,13 @@ class ModelBuilder:
                 # TODO: try title / name
                 logger.critical("Use the Default column to tell which other field to slugify")
             else:
-                self.methods.append(f"def save(self, *args, **kwargs):\n\t\tif not self.{self.id_field}:\n\t\t\tself.{self.id_field} = slugify(self.{slugified})\n\t\tsuper().save(*args, **kwargs)")
+                self.methods.append(    f"def save(self, *args, **kwargs):\n\t\tif not self.{self.id_field}:\n\t\t\tself.{self.id_field} = slugify(self.{slugified})\n\t\tsuper().save(*args, **kwargs)")
                 self.append_import("from django.utils.text import slugify")
-                self.append_import("from django.db.models.signals import pre_save")
-                self.append_import("from django.dispatch import receiver")
+                # self.append_import("from django.db.models.signals import pre_save")
+                # self.append_import("from django.dispatch import receiver")
 
             if field_name == 'id':
-                return "models.SlugField(primary_key=True, unique=True, editable=False)"
+                return f"models.SlugField(primary_key=True, unique=True, editable=False)"
             else:
                 return "models.SlugField(unique=True)"
         elif field_type == "boolean":
@@ -229,21 +249,11 @@ class ModelBuilder:
             capitalized = capitalize(field_name)
             self.methods.append(self.build_choices(capitalized, field))
 
-            field_code = f"{field_name} = models.CharField(max_length=20, choices={capitalized}Choices.choices)"
+            field_code = f"{field_name} = models.CharField(max_length=20, choices={capitalized}Choices.choices, verbose_name='{field['Field Label']}')"
             field_code = self.apply_default(field_code, field['Default'], field_type)
             field_code = self.apply_required(field_code, field['Required'])
 
             return field_code
-        elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
-            # TODO: when is `related_name` needed?
-            model_name = create_object_name(field['Relationship'])
-            if field['HowMany'] == 1:
-                return f"models.ForeignKey('{model_name}', related_name='{create_machine_name(field['Field Label'])}', on_delete=models.SET_NULL)"
-                # return f"models.OneToOneField('{model_name}', on_delete=models.CASCADE)"
-            elif field['HowMany'] > 1:
-                return f"models.ForeignKey('{model_name}', related_name='{create_machine_name(field['Field Label'])}', on_delete=models.SET_NULL)"
-            else:
-                return f"models.ForeignKey('{model_name}', related_name='{create_machine_name(field['Field Label'])}', on_delete=models.SET_NULL)"
         else:
             logger.warning(f"UNSUPPORTED FILE TYPE {field_type}")
             return "models.TextField()"

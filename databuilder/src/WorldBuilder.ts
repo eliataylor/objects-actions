@@ -36,7 +36,7 @@ export class WorldBuilder {
             builder.buildWorld().then(() => {
                 const allData = builder.getResponses()
                 for (let type in allData) {
-                    console.log(`--- ${type}`);
+                    console.log(`--- ${type} ---- `);
                     console.log(allData[type]);
                 }
             });
@@ -48,6 +48,9 @@ export class WorldBuilder {
     public async buildWorld() {
         for (const item of this.worldcounts) {
             for (let i = 0; i < item.count; i++) {
+                if (typeof TypeFieldSchema[item.type] === 'undefined') {
+                    break;
+                }
                 const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[item.type])
                 let hasImage = false;
                 const entity: any = {};
@@ -107,9 +110,17 @@ export class WorldBuilder {
 
 const worldcounts: WorldCount[] = [
 //    {type: 'user', count: 1},
-    // {type: 'song', count: 10},
-    {type: 'venue', count: 1},
-    {type: 'event', count: 3},
+    // {type: 'song', count: 1},
+    // {type: 'venue', count: 1},
+    // {type: 'event', count: 1},
+    {type: 'friendship', count: 1},
+    {type: 'playlist', count: 1},
+    {type: 'playlist_songs', count: 1},
+    {type: 'event_playlists', count: 1},
+    {type: 'activity_log', count: 1},
+    {type: 'event_checkins', count: 1},
+    {type: 'song_requests', count: 1},
+    {type: 'likes', count: 1},
 ];
 
 const builder = new WorldBuilder(worldcounts);
