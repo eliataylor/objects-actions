@@ -1,11 +1,13 @@
 #!/usr/bin/env ts-node
 
 import * as dotenv from 'dotenv';
+import axios from 'axios';
 import {FieldTypeDefinition, TypeFieldSchema} from "./types";
 // import { FieldTypeDefinition, TypeFieldSchema } from "../../templates/reactjs/src/object-actions/types/types";
 // import {fakeFieldData} from "./builder-utils";
 import ApiClient, {HttpResponse} from "./ApiClient";
 import {fakeFieldData} from "./builder-utils";
+import {faker} from "@faker-js/faker";
 
 const FormData = require('form-data');
 
@@ -63,7 +65,7 @@ export class WorldBuilder {
                     } else if (field.field_type === 'user_profile' || field.field_type === 'user_account' || field.field_type == 'type_reference' || field.field_type == 'vocabulary_reference') {
                         let relType = field.relationship
                         if (relType === 'user_account') relType = 'user';
-                        const relResponse = await this.apiClient.get( `${process.env.REACT_APP_API_HOST}/api/${relType}/`);
+                        const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/${relType}/`);
                         // @ts-ignore
                         if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
                             // @ts-ignore
@@ -73,7 +75,20 @@ export class WorldBuilder {
                         } else {
                             console.warn(`relationship ${relType} has no data yet`)
                         }
+                    } else if (field.field_type === 'image') {
+                        const imageUrl = faker.image.urlLoremFlickr({category: item.type})
+                        console.log(`Going to load ${imageUrl}`)
+                        const imageResponse = await axios.get(imageUrl, {responseType: 'stream'});
+                        if (imageResponse.status !== 200) {
+                            throw new Error(`Failed to fetch image from ${imageUrl}`);
+                        } else {
+                            hasImage = true;
+
+                            // const imageBuffer = Buffer.from(imageResponse.data);
+                            entity[field.machine] = imageResponse.data;
+                        }
                     } else {
+
                         entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options)
                         if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
                             hasImage = true;
@@ -110,17 +125,17 @@ export class WorldBuilder {
 
 const worldcounts: WorldCount[] = [
 //    {type: 'user', count: 1},
-    {type: 'song', count: 1},
-    {type: 'venue', count: 1},
-    {type: 'event', count: 1},
-    {type: 'friendship', count: 1},
-    {type: 'playlist', count: 1},
-    {type: 'playlist_songs', count: 1},
-    {type: 'event_playlists', count: 1},
-    {type: 'activity_log', count: 1},
-    {type: 'event_checkins', count: 1},
-    {type: 'song_requests', count: 1},
-    {type: 'likes', count: 1},
+    {type: 'song', count: 100},
+    {type: 'venue', count: 10},
+    {type: 'event', count: 10},
+    {type: 'friendship', count: 10},
+    {type: 'playlist', count: 5},
+    {type: 'playlist_songs', count: 100},
+    {type: 'event_playlists', count: 20},
+    {type: 'activity_log', count: 30},
+    {type: 'event_checkins', count: 10},
+    {type: 'song_requests', count: 10},
+    {type: 'likes', count: 10},
 ];
 
 const builder = new WorldBuilder(worldcounts);
