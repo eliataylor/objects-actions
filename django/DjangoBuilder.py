@@ -15,7 +15,9 @@ class DjangoBuilder:
         self.global_function = {"models":[], "serializers": [], "views": [], "urls": []}
         self.imports = {"models": ["from django.db import models",
                                    "from django.contrib import admin",
-                                   "from django.contrib.auth import get_user_model"],
+                                   "from django.contrib.auth import get_user_model",
+                                   "from django.core.exceptions import ValidationError",
+                                   "from datetime import datetime", "import os"],
                         "serializers": ["from rest_framework import serializers",
                                         "from django.core.exceptions import ObjectDoesNotExist",
                                         "from django.db.models import ManyToManyField"],

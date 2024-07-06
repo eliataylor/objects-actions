@@ -237,21 +237,15 @@ class ModelBuilder:
                 return "models.SlugField(unique=True)"
         elif field_type == "boolean":
             return "models.BooleanField()"
-        elif field_type == "image":
-            target_directory = field.get('Example')
-            if target_directory == '':
-                target_directory = "images"
-            return f"models.ImageField(upload_to='{target_directory}')"
-        elif field_type == "video":
-            target_directory = field.get('Example')
-            if target_directory == '':
-                target_directory = "videos"
-            return f"models.FileField(upload_to='{target_directory}')"
-        elif field_type == "media":
-            target_directory = field.get('Example')
-            if target_directory == '':
-                target_directory = "media"
-            return f"models.FileField(upload_to='{target_directory}')"
+        elif field_type == "image" or field_type == 'video' or field_type == 'media':
+            prefix = field.get('Example')
+            if prefix == '':
+                prefix = 'media'
+            if field_type == "image":
+                fieldType = 'ImageField'
+            else:
+                fieldType = 'FileField'
+            return f"models.{fieldType}(upload_to=lambda instance, filename: get_upload_path(instance, filename, '{prefix}'))"
         elif field_type == "flat list":
             # TODO: implement data validation based on "Example" column
             return "models.JSONField()"  # Store both as JSON array

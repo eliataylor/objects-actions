@@ -1,3 +1,7 @@
+def get_upload_path(instance, prefix, filename):
+    today = datetime.now().strftime('%Y-%m')
+    return os.path.join(prefix, today, filename)
+
 class SuperModel(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	modified = models.DateTimeField(auto_now=True)
