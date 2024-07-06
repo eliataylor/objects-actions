@@ -1,6 +1,6 @@
 import json
 import os
-from utils import inject_generated_code, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize
+from utils import inject_generated_code, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize
 from loguru import logger
 import ast
 
@@ -43,7 +43,9 @@ class ReactBuilder:
 
                 field_js = {}
                 field_js['machine'] = field_name
-                field_js['label'] = field['Field Label']
+                field_label = capitalize(field['Field Label'])
+                field_js["singular"] = pluralize(field_label, 1)
+                field_js["plural"] = pluralize(field_label, 2)
 
                 field_def = "\t"
 
@@ -76,7 +78,10 @@ class ReactBuilder:
                         list = ast.literal_eval(list)
                         field_js['options'] = []
                         for name in list:
-                            field_js['options'].append({"label":capitalize(name), "id": create_machine_name(name, True)})
+                            field_js['options'].append({
+                                "label":capitalize(name),
+                                "id": create_machine_name(name, True)
+                            })
                     except Exception as e:
                         logger.warning(
                             f"{field['Field Label']} has invalid structure of choices: {field_js['example']}  \nPlease list them as a flat json array. {str(e)}")
@@ -122,7 +127,8 @@ export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"""
 
         inject_generated_code(types_file_path, f"""export interface FieldTypeDefinition {{
     machine: string;
-    label: string;
+    singular: string;
+    plural: string;
     data_type: string;
     field_type: string;
     cardinality?: number;

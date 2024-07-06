@@ -110,9 +110,9 @@ export class WorldBuilder {
 
 const worldcounts: WorldCount[] = [
 //    {type: 'user', count: 1},
-    // {type: 'song', count: 1},
-    // {type: 'venue', count: 1},
-    // {type: 'event', count: 1},
+    {type: 'song', count: 1},
+    {type: 'venue', count: 1},
+    {type: 'event', count: 1},
     {type: 'friendship', count: 1},
     {type: 'playlist', count: 1},
     {type: 'playlist_songs', count: 1},

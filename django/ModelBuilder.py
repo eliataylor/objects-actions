@@ -214,7 +214,19 @@ class ModelBuilder:
                 # TODO: try title / name
                 logger.critical("Use the Default column to tell which other field to slugify")
             else:
-                self.methods.append(    f"def save(self, *args, **kwargs):\n\t\tif not self.{self.id_field}:\n\t\t\tself.{self.id_field} = slugify(self.{slugified})\n\t\tsuper().save(*args, **kwargs)")
+                overwrite = """\n\tdef save(self, *args, **kwargs):
+\t\tif not self.slug:
+\t\t\tbase_slug = slugify(self.{field_name})
+\t\t\tslug = base_slug
+\t\t\tcount = 1
+\t\t\twhile {model_name}.objects.filter({field_name}=slug).exists():
+\t\t\t\tslug = f"{{base_slug}}-{{count}}"
+\t\t\t\tcount += 1
+\t\t\tself.slug = slug
+\t\t\tsuper().save(*args, **kwargs)
+""".format(field_name=field_name, model_name=self.model_name)
+
+                self.methods.append(overwrite)
                 self.append_import("from django.utils.text import slugify")
                 # self.append_import("from django.db.models.signals import pre_save")
                 # self.append_import("from django.dispatch import receiver")

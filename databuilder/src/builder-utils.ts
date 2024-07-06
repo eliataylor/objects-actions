@@ -42,11 +42,11 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
             }
             return faker.lorem.paragraph();
         case 'integer':
-            return faker.number.int();
+            return faker.number.int({min: 1, max: 2147483647});
         case 'price':
             return faker.commerce.price();
         case 'decimal':
-            return faker.number.float({min: 0, max: 10000, precision: 0.01});
+            return faker.number.float({min: 0, max: 2147483647, precision: 0.01});
         case 'date':
         case 'date_time':
             const start_date = faker.date.recent({days:5});
@@ -71,7 +71,7 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
         case 'slug':
             return faker.lorem.slug();
         case 'id_auto_increment':
-            return faker.number.float({min: 1, max: 10000}); // Simulating auto increment ID
+            return faker.number.float({min: 1, max: 100000}); // Simulating auto increment ID
         case 'boolean':
             return faker.datatype.boolean();
         case 'image':
@@ -94,7 +94,7 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
         case 'vocabulary_reference':
         case 'type_reference':
             console.warn('This should be handled in WorldBuilder')
-            return faker.number.int();
+            return faker.number.int({min: 1, max: 2147483647});
         default:
             return faker.lorem.word(); // Default to a random word for unknown types
     }

@@ -186,6 +186,9 @@ def capitalize(string):
     return string[:1].upper() + string[1:] if string else string
 
 def pluralize(word, count):
+    if word.lower() == 'status':
+        return word
+
     """Pluralizes a word based on the count."""
     if count == 1:
         if word.endswith('ies'):
