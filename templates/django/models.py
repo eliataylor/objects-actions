@@ -13,6 +13,8 @@ class SuperModel(models.Model):
 			return self.title
 		elif hasattr(self, "name"):
 			return self.name
+		elif hasattr(self, "slug"):
+			return self.slug
 		return self.__class__
 	@classmethod
 	def get_current_user(cls, request):

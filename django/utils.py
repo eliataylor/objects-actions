@@ -19,7 +19,7 @@ def build_json_from_csv(csv_file):
             # Extract the type from the row
             obj_type = row['TYPES']
             if obj_type is not None and obj_type != '':
-                if row['Field Name'] == 'user':
+                if row['Field Name'].lower() == 'user':
                     logger.info(f'making {obj_type} the internal auth user model')
                     cur_type = 'User'
                 else:
@@ -63,6 +63,23 @@ def build_json_from_csv(csv_file):
                 json_data[cur_type] = [row]
 
     return json_data
+
+def find_object_by_key_value(fields, prop, value):
+    """
+    Finds the first object in the list with the specified key-value pair.
+
+    Parameters:
+    objects (list): A list of dictionaries.
+    key (str): The key to search for.
+    value: The value to match.
+
+    Returns:
+    dict: The first dictionary that matches the key-value pair, or None if no match is found.
+    """
+    for obj in fields:
+        if prop in obj and obj[prop] == value:
+            return obj
+    return None
 
 def inject_generated_code(output_file_path, code, prefix):
     comments = "####" if ".py" in output_file_path else "//---"
@@ -127,12 +144,13 @@ def addArgs(target, new_args):
     return modified_target
 
 
-def infer_field_datatype(field_type, field_name, field):
-    if field_type == 'user account':
-        # links to internal user
-        return field['Relationship']
-    elif field_type == 'user profile':
-        return field['Relationship']
+def infer_field_datatype(field_type):
+    if field_type == 'user_account':
+        return 'User'
+    elif field_type == 'user_profile':
+        return "RelEntity"
+    elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
+        return "RelEntity"
     elif field_type == "text":
         return "string"
     elif field_type == "textarea":
@@ -145,7 +163,9 @@ def infer_field_datatype(field_type, field_name, field):
         return "number"
     elif field_type == "date":
         return "string"
-    elif field_type == "date time":
+    elif field_type == "date_time":
+        return "string"
+    elif field_type == "date_range":
         return "string"
     elif field_type == 'coordinates':
         return "string"
@@ -153,6 +173,8 @@ def infer_field_datatype(field_type, field_name, field):
         return "string"
     elif field_type == "phone":
         return "string"
+    elif field_type == "address-structured":
+        return "object"
     elif field_type == "address":
         return "string" # TODO: create address object
     elif field_type == "url":
@@ -161,7 +183,7 @@ def infer_field_datatype(field_type, field_name, field):
         return "string"
     elif field_type == "slug":
         return "string"
-    elif field_type == "id (auto increment)":
+    elif field_type == "id_auto_increment":
         return "number"
     elif field_type == "boolean":
         return "boolean"
@@ -176,8 +198,6 @@ def infer_field_datatype(field_type, field_name, field):
     elif field_type == "json":
         return "object"
     elif field_type == "enum":
-        return "string"
-    elif field_type == "vocabulary reference" or field_type == field_type == "type reference":
         return "string"
     else:
         return "string"

@@ -1,6 +1,6 @@
 import json
 import os
-from utils import inject_generated_code, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize
+from utils import inject_generated_code, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize, find_object_by_key_value
 from loguru import logger
 import ast
 
@@ -24,6 +24,16 @@ class ReactBuilder:
 
 
             code = [f"interface {type_name} {{"]
+            code.append(f"\t_type: string") # also User
+            if class_name != 'User':
+                # provided by SuperModel
+                if find_object_by_key_value(self.json[class_name], "Field Name", "created") is None:
+                    code.append(f"\tcreated: number")
+                if find_object_by_key_value(self.json[class_name], "Field Name", "modified") is None:
+                    code.append(f"\tmodified: number")
+                if find_object_by_key_value(self.json[class_name], "Field Name", "author") is None:
+                    code.append(f"\tauthor?: number")
+
             constant = {}
 
             types.append(type_name)
@@ -59,10 +69,10 @@ class ReactBuilder:
                 else:
                     field_def += ": "
 
-                data_type = infer_field_datatype(field_type, field_name, field)
+                field_js['field_type'] = create_machine_name(field_type, True)
+                data_type = infer_field_datatype(field_js['field_type'])
                 field_def += data_type
                 field_js['data_type'] = data_type
-                field_js['field_type'] = create_machine_name(field_type, True)
                 field_js['cardinality'] = field['HowMany']
                 field_js['relationship'] = create_machine_name(field['Relationship'], True)
                 field_js['default'] = field['Default']
@@ -103,9 +113,15 @@ class ReactBuilder:
             code.append("}")
             interfaces.append("\n".join(code))
 
-        inject_generated_code(types_file_path, "\n".join(interfaces), 'TYPE-SCHEMA')
+        inject_generated_code(types_file_path, "\n".join(interfaces).strip(), 'TYPE-SCHEMA')
 
-        type_defintions = f"""export interface ListView {{
+        type_defintions = f"""export interface RelEntity {{
+    id: string | number;
+    str: string;
+    _type: string;
+}}
+
+export interface ListView {{
     count: number;
     next: string | null;
     previous: string | null;
@@ -114,7 +130,7 @@ class ReactBuilder:
 
 export type EntityView = {" | ".join(types)}; """
 
-        inject_generated_code(types_file_path, type_defintions, 'API-RESP')
+        inject_generated_code(types_file_path, type_defintions.strip(), 'API-RESP')
 
         navItems = f"""export interface NavItem {{
     name: string;
@@ -122,7 +138,7 @@ export type EntityView = {" | ".join(types)}; """
     api: string;
     screen: string;
 }}
-export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"""
+export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
         inject_generated_code(types_file_path, navItems, 'NAV-ITEMS')
 
         inject_generated_code(types_file_path, f"""export interface FieldTypeDefinition {{
@@ -141,7 +157,7 @@ export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2)}"""
 interface ObjectOfObjects {{
     [key: string]: {{ [key: string]: FieldTypeDefinition }};
 }}
-export const TypeFieldSchema: ObjectOfObjects = {json.dumps(constants, indent=2)}""", 'TYPE-CONSTANTS')
+export const TypeFieldSchema: ObjectOfObjects = {json.dumps(constants, indent=2).strip()}""", 'TYPE-CONSTANTS')
 
 
 
