@@ -146,7 +146,7 @@ def addArgs(target, new_args):
 
 def infer_field_datatype(field_type):
     if field_type == 'user_account':
-        return 'User'
+        return 'RelEntity'
     elif field_type == 'user_profile':
         return "RelEntity"
     elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":

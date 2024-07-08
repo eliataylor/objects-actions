@@ -8,6 +8,7 @@ class SuperModel(models.Model):
 	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
 	class Meta:
 		abstract = True
+
 	def __str__(self):
 		if hasattr(self, "title"):
 			return self.title
@@ -15,7 +16,9 @@ class SuperModel(models.Model):
 			return self.name
 		elif hasattr(self, "slug"):
 			return self.slug
-		return self.__class__
+
+		return super()
+
 	@classmethod
 	def get_current_user(cls, request):
 		if hasattr(request, 'user') and request.user.is_authenticated:

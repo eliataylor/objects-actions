@@ -38,7 +38,7 @@ class ReactBuilder:
 
             types.append(type_name)
 
-            urlItems.append({"name":class_name, "class":machine_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}"})
+            urlItems.append({"name":class_name, "type":type_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}"})
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
@@ -109,7 +109,7 @@ class ReactBuilder:
 
                 code.append(field_def)
 
-            constants[machine_name] = constant
+            constants[type_name] = constant
             code.append("}")
             interfaces.append("\n".join(code))
 
@@ -128,15 +128,22 @@ export interface ListView {{
     results: Array<{" | ".join(types)}>
 }}
 
-export type EntityView = {" | ".join(types)}; """
+export type EntityView = {" | ".join(types)}; 
+
+export function getProp<T extends EntityView, K extends keyof T>(entity: EntityView, key: string): T[K] | null {{
+    // @ts-ignore
+    if (key in entity) return entity[key]
+	return null;
+}}
+"""
 
         inject_generated_code(types_file_path, type_defintions.strip(), 'API-RESP')
 
         navItems = f"""export interface NavItem {{
-    name: string;
-    class: string;
-    api: string;
-    screen: string;
+        name: string;
+        screen: string;
+        api: string;
+        type: string;
 }}
 export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
         inject_generated_code(types_file_path, navItems, 'NAV-ITEMS')

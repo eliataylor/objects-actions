@@ -156,7 +156,7 @@ class ModelBuilder:
         elif field_type == "date_time":
             # TODO: auto_now=True ?
             return "models.DateTimeField()"
-        elif field_type == "date-time-range":
+        elif field_type == "date_time_range":
             # TODO: IMPLEMENT as two fields with validate ends is after start
             return "models.DateField()"
         elif field_type == 'bounding_box':
