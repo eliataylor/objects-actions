@@ -23,12 +23,39 @@ class ApiClient {
     constructor() {
         this.client = axios.create({
             withCredentials: true, // Ensures cookies are sent with requests
+            headers: {
+                "Content-Type": "application/json",
+                'Referer': new URL(process.env.REACT_APP_API_HOST || '').host,  // Adding Referer header to simulate request origin
+                'Origin': process.env.REACT_APP_APP_HOST    // Adding Origin header to simulate request origin
+            },
             httpsAgent: new (require('https').Agent)({rejectUnauthorized: false}), // Handle HTTPS requests
         });
         this.cookieJar = new tough.CookieJar();
+
+        // Interceptor to set CSRF token from cookies
+        this.client.interceptors.request.use(async (config) => {
+            const cookies = await this.cookieJar.getCookies(config.url || '');
+            const csrfTokenCookie = cookies.find(cookie => cookie.key === 'csrftoken');
+            if (csrfTokenCookie) {
+                config.headers['X-CSRFToken'] = csrfTokenCookie.value;
+                config.headers['Cookie'] = `${csrfTokenCookie.key}=${csrfTokenCookie.value}`;
+            }
+            return config;
+        }, (error) => {
+            return Promise.reject(error);
+        });
+
     }
 
     public async login(email: string, password: string): Promise<HttpResponse<any>> {
+
+        let url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/config`
+        const config = await this.client.get(url);
+        const setCookieHeader = config.headers['set-cookie'];
+        if (setCookieHeader) {
+            await this.setCookies(url, setCookieHeader);
+        }
+
         const resp: HttpResponse<any> = {
             success: false,
             data: null,
@@ -37,20 +64,15 @@ class ApiClient {
             ended: 0
         };
 
-        const url = `${process.env.REACT_APP_API_HOST}/account/login/`
+        url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/login`
         try {
-            const response = await this.client.post(url, {
+            const response = await this.post(url, {
                 email,
                 password,
             });
             resp.ended = new Date().getTime();
             resp.data = response.data;
             resp.success = true;
-
-            const setCookieHeader = response.headers['set-cookie'];
-            if (setCookieHeader) {
-                await this.setCookies(url, setCookieHeader);
-            }
 
         } catch (error: any) {
             resp.ended = new Date().getTime();
@@ -84,6 +106,13 @@ class ApiClient {
             resp.ended = new Date().getTime();
             resp.data = response.data;
             resp.success = true;
+
+            const setCookieHeader = response.headers['set-cookie'];
+            if (setCookieHeader) {
+                // TODO: change if changes!?!
+                await this.setCookies(url, setCookieHeader);
+            }
+
         } catch (error: any) {
             resp.data = error.response?.data
             if (!resp.data) {
