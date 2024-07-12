@@ -37,7 +37,7 @@ class ApiClient {
             ended: 0
         };
 
-        const url = `${process.env.REACT_APP_API_HOST}/auth/login/`
+        const url = `${process.env.REACT_APP_API_HOST}/account/login/`
         try {
             const response = await this.client.post(url, {
                 email,

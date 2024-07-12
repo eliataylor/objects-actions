@@ -16,8 +16,7 @@ class DjangoBuilder:
         self.global_function = {"models": [], "serializers": [], "views": [], "urls": []}
         self.imports = {"admin": ["from django.contrib import admin",
                                   "from django.utils.translation import gettext_lazy as _",
-                                  "from django.contrib.auth.admin import UserAdmin as BaseUserAdmin"
-                                  ],
+                                  "from django.contrib.auth.admin import UserAdmin as BaseUserAdmin"],
                         "models": ["from django.db import models",
                                    "from django.contrib.auth.models import AbstractUser",
                                    "from django.contrib.auth import get_user_model",
@@ -26,15 +25,13 @@ class DjangoBuilder:
                                    "from django.dispatch import receiver",
                                    "from allauth.account.signals import email_confirmed",
                                    "from django.utils.timezone import now",
-                                   "from django.core.exceptions import ValidationError",
-                                   ],
+                                   "from django.core.exceptions import ValidationError"],
                         "serializers": ["from rest_framework import serializers",
                                         "from django.core.exceptions import ObjectDoesNotExist",
                                         "from django.db.models import ManyToManyField"],
                         "views": ["from rest_framework import viewsets, permissions, status, pagination",
                                   "from django.http import JsonResponse",
-                                  "from django.core.management import call_command"
-                                  ],
+                                  "from django.core.management import call_command"],
                         "urls": [
                             "from rest_framework.routers import DefaultRouter",
                             "from django.urls import include, path",

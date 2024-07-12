@@ -42,8 +42,12 @@ export function parseFormURL(url: string): ParsedURL | null {
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
 interface Customer {
-	readonly id?: string | null;
-	user_id?: string | null;
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	readonly id?: number | null;
+	user_id?: RelEntity | null;
 	phone: string;
 	email: string;
 	billing_name?: string | null;
@@ -51,6 +55,10 @@ interface Customer {
 	delivery_address?: string | null;
 }
 interface Supplier {
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
 	readonly id?: string | null;
 	name: string;
 	photo?: string | null;
@@ -58,15 +66,23 @@ interface Supplier {
 	website?: string | null;
 }
 interface Ingredient {
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
 	readonly id?: string | null;
 	title: string;
 	image?: string | null;
-	supplier?: string | null;
+	supplier?: RelEntity | null;
 	seasonal?: boolean | null;
 	in_season_price?: number | null;
 	out_of_season_price?: number | null;
 }
 interface Meal {
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
 	readonly id?: string | null;
 	title: string;
 	description: string;
@@ -74,28 +90,40 @@ interface Meal {
 	photo?: string[] | null;
 	internal_cost?: number | null;
 	public_price?: number | null;
-	ingredients?: string | null;
-	suppliers?: string | null;
+	ingredients?: RelEntity | null;
+	suppliers?: RelEntity | null;
 }
 interface Plan {
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
 	readonly id: string;
 	name: string;
 	description?: string | null;
-	meals: string;
+	meals: RelEntity;
 	price?: number | null;
 	date?: string | null;
 }
 interface OrderItem {
-	readonly id?: string | null;
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	readonly id?: number | null;
 	date: string;
 	delivery_date: string;
-	meal?: string | null;
-	meal_menu?: string | null;
+	meal?: RelEntity | null;
+	meal_menu?: RelEntity | null;
 	servings: number;
 }
 interface Order {
-	readonly id?: string | null;
-	customer: string;
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	readonly id?: number | null;
+	customer: RelEntity;
 	created_date: string;
 	start_date: string;
 	final_price: number;
@@ -103,7 +131,7 @@ interface Order {
 	customizations: string;
 	glass_containers?: boolean | null;
 	recurring?: boolean | null;
-	order_items: string;
+	order_items: RelEntity;
 	status: string;
 }
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
@@ -111,6 +139,12 @@ interface Order {
 
 
 //---OBJECT-ACTIONS-API-RESP-STARTS---//
+export interface RelEntity {
+    id: string | number;
+    str: string;
+    _type: string;
+}
+
 export interface ListView {
     count: number;
     next: string | null;
@@ -118,58 +152,64 @@ export interface ListView {
     results: Array<Customer | Supplier | Ingredient | Meal | Plan | OrderItem | Order>
 }
 
-export type EntityView = Customer | Supplier | Ingredient | Meal | Plan | OrderItem | Order; 
+export type EntityView = Customer | Supplier | Ingredient | Meal | Plan | OrderItem | Order;
+
+export function getProp<T extends EntityView, K extends keyof T>(entity: EntityView, key: string): T[K] | null {
+    // @ts-ignore
+    if (key in entity) return entity[key]
+	return null;
+}
 //---OBJECT-ACTIONS-API-RESP-ENDS---//
 
 
 
 //---OBJECT-ACTIONS-NAV-ITEMS-STARTS---//
 export interface NavItem {
-    name: string;
-    class: string;
-    api: string;
-    screen: string;
+        name: string;
+        screen: string;
+        api: string;
+        type: string;
 }
 export const NAVITEMS: NavItem[] = [
   {
     "name": "Customer",
-    "class": "customer",
+    "type": "Customer",
     "api": "/api/customer",
     "screen": "/customer"
   },
   {
     "name": "Supplier",
-    "class": "supplier",
+    "type": "Supplier",
     "api": "/api/supplier",
     "screen": "/supplier"
   },
   {
     "name": "Ingredient",
-    "class": "ingredient",
+    "type": "Ingredient",
     "api": "/api/ingredient",
     "screen": "/ingredient"
   },
   {
     "name": "Meal",
-    "class": "meal",
+    "type": "Meal",
     "api": "/api/meal",
     "screen": "/meal"
   },
   {
     "name": "Plan",
-    "class": "plan",
+    "type": "Plan",
     "api": "/api/plan",
     "screen": "/plan"
   },
   {
     "name": "Order Item",
-    "class": "order_item",
+    "type": "OrderItem",
     "api": "/api/order_item",
     "screen": "/order_item"
   },
   {
     "name": "Order",
-    "class": "order",
+    "type": "Order",
     "api": "/api/order",
     "screen": "/order"
   }
@@ -193,7 +233,8 @@ export const NAVITEMS: NavItem[] = [
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-STARTS---//
 export interface FieldTypeDefinition {
     machine: string;
-    label: string;
+    singular: string;
+    plural: string;
     data_type: string;
     field_type: string;
     cardinality?: number;
@@ -201,17 +242,19 @@ export interface FieldTypeDefinition {
     required?: boolean;
     default?: string;
     example?: string;
+    options?: object;
 }
 interface ObjectOfObjects {
     [key: string]: { [key: string]: FieldTypeDefinition };
 }
 export const TypeFieldSchema: ObjectOfObjects = {
-  "customer": {
+  "Customer": {
     "id": {
       "machine": "id",
-      "label": "ID",
-      "data_type": "string",
+      "singular": "ID",
+      "plural": "IDs",
       "field_type": "id_auto_increment",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -220,9 +263,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "user_id": {
       "machine": "user_id",
-      "label": "User ID",
-      "data_type": "string",
+      "singular": "User ID",
+      "plural": "User IDs",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -231,9 +275,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "phone": {
       "machine": "phone",
-      "label": "Phone",
-      "data_type": "string",
+      "singular": "Phone",
+      "plural": "Phones",
       "field_type": "phone",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -242,9 +287,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "email": {
       "machine": "email",
-      "label": "Email",
-      "data_type": "string",
+      "singular": "Email",
+      "plural": "Emails",
       "field_type": "email",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -253,9 +299,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "billing_name": {
       "machine": "billing_name",
-      "label": "Billing Name",
-      "data_type": "string",
+      "singular": "Billing Name",
+      "plural": "Billing Names",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -264,9 +311,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "billing_address": {
       "machine": "billing_address",
-      "label": "Billing Address",
-      "data_type": "string",
+      "singular": "Billing Addres",
+      "plural": "Billing Address",
       "field_type": "address",
+      "data_type": "string",
       "cardinality": Infinity,
       "relationship": "",
       "default": "",
@@ -275,9 +323,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "delivery_address": {
       "machine": "delivery_address",
-      "label": "Delivery Address",
-      "data_type": "string",
+      "singular": "Delivery Addres",
+      "plural": "Delivery Address",
       "field_type": "address",
+      "data_type": "string",
       "cardinality": Infinity,
       "relationship": "",
       "default": "",
@@ -285,12 +334,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "supplier": {
+  "Supplier": {
     "id": {
       "machine": "id",
-      "label": "ID",
-      "data_type": "string",
+      "singular": "ID",
+      "plural": "IDs",
       "field_type": "slug",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "name",
@@ -299,9 +349,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "name": {
       "machine": "name",
-      "label": "Name",
-      "data_type": "string",
+      "singular": "Name",
+      "plural": "Names",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -310,9 +361,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "photo": {
       "machine": "photo",
-      "label": "Photo",
-      "data_type": "string",
+      "singular": "Photo",
+      "plural": "Photos",
       "field_type": "image",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -321,9 +373,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "address": {
       "machine": "address",
-      "label": "Address",
-      "data_type": "string",
+      "singular": "Addres",
+      "plural": "Address",
       "field_type": "address",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -332,9 +385,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "website": {
       "machine": "website",
-      "label": "Website",
-      "data_type": "string",
+      "singular": "Website",
+      "plural": "Websites",
       "field_type": "url",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -342,12 +396,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "ingredient": {
+  "Ingredient": {
     "id": {
       "machine": "id",
-      "label": "ID",
-      "data_type": "string",
+      "singular": "ID",
+      "plural": "IDs",
       "field_type": "slug",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "title",
@@ -356,9 +411,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "title": {
       "machine": "title",
-      "label": "Title",
-      "data_type": "string",
+      "singular": "Title",
+      "plural": "Titles",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -367,9 +423,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "image": {
       "machine": "image",
-      "label": "Image",
-      "data_type": "string",
+      "singular": "Image",
+      "plural": "Images",
       "field_type": "image",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -378,20 +435,22 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "supplier": {
       "machine": "supplier",
-      "label": "Supplier",
-      "data_type": "string",
+      "singular": "Supplier",
+      "plural": "Suppliers",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Supplier",
+      "relationship": "supplier",
       "default": "",
       "required": false,
       "example": ""
     },
     "seasonal": {
       "machine": "seasonal",
-      "label": "Seasonal",
-      "data_type": "boolean",
+      "singular": "Seasonal",
+      "plural": "Seasonals",
       "field_type": "boolean",
+      "data_type": "boolean",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -400,9 +459,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "in_season_price": {
       "machine": "in_season_price",
-      "label": "In season Price",
-      "data_type": "number",
+      "singular": "In season Price",
+      "plural": "In season Prices",
       "field_type": "decimal",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -411,9 +471,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "out_of_season_price": {
       "machine": "out_of_season_price",
-      "label": "Out of season price",
-      "data_type": "number",
+      "singular": "Out of season price",
+      "plural": "Out of season prices",
       "field_type": "decimal",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -421,12 +482,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "meal": {
+  "Meal": {
     "id": {
       "machine": "id",
-      "label": "ID",
-      "data_type": "string",
+      "singular": "ID",
+      "plural": "IDs",
       "field_type": "slug",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "title",
@@ -435,9 +497,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "title": {
       "machine": "title",
-      "label": "Title",
-      "data_type": "string",
+      "singular": "Title",
+      "plural": "Titles",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -446,9 +509,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "description": {
       "machine": "description",
-      "label": "Description",
-      "data_type": "string",
+      "singular": "Description",
+      "plural": "Descriptions",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -457,20 +521,44 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "bld": {
       "machine": "bld",
-      "label": "BLD",
-      "data_type": "string",
+      "singular": "BLD",
+      "plural": "BLDs",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
       "required": true,
-      "example": "['breakfast', 'lunch', 'dinner', 'desert', 'snack']"
+      "example": "['breakfast', 'lunch', 'dinner', 'desert', 'snack']",
+      "options": [
+        {
+          "label": "Breakfast",
+          "id": "breakfast"
+        },
+        {
+          "label": "Lunch",
+          "id": "lunch"
+        },
+        {
+          "label": "Dinner",
+          "id": "dinner"
+        },
+        {
+          "label": "Desert",
+          "id": "desert"
+        },
+        {
+          "label": "Snack",
+          "id": "snack"
+        }
+      ]
     },
     "photo": {
       "machine": "photo",
-      "label": "Photo",
-      "data_type": "string",
+      "singular": "Photo",
+      "plural": "Photos",
       "field_type": "media",
+      "data_type": "string",
       "cardinality": 3,
       "relationship": "",
       "default": "",
@@ -479,9 +567,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "internal_cost": {
       "machine": "internal_cost",
-      "label": "Internal Cost",
-      "data_type": "number",
+      "singular": "Internal Cost",
+      "plural": "Internal Costs",
       "field_type": "decimal",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -490,9 +579,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "public_price": {
       "machine": "public_price",
-      "label": "Public Price",
-      "data_type": "number",
+      "singular": "Public Price",
+      "plural": "Public Prices",
       "field_type": "decimal",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "16",
@@ -501,33 +591,36 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "ingredients": {
       "machine": "ingredients",
-      "label": "Ingredients",
-      "data_type": "string",
+      "singular": "Ingredient",
+      "plural": "Ingredients",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Ingredient",
+      "relationship": "ingredient",
       "default": "",
       "required": false,
       "example": ""
     },
     "suppliers": {
       "machine": "suppliers",
-      "label": "Suppliers",
-      "data_type": "string",
+      "singular": "Supplier",
+      "plural": "Suppliers",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Supplier",
+      "relationship": "supplier",
       "default": "",
       "required": false,
       "example": ""
     }
   },
-  "plan": {
+  "Plan": {
     "id": {
       "machine": "id",
-      "label": "ID",
-      "data_type": "string",
+      "singular": "ID",
+      "plural": "IDs",
       "field_type": "slug",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "name",
@@ -536,9 +629,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "name": {
       "machine": "name",
-      "label": "Name",
-      "data_type": "string",
+      "singular": "Name",
+      "plural": "Names",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -547,9 +641,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "description": {
       "machine": "description",
-      "label": "Description",
-      "data_type": "string",
+      "singular": "Description",
+      "plural": "Descriptions",
       "field_type": "textarea",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -558,20 +653,22 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "meals": {
       "machine": "meals",
-      "label": "Meals",
-      "data_type": "string",
+      "singular": "Meal",
+      "plural": "Meals",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Meal",
+      "relationship": "meal",
       "default": "",
       "required": true,
       "example": ""
     },
     "price": {
       "machine": "price",
-      "label": "Price",
-      "data_type": "number",
+      "singular": "Price",
+      "plural": "Prices",
       "field_type": "price",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -580,9 +677,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "date": {
       "machine": "date",
-      "label": "Date",
-      "data_type": "string",
+      "singular": "Date",
+      "plural": "Dates",
       "field_type": "date",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -590,12 +688,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "order_item": {
+  "OrderItem": {
     "id": {
       "machine": "id",
-      "label": "ID",
-      "data_type": "string",
+      "singular": "ID",
+      "plural": "IDs",
       "field_type": "id_auto_increment",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -604,9 +703,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "date": {
       "machine": "date",
-      "label": "Date",
-      "data_type": "string",
+      "singular": "Date",
+      "plural": "Dates",
       "field_type": "date",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -615,9 +715,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "delivery_date": {
       "machine": "delivery_date",
-      "label": "Delivery Date",
-      "data_type": "string",
+      "singular": "Delivery Date",
+      "plural": "Delivery Dates",
       "field_type": "date",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -626,31 +727,34 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "meal": {
       "machine": "meal",
-      "label": "Meal",
-      "data_type": "string",
+      "singular": "Meal",
+      "plural": "Meals",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Meal",
+      "relationship": "meal",
       "default": "",
       "required": false,
       "example": ""
     },
     "meal_menu": {
       "machine": "meal_menu",
-      "label": "Meal Menu",
-      "data_type": "string",
+      "singular": "Meal Menu",
+      "plural": "Meal Menus",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Plan",
+      "relationship": "plan",
       "default": "",
       "required": false,
       "example": ""
     },
     "servings": {
       "machine": "servings",
-      "label": "Servings",
-      "data_type": "number",
+      "singular": "Serving",
+      "plural": "Servings",
       "field_type": "integer",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "1",
@@ -658,12 +762,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "order": {
+  "Order": {
     "id": {
       "machine": "id",
-      "label": "ID",
-      "data_type": "string",
+      "singular": "ID",
+      "plural": "IDs",
       "field_type": "id_auto_increment",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -672,20 +777,22 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "customer": {
       "machine": "customer",
-      "label": "Customer",
-      "data_type": "string",
+      "singular": "Customer",
+      "plural": "Customers",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Customer",
+      "relationship": "customer",
       "default": "",
       "required": true,
       "example": ""
     },
     "created_date": {
       "machine": "created_date",
-      "label": "Created Date",
-      "data_type": "string",
+      "singular": "Created Date",
+      "plural": "Created Dates",
       "field_type": "date",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -694,9 +801,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "start_date": {
       "machine": "start_date",
-      "label": "Start Date",
-      "data_type": "string",
+      "singular": "Start Date",
+      "plural": "Start Dates",
       "field_type": "date",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -705,9 +813,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "final_price": {
       "machine": "final_price",
-      "label": "Final Price",
-      "data_type": "number",
+      "singular": "Final Price",
+      "plural": "Final Prices",
       "field_type": "decimal",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -716,9 +825,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "delivery_instructions": {
       "machine": "delivery_instructions",
-      "label": "Delivery Instructions",
-      "data_type": "string",
+      "singular": "Delivery Instruction",
+      "plural": "Delivery Instructions",
       "field_type": "textarea",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -727,9 +837,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "customizations": {
       "machine": "customizations",
-      "label": "Customizations",
-      "data_type": "string",
+      "singular": "Customization",
+      "plural": "Customizations",
       "field_type": "textarea",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -738,9 +849,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "glass_containers": {
       "machine": "glass_containers",
-      "label": "Glass Containers",
-      "data_type": "boolean",
+      "singular": "Glass Container",
+      "plural": "Glass Containers",
       "field_type": "boolean",
+      "data_type": "boolean",
       "cardinality": 1,
       "relationship": "",
       "default": "0",
@@ -749,9 +861,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "recurring": {
       "machine": "recurring",
-      "label": "Recurring",
-      "data_type": "boolean",
+      "singular": "Recurring",
+      "plural": "Recurrings",
       "field_type": "boolean",
+      "data_type": "boolean",
       "cardinality": 1,
       "relationship": "",
       "default": "0",
@@ -760,29 +873,57 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "order_items": {
       "machine": "order_items",
-      "label": "Order Items",
-      "data_type": "string",
+      "singular": "Order Item",
+      "plural": "Order Items",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Order Item",
+      "relationship": "order_item",
       "default": "",
       "required": true,
       "example": ""
     },
     "status": {
       "machine": "status",
-      "label": "Status",
-      "data_type": "string",
+      "singular": "Status",
+      "plural": "Status",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "unpaid",
       "required": true,
-      "example": "['paid', 'cancelled', 'unpaid']"
+      "example": "['paid', 'cancelled', 'unpaid']",
+      "options": [
+        {
+          "label": "Paid",
+          "id": "paid"
+        },
+        {
+          "label": "Cancelled",
+          "id": "cancelled"
+        },
+        {
+          "label": "Unpaid",
+          "id": "unpaid"
+        }
+      ]
     }
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

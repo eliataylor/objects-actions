@@ -20,19 +20,29 @@ class ReactBuilder:
         urlItems = []
         for class_name in self.json:
             type_name = capitalize(create_object_name(class_name))
-            machine_name = create_machine_name(class_name)
-
+            machine_name = create_machine_name(class_name, True)
 
             code = [f"interface {type_name} {{"]
             code.append(f"\t_type: string") # also User
-            if machine_name != 'user':
+
+            if machine_name != 'users':
                 # provided by SuperModel
-                if find_object_by_key_value(self.json[class_name], "Field Name", "created") is None:
-                    code.append(f"\tcreated: number")
-                if find_object_by_key_value(self.json[class_name], "Field Name", "modified") is None:
-                    code.append(f"\tmodified: number")
+                if find_object_by_key_value(self.json[class_name], "Field Name", "created_at") is None:
+                    code.append(f"\tcreated_at: number")
+                if find_object_by_key_value(self.json[class_name], "Field Name", "modified_at") is None:
+                    code.append(f"\tmodified_at: number")
                 if find_object_by_key_value(self.json[class_name], "Field Name", "author") is None:
                     code.append(f"\tauthor?: number")
+            else:
+                code.append(f"\tis_active?: boolean")
+                code.append(f"\tis_staff?: boolean")
+                code.append(f"\tlast_login?: string")
+                code.append(f"\tdate_joined?: string")
+                if find_object_by_key_value(self.json[class_name], "Field Name", "email") is None:
+                    code.append(f"\temail?: string")
+                code.append(f"\tusername?: string")
+                code.append(f"\tfirst_name?: string")
+                code.append(f"\tlast_name?: string")
 
             constant = {}
 
