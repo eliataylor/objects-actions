@@ -25,7 +25,7 @@ class ReactBuilder:
 
             code = [f"interface {type_name} {{"]
             code.append(f"\t_type: string") # also User
-            if class_name != 'User':
+            if machine_name != 'user':
                 # provided by SuperModel
                 if find_object_by_key_value(self.json[class_name], "Field Name", "created") is None:
                     code.append(f"\tcreated: number")

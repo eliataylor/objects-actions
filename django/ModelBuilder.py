@@ -10,6 +10,9 @@ class ModelBuilder:
         self.model_name = create_object_name(class_name)
 
         self.id_field = 'id'
+        templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django/'
+        self.template_path = templates_dir + '/model.py'
+
 
         self.fields = []
         self.methods = []
@@ -18,12 +21,12 @@ class ModelBuilder:
         self.requirements = []
 
     def to_string(self):
-        templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django/'
-
-        with open(templates_dir + '/model.py', 'r') as fm:
+        with open(self.template_path, 'r') as fm:
             model_template = fm.read()
 
         code_source = model_template.replace('__CLASSNAME__', self.model_name)
+
+        # TODO: use Field Name column from
         code_source = code_source.replace('__SINGULAR__', f'"{pluralize(self.class_name, 1)}"')
         code_source = code_source.replace('__PLURAL__', f'"{pluralize(self.class_name, 2)}"')
 
@@ -37,12 +40,12 @@ class ModelBuilder:
         else:
             code_source = code_source.replace('###METHODS###', "")
 
+        return code_source.strip()
+
+    def admin_string(self):
         admin_code = f"\nclass {self.model_name}Admin(admin.ModelAdmin):\n\treadonly_fields = ('{self.id_field}',)"
         admin_code += f"\n\nadmin.site.register({self.model_name}, {self.model_name}Admin)\n"
-
-        code_source = code_source.replace('###ADMIN_OVERRIDE###', admin_code)
-
-        return code_source.strip()
+        return admin_code.strip()
 
     def append_import(self, val):
         if val not in self.imports:
@@ -68,9 +71,11 @@ class ModelBuilder:
                 logger.debug(f"using explicit id field {field_name}")
 
             if field_name == 'author':
-                logger.debug(
-                    f"author is handled by SuperModel, but might want to change the label to {field['Field Label']}")
-                continue
+                if field['Field Label'].lower() == 'author':
+                    logger.debug(
+                        f"author is handled by SuperModel, but might want to change the label to {field['Field Label']}")
+                else:
+                    field_name = 'author'   # overwrides SuperModal but keeps verbose_name
 
             field_code = self.infer_field_type(field_type, field_name, field)
 
@@ -124,14 +129,14 @@ class ModelBuilder:
     def infer_field_type(self, field_type, field_name, field):
         if field_type == "id_auto_increment":
             return "models.AutoField(primary_key=True)"
-        elif field_type == 'user_profile':
+        elif field_type == 'user_profiles':
             return "models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)"
         elif field_type == 'user_account':
             return "models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
         elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
             # TODO: Test OneToOneField, ManyToMany, ...
             model_name = create_object_name(field['Relationship'])
-            model_name = 'get_user_model()' if model_name == 'UserAccount' else f"'{model_name}'"
+            model_name = 'get_user_model()' if model_name == 'User Account' else f"'{model_name}'"
             if field['HowMany'] == 1:
                 return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
             else:
@@ -238,14 +243,16 @@ class ModelBuilder:
         elif field_type == "boolean":
             return "models.BooleanField()"
         elif field_type == "image" or field_type == 'video' or field_type == 'media':
-            prefix = field.get('Example')
-            if prefix == '':
-                prefix = 'media'
             if field_type == "image":
                 fieldType = 'ImageField'
             else:
                 fieldType = 'FileField'
-            return f"models.{fieldType}(upload_to=lambda instance, filename: get_upload_path(instance, filename, '{prefix}'))"
+
+            prefix = field.get('Example')
+            if prefix is None or prefix == '':
+                return f"models.{fieldType}(upload_to='uploads/%Y-%m')"
+            else:
+                return f"models.{fieldType}(upload_to='{prefix}')"
         elif field_type == "flat list":
             # TODO: implement data validation based on "Example" column
             return "models.JSONField()"  # Store both as JSON array

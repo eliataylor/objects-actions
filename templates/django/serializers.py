@@ -11,6 +11,7 @@ class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
     def __init__(self, **kwargs):
         self.slug_field = kwargs.pop('slug_field', None)
         super(SubFieldRelatedField, self).__init__(**kwargs)
+
     def to_internal_value(self, data):
         if self.pk_field is not None:
             field_label = self.pk_field.label
@@ -44,3 +45,22 @@ class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
 
 class CustomSerializer(serializers.ModelSerializer):
     serializer_related_field = SubFieldRelatedField
+
+    def to_representation(self, instance):
+        # Get the original representation
+        representation = super().to_representation(instance)
+        # Add the model type
+        representation['_type'] = instance.__class__.__name__
+
+        for field in self.Meta.model._meta.fields:
+            if field.is_relation and field.many_to_one:
+                field_name = field.name
+                related_instance = getattr(instance, field_name)
+                if related_instance is not None:
+                    representation[field_name] = {
+                        "id": related_instance.pk,
+                        "str": str(related_instance),
+                        "_type": related_instance.__class__.__name__,
+                    }
+
+        return representation

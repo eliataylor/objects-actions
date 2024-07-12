@@ -3,6 +3,7 @@ import os
 from loguru import logger
 
 from ModelBuilder import ModelBuilder
+from UserBuilder import UserBuilder
 from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv
 
 
@@ -12,12 +13,21 @@ class DjangoBuilder:
 
         self.templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django/'
 
-        self.global_function = {"models":[], "serializers": [], "views": [], "urls": []}
-        self.imports = {"models": ["from django.db import models",
-                                   "from django.contrib import admin",
+        self.global_function = {"models": [], "serializers": [], "views": [], "urls": []}
+        self.imports = {"admin": ["from django.contrib import admin",
+                                  "from django.utils.translation import gettext_lazy as _",
+                                  "from django.contrib.auth.admin import UserAdmin as BaseUserAdmin"
+                                  ],
+                        "models": ["from django.db import models",
+                                   "from django.contrib.auth.models import AbstractUser",
                                    "from django.contrib.auth import get_user_model",
+                                   "from utils.models import BumpParentsModelMixin",
+                                   "from allauth.account.models import EmailAddress",
+                                   "from django.dispatch import receiver",
+                                   "from allauth.account.signals import email_confirmed",
+                                   "from django.utils.timezone import now",
                                    "from django.core.exceptions import ValidationError",
-                                   "from datetime import datetime", "import os"],
+                                   ],
                         "serializers": ["from rest_framework import serializers",
                                         "from django.core.exceptions import ObjectDoesNotExist",
                                         "from django.db.models import ManyToManyField"],
@@ -49,7 +59,7 @@ class DjangoBuilder:
         if val not in self.imports[key]:
             if isinstance(val, list):
                 for v in val:
-                    self.imports[key].append(v)
+                    self.append_import(key, v)
             else:
                 self.imports[key].append(val)
 
@@ -57,27 +67,33 @@ class DjangoBuilder:
         if val not in self.global_function[key]:
             if isinstance(val, list):
                 for v in val:
-                    self.global_function[key].append(v)
+                    self.append_global(key, v)
             else:
                 self.global_function[key].append(val)
 
     def build_models(self):
 
         model_file_path = os.path.join(self.output_dir, f'models.py')
+        admin_file_path = os.path.join(self.output_dir, f'admin.py')
         parts = []
+        admin_parts = []
 
         with open(self.templates_dir + '/models.py', 'r') as fm:
             parts.append(fm.read())
 
         for class_name in self.json:
-            if class_name.lower() == 'user':
-                logger.critical("TODO: inject fields directly to user project")
-                continue
+            model_name = create_object_name(class_name)
+            if class_name.lower() == 'users':
+                mbuilder = UserBuilder(class_name)
+                mbuilder.build_fields(self.json[class_name])
+                parts.insert(0, mbuilder.to_string())  # before SuperModel
+            else:
+                mbuilder = ModelBuilder(class_name)
+                mbuilder.build_fields(self.json[class_name])
+                parts.append(mbuilder.to_string())
 
-            mbuilder = ModelBuilder(class_name)
-            mbuilder.build_fields(self.json[class_name])
-
-            parts.append(mbuilder.to_string())
+            self.append_import("admin", f"from .models import {model_name}")
+            admin_parts.append(mbuilder.admin_string())
 
             self.append_global('models', mbuilder.get_functions())
             self.append_import('models', mbuilder.get_imports())
@@ -85,8 +101,11 @@ class DjangoBuilder:
         if len(self.global_function['models']) > 0:
             parts.insert(0, "\n\t".join(self.global_function['models']).strip())
 
-        inject_generated_code(model_file_path, "\n".join(self.imports['models']).strip(), 'MODEL_IMPORTS')
+        inject_generated_code(model_file_path, "\n".join(self.imports['models']).strip(), 'MODELS_IMPORTS')
         inject_generated_code(model_file_path, "\n\n".join(parts).strip(), 'MODELS')
+
+        inject_generated_code(admin_file_path, "\n".join(self.imports['admin']).strip(), 'ADMIN_IMPORTS')
+        inject_generated_code(admin_file_path, "\n\n".join(admin_parts).strip(), 'ADMIN_MODELS')
 
         if len(self.requirements) > 0:
             cmds = "\n".join(self.requirements)
@@ -126,10 +145,7 @@ class DjangoBuilder:
         for class_name in self.json:
             model_name = create_object_name(class_name)
             parts.append(tpl.replace('__CLASSNAME__', model_name))
-            if class_name == 'User':
-                self.append_import("serializers", f"from users.models import {model_name}")
-            else:
-                self.append_import("serializers", f"from .models import {model_name}")
+            self.append_import("serializers", f"from .models import {model_name}")
 
         inject_generated_code(outpath, '\n'.join(self.imports["serializers"]), 'SERIALIZER-IMPORTS')
         inject_generated_code(outpath, serializers_helpers + "\n" + "\n".join(parts).strip(), 'SERIALIZERS')
@@ -144,11 +160,7 @@ class DjangoBuilder:
         for class_name in self.json:
             model_name = create_object_name(class_name)
             parts.append(tpl.replace('__CLASSNAME__', model_name))
-            if class_name == 'User':
-                self.append_import("views", f"from users.models import {model_name}")
-            else:
-                self.append_import("views", f"from .models import {model_name}")
-
+            self.append_import("views", f"from .models import {model_name}")
             self.append_import("views", f"from .serializers import {model_name}Serializer")
 
         inject_generated_code(outpath, '\n'.join(self.imports["views"]).strip(), 'VIEWSET-IMPORTS')

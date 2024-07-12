@@ -5,4 +5,3 @@ class __CLASSNAME__(SuperModel):
         verbose_name_plural = __PLURAL__
 ###METHODS###
 ###FIELDS_OVERRIDE###
-###ADMIN_OVERRIDE###
