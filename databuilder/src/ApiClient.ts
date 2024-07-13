@@ -24,7 +24,6 @@ class ApiClient {
         this.client = axios.create({
             withCredentials: true, // Ensures cookies are sent with requests
             headers: {
-                "Content-Type": "application/json",
                 'Referer': new URL(process.env.REACT_APP_API_HOST || '').host,  // Adding Referer header to simulate request origin
                 'Origin': process.env.REACT_APP_APP_HOST    // Adding Origin header to simulate request origin
             },
@@ -38,7 +37,6 @@ class ApiClient {
             const csrfTokenCookie = cookies.find(cookie => cookie.key === 'csrftoken');
             if (csrfTokenCookie) {
                 config.headers['X-CSRFToken'] = csrfTokenCookie.value;
-                config.headers['Cookie'] = `${csrfTokenCookie.key}=${csrfTokenCookie.value}`;
             }
             return config;
         }, (error) => {

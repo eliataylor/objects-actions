@@ -2,7 +2,7 @@
 
 import * as dotenv from 'dotenv';
 import axios from 'axios';
-import {FieldTypeDefinition, TypeFieldSchema} from "./types";
+import {FieldTypeDefinition, NAVITEMS, TypeFieldSchema} from "./types";
 // import { FieldTypeDefinition, TypeFieldSchema } from "../../templates/reactjs/src/object-actions/types/types";
 // import {fakeFieldData} from "./builder-utils";
 import ApiClient, {HttpResponse} from "./ApiClient";
@@ -34,7 +34,7 @@ export class WorldBuilder {
     async init() {
         const loginResponse = await this.apiClient.login(process.env.REACT_APP_LOGIN_EMAIL || '', process.env.REACT_APP_LOGIN_PASS || '')
         if (loginResponse.success) {
-            console.log('Login successful, token: ', loginResponse.data.access_token);
+            console.log('Login successful, token: ', loginResponse.data);
             builder.buildWorld().then(() => {
                 const allData = builder.getResponses()
                 for (let type in allData) {
@@ -51,6 +51,12 @@ export class WorldBuilder {
         for (const item of this.worldcounts) {
             for (let i = 0; i < item.count; i++) {
                 if (typeof TypeFieldSchema[item.type] === 'undefined') {
+                    console.error('Invalid Type', item)
+                    break;
+                }
+                const hasUrl = NAVITEMS.find(nav => nav.type === item.type);
+                if (!hasUrl) {
+                    console.error('Invalid URL Type', item)
                     break;
                 }
                 const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[item.type])
@@ -76,7 +82,7 @@ export class WorldBuilder {
                             console.warn(`relationship ${relType} has no data yet`)
                         }
                     } else if (field.field_type === 'image') {
-                        const imageUrl = faker.image.urlLoremFlickr({category: item.type})
+                        const imageUrl = faker.image.urlLoremFlickr({category: hasUrl.name})
                         console.log(`Going to load ${imageUrl}`)
                         const imageResponse = await axios.get(imageUrl, {responseType: 'stream'});
                         if (imageResponse.status !== 200) {
@@ -109,7 +115,7 @@ export class WorldBuilder {
                     formData = entity;
                 }
 
-                const apiUrl = `${process.env.REACT_APP_API_HOST}/api/${item.type}/`
+                const apiUrl = `${process.env.REACT_APP_API_HOST}${hasUrl.api}/`
                 const response = await this.apiClient.post(apiUrl, formData, headers);
                 if (typeof this.responses[item.type] === 'undefined') this.responses[item.type] = [];
                 this.responses[item.type].push(response);
@@ -125,17 +131,17 @@ export class WorldBuilder {
 
 const worldcounts: WorldCount[] = [
 //    {type: 'user', count: 1},
-    {type: 'song', count: 100},
-    {type: 'venue', count: 10},
-    {type: 'event', count: 10},
-    {type: 'friendship', count: 10},
-    {type: 'playlist', count: 5},
-    {type: 'playlist_songs', count: 100},
-    {type: 'event_playlists', count: 20},
-    {type: 'activity_log', count: 30},
-    {type: 'event_checkins', count: 10},
-    {type: 'song_requests', count: 10},
-    {type: 'likes', count: 10},
+//    {type: 'Songs', count: 100},
+    {type: 'Venues', count: 10},
+    {type: 'Events', count: 10},
+    {type: 'Friendships', count: 10},
+    {type: 'Playlists', count: 5},
+    {type: 'PlaylistSongs', count: 100},
+    {type: 'EventPlaylists', count: 20},
+    {type: 'ActivityLogs', count: 30},
+    {type: 'EventCheckins', count: 10},
+    {type: 'SongRequests', count: 10},
+    {type: 'Likes', count: 10},
 ];
 
 const builder = new WorldBuilder(worldcounts);

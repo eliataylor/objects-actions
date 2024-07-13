@@ -19,7 +19,7 @@ interface ParsedURL {
 
 export function parseFormURL(url: string): ParsedURL | null {
     // Regular expression to capture object/id pairs and the verb
-    const pattern = /^\/forms(\/[a-zA-Z0-9]+\/\d+)+(\/(add|edit|delete))$/;
+    const pattern = /^\/forms(\/[a-zA-Z0-9_-]+\/\d+)+(\/(add|edit|delete))$/;
     const match = url.match(pattern);
 
     if (!match) {
@@ -41,8 +41,16 @@ export function parseFormURL(url: string): ParsedURL | null {
 
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
-interface User {
-	readonly id: string;
+interface Users {
+	_type: string
+	is_active?: boolean
+	is_staff?: boolean
+	last_login?: string
+	date_joined?: string
+	username?: string
+	first_name?: string
+	last_name?: string
+	readonly id: number;
 	phone?: string | null;
 	email?: string | null;
 	profile_picture?: string | null;
@@ -50,44 +58,60 @@ interface User {
 	gender?: string | null;
 	locale?: string | null;
 	last_known_location?: string | null;
-	status: string;
 	spotify_access_token?: string | null;
 	spotify_refresh_token?: string | null;
 	spotify_token_expires_at?: string | null;
 	apple_token_data?: object | null;
 }
-interface Song {
-	readonly id: string;
+interface Songs {
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	readonly id: number;
 	spotify_id?: string | null;
 	apple_id?: string | null;
 	name: string;
 	artist?: string | null;
 	cover?: string | null;
 }
-interface Playlist {
-	readonly id: string;
-	author?: string | null;
+interface Playlists {
+	_type: string
+	created_at: number
+	modified_at: number
+	readonly id: number;
+	author?: RelEntity | null;
 	name: string;
 	bio?: string | null;
 	image?: string | null;
 }
 interface PlaylistSongs {
-	playlist: string;
-	song: string;
+	_type: string
+	created_at: number
+	modified_at: number
+	playlist: RelEntity;
+	song: RelEntity;
 	order: number;
 	likes_count?: number | null;
-	author: string;
+	author: RelEntity;
 	match_score?: number | null;
 }
 interface EventPlaylists {
-	playlist: string;
-	event: string;
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	playlist: RelEntity;
+	event: RelEntity;
 	order: number;
 }
-interface Venue {
-	slug: string;
-	author: string;
-	managers?: string[] | null;
+interface Venues {
+	_type: string
+	created_at: number
+	modified_at: number
+	url_alias: string;
+	author: RelEntity;
+	managers?: RelEntity[] | null;
 	name: string;
 	description: string;
 	cover?: string[] | null;
@@ -95,162 +119,196 @@ interface Venue {
 	address?: string | null;
 	privacy: string;
 }
-interface Event {
-	readonly id: string;
-	author: string;
-	cohosts?: string | null;
-	slug?: string | null;
+interface Events {
+	_type: string
+	created_at: number
+	modified_at: number
+	readonly id: number;
+	author: RelEntity;
+	cohosts?: RelEntity | null;
+	url_alias?: string | null;
 	name: string;
 	starts: string;
 	ends: string;
 	cover?: string[] | null;
 	description: string;
-	venue: string;
+	venue: RelEntity;
 }
-interface Friendship {
-	sender: string;
-	recipient: string;
+interface Friendships {
+	_type: string
+	created_at: number
+	modified_at: number
+	author: RelEntity;
+	recipient: RelEntity;
 	status: string;
 }
 interface Invites {
-	sender: string;
-	recipient: string;
-	event?: string | null;
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	sender: RelEntity;
+	recipient: RelEntity;
+	event?: RelEntity | null;
 	status: string;
 }
-interface ActivityLog {
-	readonly id: string;
+interface ActivityLogs {
+	_type: string
+	created_at: number
+	modified_at: number
+	readonly id: number;
 	activity: string;
 	last_notified: string;
-	author: string;
+	author: RelEntity;
 	location?: string | null;
-	target_user?: string | null;
-	target_song?: string | null;
-	target_playlist?: string | null;
-	target_event?: string | null;
-	target_venue?: string | null;
+	target_user?: RelEntity | null;
+	target_song?: RelEntity | null;
+	target_playlist?: RelEntity | null;
+	target_event?: RelEntity | null;
+	target_venue?: RelEntity | null;
 }
 interface SongRequests {
-	author: string;
-	song: string;
-	event: string;
-	playlist: string;
+	_type: string
+	created_at: number
+	modified_at: number
+	author: RelEntity;
+	song: RelEntity;
+	event: RelEntity;
+	playlist: RelEntity;
 	status: string;
 }
 interface EventCheckins {
-	author: string;
-	venue: string;
-	event: string;
+	_type: string
+	created_at: number
+	modified_at: number
+	author: RelEntity;
+	venue: RelEntity;
+	event: RelEntity;
 	coordinate: string;
 	status: string;
 }
 interface Likes {
-	author: string;
+	_type: string
+	created_at: number
+	modified_at: number
+	author: RelEntity;
 	type: string;
-	song?: string | null;
-	event?: string | null;
-	playlist?: string | null;
+	song?: RelEntity | null;
+	event?: RelEntity | null;
+	playlist?: RelEntity | null;
 }
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
 
 
 
 //---OBJECT-ACTIONS-API-RESP-STARTS---//
+export interface RelEntity {
+    id: string | number;
+    str: string;
+    _type: string;
+}
+
 export interface ListView {
     count: number;
     next: string | null;
     previous: string | null;
-    results: Array<User | Song | Playlist | PlaylistSongs | EventPlaylists | Venue | Event | Friendship | Invites | ActivityLog | SongRequests | EventCheckins | Likes>
+    results: Array<Users | Songs | Playlists | PlaylistSongs | EventPlaylists | Venues | Events | Friendships | Invites | ActivityLogs | SongRequests | EventCheckins | Likes>
 }
 
-export type EntityView = User | Song | Playlist | PlaylistSongs | EventPlaylists | Venue | Event | Friendship | Invites | ActivityLog | SongRequests | EventCheckins | Likes; 
+export type EntityView = Users | Songs | Playlists | PlaylistSongs | EventPlaylists | Venues | Events | Friendships | Invites | ActivityLogs | SongRequests | EventCheckins | Likes; 
+
+export function getProp<T extends EntityView, K extends keyof T>(entity: EntityView, key: string): T[K] | null {
+    // @ts-ignore
+    if (key in entity) return entity[key]
+	return null;
+}
 //---OBJECT-ACTIONS-API-RESP-ENDS---//
 
 
 
 //---OBJECT-ACTIONS-NAV-ITEMS-STARTS---//
 export interface NavItem {
-    name: string;
-    class: string;
-    api: string;
-    screen: string;
+        name: string;
+        screen: string;
+        api: string;
+        type: string;
 }
 export const NAVITEMS: NavItem[] = [
   {
-    "name": "User",
-    "class": "user",
-    "api": "/api/user",
-    "screen": "/user"
+    "name": "Users",
+    "type": "Users",
+    "api": "/api/users",
+    "screen": "/users"
   },
   {
-    "name": "Song",
-    "class": "song",
-    "api": "/api/song",
-    "screen": "/song"
+    "name": "Songs",
+    "type": "Songs",
+    "api": "/api/songs",
+    "screen": "/songs"
   },
   {
-    "name": "Playlist",
-    "class": "playlist",
-    "api": "/api/playlist",
-    "screen": "/playlist"
+    "name": "Playlists",
+    "type": "Playlists",
+    "api": "/api/playlists",
+    "screen": "/playlists"
   },
   {
     "name": "Playlist Songs",
-    "class": "playlist_songs",
+    "type": "PlaylistSongs",
     "api": "/api/playlist_songs",
     "screen": "/playlist_songs"
   },
   {
     "name": "Event Playlists",
-    "class": "event_playlists",
+    "type": "EventPlaylists",
     "api": "/api/event_playlists",
     "screen": "/event_playlists"
   },
   {
-    "name": "Venue",
-    "class": "venue",
-    "api": "/api/venue",
-    "screen": "/venue"
+    "name": "Venues",
+    "type": "Venues",
+    "api": "/api/venues",
+    "screen": "/venues"
   },
   {
-    "name": "Event",
-    "class": "event",
-    "api": "/api/event",
-    "screen": "/event"
+    "name": "Events",
+    "type": "Events",
+    "api": "/api/events",
+    "screen": "/events"
   },
   {
-    "name": "Friendship",
-    "class": "friendship",
-    "api": "/api/friendship",
-    "screen": "/friendship"
+    "name": "Friendships",
+    "type": "Friendships",
+    "api": "/api/friendships",
+    "screen": "/friendships"
   },
   {
     "name": "Invites",
-    "class": "invites",
+    "type": "Invites",
     "api": "/api/invites",
     "screen": "/invites"
   },
   {
-    "name": "Activity Log",
-    "class": "activity_log",
-    "api": "/api/activity_log",
-    "screen": "/activity_log"
+    "name": "Activity Logs",
+    "type": "ActivityLogs",
+    "api": "/api/activity_logs",
+    "screen": "/activity_logs"
   },
   {
     "name": "Song Requests",
-    "class": "song_requests",
+    "type": "SongRequests",
     "api": "/api/song_requests",
     "screen": "/song_requests"
   },
   {
     "name": "Event Checkins",
-    "class": "event_checkins",
+    "type": "EventCheckins",
     "api": "/api/event_checkins",
     "screen": "/event_checkins"
   },
   {
     "name": "Likes",
-    "class": "likes",
+    "type": "Likes",
     "api": "/api/likes",
     "screen": "/likes"
   }
@@ -289,13 +347,13 @@ interface ObjectOfObjects {
     [key: string]: { [key: string]: FieldTypeDefinition };
 }
 export const TypeFieldSchema: ObjectOfObjects = {
-  "user": {
+  "Users": {
     "id": {
       "machine": "id",
       "singular": "ID",
       "plural": "IDs",
-      "data_type": "string",
       "field_type": "id_auto_increment",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -306,8 +364,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "phone",
       "singular": "Phone",
       "plural": "Phones",
-      "data_type": "string",
       "field_type": "phone",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -318,8 +376,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "email",
       "singular": "Email",
       "plural": "Emails",
-      "data_type": "string",
       "field_type": "email",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -330,8 +388,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "profile_picture",
       "singular": "Profile Picture",
       "plural": "Profile Pictures",
-      "data_type": "string",
       "field_type": "image",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -342,8 +400,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "birthday",
       "singular": "Birthday",
       "plural": "Birthdays",
-      "data_type": "string",
       "field_type": "date",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -354,8 +412,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "gender",
       "singular": "Gender",
       "plural": "Genders",
-      "data_type": "string",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -380,8 +438,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "locale",
       "singular": "Locale",
       "plural": "Locales",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -392,54 +450,20 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "last_known_location",
       "singular": "Last Known Location",
       "plural": "Last Known Locations",
-      "data_type": "string",
       "field_type": "coordinates",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
       "required": false,
       "example": ""
     },
-    "status": {
-      "machine": "status",
-      "singular": "Status",
-      "plural": "Status",
-      "data_type": "string",
-      "field_type": "enum",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "pending",
-      "required": true,
-      "example": "[\"invited\", \"pending\", \"verified\", \"deleted\", \"locked\"]",
-      "options": [
-        {
-          "label": "Invited",
-          "id": "invited"
-        },
-        {
-          "label": "Pending",
-          "id": "pending"
-        },
-        {
-          "label": "Verified",
-          "id": "verified"
-        },
-        {
-          "label": "Deleted",
-          "id": "deleted"
-        },
-        {
-          "label": "Locked",
-          "id": "locked"
-        }
-      ]
-    },
     "spotify_access_token": {
       "machine": "spotify_access_token",
       "singular": "Spotify Token",
       "plural": "Spotify Tokens",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -450,8 +474,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "spotify_refresh_token",
       "singular": "Spotify Refresh Token",
       "plural": "Spotify Refresh Tokens",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -462,8 +486,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "spotify_token_expires_at",
       "singular": "Spotify Expiry",
       "plural": "Spotify Expirys",
-      "data_type": "string",
       "field_type": "date_time",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -474,8 +498,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "apple_token_data",
       "singular": "Apple Token",
       "plural": "Apple Tokens",
-      "data_type": "object",
       "field_type": "json",
+      "data_type": "object",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -483,13 +507,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "song": {
+  "Songs": {
     "id": {
       "machine": "id",
       "singular": "ID",
       "plural": "IDs",
-      "data_type": "string",
       "field_type": "id_auto_increment",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -500,8 +524,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "spotify_id",
       "singular": "Spotify ID",
       "plural": "Spotify IDs",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -512,8 +536,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "apple_id",
       "singular": "Apple ID",
       "plural": "Apple IDs",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -524,8 +548,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "name",
       "singular": "Name",
       "plural": "Names",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -536,8 +560,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "artist",
       "singular": "Artist",
       "plural": "Artists",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -548,8 +572,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "cover",
       "singular": "Cover",
       "plural": "Covers",
-      "data_type": "string",
       "field_type": "image",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -557,13 +581,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "playlist": {
+  "Playlists": {
     "id": {
       "machine": "id",
       "singular": "ID",
       "plural": "IDs",
-      "data_type": "string",
       "field_type": "id_auto_increment",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -574,10 +598,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "author",
       "singular": "DJ",
       "plural": "DJs",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": false,
       "example": ""
@@ -586,8 +610,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "name",
       "singular": "Name",
       "plural": "Names",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -598,8 +622,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "bio",
       "singular": "Bio",
       "plural": "Bios",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -610,8 +634,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "image",
       "singular": "Image",
       "plural": "Images",
-      "data_type": "string",
       "field_type": "image",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -619,15 +643,15 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "playlist_songs": {
+  "PlaylistSongs": {
     "playlist": {
       "machine": "playlist",
       "singular": "Playlist",
       "plural": "Playlists",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "playlist",
+      "relationship": "playlists",
       "default": "",
       "required": true,
       "example": ""
@@ -636,10 +660,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "song",
       "singular": "Song",
       "plural": "Songs",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "song",
+      "relationship": "songs",
       "default": "",
       "required": true,
       "example": ""
@@ -648,8 +672,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "order",
       "singular": "Order",
       "plural": "Orders",
-      "data_type": "number",
       "field_type": "integer",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -660,8 +684,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "likes_count",
       "singular": "Like",
       "plural": "Likes",
-      "data_type": "number",
       "field_type": "integer",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "0",
@@ -672,10 +696,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "author",
       "singular": "Added By",
       "plural": "Added Bys",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -684,8 +708,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "match_score",
       "singular": "Match Score",
       "plural": "Match Scores",
-      "data_type": "number",
       "field_type": "integer",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -693,15 +717,15 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "event_playlists": {
+  "EventPlaylists": {
     "playlist": {
       "machine": "playlist",
       "singular": "Playlist",
       "plural": "Playlists",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "playlist",
+      "relationship": "playlists",
       "default": "",
       "required": true,
       "example": ""
@@ -710,10 +734,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "event",
       "singular": "Event",
       "plural": "Events",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "event",
+      "relationship": "events",
       "default": "",
       "required": true,
       "example": ""
@@ -722,8 +746,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "order",
       "singular": "Order",
       "plural": "Orders",
-      "data_type": "number",
       "field_type": "integer",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -731,13 +755,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "venue": {
-    "slug": {
-      "machine": "slug",
-      "singular": "URL Alia",
+  "Venues": {
+    "url_alias": {
+      "machine": "url_alias",
+      "singular": "URL Alias",
       "plural": "URL Alias",
-      "data_type": "string",
       "field_type": "slug",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "name",
@@ -748,10 +772,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "author",
       "singular": "Owner",
       "plural": "Owners",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -760,10 +784,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "managers",
       "singular": "Manager",
       "plural": "Managers",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 3,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": false,
       "example": ""
@@ -772,8 +796,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "name",
       "singular": "Name",
       "plural": "Names",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -784,8 +808,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "description",
       "singular": "Description",
       "plural": "Descriptions",
-      "data_type": "string",
       "field_type": "textarea",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -796,8 +820,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "cover",
       "singular": "Cover",
       "plural": "Covers",
-      "data_type": "string",
       "field_type": "image",
+      "data_type": "string",
       "cardinality": 10,
       "relationship": "",
       "default": "",
@@ -808,8 +832,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "bounding_box",
       "singular": "Bounding Box",
       "plural": "Bounding Boxes",
-      "data_type": "string",
       "field_type": "bounding_box",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -820,8 +844,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "address",
       "singular": "Addres",
       "plural": "Address",
-      "data_type": "string",
       "field_type": "address",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -832,8 +856,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "privacy",
       "singular": "Privacy",
       "plural": "Privacys",
-      "data_type": "string",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "unlisted",
@@ -855,13 +879,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       ]
     }
   },
-  "event": {
+  "Events": {
     "id": {
       "machine": "id",
       "singular": "ID",
       "plural": "IDs",
-      "data_type": "string",
       "field_type": "id_auto_increment",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -872,10 +896,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "author",
       "singular": "Host",
       "plural": "Hosts",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -884,20 +908,20 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "cohosts",
       "singular": "Co-Host",
       "plural": "Co-Hosts",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": false,
       "example": ""
     },
-    "slug": {
-      "machine": "slug",
+    "url_alias": {
+      "machine": "url_alias",
       "singular": "URL Alia",
       "plural": "URL Alias",
-      "data_type": "string",
       "field_type": "slug",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "name",
@@ -908,8 +932,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "name",
       "singular": "Name",
       "plural": "Names",
-      "data_type": "string",
       "field_type": "text",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -920,8 +944,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "starts",
       "singular": "Start",
       "plural": "Starts",
-      "data_type": "string",
       "field_type": "date_time",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -932,8 +956,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "ends",
       "singular": "End",
       "plural": "Ends",
-      "data_type": "string",
       "field_type": "date_time",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -944,8 +968,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "cover",
       "singular": "Cover",
       "plural": "Covers",
-      "data_type": "string",
       "field_type": "image",
+      "data_type": "string",
       "cardinality": 10,
       "relationship": "",
       "default": "",
@@ -956,8 +980,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "description",
       "singular": "Description",
       "plural": "Descriptions",
-      "data_type": "string",
       "field_type": "textarea",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -968,24 +992,24 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "venue",
       "singular": "Venue",
       "plural": "Venues",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "venue",
+      "relationship": "venues",
       "default": "",
       "required": true,
       "example": ""
     }
   },
-  "friendship": {
-    "sender": {
-      "machine": "sender",
+  "Friendships": {
+    "author": {
+      "machine": "author",
       "singular": "Sender",
       "plural": "Senders",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -994,10 +1018,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "recipient",
       "singular": "Recipient",
       "plural": "Recipients",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -1006,8 +1030,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "status",
       "singular": "Status",
       "plural": "Status",
-      "data_type": "string",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "pending",
@@ -1033,15 +1057,15 @@ export const TypeFieldSchema: ObjectOfObjects = {
       ]
     }
   },
-  "invites": {
+  "Invites": {
     "sender": {
       "machine": "sender",
       "singular": "Sender",
       "plural": "Senders",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -1050,10 +1074,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "recipient",
       "singular": "Recipient",
       "plural": "Recipients",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -1062,10 +1086,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "event",
       "singular": "Event",
       "plural": "Events",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "event",
+      "relationship": "events",
       "default": "",
       "required": false,
       "example": ""
@@ -1074,8 +1098,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "status",
       "singular": "Status",
       "plural": "Status",
-      "data_type": "string",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "invited",
@@ -1101,13 +1125,13 @@ export const TypeFieldSchema: ObjectOfObjects = {
       ]
     }
   },
-  "activity_log": {
+  "ActivityLogs": {
     "id": {
       "machine": "id",
       "singular": "ID",
       "plural": "IDs",
-      "data_type": "string",
       "field_type": "id_auto_increment",
+      "data_type": "number",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -1118,8 +1142,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "activity",
       "singular": "Activity",
       "plural": "Activitys",
-      "data_type": "string",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -1148,8 +1172,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "last_notified",
       "singular": "Last Notified",
       "plural": "Last Notifieds",
-      "data_type": "string",
       "field_type": "date_time",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -1160,10 +1184,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "author",
       "singular": "User",
       "plural": "Users",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -1172,8 +1196,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "location",
       "singular": "Location",
       "plural": "Locations",
-      "data_type": "string",
       "field_type": "coordinates",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -1184,10 +1208,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "target_user",
       "singular": "Target User",
       "plural": "Target Users",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": false,
       "example": ""
@@ -1196,10 +1220,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "target_song",
       "singular": "Target Song",
       "plural": "Target Songs",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "song",
+      "relationship": "songs",
       "default": "",
       "required": false,
       "example": ""
@@ -1208,10 +1232,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "target_playlist",
       "singular": "Target Playlist",
       "plural": "Target Playlists",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "playlist",
+      "relationship": "playlists",
       "default": "",
       "required": false,
       "example": ""
@@ -1220,10 +1244,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "target_event",
       "singular": "Target Event",
       "plural": "Target Events",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "event",
+      "relationship": "events",
       "default": "",
       "required": false,
       "example": ""
@@ -1232,24 +1256,24 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "target_venue",
       "singular": "Target Venue",
       "plural": "Target Venues",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "venue",
+      "relationship": "venues",
       "default": "",
       "required": false,
       "example": ""
     }
   },
-  "song_requests": {
+  "SongRequests": {
     "author": {
       "machine": "author",
       "singular": "Requester",
       "plural": "Requesters",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -1258,10 +1282,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "song",
       "singular": "Song",
       "plural": "Songs",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "song",
+      "relationship": "songs",
       "default": "",
       "required": true,
       "example": ""
@@ -1270,10 +1294,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "event",
       "singular": "Event",
       "plural": "Events",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "event",
+      "relationship": "events",
       "default": "",
       "required": true,
       "example": ""
@@ -1282,8 +1306,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "playlist",
       "singular": "Playlist",
       "plural": "Playlists",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
       "relationship": "playlist_songs",
       "default": "",
@@ -1294,8 +1318,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "status",
       "singular": "Status",
       "plural": "Status",
-      "data_type": "string",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "requested",
@@ -1321,15 +1345,15 @@ export const TypeFieldSchema: ObjectOfObjects = {
       ]
     }
   },
-  "event_checkins": {
+  "EventCheckins": {
     "author": {
       "machine": "author",
       "singular": "User",
       "plural": "Users",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -1338,10 +1362,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "venue",
       "singular": "Venue",
       "plural": "Venues",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "venue",
+      "relationship": "venues",
       "default": "",
       "required": true,
       "example": ""
@@ -1350,10 +1374,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "event",
       "singular": "Event",
       "plural": "Events",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "event",
+      "relationship": "events",
       "default": "",
       "required": true,
       "example": ""
@@ -1362,8 +1386,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "coordinate",
       "singular": "Coordinate",
       "plural": "Coordinates",
-      "data_type": "string",
       "field_type": "coordinates",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -1374,8 +1398,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "status",
       "singular": "Status",
       "plural": "Status",
-      "data_type": "string",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "entered",
@@ -1393,15 +1417,15 @@ export const TypeFieldSchema: ObjectOfObjects = {
       ]
     }
   },
-  "likes": {
+  "Likes": {
     "author": {
       "machine": "author",
       "singular": "Requester",
       "plural": "Requesters",
-      "data_type": "string",
       "field_type": "user_account",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "user_account",
+      "relationship": "users",
       "default": "",
       "required": true,
       "example": ""
@@ -1410,8 +1434,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "type",
       "singular": "Type",
       "plural": "Types",
-      "data_type": "string",
       "field_type": "enum",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -1440,10 +1464,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "song",
       "singular": "Song",
       "plural": "Songs",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "song",
+      "relationship": "songs",
       "default": "",
       "required": false,
       "example": ""
@@ -1452,10 +1476,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "event",
       "singular": "Event",
       "plural": "Events",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "event",
+      "relationship": "events",
       "default": "",
       "required": false,
       "example": ""
@@ -1464,8 +1488,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "machine": "playlist",
       "singular": "Playlist",
       "plural": "Playlists",
-      "data_type": "string",
       "field_type": "type_reference",
+      "data_type": "RelEntity",
       "cardinality": 1,
       "relationship": "playlist_songs",
       "default": "",
@@ -1475,6 +1499,82 @@ export const TypeFieldSchema: ObjectOfObjects = {
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

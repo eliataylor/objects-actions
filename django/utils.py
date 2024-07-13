@@ -206,7 +206,7 @@ def capitalize(string):
     return string[:1].upper() + string[1:] if string else string
 
 def pluralize(word, count):
-    if word.lower() == 'status':
+    if word.lower() == 'status' or word.lower() == 'url alias' or word.lower() == 'privacy':
         return word
 
     """Pluralizes a word based on the count."""
