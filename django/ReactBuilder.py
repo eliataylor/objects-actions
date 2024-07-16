@@ -6,13 +6,12 @@ import ast
 
 
 class ReactBuilder:
-    def __init__(self, field_csv, matrix_csv, react_dir):
-        self.react_dir = react_dir
+    def __init__(self, field_csv, matrix_csv, types_filepath):
+        self.types_filepath = types_filepath
 
         self.json = build_json_from_csv(field_csv)
 
     def build_types(self):
-        types_file_path = os.path.join(self.react_dir, 'src/object-actions/types/types.tsx')
 
         types = []
         constants = {}
@@ -123,7 +122,7 @@ class ReactBuilder:
             code.append("}")
             interfaces.append("\n".join(code))
 
-        inject_generated_code(types_file_path, "\n".join(interfaces).strip(), 'TYPE-SCHEMA')
+        inject_generated_code(self.types_filepath, "\n".join(interfaces).strip(), 'TYPE-SCHEMA')
 
         type_defintions = f"""export interface RelEntity {{
     id: string | number;
@@ -147,7 +146,7 @@ export function getProp<T extends EntityView, K extends keyof T>(entity: EntityV
 }}
 """
 
-        inject_generated_code(types_file_path, type_defintions.strip(), 'API-RESP')
+        inject_generated_code(self.types_filepath, type_defintions.strip(), 'API-RESP')
 
         navItems = f"""export interface NavItem {{
         name: string;
@@ -156,9 +155,9 @@ export function getProp<T extends EntityView, K extends keyof T>(entity: EntityV
         type: string;
 }}
 export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
-        inject_generated_code(types_file_path, navItems, 'NAV-ITEMS')
+        inject_generated_code(self.types_filepath, navItems, 'NAV-ITEMS')
 
-        inject_generated_code(types_file_path, f"""export interface FieldTypeDefinition {{
+        inject_generated_code(self.types_filepath, f"""export interface FieldTypeDefinition {{
     machine: string;
     singular: string;
     plural: string;

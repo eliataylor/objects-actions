@@ -4,7 +4,7 @@ from loguru import logger
 
 from ModelBuilder import ModelBuilder
 from UserBuilder import UserBuilder
-from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv
+from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_object_by_key_value
 
 
 class DjangoBuilder:
@@ -156,7 +156,24 @@ class DjangoBuilder:
         parts = []
         for class_name in self.json:
             model_name = create_object_name(class_name)
-            parts.append(tpl.replace('__CLASSNAME__', model_name))
+            code = tpl.replace('__CLASSNAME__', model_name)
+
+            if find_object_by_key_value(self.json[class_name], "Field Name", "title") is not None:
+                code = code.replace("__TITLEFIELD__", "title")
+            elif find_object_by_key_value(self.json[class_name], "Field Name", "name") is not None:
+                code = code.replace("__TITLEFIELD__", "name")
+            elif find_object_by_key_value(self.json[class_name], "Field Name", "slug") is not None:
+                code = code.replace("__TITLEFIELD__", "slug")
+            elif find_object_by_key_value(self.json[class_name], "Field Name", "url_alias") is not None:
+                code = code.replace("__TITLEFIELD__", "url_alias")
+            else:
+                for obj in self.json[class_name]:
+                    if obj['Field Type'] not in ["vocabulary_reference", "type_reference", "user_account", "user_profile"]:
+                        code = code.replace("__TITLEFIELD__", obj['Field Name'])
+                        break
+
+
+            parts.append(code)
             self.append_import("views", f"from .models import {model_name}")
             self.append_import("views", f"from .serializers import {model_name}Serializer")
 

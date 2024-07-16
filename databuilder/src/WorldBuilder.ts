@@ -95,7 +95,7 @@ export class WorldBuilder {
                         }
                     } else {
 
-                        entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options)
+                        entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.name)
                         if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
                             hasImage = true;
                         }
@@ -119,6 +119,7 @@ export class WorldBuilder {
                 const response = await this.apiClient.post(apiUrl, formData, headers);
                 if (typeof this.responses[item.type] === 'undefined') this.responses[item.type] = [];
                 this.responses[item.type].push(response);
+                console.log(`Created ${item.type} --- ${JSON.stringify(response.data)}`)
             }
         }
     }
@@ -131,17 +132,20 @@ export class WorldBuilder {
 
 const worldcounts: WorldCount[] = [
 //    {type: 'user', count: 1},
-//    {type: 'Songs', count: 100},
-    {type: 'Venues', count: 10},
-    {type: 'Events', count: 10},
+    {type: 'Songs', count: 100},
+    {type: 'Venues', count: 30},
+    {type: 'Events', count: 50},
+    {type: 'Playlists', count: 20},
+    {type: 'ActivityLogs', count: 200},
+
+    /*
     {type: 'Friendships', count: 10},
-    {type: 'Playlists', count: 5},
     {type: 'PlaylistSongs', count: 100},
     {type: 'EventPlaylists', count: 20},
-    {type: 'ActivityLogs', count: 30},
     {type: 'EventCheckins', count: 10},
     {type: 'SongRequests', count: 10},
     {type: 'Likes', count: 10},
+     */
 ];
 
 const builder = new WorldBuilder(worldcounts);

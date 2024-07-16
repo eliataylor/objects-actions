@@ -220,15 +220,19 @@ class ModelBuilder:
                 logger.critical("Use the Default column to tell which other field to slugify")
             else:
                 overwrite = """\n\tdef save(self, *args, **kwargs):
-\t\tif not self.{field_name}:
-\t\t\tbase_slug = slugify(self.{slugified})
-\t\t\tslug = base_slug
-\t\t\tcount = 1
-\t\t\twhile {model_name}.objects.filter({field_name}=slug).exists():
-\t\t\t\tslug = f"{{base_slug}}-{{count}}"
-\t\t\t\tcount += 1
-\t\t\tself.{field_name} = slug
-\t\t\tsuper().save(*args, **kwargs)
+\t\tif '{slugified}' in kwargs:
+\t\t\tself.{slugified} = kwargs.pop('{slugified}')
+
+\t\tbase_slug = slugify(self.{slugified})
+\t\tslug = base_slug
+\t\tcount = 1
+
+\t\twhile {model_name}.objects.filter({field_name}=slug).exclude(id=self.id).exists():
+\t\t\tslug = f"{{base_slug}}-{{count}}"
+\t\t\tcount += 1
+\t\tself.{field_name} = slug
+
+\t\tsuper().save(*args, **kwargs)
 """.format(field_name=field_name, model_name=self.model_name, slugified=slugified)
 
                 self.methods.append(overwrite)

@@ -22,7 +22,7 @@ function getRandomFile(directoryPath: string): string {
     return join(directoryPath, randomFile);
 }
 
-export function fakeFieldData(field_type: string, field_name: string, options:any): any {
+export function fakeFieldData(field_type: string, field_name: string, options:any, model_type:string): any {
     switch (field_type) {
         case 'user_account':
             return 1; // TODO
@@ -30,10 +30,25 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
             return 1; // TODO
         case 'text':
             if (field_name === 'name') {
+                if (model_type == 'Venues') {
+                    return `${faker.location.buildingNumber()} ${faker.location.street()}`
+                }
+                if (model_type == 'Events') {
+                    return faker.commerce.productAdjective()
+                }
+                if (model_type == 'Songs') {
+                    return faker.music.songName()
+                }
+                if (model_type == 'Playlists') {
+                    return `${faker.commerce.department()} ${faker.music.genre()}`
+                }
                 return faker.person.fullName()
             }
+            if (field_name === 'description') {
+                return faker.commerce.productDescription()
+            }
             if (field_name === 'artist') {
-                return faker.person.middleName()
+                return faker.person.fullName()
             }
             return faker.lorem.sentence({min:1, max:6});
         case 'textarea':
