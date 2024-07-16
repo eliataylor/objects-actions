@@ -25,7 +25,7 @@ def build_json_from_csv(csv_file):
                 else:
                     cur_type = obj_type
 
-            if row['Field Label'] is None or row['Field Label'] == '':
+            if row['Field Type'] is None or row['Field Type'] == '':
                 continue
 
             if row['Field Name'] is None or row['Field Name'] == '':
