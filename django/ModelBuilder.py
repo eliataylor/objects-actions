@@ -129,10 +129,11 @@ class ModelBuilder:
     def infer_field_type(self, field_type, field_name, field):
         if field_type == "id_auto_increment":
             return "models.AutoField(primary_key=True)"
-        elif field_type == 'user_profiles':
-            return "models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)"
-        elif field_type == 'user_account':
-            return "models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
+        elif  field_type == 'user_profiles' or field_type == 'user_account':
+            if field['HowMany'] == 1:
+                return f"models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
+            else:
+                return f"models.ManyToManyField(get_user_model(), related_name='{field_name}_to_{field_type}')"
         elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
             # TODO: Test OneToOneField, ManyToMany, ...
             model_name = create_object_name(field['Relationship'])
@@ -140,7 +141,7 @@ class ModelBuilder:
             if field['HowMany'] == 1:
                 return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
             else:
-                return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, null=True)"
+                return f"models.ManyToManyField({model_name}, related_name='{field_name}_to_{model_name}')"
         elif field_type == "text":
             return "models.CharField(max_length=255)"  # Adjust max_length as needed
         elif field_type == "textarea":

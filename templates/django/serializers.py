@@ -43,6 +43,7 @@ class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
 
+
 class CustomSerializer(serializers.ModelSerializer):
     serializer_related_field = SubFieldRelatedField
 
@@ -52,15 +53,27 @@ class CustomSerializer(serializers.ModelSerializer):
         # Add the model type
         representation['_type'] = instance.__class__.__name__
 
-        for field in self.Meta.model._meta.fields:
-            if field.is_relation and field.many_to_one:
+        for field in self.Meta.model._meta.get_fields():
+            if field.is_relation:
                 field_name = field.name
                 related_instance = getattr(instance, field_name)
-                if related_instance is not None:
-                    representation[field_name] = {
-                        "id": related_instance.pk,
-                        "str": str(related_instance),
-                        "_type": related_instance.__class__.__name__,
-                    }
+
+                if field.many_to_one:
+                    if related_instance is not None:
+                        representation[field_name] = {
+                            "id": related_instance.pk,
+                            "str": str(related_instance),
+                            "_type": related_instance.__class__.__name__,
+                        }
+
+                elif field.many_to_many:
+                    related_instances = related_instance.all()
+                    representation[field_name] = [
+                        {
+                            "id": related.pk,
+                            "str": str(related),
+                            "_type": related.__class__.__name__,
+                        } for related in related_instances
+                    ]
 
         return representation
