@@ -1,6 +1,7 @@
 .idea
 .env
 */.env
+.venv
 examples/**djmote.csv
 databuilder/public/profilepics
 databuilder/dist
