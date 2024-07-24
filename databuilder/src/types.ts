@@ -41,7 +41,7 @@ export function parseFormURL(url: string): ParsedURL | null {
 
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
-interface Users {
+export interface Users {
 	_type: string
 	is_active?: boolean
 	is_staff?: boolean

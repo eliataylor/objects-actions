@@ -3,17 +3,10 @@ import tough, {Cookie, CookieJar} from 'tough-cookie';
 
 export interface HttpResponse<T> {
     success: boolean;
-    data?: T | null;
+    data: T | any;
     error?: string;
     started: number;
     ended: number;
-}
-
-export interface ListResponse {
-    results: [];
-    count: number;
-    next?: string;
-    previous?: string;
 }
 
 class ApiClient {
@@ -171,7 +164,15 @@ class ApiClient {
         });
     }
 
-    private async setCookies(url: string, setCookieHeader: string[]): Promise<void> {
+    changeCookies(cookie:string, url:string) {
+        this.cookieJar.setCookieSync(cookie, url);
+    }
+
+    getCookies() {
+        return this.cookieJar.getSetCookieStringsSync(process.env.REACT_APP_API_HOST || "*");
+    }
+
+    public async setCookies(url: string, setCookieHeader: string[]): Promise<void> {
         setCookieHeader.forEach((cookieStr) => {
             const cookie = Cookie.parse(cookieStr);
             if (cookie) {

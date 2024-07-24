@@ -2,16 +2,19 @@
 
 import * as dotenv from 'dotenv';
 import axios from 'axios';
-import {FieldTypeDefinition, NAVITEMS, TypeFieldSchema} from "./types";
-// import { FieldTypeDefinition, TypeFieldSchema } from "../../templates/reactjs/src/object-actions/types/types";
-// import {fakeFieldData} from "./builder-utils";
+import {Users, TypeFieldSchema, FieldTypeDefinition, NAVITEMS} from "./types";
 import ApiClient, {HttpResponse} from "./ApiClient";
 import {fakeFieldData} from "./builder-utils";
 import {faker} from "@faker-js/faker";
 
+
 const FormData = require('form-data');
 
 dotenv.config();
+
+interface Creators extends Users {
+    cookies?: string[];
+}
 
 interface WorldCount {
     type: string;
@@ -24,17 +27,25 @@ export class WorldBuilder {
     private worldcounts: WorldCount[];
     private responses: WorldData;
     private apiClient: ApiClient;
+    private superToken: string;
+    private contentCreators: Creators[];
 
     constructor(worldcounts: WorldCount[]) {
         this.worldcounts = worldcounts;
         this.responses = {};
         this.apiClient = new ApiClient();
+        this.superToken = ""
+        this.contentCreators = []
     }
 
-    async init() {
-        const loginResponse = await this.apiClient.login(process.env.REACT_APP_LOGIN_EMAIL || '', process.env.REACT_APP_LOGIN_PASS || '')
+    async init(email:string, pass:string) {
+        const loginResponse = await this.apiClient.login(email, pass)
         if (loginResponse.success) {
-            console.log('Login successful, token: ', loginResponse.data);
+            console.log('Login successful, cookies: ', loginResponse.data);
+            this.superToken = loginResponse.data
+
+            await builder.getContentCreators();
+
             builder.buildWorld().then(() => {
                 const allData = builder.getResponses()
                 for (let type in allData) {
@@ -45,6 +56,14 @@ export class WorldBuilder {
         } else {
             console.error('Login failed:', loginResponse.error);
         }
+    }
+
+    public async getContentCreators() {
+        const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/users/`);
+        if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
+            this.contentCreators = relResponse.data.results as Creators[]; // .results as Creators[]
+        }
+        console.log("CONTENT CREATORS " + this.contentCreators.length)
     }
 
     public async buildWorld() {
@@ -59,9 +78,25 @@ export class WorldBuilder {
                     console.error('Invalid URL Type', item)
                     break;
                 }
+
+                let randomIndex = Math.floor(Math.random() * this.contentCreators.length);
+                const creator = this.contentCreators[randomIndex]
+                console.log(creator);
+                if (typeof creator['cookies'] === 'undefined' && typeof creator['username'] === 'string') {
+                    const loginResponse = await this.apiClient.login(<string>creator['username'], "1234")
+                    if (loginResponse.success) {
+                        console.log('Login user successful, cookies: ', loginResponse.data);
+                        this.contentCreators[randomIndex]['cookies'] = this.apiClient.getCookies()
+                        creator['cookies'] = this.apiClient.getCookies()
+                    }
+                }
+                if (typeof creator['cookies'] === 'string') {
+                    await this.apiClient.setCookies(process.env.REACT_APP_API_HOST || "", creator['cookies']);
+                }
+
                 const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[item.type])
                 let hasImage = false;
-                const entity: any = {};
+                const entity: any = {author:creator.id};
                 const headers: any = {
                     'accept': 'application/json'
                 }
@@ -75,7 +110,7 @@ export class WorldBuilder {
                         // @ts-ignore
                         if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
                             // @ts-ignore
-                            const randomIndex = Math.floor(Math.random() * relResponse.data.results.length);
+                            randomIndex = Math.floor(Math.random() * relResponse.data.results.length);
                             // @ts-ignore
                             entity[field.machine] = relResponse.data.results[randomIndex].id || relResponse.data.results[randomIndex].slug
                         } else {
@@ -130,23 +165,20 @@ export class WorldBuilder {
 
 }
 
+const factor = 50
 const worldcounts: WorldCount[] = [
-//    {type: 'user', count: 1},
-    {type: 'Songs', count: 100},
-    {type: 'Venues', count: 30},
-    {type: 'Events', count: 50},
-    {type: 'Playlists', count: 20},
-    {type: 'ActivityLogs', count: 200},
-
-    /*
-    {type: 'Friendships', count: 10},
-    {type: 'PlaylistSongs', count: 100},
-    {type: 'EventPlaylists', count: 20},
-    {type: 'EventCheckins', count: 10},
-    {type: 'SongRequests', count: 10},
-    {type: 'Likes', count: 10},
-     */
+    {type: 'Songs', count: 1 * factor},
+    {type: 'Venues', count: 3 * factor},
+    {type: 'Events', count: 5 * factor},
+    {type: 'Playlists', count: 2 * factor},
+    {type: 'ActivityLogs', count: 2 * factor},
+    {type: 'Friendships', count: 1 * factor},
+    {type: 'PlaylistSongs', count: 1 * factor},
+    {type: 'EventPlaylists', count: 2 * factor},
+    {type: 'EventCheckins', count: 1 * factor},
+    {type: 'SongRequests', count: 1 * factor},
+    {type: 'Likes', count: 1 * factor},
 ];
 
 const builder = new WorldBuilder(worldcounts);
-builder.init()
+builder.init(process.env.REACT_APP_LOGIN_EMAIL || '', process.env.REACT_APP_LOGIN_PASS || '')
