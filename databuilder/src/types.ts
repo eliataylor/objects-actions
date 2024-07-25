@@ -63,7 +63,7 @@ export interface Users {
 	spotify_token_expires_at?: string | null;
 	apple_token_data?: object | null;
 }
-interface Songs {
+export interface Songs {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -75,7 +75,7 @@ interface Songs {
 	artist?: string | null;
 	cover?: string | null;
 }
-interface Playlists {
+export interface Playlists {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -85,7 +85,7 @@ interface Playlists {
 	bio?: string | null;
 	image?: string | null;
 }
-interface PlaylistSongs {
+export interface PlaylistSongs {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -96,7 +96,7 @@ interface PlaylistSongs {
 	author: RelEntity;
 	match_score?: number | null;
 }
-interface EventPlaylists {
+export interface EventPlaylists {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -105,7 +105,7 @@ interface EventPlaylists {
 	event: RelEntity;
 	order: number;
 }
-interface Venues {
+export interface Venues {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -119,7 +119,7 @@ interface Venues {
 	address?: string | null;
 	privacy: string;
 }
-interface Events {
+export interface Events {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -134,7 +134,7 @@ interface Events {
 	description: string;
 	venue: RelEntity;
 }
-interface Friendships {
+export interface Friendships {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -142,7 +142,7 @@ interface Friendships {
 	recipient: RelEntity;
 	status: string;
 }
-interface Invites {
+export interface Invites {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -152,7 +152,7 @@ interface Invites {
 	event?: RelEntity | null;
 	status: string;
 }
-interface ActivityLogs {
+export interface ActivityLogs {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -167,7 +167,7 @@ interface ActivityLogs {
 	target_event?: RelEntity | null;
 	target_venue?: RelEntity | null;
 }
-interface SongRequests {
+export interface SongRequests {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -177,7 +177,7 @@ interface SongRequests {
 	playlist: RelEntity;
 	status: string;
 }
-interface EventCheckins {
+export interface EventCheckins {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -187,7 +187,7 @@ interface EventCheckins {
 	coordinate: string;
 	status: string;
 }
-interface Likes {
+export interface Likes {
 	_type: string
 	created_at: number
 	modified_at: number
@@ -232,85 +232,133 @@ export interface NavItem {
         screen: string;
         api: string;
         type: string;
+        search_fields: string[];
+
 }
 export const NAVITEMS: NavItem[] = [
   {
     "name": "Users",
     "type": "Users",
     "api": "/api/users",
-    "screen": "/users"
+    "screen": "/users",
+    "search_fields": [
+      "first_name",
+      "last_name"
+    ]
   },
   {
     "name": "Songs",
     "type": "Songs",
     "api": "/api/songs",
-    "screen": "/songs"
+    "screen": "/songs",
+    "search_fields": [
+      "name"
+    ]
   },
   {
     "name": "Playlists",
     "type": "Playlists",
     "api": "/api/playlists",
-    "screen": "/playlists"
+    "screen": "/playlists",
+    "search_fields": [
+      "name"
+    ]
   },
   {
     "name": "Playlist Songs",
     "type": "PlaylistSongs",
     "api": "/api/playlist_songs",
-    "screen": "/playlist_songs"
+    "screen": "/playlist_songs",
+    "search_fields": [
+      "playlist__name",
+      "song__name"
+    ]
   },
   {
     "name": "Event Playlists",
     "type": "EventPlaylists",
     "api": "/api/event_playlists",
-    "screen": "/event_playlists"
+    "screen": "/event_playlists",
+    "search_fields": [
+      "playlist__name",
+      "event__name"
+    ]
   },
   {
     "name": "Venues",
     "type": "Venues",
     "api": "/api/venues",
-    "screen": "/venues"
+    "screen": "/venues",
+    "search_fields": [
+      "name"
+    ]
   },
   {
     "name": "Events",
     "type": "Events",
     "api": "/api/events",
-    "screen": "/events"
+    "screen": "/events",
+    "search_fields": [
+      "name"
+    ]
   },
   {
     "name": "Friendships",
     "type": "Friendships",
     "api": "/api/friendships",
-    "screen": "/friendships"
+    "screen": "/friendships",
+    "search_fields": []
   },
   {
     "name": "Invites",
     "type": "Invites",
     "api": "/api/invites",
-    "screen": "/invites"
+    "screen": "/invites",
+    "search_fields": [
+      "event__name"
+    ]
   },
   {
     "name": "Activity Logs",
     "type": "ActivityLogs",
     "api": "/api/activity_logs",
-    "screen": "/activity_logs"
+    "screen": "/activity_logs",
+    "search_fields": [
+      "target_song__name",
+      "target_playlist__name",
+      "target_event__name",
+      "target_venue__name"
+    ]
   },
   {
     "name": "Song Requests",
     "type": "SongRequests",
     "api": "/api/song_requests",
-    "screen": "/song_requests"
+    "screen": "/song_requests",
+    "search_fields": [
+      "song__name",
+      "event__name"
+    ]
   },
   {
     "name": "Event Checkins",
     "type": "EventCheckins",
     "api": "/api/event_checkins",
-    "screen": "/event_checkins"
+    "screen": "/event_checkins",
+    "search_fields": [
+      "venue__name",
+      "event__name"
+    ]
   },
   {
     "name": "Likes",
     "type": "Likes",
     "api": "/api/likes",
-    "screen": "/likes"
+    "screen": "/likes",
+    "search_fields": [
+      "song__name",
+      "event__name"
+    ]
   }
 ]
 //---OBJECT-ACTIONS-NAV-ITEMS-ENDS---//
@@ -601,7 +649,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": false,
       "example": ""
@@ -651,7 +699,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "playlists",
+      "relationship": "Playlists",
       "default": "",
       "required": true,
       "example": ""
@@ -663,7 +711,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "songs",
+      "relationship": "Songs",
       "default": "",
       "required": true,
       "example": ""
@@ -699,7 +747,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -725,7 +773,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "playlists",
+      "relationship": "Playlists",
       "default": "",
       "required": true,
       "example": ""
@@ -737,7 +785,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "events",
+      "relationship": "Events",
       "default": "",
       "required": true,
       "example": ""
@@ -775,7 +823,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -787,7 +835,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 3,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": false,
       "example": ""
@@ -855,7 +903,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "privacy": {
       "machine": "privacy",
       "singular": "Privacy",
-      "plural": "Privacys",
+      "plural": "Privacy",
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
@@ -899,7 +947,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -911,14 +959,14 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": false,
       "example": ""
     },
     "url_alias": {
       "machine": "url_alias",
-      "singular": "URL Alia",
+      "singular": "URL Alias",
       "plural": "URL Alias",
       "field_type": "slug",
       "data_type": "string",
@@ -995,7 +1043,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "venues",
+      "relationship": "Venues",
       "default": "",
       "required": true,
       "example": ""
@@ -1009,7 +1057,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1021,7 +1069,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1065,7 +1113,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1077,7 +1125,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1089,7 +1137,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "events",
+      "relationship": "Events",
       "default": "",
       "required": false,
       "example": ""
@@ -1187,7 +1235,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1211,7 +1259,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": false,
       "example": ""
@@ -1223,7 +1271,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "songs",
+      "relationship": "Songs",
       "default": "",
       "required": false,
       "example": ""
@@ -1235,7 +1283,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "playlists",
+      "relationship": "Playlists",
       "default": "",
       "required": false,
       "example": ""
@@ -1247,7 +1295,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "events",
+      "relationship": "Events",
       "default": "",
       "required": false,
       "example": ""
@@ -1259,7 +1307,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "venues",
+      "relationship": "Venues",
       "default": "",
       "required": false,
       "example": ""
@@ -1273,7 +1321,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1285,7 +1333,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "songs",
+      "relationship": "Songs",
       "default": "",
       "required": true,
       "example": ""
@@ -1297,7 +1345,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "events",
+      "relationship": "Events",
       "default": "",
       "required": true,
       "example": ""
@@ -1309,7 +1357,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "playlist_songs",
+      "relationship": "PlaylistSongs",
       "default": "",
       "required": true,
       "example": ""
@@ -1353,7 +1401,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1365,7 +1413,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "venues",
+      "relationship": "Venues",
       "default": "",
       "required": true,
       "example": ""
@@ -1377,7 +1425,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "events",
+      "relationship": "Events",
       "default": "",
       "required": true,
       "example": ""
@@ -1425,7 +1473,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "users",
+      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1467,7 +1515,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "songs",
+      "relationship": "Songs",
       "default": "",
       "required": false,
       "example": ""
@@ -1479,7 +1527,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "events",
+      "relationship": "Events",
       "default": "",
       "required": false,
       "example": ""
@@ -1491,7 +1539,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "playlist_songs",
+      "relationship": "PlaylistSongs",
       "default": "",
       "required": false,
       "example": ""
@@ -1499,6 +1547,30 @@ export const TypeFieldSchema: ObjectOfObjects = {
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

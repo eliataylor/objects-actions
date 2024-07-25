@@ -245,3 +245,27 @@ def create_machine_name(label, lower=True):
     if lower is True:
         machine_name = machine_name.lower()
     return machine_name
+
+
+def find_search_fields(json, class_name):
+    search_fields = []
+    if class_name == "Users":
+        search_fields.append('first_name')
+        search_fields.append('last_name')
+    elif find_object_by_key_value(json[class_name], "Field Name", "title") is not None:
+        search_fields.append('title')
+    elif find_object_by_key_value(json[class_name], "Field Name", "name") is not None:
+        search_fields.append('name')
+    else:
+        for obj in json[class_name]:
+            if obj['Field Type'] in ["vocabulary reference", "type reference", "user profile"]:
+                rel_model = json[obj['Relationship']]
+                if find_object_by_key_value(rel_model, "Field Name", "title") is not None:
+                    search_fields.append(f"{obj['Field Name']}__title")
+                elif find_object_by_key_value(rel_model, "Field Name", "name") is not None:
+                    search_fields.append(f"{obj['Field Name']}__name")
+
+            elif obj['Field Type'] == "user_account":
+                search_fields.append(f"{obj['Field Name']}__first_name")
+                search_fields.append(f"{obj['Field Name']}__last_name")
+    return search_fields

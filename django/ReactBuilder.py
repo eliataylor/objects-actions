@@ -1,6 +1,6 @@
 import json
 import os
-from utils import inject_generated_code, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize, find_object_by_key_value
+from utils import inject_generated_code, find_search_fields, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize, find_object_by_key_value
 from loguru import logger
 import ast
 
@@ -21,7 +21,7 @@ class ReactBuilder:
             type_name = capitalize(create_object_name(class_name))
             machine_name = create_machine_name(class_name, True)
 
-            code = [f"interface {type_name} {{"]
+            code = [f"export interface {type_name} {{"]
             code.append(f"\t_type: string") # also User
 
             if machine_name != 'users':
@@ -47,7 +47,9 @@ class ReactBuilder:
 
             types.append(type_name)
 
-            urlItems.append({"name":class_name, "type":type_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}"})
+            urlItems.append({"name":class_name, "type":type_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}",
+                             'search_fields': find_search_fields(self.json, class_name)
+            })
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
@@ -83,7 +85,7 @@ class ReactBuilder:
                 field_def += data_type
                 field_js['data_type'] = data_type
                 field_js['cardinality'] = field['HowMany']
-                field_js['relationship'] = create_machine_name(field['Relationship'], True)
+                field_js['relationship'] = capitalize(create_object_name(field['Relationship']))
                 field_js['default'] = field['Default']
                 field_js['required'] = True if field['Required'] else False
                 field_js['example'] = field['Example'].strip()
@@ -153,6 +155,8 @@ export function getProp<T extends EntityView, K extends keyof T>(entity: EntityV
         screen: string;
         api: string;
         type: string;
+        search_fields: string[];
+
 }}
 export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
         inject_generated_code(self.types_filepath, navItems, 'NAV-ITEMS')

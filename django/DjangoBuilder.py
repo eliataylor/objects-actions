@@ -4,7 +4,7 @@ from loguru import logger
 
 from ModelBuilder import ModelBuilder
 from UserBuilder import UserBuilder
-from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_object_by_key_value
+from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_search_fields
 
 
 class DjangoBuilder:
@@ -159,24 +159,7 @@ class DjangoBuilder:
             model_name = create_object_name(class_name)
             code = tpl.replace('__CLASSNAME__', model_name)
 
-            search_fields = []
-            if find_object_by_key_value(self.json[class_name], "Field Name", "title") is not None:
-                search_fields.append('title')
-            elif find_object_by_key_value(self.json[class_name], "Field Name", "name") is not None:
-                search_fields.append('name')
-            else:
-                for obj in self.json[class_name]:
-                    if obj['Field Type'] in ["vocabulary reference", "type reference", "user profile"]:
-                        # TODO: find title / name field of Relationship. Guessing for now:
-                        rel_model = self.json[obj['Relationship']]
-                        if find_object_by_key_value(rel_model, "Field Name", "title") is not None:
-                            search_fields.append(f"{obj['Field Name']}__title")
-                        elif find_object_by_key_value(rel_model, "Field Name", "name") is not None:
-                            search_fields.append(f"{obj['Field Name']}__name")
-
-                    elif obj['Field Type'] == "user_account":
-                        search_fields.append('first_name')
-                        search_fields.append('last_name')
+            search_fields = find_search_fields(self.json, class_name)
 
             if len(search_fields) > 0:
                 code = code.replace("__FILTERING__",
