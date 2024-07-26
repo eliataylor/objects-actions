@@ -183,7 +183,7 @@ export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
     required?: boolean;
     default?: string;
     example?: string;
-    options?: object;
+    options?: {{ label: string; id: string; }}[];
 }}
 interface ObjectOfObjects {{
     [key: string]: {{ [key: string]: FieldTypeDefinition }};

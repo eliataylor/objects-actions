@@ -157,21 +157,6 @@ export interface Invites {
 	event?: RelEntity | null;
 	status: string;
 }
-export interface ActivityLogs {
-	_type: string
-	created_at: number
-	modified_at: number
-	readonly id: number;
-	activity: string;
-	last_notified: string;
-	author: RelEntity;
-	location?: string | null;
-	target_user?: RelEntity | null;
-	target_song?: RelEntity | null;
-	target_playlist?: RelEntity | null;
-	target_event?: RelEntity | null;
-	target_venue?: RelEntity | null;
-}
 export interface SongRequests {
 	readonly id: number
 	_type: string
@@ -220,7 +205,7 @@ export interface NewEntity {
     id: number | string
 }
 
-export type EntityTypes = Users | Songs | Playlists | PlaylistSongs | EventPlaylists | Venues | Events | Friendships | Invites | ActivityLogs | SongRequests | EventCheckins | Likes; 
+export type EntityTypes = Users | Songs | Playlists | PlaylistSongs | EventPlaylists | Venues | Events | Friendships | Invites | SongRequests | EventCheckins | Likes; 
 
 export interface ApiListResponse {
     count: number;
@@ -332,18 +317,6 @@ export const NAVITEMS: NavItem[] = [
     ]
   },
   {
-    "name": "Activity Logs",
-    "type": "ActivityLogs",
-    "api": "/api/activity_logs",
-    "screen": "/activity_logs",
-    "search_fields": [
-      "target_song__name",
-      "target_playlist__name",
-      "target_event__name",
-      "target_venue__name"
-    ]
-  },
-  {
     "name": "Song Requests",
     "type": "SongRequests",
     "api": "/api/song_requests",
@@ -402,7 +375,7 @@ export interface FieldTypeDefinition {
     required?: boolean;
     default?: string;
     example?: string;
-    options?: object;
+    options?: { label: string; id: string; }[];
 }
 interface ObjectOfObjects {
     [key: string]: { [key: string]: FieldTypeDefinition };
@@ -923,7 +896,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "relationship": "",
       "default": "unlisted",
       "required": true,
-      "example": "['public', 'unlisted', 'invite-only']",
+      "example": "['public', 'unlisted']",
       "options": [
         {
           "label": "Public",
@@ -932,10 +905,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
         {
           "label": "Unlisted",
           "id": "unlisted"
-        },
-        {
-          "label": "Invite-only",
-          "id": "inviteonly"
         }
       ]
     }
@@ -1186,146 +1155,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
       ]
     }
   },
-  "ActivityLogs": {
-    "id": {
-      "machine": "id",
-      "singular": "ID",
-      "plural": "IDs",
-      "field_type": "id_auto_increment",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "activity": {
-      "machine": "activity",
-      "singular": "Activity",
-      "plural": "Activitys",
-      "field_type": "enum",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": "[\"request-song\", \"like-song-request\", \"checkin\", \"leave\"]",
-      "options": [
-        {
-          "label": "Request-song",
-          "id": "requestsong"
-        },
-        {
-          "label": "Like-song-request",
-          "id": "likesongrequest"
-        },
-        {
-          "label": "Checkin",
-          "id": "checkin"
-        },
-        {
-          "label": "Leave",
-          "id": "leave"
-        }
-      ]
-    },
-    "last_notified": {
-      "machine": "last_notified",
-      "singular": "Last Notified",
-      "plural": "Last Notifieds",
-      "field_type": "date_time",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "author": {
-      "machine": "author",
-      "singular": "User",
-      "plural": "Users",
-      "field_type": "user_account",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Users",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "location": {
-      "machine": "location",
-      "singular": "Location",
-      "plural": "Locations",
-      "field_type": "coordinates",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "target_user": {
-      "machine": "target_user",
-      "singular": "Target User",
-      "plural": "Target Users",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Users",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "target_song": {
-      "machine": "target_song",
-      "singular": "Target Song",
-      "plural": "Target Songs",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Songs",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "target_playlist": {
-      "machine": "target_playlist",
-      "singular": "Target Playlist",
-      "plural": "Target Playlists",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Playlists",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "target_event": {
-      "machine": "target_event",
-      "singular": "Target Event",
-      "plural": "Target Events",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Events",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "target_venue": {
-      "machine": "target_venue",
-      "singular": "Target Venue",
-      "plural": "Target Venues",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Venues",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
   "SongRequests": {
     "author": {
       "machine": "author",
@@ -1560,6 +1389,14 @@ export const TypeFieldSchema: ObjectOfObjects = {
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
 
 
 
