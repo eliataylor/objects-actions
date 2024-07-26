@@ -1,7 +1,7 @@
 import os
 
 from loguru import logger
-
+import json
 from ModelBuilder import ModelBuilder
 from UserBuilder import UserBuilder
 from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_search_fields
@@ -29,13 +29,17 @@ class DjangoBuilder:
                         "serializers": ["from rest_framework import serializers",
                                         "from django.core.exceptions import ObjectDoesNotExist",
                                         "from django.db.models import ManyToManyField"],
-                        "views": ["from rest_framework import viewsets, permissions, filters",
+                        "views": ["from rest_framework import viewsets, permissions, filters, generics",
                                   "from rest_framework.pagination import PageNumberPagination",
                                   "from django.http import JsonResponse",
-                                  "from django.core.management import call_command"],
+                                  "from django.core.management import call_command",
+                                    "from django.apps import apps",
+                                    "from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse"
+                                  ],
                         "urls": [
                             "from rest_framework.routers import DefaultRouter",
                             "from django.urls import include, path",
+                            "from .views import UserModelListView",
                             "from .views import migrate, collectstatic"
                         ]}
 
@@ -124,6 +128,8 @@ class DjangoBuilder:
         inject_generated_code(outpath, '\n'.join(self.imports["urls"]), 'URL-IMPORTS')
 
         code += """urlpatterns = [
+    path('api/users/<int:user_id>/<str:model_name>/', UserModelListView.as_view(), name='user-model-list'),
+
     path('migrate/', migrate, name='migrate'),
     path('collectstatic/', collectstatic, name='collectstatic'),
     path('', include(router.urls)),
@@ -142,7 +148,11 @@ class DjangoBuilder:
         parts = []
         for class_name in self.json:
             model_name = create_object_name(class_name)
-            parts.append(tpl.replace('__CLASSNAME__', model_name))
+            code = tpl.replace('__CLASSNAME__', model_name)
+            if model_name == 'Users':
+                code = code.replace("fields = '__all__'", "fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]")
+            parts.append(code)
+
             self.append_import("serializers", f"from .models import {model_name}")
 
         inject_generated_code(outpath, '\n'.join(self.imports["serializers"]), 'SERIALIZER-IMPORTS')
@@ -154,12 +164,17 @@ class DjangoBuilder:
         with open(self.templates_dir + '/view.py', 'r') as fm:
             tpl = fm.read().strip()
 
+        serialModelMap = []
+        searchFieldMap = {}
+
         parts = []
         for class_name in self.json:
             model_name = create_object_name(class_name)
             code = tpl.replace('__CLASSNAME__', model_name)
 
             search_fields = find_search_fields(self.json, class_name)
+            searchFieldMap[model_name] = search_fields
+            serialModelMap.append(f'"{model_name}": {model_name}Serializer')
 
             if len(search_fields) > 0:
                 code = code.replace("__FILTERING__",
@@ -172,10 +187,15 @@ class DjangoBuilder:
             self.append_import("views", f"from .models import {model_name}")
             self.append_import("views", f"from .serializers import {model_name}Serializer")
 
+
         inject_generated_code(outpath, '\n'.join(self.imports["views"]).strip(), 'VIEWSET-IMPORTS')
 
         with open(self.templates_dir + '/views.py', 'r') as fm:
             core = fm.read()
+            core = core.replace("__SERIALIZER_MODEL_MAP__", f'{{ {",".join(serialModelMap)} }}')
+            core = core.replace("__SEARCHFIELD_MAP__", json.dumps(searchFieldMap, indent=2).strip())
+            core = core.replace("__DJANGO_APPNAME__", "djmote_app")
+
             inject_generated_code(outpath, core.strip(), 'CORE')
 
         inject_generated_code(outpath, "\n".join(parts).strip(), 'VIEWSETS')

@@ -21,6 +21,8 @@ class ReactBuilder:
             type_name = capitalize(create_object_name(class_name))
             machine_name = create_machine_name(class_name, True)
 
+            noId = True
+
             code = [f"export interface {type_name} {{"]
             code.append(f"\t_type: string") # also User
 
@@ -71,6 +73,7 @@ class ReactBuilder:
                 field_def = "\t"
 
                 if field_name == 'id':
+                    noId = False
                     field_def += f"readonly {field_name}"
                 else:
                     field_def += field_name
@@ -120,6 +123,9 @@ class ReactBuilder:
 
                 code.append(field_def)
 
+            if noId is True:
+               code.insert(1, f"\treadonly id: number")  # also User
+
             constants[type_name] = constant
             code.append("}")
             interfaces.append("\n".join(code))
@@ -132,16 +138,20 @@ class ReactBuilder:
     _type: string;
 }}
 
-export interface ListView {{
+export interface NewEntity {{
+    id: number | string
+}}
+
+export type EntityTypes = {" | ".join(types)}; 
+
+export interface ApiListResponse {{
     count: number;
     next: string | null;
     previous: string | null;
-    results: Array<{" | ".join(types)}>
+    results: EntityTypes[]
 }}
 
-export type EntityView = {" | ".join(types)}; 
-
-export function getProp<T extends EntityView, K extends keyof T>(entity: EntityView, key: string): T[K] | null {{
+export function getProp<T extends EntityTypes, K extends keyof T>(entity: EntityTypes, key: string): T[K] | null {{
     // @ts-ignore
     if (key in entity) return entity[key]
 	return null;
@@ -154,6 +164,7 @@ export function getProp<T extends EntityView, K extends keyof T>(entity: EntityV
         name: string;
         screen: string;
         api: string;
+        icon?: string;
         type: string;
         search_fields: string[];
 

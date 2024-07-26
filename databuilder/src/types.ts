@@ -86,6 +86,7 @@ export interface Playlists {
 	image?: string | null;
 }
 export interface PlaylistSongs {
+	readonly id: number
 	_type: string
 	created_at: number
 	modified_at: number
@@ -97,6 +98,7 @@ export interface PlaylistSongs {
 	match_score?: number | null;
 }
 export interface EventPlaylists {
+	readonly id: number
 	_type: string
 	created_at: number
 	modified_at: number
@@ -106,6 +108,7 @@ export interface EventPlaylists {
 	order: number;
 }
 export interface Venues {
+	readonly id: number
 	_type: string
 	created_at: number
 	modified_at: number
@@ -135,6 +138,7 @@ export interface Events {
 	venue: RelEntity;
 }
 export interface Friendships {
+	readonly id: number
 	_type: string
 	created_at: number
 	modified_at: number
@@ -143,6 +147,7 @@ export interface Friendships {
 	status: string;
 }
 export interface Invites {
+	readonly id: number
 	_type: string
 	created_at: number
 	modified_at: number
@@ -168,6 +173,7 @@ export interface ActivityLogs {
 	target_venue?: RelEntity | null;
 }
 export interface SongRequests {
+	readonly id: number
 	_type: string
 	created_at: number
 	modified_at: number
@@ -178,6 +184,7 @@ export interface SongRequests {
 	status: string;
 }
 export interface EventCheckins {
+	readonly id: number
 	_type: string
 	created_at: number
 	modified_at: number
@@ -188,6 +195,7 @@ export interface EventCheckins {
 	status: string;
 }
 export interface Likes {
+	readonly id: number
 	_type: string
 	created_at: number
 	modified_at: number
@@ -208,16 +216,20 @@ export interface RelEntity {
     _type: string;
 }
 
-export interface ListView {
+export interface NewEntity {
+    id: number | string
+}
+
+export type EntityTypes = Users | Songs | Playlists | PlaylistSongs | EventPlaylists | Venues | Events | Friendships | Invites | ActivityLogs | SongRequests | EventCheckins | Likes; 
+
+export interface ApiListResponse {
     count: number;
     next: string | null;
     previous: string | null;
-    results: Array<Users | Songs | Playlists | PlaylistSongs | EventPlaylists | Venues | Events | Friendships | Invites | ActivityLogs | SongRequests | EventCheckins | Likes>
+    results: EntityTypes[]
 }
 
-export type EntityView = Users | Songs | Playlists | PlaylistSongs | EventPlaylists | Venues | Events | Friendships | Invites | ActivityLogs | SongRequests | EventCheckins | Likes; 
-
-export function getProp<T extends EntityView, K extends keyof T>(entity: EntityView, key: string): T[K] | null {
+export function getProp<T extends EntityTypes, K extends keyof T>(entity: EntityTypes, key: string): T[K] | null {
     // @ts-ignore
     if (key in entity) return entity[key]
 	return null;
@@ -231,6 +243,7 @@ export interface NavItem {
         name: string;
         screen: string;
         api: string;
+        icon?: string;
         type: string;
         search_fields: string[];
 
@@ -1547,6 +1560,43 @@ export const TypeFieldSchema: ObjectOfObjects = {
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

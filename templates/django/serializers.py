@@ -1,13 +1,4 @@
 class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
-    # META >
-    # exclude = ()  # Default: empty tuple, no fields excluded
-    # depth = 0  # Default: 0, no nested serialization
-    # read_only_fields = ()  # Default: empty tuple, no read-only fields
-    # write_only_fields = ()  # Default: empty tuple, no write-only fields
-    # extra_kwargs = {}  # Default: empty dictionary, no extra field configurations
-    # validators = []  # Default: empty list, no validators defined
-    # error_messages = {}  # Default: empty dictionary, no custom error messages
-
     def __init__(self, **kwargs):
         self.slug_field = kwargs.pop('slug_field', None)
         super(SubFieldRelatedField, self).__init__(**kwargs)
@@ -45,7 +36,7 @@ class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
 
 
 class CustomSerializer(serializers.ModelSerializer):
-    serializer_related_field = SubFieldRelatedField
+    # serializer_related_field = SubFieldRelatedField
 
     def to_representation(self, instance):
         # Get the original representation
@@ -54,7 +45,7 @@ class CustomSerializer(serializers.ModelSerializer):
         representation['_type'] = instance.__class__.__name__
 
         for field in self.Meta.model._meta.get_fields():
-            if field.is_relation:
+            if field.is_relation and hasattr(instance, field.name):
                 field_name = field.name
                 related_instance = getattr(instance, field_name)
 
