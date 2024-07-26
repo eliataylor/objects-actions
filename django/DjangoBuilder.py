@@ -4,7 +4,7 @@ from loguru import logger
 import json
 from ModelBuilder import ModelBuilder
 from UserBuilder import UserBuilder
-from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_search_fields
+from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_search_fields, find_object_by_key_value
 
 
 class DjangoBuilder:
@@ -117,6 +117,7 @@ class DjangoBuilder:
     def build_urls(self):
 
         outpath = os.path.join(self.output_dir, 'urls.py')
+        extra_patterns = []
 
         code = "\nrouter = DefaultRouter()\n"
         for class_name in self.json:
@@ -125,9 +126,16 @@ class DjangoBuilder:
             code += f"router.register(r'api/{path_name}', {model_name}ViewSet, basename='{path_name}')\n"
             self.append_import("urls", f"from .views import {model_name}ViewSet")
 
+            has_slug = find_object_by_key_value(self.json[class_name], "Field Type", "slug")
+            if has_slug:
+                self.append_import("urls", f"from .views import {model_name}AliasView")
+                extra_patterns.append(f"path('u/{model_name.lower()}/<slug:{has_slug["Field Name"]}>/', {model_name}AliasView.as_view(), name='{model_name.lower()}-alias-view')")
+
         inject_generated_code(outpath, '\n'.join(self.imports["urls"]), 'URL-IMPORTS')
 
-        code += """urlpatterns = [
+        code += f"""urlpatterns = [
+        
+    {(",\n\t").join(extra_patterns)},    
     path('api/users/<int:user_id>/<str:model_name>/', UserModelListView.as_view(), name='user-model-list'),
 
     path('migrate/', migrate, name='migrate'),
@@ -184,6 +192,15 @@ class DjangoBuilder:
                 code = code.replace("__FILTERING__", "")
 
             parts.append(code)
+
+
+            has_slug = find_object_by_key_value(self.json[class_name], "Field Type", "slug")
+            if has_slug:
+                parts.append(f"""class {model_name}AliasView(generics.RetrieveAPIView):
+    queryset = {model_name}.objects.all()
+    serializer_class = {model_name}Serializer
+    lookup_field = '{has_slug['Field Name']}'""")
+
             self.append_import("views", f"from .models import {model_name}")
             self.append_import("views", f"from .serializers import {model_name}Serializer")
 

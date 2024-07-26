@@ -10,6 +10,7 @@ class ModelBuilder:
         self.model_name = create_object_name(class_name)
 
         self.id_field = 'id'
+        self.has_slug = False
         templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django/'
         self.template_path = templates_dir + '/model.py'
 
@@ -215,6 +216,7 @@ class ModelBuilder:
         elif field_type == "uuid":
             return "models.UUIDField(default=uuid.uuid4, editable=False)"
         elif field_type == "slug":
+            self.has_slug = True
             slugified = field['Default'].strip()
             if slugified == '':
                 # TODO: try title / name
@@ -238,6 +240,7 @@ class ModelBuilder:
 
                 self.methods.append(overwrite)
                 self.append_import("from django.utils.text import slugify")
+                self.append_import("from rest_framework import generics")
                 # self.append_import("from django.db.models.signals import pre_save")
                 # self.append_import("from django.dispatch import receiver")
 
