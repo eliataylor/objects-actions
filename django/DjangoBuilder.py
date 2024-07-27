@@ -10,6 +10,7 @@ from utils import inject_generated_code, create_machine_name, create_object_name
 class DjangoBuilder:
     def __init__(self, csv_file, output_dir):
         self.output_dir = output_dir
+        self.app_name = os.path.basename(output_dir)
 
         self.templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django/'
 
@@ -31,6 +32,7 @@ class DjangoBuilder:
                                         "from django.db.models import ManyToManyField"],
                         "views": ["from rest_framework import viewsets, permissions, filters, generics",
                                   "from rest_framework.pagination import PageNumberPagination",
+                                  "from rest_framework.views import APIView",
                                   "from django.http import JsonResponse",
                                   "from django.core.management import call_command",
                                     "from django.apps import apps",
@@ -137,6 +139,7 @@ class DjangoBuilder:
         
     {(",\n\t").join(extra_patterns)},    
     path('api/users/<int:user_id>/<str:model_name>/', UserModelListView.as_view(), name='user-model-list'),
+    path('api/users/<int:user_id>/<str:model_name>/stats/', UserStatsView.as_view(), name='user-model-stats'),
 
     path('migrate/', migrate, name='migrate'),
     path('collectstatic/', collectstatic, name='collectstatic'),
@@ -211,7 +214,7 @@ class DjangoBuilder:
             core = fm.read()
             core = core.replace("__SERIALIZER_MODEL_MAP__", f'{{ {",".join(serialModelMap)} }}')
             core = core.replace("__SEARCHFIELD_MAP__", json.dumps(searchFieldMap, indent=2).strip())
-            core = core.replace("__DJANGO_APPNAME__", "djmote_app")
+            core = core.replace("__DJANGO_APPNAME__", self.app_name)
 
             inject_generated_code(outpath, core.strip(), 'CORE')
 

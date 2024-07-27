@@ -16,6 +16,26 @@ SEARCH_FIELDS_MAPPING = __SEARCHFIELD_MAP__
 
 SERIALZE_MODEL_MAP = __SERIALIZER_MODEL_MAP__
 
+class UserStatsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, user_id, model_name):
+        # Get the model class from the model name
+        try:
+            model = apps.get_model('__DJANGO_APPNAME__', model_name)
+        except LookupError:
+            return JsonResponse({'error': 'Model not found'}, status=404)
+
+        # Check if the model has an 'author' field
+        if not hasattr(model, 'author'):
+            return JsonResponse({'error': 'Model does not have an author field'}, status=400)
+
+        # Count the number of entities the user owns
+        count = model.objects.filter(author=user_id).count()
+
+        # Return the count as JSON
+        return JsonResponse({'model': model_name, 'count': count})
+
 @extend_schema(
     parameters=[
         OpenApiParameter(name='search', description='Search term', required=False, type=str),
@@ -32,7 +52,7 @@ class UserModelListView(generics.GenericAPIView):
         try:
             model_class = apps.get_model("__DJANGO_APPNAME__", model_name)
         except LookupError:
-            return Response({'detail': 'Model not found.'}, status=404)
+            return JsonResponse({'detail': 'Model not found.'}, status=404)
 
         # Filter the queryset based on author
         queryset = model_class.objects.filter(author_id=user_id)
@@ -46,7 +66,7 @@ class UserModelListView(generics.GenericAPIView):
         serializer_class = self.get_serializer_class(model_class)
 
         if not serializer_class:
-            return Response({'detail': 'Serializer not found for this model.'}, status=404)
+            return JsonResponse({'detail': 'Serializer not found for this model.'}, status=404)
 
         # Apply pagination
         paginator = self.pagination_class()
