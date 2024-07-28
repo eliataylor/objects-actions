@@ -81,3 +81,43 @@ class UserModelListView(generics.GenericAPIView):
     def filter_queryset(self, queryset):
         search_filter = filters.SearchFilter()
         return search_filter.filter_queryset(self.request, queryset, self)
+
+
+
+class RenderFrontendIndex(APIView):
+    def get(self, request, *args, **kwargs):
+        with open(os.getenv("FRONTEND_INDEX_HTML", "index.html"), 'r') as file:
+            html_content = file.read()
+
+        modified_html = html_content
+        frontend_url = settings.FRONTEND_URL
+
+        # Prepend the host to all relative URLs
+        def prepend_host(match):
+            url = match.group(1)
+            if url.startswith('/') or not url.startswith(('http://', 'https://')):
+                return f'{match.group(0)[:5]}{frontend_url}{url.lstrip("/")}"'
+            return match.group(0)
+
+        # Prepend the host to all relative src and href URLs
+        modified_html = re.sub(r'src="([^"]+)"', prepend_host, modified_html)
+        modified_html = re.sub(r'href="([^"]+)"', prepend_host, modified_html)
+
+        return HttpResponse(modified_html, content_type='text/html')
+
+
+from django.shortcuts import redirect
+
+def redirect_to_frontend(request, provider=None):
+#    session = LoginSession(request, "social_login_redirected", settings.SESSION_COOKIE_NAME)
+
+    frontend_url = settings.FRONTEND_URL
+    redirect_path = "/account/provider/callback/"
+    if provider:
+        response = redirect(f'{frontend_url}{redirect_path}?provider={provider}')
+    else:
+        response = redirect(f'{frontend_url}{redirect_path}')
+
+#    response.url = redirect_url
+#    session.save(response)
+    return response

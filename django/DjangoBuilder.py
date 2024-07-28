@@ -35,13 +35,18 @@ class DjangoBuilder:
                                   "from rest_framework.views import APIView",
                                   "from django.http import JsonResponse",
                                   "from django.core.management import call_command",
-                                    "from django.apps import apps",
-                                    "from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse"
+                                  "from django.apps import apps",
+                                  "from django.http import HttpResponse",
+                                  "import re",
+                                  "from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse"
                                   ],
                         "urls": [
                             "from rest_framework.routers import DefaultRouter",
                             "from django.urls import include, path",
                             "from .views import UserModelListView",
+                            "from .views import UserStatsView",
+                            "from .views import RenderFrontendIndex",
+                            "from .views import redirect_to_frontend",
                             "from .views import migrate, collectstatic"
                         ]}
 
@@ -125,7 +130,7 @@ class DjangoBuilder:
         for class_name in self.json:
             path_name = create_machine_name(class_name)
             model_name = create_object_name(class_name)
-            code += f"router.register(r'api/{path_name}', {model_name}ViewSet, basename='{path_name}')\n"
+            code += f"router.register('{path_name}', {model_name}ViewSet, basename='{path_name}')\n"
             self.append_import("urls", f"from .views import {model_name}ViewSet")
 
             has_slug = find_object_by_key_value(self.json[class_name], "Field Type", "slug")
@@ -135,15 +140,18 @@ class DjangoBuilder:
 
         inject_generated_code(outpath, '\n'.join(self.imports["urls"]), 'URL-IMPORTS')
 
-        code += f"""urlpatterns = [
-        
+        code += f"""\nif urlpatterns is None:
+    urlpatterns = []
+    
+urlpatterns += [
+    path('account/provider/callback/', redirect_to_frontend, name='provider_callback_no_provider'),
     {(",\n\t").join(extra_patterns)},    
     path('api/users/<int:user_id>/<str:model_name>/', UserModelListView.as_view(), name='user-model-list'),
     path('api/users/<int:user_id>/<str:model_name>/stats/', UserStatsView.as_view(), name='user-model-stats'),
 
     path('migrate/', migrate, name='migrate'),
     path('collectstatic/', collectstatic, name='collectstatic'),
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
 ]"""
 
         inject_generated_code(outpath, code.strip(), 'URLS')

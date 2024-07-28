@@ -37,6 +37,19 @@ class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
 
 class CustomSerializer(serializers.ModelSerializer):
     # serializer_related_field = SubFieldRelatedField
+    def create(self, validated_data):
+        request = self.context.get('request', None)
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if 'author' in self.Meta.model._meta.get_fields():
+                validated_data['author'] = request.user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request', None)
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if 'author' in self.Meta.model._meta.get_fields():
+                validated_data['author'] = request.user
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         # Get the original representation
