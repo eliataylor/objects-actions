@@ -1,4 +1,4 @@
-from utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize
+from utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize, str_to_bool
 from loguru import logger
 import os
 import ast
@@ -111,9 +111,13 @@ class ModelBuilder:
 
         return code
 
+
+
     def apply_default(self, field_code, default_value, field_type):
         if default_value != '':
-            if field_type == "integer" or field_type == 'decimal':
+            if field_type == "boolean":
+                field_code = addArgs(field_code, [f"default={str_to_bool(default_value)}"])
+            elif field_type == "integer" or field_type == 'decimal':
                 field_code = addArgs(field_code, [f"default={default_value}"])
             else:
                 field_code = addArgs(field_code, [f"default=\"{default_value}\""])

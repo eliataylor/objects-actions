@@ -81,6 +81,11 @@ def find_object_by_key_value(fields, prop, value):
             return obj
     return None
 
+def str_to_bool(value):
+    if isinstance(value, str):
+        return value.lower() not in ('false', '0')
+    return bool(value)
+
 def inject_generated_code(output_file_path, code, prefix):
     comments = "####" if ".py" in output_file_path else "//---"
     commentend = "####" if ".py" in output_file_path else "---//"

@@ -56,12 +56,10 @@ export interface Users {
 	profile_picture?: string | null;
 	birthday?: string | null;
 	gender?: string | null;
-	locale?: string | null;
 	last_known_location?: string | null;
-	spotify_access_token?: string | null;
-	spotify_refresh_token?: string | null;
-	spotify_token_expires_at?: string | null;
-	apple_token_data?: object | null;
+	link_ig?: string | null;
+	link_spotify?: string | null;
+	link_apple?: string | null;
 }
 export interface Songs {
 	_type: string
@@ -80,47 +78,12 @@ export interface Playlists {
 	created_at: number
 	modified_at: number
 	readonly id: number;
-	author?: RelEntity | null;
+	social_source?: string | null;
+	author: RelEntity;
 	name: string;
-	bio?: string | null;
 	image?: string | null;
-}
-export interface PlaylistSongs {
-	readonly id: number
-	_type: string
-	created_at: number
-	modified_at: number
-	playlist: RelEntity;
-	song: RelEntity;
-	order: number;
-	likes_count?: number | null;
-	author: RelEntity;
-	match_score?: number | null;
-}
-export interface EventPlaylists {
-	readonly id: number
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	playlist: RelEntity;
 	event: RelEntity;
-	order: number;
-}
-export interface Venues {
-	readonly id: number
-	_type: string
-	created_at: number
-	modified_at: number
-	url_alias: string;
-	author: RelEntity;
-	managers?: RelEntity[] | null;
-	name: string;
-	description: string;
-	cover?: string[] | null;
-	bounding_box: string;
-	address?: string | null;
-	privacy: string;
+	playing_now?: boolean | null;
 }
 export interface Events {
 	_type: string
@@ -135,7 +98,8 @@ export interface Events {
 	ends: string;
 	cover?: string[] | null;
 	description: string;
-	venue: RelEntity;
+	address: string;
+	coordinates?: string | null;
 }
 export interface Friendships {
 	readonly id: number
@@ -174,7 +138,6 @@ export interface EventCheckins {
 	created_at: number
 	modified_at: number
 	author: RelEntity;
-	venue: RelEntity;
 	event: RelEntity;
 	coordinate: string;
 	status: string;
@@ -205,7 +168,7 @@ export interface NewEntity {
     id: number | string
 }
 
-export type EntityTypes = Users | Songs | Playlists | PlaylistSongs | EventPlaylists | Venues | Events | Friendships | Invites | SongRequests | EventCheckins | Likes; 
+export type EntityTypes = Users | Songs | Playlists | Events | Friendships | Invites | SongRequests | EventCheckins | Likes; 
 
 export interface ApiListResponse {
     count: number;
@@ -263,35 +226,6 @@ export const NAVITEMS: NavItem[] = [
     ]
   },
   {
-    "name": "Playlist Songs",
-    "type": "PlaylistSongs",
-    "api": "/api/playlist_songs",
-    "screen": "/playlist_songs",
-    "search_fields": [
-      "playlist__name",
-      "song__name"
-    ]
-  },
-  {
-    "name": "Event Playlists",
-    "type": "EventPlaylists",
-    "api": "/api/event_playlists",
-    "screen": "/event_playlists",
-    "search_fields": [
-      "playlist__name",
-      "event__name"
-    ]
-  },
-  {
-    "name": "Venues",
-    "type": "Venues",
-    "api": "/api/venues",
-    "screen": "/venues",
-    "search_fields": [
-      "name"
-    ]
-  },
-  {
     "name": "Events",
     "type": "Events",
     "api": "/api/events",
@@ -323,7 +257,8 @@ export const NAVITEMS: NavItem[] = [
     "screen": "/song_requests",
     "search_fields": [
       "song__name",
-      "event__name"
+      "event__name",
+      "playlist__name"
     ]
   },
   {
@@ -332,7 +267,6 @@ export const NAVITEMS: NavItem[] = [
     "api": "/api/event_checkins",
     "screen": "/event_checkins",
     "search_fields": [
-      "venue__name",
       "event__name"
     ]
   },
@@ -343,7 +277,8 @@ export const NAVITEMS: NavItem[] = [
     "screen": "/likes",
     "search_fields": [
       "song__name",
-      "event__name"
+      "event__name",
+      "playlist__name"
     ]
   }
 ]
@@ -468,18 +403,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
         }
       ]
     },
-    "locale": {
-      "machine": "locale",
-      "singular": "Locale",
-      "plural": "Locales",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
     "last_known_location": {
       "machine": "last_known_location",
       "singular": "Last Known Location",
@@ -492,11 +415,11 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "spotify_access_token": {
-      "machine": "spotify_access_token",
-      "singular": "Spotify Token",
-      "plural": "Spotify Tokens",
-      "field_type": "text",
+    "link_ig": {
+      "machine": "link_ig",
+      "singular": "Instagram",
+      "plural": "Instagrams",
+      "field_type": "url",
       "data_type": "string",
       "cardinality": 1,
       "relationship": "",
@@ -504,11 +427,11 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "spotify_refresh_token": {
-      "machine": "spotify_refresh_token",
-      "singular": "Spotify Refresh Token",
-      "plural": "Spotify Refresh Tokens",
-      "field_type": "text",
+    "link_spotify": {
+      "machine": "link_spotify",
+      "singular": "Spotify",
+      "plural": "Spotifys",
+      "field_type": "url",
       "data_type": "string",
       "cardinality": 1,
       "relationship": "",
@@ -516,24 +439,12 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "spotify_token_expires_at": {
-      "machine": "spotify_token_expires_at",
-      "singular": "Spotify Expiry",
-      "plural": "Spotify Expirys",
-      "field_type": "date_time",
+    "link_apple": {
+      "machine": "link_apple",
+      "singular": "Apple Music",
+      "plural": "Apple Musics",
+      "field_type": "url",
       "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "apple_token_data": {
-      "machine": "apple_token_data",
-      "singular": "Apple Token",
-      "plural": "Apple Tokens",
-      "field_type": "json",
-      "data_type": "object",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -628,6 +539,28 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": true,
       "example": ""
     },
+    "social_source": {
+      "machine": "social_source",
+      "singular": "Social Source",
+      "plural": "Social Sources",
+      "field_type": "enum",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": "[\"spotify\", \"apple\"]",
+      "options": [
+        {
+          "label": "Spotify",
+          "id": "spotify"
+        },
+        {
+          "label": "Apple",
+          "id": "apple"
+        }
+      ]
+    },
     "author": {
       "machine": "author",
       "singular": "DJ",
@@ -637,7 +570,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "cardinality": 1,
       "relationship": "Users",
       "default": "",
-      "required": false,
+      "required": true,
       "example": ""
     },
     "name": {
@@ -652,18 +585,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": true,
       "example": ""
     },
-    "bio": {
-      "machine": "bio",
-      "singular": "Bio",
-      "plural": "Bios",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
     "image": {
       "machine": "image",
       "singular": "Image",
@@ -674,94 +595,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "relationship": "",
       "default": "",
       "required": false,
-      "example": ""
-    }
-  },
-  "PlaylistSongs": {
-    "playlist": {
-      "machine": "playlist",
-      "singular": "Playlist",
-      "plural": "Playlists",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Playlists",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "song": {
-      "machine": "song",
-      "singular": "Song",
-      "plural": "Songs",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Songs",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "order": {
-      "machine": "order",
-      "singular": "Order",
-      "plural": "Orders",
-      "field_type": "integer",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "likes_count": {
-      "machine": "likes_count",
-      "singular": "Like",
-      "plural": "Likes",
-      "field_type": "integer",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "0",
-      "required": false,
-      "example": ""
-    },
-    "author": {
-      "machine": "author",
-      "singular": "Added By",
-      "plural": "Added Bys",
-      "field_type": "user_account",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Users",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "match_score": {
-      "machine": "match_score",
-      "singular": "Match Score",
-      "plural": "Match Scores",
-      "field_type": "integer",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "EventPlaylists": {
-    "playlist": {
-      "machine": "playlist",
-      "singular": "Playlist",
-      "plural": "Playlists",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Playlists",
-      "default": "",
-      "required": true,
       "example": ""
     },
     "event": {
@@ -776,137 +609,17 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": true,
       "example": ""
     },
-    "order": {
-      "machine": "order",
-      "singular": "Order",
-      "plural": "Orders",
-      "field_type": "integer",
-      "data_type": "number",
+    "playing_now": {
+      "machine": "playing_now",
+      "singular": "Playing Now",
+      "plural": "Playing Nows",
+      "field_type": "boolean",
+      "data_type": "boolean",
       "cardinality": 1,
       "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    }
-  },
-  "Venues": {
-    "url_alias": {
-      "machine": "url_alias",
-      "singular": "URL Alias",
-      "plural": "URL Alias",
-      "field_type": "slug",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "name",
-      "required": true,
-      "example": ""
-    },
-    "author": {
-      "machine": "author",
-      "singular": "Owner",
-      "plural": "Owners",
-      "field_type": "user_account",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Users",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "managers": {
-      "machine": "managers",
-      "singular": "Manager",
-      "plural": "Managers",
-      "field_type": "user_account",
-      "data_type": "RelEntity",
-      "cardinality": 3,
-      "relationship": "Users",
-      "default": "",
+      "default": "FALSE",
       "required": false,
       "example": ""
-    },
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "description": {
-      "machine": "description",
-      "singular": "Description",
-      "plural": "Descriptions",
-      "field_type": "textarea",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "cover": {
-      "machine": "cover",
-      "singular": "Cover",
-      "plural": "Covers",
-      "field_type": "image",
-      "data_type": "string",
-      "cardinality": 10,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "bounding_box": {
-      "machine": "bounding_box",
-      "singular": "Bounding Box",
-      "plural": "Bounding Boxes",
-      "field_type": "bounding_box",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "address": {
-      "machine": "address",
-      "singular": "Addres",
-      "plural": "Address",
-      "field_type": "address",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "privacy": {
-      "machine": "privacy",
-      "singular": "Privacy",
-      "plural": "Privacy",
-      "field_type": "enum",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "unlisted",
-      "required": true,
-      "example": "['public', 'unlisted']",
-      "options": [
-        {
-          "label": "Public",
-          "id": "public"
-        },
-        {
-          "label": "Unlisted",
-          "id": "unlisted"
-        }
-      ]
     }
   },
   "Events": {
@@ -1018,16 +731,28 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": true,
       "example": ""
     },
-    "venue": {
-      "machine": "venue",
-      "singular": "Venue",
-      "plural": "Venues",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
+    "address": {
+      "machine": "address",
+      "singular": "Addres",
+      "plural": "Address",
+      "field_type": "address",
+      "data_type": "string",
       "cardinality": 1,
-      "relationship": "Venues",
+      "relationship": "",
       "default": "",
       "required": true,
+      "example": ""
+    },
+    "coordinates": {
+      "machine": "coordinates",
+      "singular": "Coordinate",
+      "plural": "Coordinates",
+      "field_type": "coordinates",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
       "example": ""
     }
   },
@@ -1199,7 +924,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "PlaylistSongs",
+      "relationship": "Playlists",
       "default": "",
       "required": true,
       "example": ""
@@ -1244,18 +969,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "data_type": "RelEntity",
       "cardinality": 1,
       "relationship": "Users",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "venue": {
-      "machine": "venue",
-      "singular": "Venue",
-      "plural": "Venues",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Venues",
       "default": "",
       "required": true,
       "example": ""
@@ -1330,7 +1043,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "relationship": "",
       "default": "",
       "required": true,
-      "example": "[\"song\", \"event\", \"playlist\", \"request\"]",
+      "example": "[\"song\", \"event\", \"playlist\", \"request\", \"checkin\", \"friendship\"]",
       "options": [
         {
           "label": "Song",
@@ -1347,6 +1060,14 @@ export const TypeFieldSchema: ObjectOfObjects = {
         {
           "label": "Request",
           "id": "request"
+        },
+        {
+          "label": "Checkin",
+          "id": "checkin"
+        },
+        {
+          "label": "Friendship",
+          "id": "friendship"
         }
       ]
     },
@@ -1381,7 +1102,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "PlaylistSongs",
+      "relationship": "Playlists",
       "default": "",
       "required": false,
       "example": ""
@@ -1389,6 +1110,14 @@ export const TypeFieldSchema: ObjectOfObjects = {
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
 
 
 

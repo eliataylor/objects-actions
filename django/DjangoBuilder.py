@@ -126,11 +126,11 @@ class DjangoBuilder:
         outpath = os.path.join(self.output_dir, 'urls.py')
         extra_patterns = []
 
-        code = "\nrouter = DefaultRouter()\n"
+        code = "\nOARouter = DefaultRouter()\n"
         for class_name in self.json:
             path_name = create_machine_name(class_name)
             model_name = create_object_name(class_name)
-            code += f"router.register('{path_name}', {model_name}ViewSet, basename='{path_name}')\n"
+            code += f"OARouter.register('{path_name}', {model_name}ViewSet, basename='{path_name}')\n"
             self.append_import("urls", f"from .views import {model_name}ViewSet")
 
             has_slug = find_object_by_key_value(self.json[class_name], "Field Type", "slug")
@@ -151,7 +151,7 @@ urlpatterns += [
 
     path('migrate/', migrate, name='migrate'),
     path('collectstatic/', collectstatic, name='collectstatic'),
-    path('api/', include(router.urls)),
+    path('api/', include(OARouter.urls)),
 ]"""
 
         inject_generated_code(outpath, code.strip(), 'URLS')
