@@ -91,9 +91,9 @@ class ApiClient {
             // Merge headers with cookies
             const mergedHeaders = await this.getMergedHeaders(url, headers);
 
-            response = await this.client.post<T>(url, data, {
-                headers: mergedHeaders,
-            });
+            response = await this.client.post(url, data,
+                {headers: mergedHeaders}
+            );
             resp.ended = new Date().getTime();
             resp.data = response.data;
             resp.success = true;

@@ -1,4 +1,5 @@
-import {faker} from '@faker-js/faker';
+// import {faker} from '@faker-js/faker';
+import { faker } from '@faker-js/faker/locale/en_US';
 import {join, resolve} from 'path';
 
 const fs = require('fs');
@@ -72,13 +73,14 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
             }
             return end_date.toISOString()
         case 'coordinates':
-            return `${faker.location.latitude()}, ${faker.location.longitude()}`;
+            return `{"lat":${faker.location.latitude()}, "lng":${faker.location.longitude()}}`;
         case 'email':
             return faker.internet.email();
         case 'phone':
             return faker.phone.number();
         case 'address':
-            return faker.location.streetAddress();
+            const state = faker.location.state({abbreviated:true})
+            return `${faker.location.streetAddress()} ${faker.location.city()} ${state} ${faker.location.zipCode({state})}`;
         case 'url':
             return faker.internet.url();
         case 'uuid':
@@ -100,7 +102,8 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
         case 'flat_list':
             return Array.from({length: 5}, () => faker.lorem.word()); // Example of a flat list
         case 'bounding_box':
-            return `[${faker.location.latitude()},${faker.location.longitude()},${faker.location.latitude()},${faker.location.longitude()}]`;
+            return `{"lat":${faker.location.latitude()}, "lng":${faker.location.longitude()}, "lat2":${faker.location.latitude()}, "lng2":${faker.location.longitude()}}`;
+            // return `[${faker.location.latitude()},${faker.location.longitude()},${faker.location.latitude()},${faker.location.longitude()}]`;
         case 'json':
             return faker.helpers.fake('{{name.firstName}} {{name.lastName}}, {{address.city}}');
         case 'enum':

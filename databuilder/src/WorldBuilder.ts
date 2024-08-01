@@ -7,7 +7,6 @@ import ApiClient, {HttpResponse} from "./ApiClient";
 import {fakeFieldData} from "./builder-utils";
 import {faker} from "@faker-js/faker";
 
-
 const FormData = require('form-data');
 
 dotenv.config();
@@ -41,7 +40,7 @@ export class WorldBuilder {
     async init(email:string, pass:string) {
         const loginResponse = await this.apiClient.login(email, pass)
         if (loginResponse.success) {
-            console.log('Login successful, cookies: ', loginResponse.data);
+            console.log('Login SUPERUSER successful: ', loginResponse.data.data.user.username);
             this.superToken = loginResponse.data
 
             await builder.getContentCreators();
@@ -59,7 +58,7 @@ export class WorldBuilder {
     }
 
     public async getContentCreators() {
-        const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/users/`);
+        const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/users/?page_size=300`);
         if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
             this.contentCreators = relResponse.data.results as Creators[]; // .results as Creators[]
         }
@@ -81,11 +80,11 @@ export class WorldBuilder {
 
                 let randomIndex = Math.floor(Math.random() * this.contentCreators.length);
                 const creator = this.contentCreators[randomIndex]
-                console.log(creator);
+                console.log(`CREATOR ${creator.username}: `);
                 if (typeof creator['cookies'] === 'undefined' && typeof creator['username'] === 'string') {
                     const loginResponse = await this.apiClient.login(<string>creator['username'], "1234")
                     if (loginResponse.success) {
-                        console.log('Login user successful, cookies: ', loginResponse.data);
+                        console.log('Login user successful: ' +  loginResponse.data.data.user.username);
                         this.contentCreators[randomIndex]['cookies'] = this.apiClient.getCookies()
                         creator['cookies'] = this.apiClient.getCookies()
                     }
@@ -93,6 +92,7 @@ export class WorldBuilder {
                 if (typeof creator['cookies'] === 'string') {
                     await this.apiClient.setCookies(process.env.REACT_APP_API_HOST || "", creator['cookies']);
                 }
+
 
                 const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[item.type])
                 let hasImage = false;
@@ -104,8 +104,7 @@ export class WorldBuilder {
                     if (field.field_type === 'id_auto_increment' || field.field_type === 'slug') {
                         // console.log(`let server handle ${field.field_type}`)
                     } else if (field.field_type === 'user_profile' || field.field_type === 'user_account' || field.field_type == 'type_reference' || field.field_type == 'vocabulary_reference') {
-                        let relType = field.relationship
-                        if (relType === 'user_account') relType = 'user';
+                        let relType = field.relationship?.toLowerCase()
                         const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/${relType}/`);
                         // @ts-ignore
                         if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
@@ -117,7 +116,7 @@ export class WorldBuilder {
                             console.warn(`relationship ${relType} has no data yet`)
                         }
                     } else if (field.field_type === 'image') {
-                        const imageUrl = faker.image.urlLoremFlickr({category: hasUrl.name})
+                        const imageUrl = faker.image.urlLoremFlickr({category: hasUrl.name.toLowerCase()})
                         console.log(`Going to load ${imageUrl}`)
                         const imageResponse = await axios.get(imageUrl, {responseType: 'stream'});
                         if (imageResponse.status !== 200) {
@@ -165,19 +164,15 @@ export class WorldBuilder {
 
 }
 
-const factor = 50
+const factor = 1
 const worldcounts: WorldCount[] = [
-    {type: 'Songs', count: 1 * factor},
-    {type: 'Venues', count: 3 * factor},
-    {type: 'Events', count: 5 * factor},
-    {type: 'Playlists', count: 2 * factor},
-    {type: 'ActivityLogs', count: 2 * factor},
-    {type: 'Friendships', count: 1 * factor},
-    {type: 'PlaylistSongs', count: 1 * factor},
-    {type: 'EventPlaylists', count: 2 * factor},
-    {type: 'EventCheckins', count: 1 * factor},
-    {type: 'SongRequests', count: 1 * factor},
-    {type: 'Likes', count: 1 * factor},
+    // {type: 'Songs', count: 1 * factor},
+    // {type: 'Events', count: 5 * factor},
+    {type: 'Playlists', count: 7 * factor},
+    {type: 'Friendships', count: 10 * factor},
+    {type: 'EventCheckins', count: 6 * factor},
+    {type: 'SongRequests', count: 6 * factor},
+    {type: 'Likes', count: 8 * factor},
 ];
 
 const builder = new WorldBuilder(worldcounts);
