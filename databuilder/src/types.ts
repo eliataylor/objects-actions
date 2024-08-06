@@ -115,8 +115,7 @@ export interface Invites {
 	_type: string
 	created_at: number
 	modified_at: number
-	author?: number
-	sender: RelEntity;
+	author: RelEntity;
 	recipient: RelEntity;
 	event?: RelEntity | null;
 	status: string;
@@ -813,8 +812,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     }
   },
   "Invites": {
-    "sender": {
-      "machine": "sender",
+    "author": {
+      "machine": "author",
       "singular": "Sender",
       "plural": "Senders",
       "field_type": "user_account",

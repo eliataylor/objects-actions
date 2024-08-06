@@ -164,10 +164,11 @@ export class WorldBuilder {
 
 }
 
-const factor = 1
+const factor = 30
 const worldcounts: WorldCount[] = [
-    // {type: 'Songs', count: 1 * factor},
+   // {type: 'Songs', count: 1 * factor},
     // {type: 'Events', count: 5 * factor},
+    {type: 'Invites', count: 7 * factor},
     {type: 'Playlists', count: 7 * factor},
     {type: 'Friendships', count: 10 * factor},
     {type: 'EventCheckins', count: 6 * factor},
