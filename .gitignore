@@ -11,3 +11,5 @@ templates/reactjs/.env
 __pycache__
 runnerlogs.log
 node_modules
+
+*Zone.Identifier

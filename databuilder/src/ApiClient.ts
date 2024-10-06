@@ -31,6 +31,14 @@ class ApiClient {
             if (csrfTokenCookie) {
                 config.headers['X-CSRFToken'] = csrfTokenCookie.value;
             }
+
+            if (config.url) {
+                const [path, queryOrHash] = config.url.split(/(?=[?#])/);
+                if (path.endsWith('/')) {
+                    config.url = path.slice(0, -1) + (queryOrHash || '');
+                }
+            }
+
             return config;
         }, (error) => {
             return Promise.reject(error);

@@ -55,14 +55,16 @@ class ReactBuilder:
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
+                if field_type == '':
+                    field_type = 'string'
+                field_type = create_machine_name(field_type, True)
+
                 field_name = field['Field Name']
                 if field_name == '':
                     field_name = create_machine_name(field['Field Label'], True)
                 else:
                     field_name = create_machine_name(field_name, True)
 
-                if field_type == '':
-                    field_type = 'string'
 
                 field_js = {}
                 field_js['machine'] = field_name
@@ -78,13 +80,14 @@ class ReactBuilder:
                 else:
                     field_def += field_name
 
-                if not field['Required']:
+                data_type = infer_field_datatype(field_type)
+
+                if not field['Required'] and field_type != 'id_auto_increment':
                     field_def += "?: "
                 else:
                     field_def += ": "
 
-                field_js['field_type'] = create_machine_name(field_type, True)
-                data_type = infer_field_datatype(field_js['field_type'])
+                field_js['field_type'] = field_type
                 field_def += data_type
                 field_js['data_type'] = data_type
                 field_js['cardinality'] = field['HowMany']
@@ -115,7 +118,7 @@ class ReactBuilder:
                 if field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
                     field_def += '[]'
 
-                if not field['Required']:
+                if not field['Required'] and field_type != 'id_auto_increment':
                     field_def += ' | null;'
                 else:
                     field_def += ';'
@@ -124,7 +127,7 @@ class ReactBuilder:
                 code.append(field_def)
 
             if noId is True:
-               code.insert(1, f"\treadonly id: number")  # also User
+               code.insert(1, f"\treadonly id: number | string")  # also User
 
             constants[type_name] = constant
             code.append("}")
@@ -136,6 +139,8 @@ class ReactBuilder:
     id: string | number;
     str: string;
     _type: string;
+    img?: string;
+    entity?: EntityTypes
 }}
 
 export interface NewEntity {{
@@ -144,11 +149,13 @@ export interface NewEntity {{
 
 export type EntityTypes = {" | ".join(types)}; 
 
-export interface ApiListResponse {{
+export interface ApiListResponse<T = EntityTypes> {{
     count: number;
-    next: string | null;
-    previous: string | null;
-    results: EntityTypes[]
+    offset: number;
+    limit: number;
+    meta: any;
+    error: string | null;
+    results: T[]
 }}
 
 export function getProp<T extends EntityTypes, K extends keyof T>(entity: EntityTypes, key: string): T[K] | null {{
