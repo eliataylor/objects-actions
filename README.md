@@ -42,65 +42,26 @@ this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi
 This [Example version](https://docs.google.com/spreadsheets/d/1AkFY0dSelMAxoaLVA_knNHIYmL97rtVjE1zuqEonCyM/edit?usp=sharing)
 describes a simple ecommerce project for a meal prep program:
 
-<div style="display: flex; justify-content: space-around; gap:6px">
+|                 Objects to Actions                 |             Object Field Types              |                                                               Permissions Matrix                                                                |
+|:--------------------------------------------------:|:-------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------:|
+| <a href="docs/object-actions-nod.png" target="_blank"><img src="docs/object-actions-nod.png" alt="Objects / Actions" width="300" /></a> |  <a href="docs/objects-nod.png" target="_blank"><img src="docs/objects-nod.png" alt="Objects to Actions" height="300"/></a> | <a href="docs/permissions-matrix-nod.png" target="_blank"><img src="docs/permissions-matrix-nod.png" alt="Permission Matrix" height="300"/></a> |
 
-  <div style="text-align: center;">
-     <a href="docs/object-actions-nod.png" target="_blank">
-      <img src="docs/object-actions-nod.png" alt="Objects / Actions" height="200" />
-    </a>
-    <caption>Objects to Actions</caption>
-  </div>
-
-  <div style="text-align: center;">
-     <a href="docs/objects-nod.png" target="_blank">
-         <img src="docs/objects-nod.png" alt="Object Field Types" height="200" />
-    </a>
-    <caption>Object Field Types</caption>
-  </div>
-
-  <div style="text-align: center;">
-     <a href="docs/permissions-matrix-nod.png" target="_blank">
-        <img src="docs/permissions-matrix-nod.png" alt="Permission Matrix" height="200"/>
-    </a>
-    <caption>Permissions Matrix</caption>
-  </div>
-
-</div>
-
-<div style="text-align: center; margin:20px 0">------------------------------------------ ↓ generates ↓ ------------------------------------------</div>
-
+<hr />
+<center>------------------------------------------ ↓ generates ↓ ------------------------------------------</center>
+<hr />
 
   <div style="text-align: center; margin:20px 0">
      <a href="docs/nod-oa-interface.png" target="_blank">
 <img src="docs/nod-oa-interface.png" alt="Interface" width="100%" />  
 </a>
-    <caption>Demo Interface</caption>
+    <caption>Demo Interface, and...</caption>
   </div>
 
-<div style="display: flex; justify-content: space-around; gap:6px">
 
-  <div style="text-align: center;">
-     <a href="docs/nod-backend_admin.png" target="_blank">
-      <img src="docs/nod-backend_admin.png" alt="CMS Admin" height="200" />
-    </a>
-    <caption>CMS Admin</caption>
-  </div>
+|                                                         Content Admin                                                          |                                                           API Documentation                                                           |                                                with Secure Authentication System                                                |
+|:------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------:|
+| <a href="docs/nod-backend_admin.png" target="_blank"><img src="docs/nod-backend_admin.png" alt="CMS Admin" height="200" /></a> | <a href="docs/nod-backend_swagger.png" target="_blank"><img src="docs/nod-backend_swagger.png" alt="Swagger Docs" height="200" /></a> | <a href="docs/nod-backend_redoc.png" target="_blank"><img src="docs/nod-backend_redoc.png" alt="Redoc Docs" height="200" /></a> |
 
-<div style="text-align: center;">
-     <a href="docs/nod-backend_swagger.png" target="_blank">
-      <img src="docs/nod-backend_swagger.png" alt="Swagger Docs" height="200" />
-    </a>
-    <caption>Swagger Docs</caption>
-  </div>
-
-<div style="text-align: center;">
-     <a href="docs/nod-backend_redoc.png" target="_blank">
-      <img src="docs/nod-backend_redoc.png" alt="Redoc Docs" height="200" />
-    </a>
-    <caption>Redoc Docs</caption>
-  </div>
-
-</div>
 
 
 
