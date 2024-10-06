@@ -39,29 +39,28 @@
 Copy and start your own from
 this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing).
 
-This [Example version](https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?usp=sharing)
-describes an open source platform for rallying citizens to civic engagement called Democrasee (
-github.com/DemocraseeClub). Screenshots are below:
+This [Example version](https://docs.google.com/spreadsheets/d/1AkFY0dSelMAxoaLVA_knNHIYmL97rtVjE1zuqEonCyM/edit?usp=sharing)
+describes a simple ecommerce project for a meal prep program:
 
 <div style="display: flex; justify-content: space-around; gap:6px">
 
   <div style="text-align: center;">
-     <a href="docs/object-actions-democrasee.png" target="_blank">
-      <img src="docs/object-actions-democrasee.png" alt="Objects / Actions" height="200" />
+     <a href="docs/object-actions-nod.png" target="_blank">
+      <img src="docs/object-actions-nod.png" alt="Objects / Actions" height="200" />
     </a>
     <caption>Objects to Actions</caption>
   </div>
 
   <div style="text-align: center;">
-     <a href="docs/objects-democrasee.png" target="_blank">
-         <img src="docs/objects-democrasee.png" alt="Object Field Types" height="200" />
+     <a href="docs/objects-nod.png" target="_blank">
+         <img src="docs/objects-nod.png" alt="Object Field Types" height="200" />
     </a>
     <caption>Object Field Types</caption>
   </div>
 
   <div style="text-align: center;">
-     <a href="docs/permissions-matrix-democrasee.png" target="_blank">
-        <img src="docs/permissions-matrix-democrasee.png" alt="Permission Matrix" height="200"/>
+     <a href="docs/permissions-matrix-nod.png" target="_blank">
+        <img src="docs/permissions-matrix-nod.png" alt="Permission Matrix" height="200"/>
     </a>
     <caption>Permissions Matrix</caption>
   </div>
