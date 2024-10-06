@@ -21,9 +21,9 @@ class ApiClient {
             if (csrfToken) {
                 config.headers['X-CSRFToken'] = csrfToken;
             }
-            if (localStorage.getItem("appOS") && localStorage.getItem('djmote_token')) {
+            if (localStorage.getItem("appOS") && localStorage.getItem('oaexample_token')) {
                 config.headers['X-App-Client'] = localStorage.getItem("appOS")
-                config.headers['Authorization'] = `Bearer ${localStorage.getItem('djmote_token')}`;
+                config.headers['Authorization'] = `Bearer ${localStorage.getItem('oaexample_token')}`;
             }
 
             if (config.url) {

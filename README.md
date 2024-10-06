@@ -3,59 +3,106 @@
 --------------------------------------------------------------------------------
 
 ## PURPOSE
-- [x] Relational Database Schema Design
-- [x] Scaffolding Content Management Systems
-- [x] Scaffolding Authentication and Access Permissions
-- [x] Scaffolding Web App interface and API connectivity
-- [x] Scaffolding Cypress.io test suites
-- [x] Generating unlimited numbers of fake data entries to test
+
+- [x] Learn Relational Database Schema Design
+- [x] Quickly build idea App & API prototypes
+
+
+- [x] Scaffold Content Management Systems
+- [x] Scaffold Authentication and Access Permissions
+- [x] Scaffold Web App interface and API connectivity
+- [x] Scaffold Cypress.io test suites
+- [x] Generate unlimited fake data to test and prototype
 
 ## USAGE:
+
 ### Generate your Django models, views, serializers and urls:
-- `git clone git@github.com:eliataylor/object-actions.git`
-- `cd object-actions`
-- `python3.9 -m venv .venv` (pretty much any version of python should work)
-- `source .venv/bin/activate`
-- `pip install -r requirements.txt`
-- `python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/generated`
-- 
-If you use Address, Price, or Coordinates field types, you'll need to add the respective entries to the INSTALLED_APPS list in your settings.py file:
-```python
-INSTALLED_APPS = [
-    # ... 
-    'address',
-    'django-money',
-    'django.contrib.gis',
-    # ... 
-]
-```
 
-#### To run a complete CMS, API, with connected ReactJS app follow [CONTRIBUTING.md](CONTRIBUTING.md)
+`python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/django/oaexample_app`
+
+### Generate your TypeScript types, interfaces and URL patterns:
+
+`python django/generate.py typescript --types=examples/object-fields-nod.csv --output_dir=examples/reactjs/src/object-actions/types/types.tsx`
+
+### Test API and Generate fake data for API
+
+`cd databuilder && npm install && npm start`
+
+### Run Frontend example from object-actions/examples/reactjs:
+
+`cd object-actions/examples/reactjs && npm install && npm start`
+
+### For step-by-step usage to build example projects see [USAGE.md](USAGE.md)
+
+## Build your own project from Object/Actions spreadsheets
+
+Copy and start your own from
+this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing).
+
+This [Example version](https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?usp=sharing)
+describes an open source platform for rallying citizens to civic engagement called Democrasee (
+github.com/DemocraseeClub). Screenshots are below:
+
+<div style="display: flex; justify-content: space-around; gap:6px">
+
+  <div style="text-align: center;">
+     <a href="docs/object-actions-democrasee.png" target="_blank">
+      <img src="docs/object-actions-democrasee.png" alt="Objects / Actions" height="200" />
+    </a>
+    <caption>Objects to Actions</caption>
+  </div>
+
+  <div style="text-align: center;">
+     <a href="docs/objects-democrasee.png" target="_blank">
+         <img src="docs/objects-democrasee.png" alt="Object Field Types" height="200" />
+    </a>
+    <caption>Object Field Types</caption>
+  </div>
+
+  <div style="text-align: center;">
+     <a href="docs/permissions-matrix-democrasee.png" target="_blank">
+        <img src="docs/permissions-matrix-democrasee.png" alt="Permission Matrix" height="200"/>
+    </a>
+    <caption>Permissions Matrix</caption>
+  </div>
+
+</div>
+
+<div style="text-align: center; margin:20px 0">------------------------------------------ ↓ generates ↓ ------------------------------------------</div>
 
 
-## Getting Started
+  <div style="text-align: center; margin:20px 0">
+     <a href="docs/nod-oa-interface.png" target="_blank">
+<img src="docs/nod-oa-interface.png" alt="Interface" width="100%" />  
+</a>
+    <caption>Demo Interface</caption>
+  </div>
 
-Copy and start your own from this [empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing).
+<div style="display: flex; justify-content: space-around; gap:6px">
 
-This [example version](https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?usp=sharing) describes an open source platform for rallying citizens to civic engagement called Democrasee (github.com/DemocraseeClub). Screenshots are below:
+  <div style="text-align: center;">
+     <a href="docs/nod-backend_admin.png" target="_blank">
+      <img src="docs/nod-backend_admin.png" alt="CMS Admin" height="200" />
+    </a>
+    <caption>CMS Admin</caption>
+  </div>
 
-![Object/Actions](docs/object-actions-democrasee.png)
-![Object Fields](docs/objects-democrasee.png)
-![Vocabulary Fields](docs/vocabularies-democrasee.png)
-![Permissions Matrix](docs/permissions-matrix-democrasee.png)
+<div style="text-align: center;">
+     <a href="docs/nod-backend_swagger.png" target="_blank">
+      <img src="docs/nod-backend_swagger.png" alt="Swagger Docs" height="200" />
+    </a>
+    <caption>Swagger Docs</caption>
+  </div>
 
-All Select options under Fields Types (Column D) in the Object Fields sheet come from column A in the "selectors" sheet. If you have special field types, add them here. The checkboxes roughly describe what Fields are support by the different CMS config builders in this repository.
-![Field Types](docs/field-types.png)
+<div style="text-align: center;">
+     <a href="docs/nod-backend_redoc.png" target="_blank">
+      <img src="docs/nod-backend_redoc.png" alt="Redoc Docs" height="200" />
+    </a>
+    <caption>Redoc Docs</caption>
+  </div>
+
+</div>
 
 
-## DEVELOPMENT ROADMAP
-- [x] Generate Django Admin CMS
-- [x] Generate Django Restful API with Swagger Docs
-- [ ] Generate Fake Data builder via HTTP (https://mockaroo.com/?)
-- [ ] Generate ReactJS app
-  - [x] TypeScript interface and object types defined 
-  - [ ] Material-UI Drawer of Permissions Matrix Paths
-- [ ] Generate Cypress.io test suite
-- [ ] AppScrips to generate full Worksheet for given Object-Actions list
 
 To contribute: [CONTRIBUTING.md](CONTRIBUTING.md)

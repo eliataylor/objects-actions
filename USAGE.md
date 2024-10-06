@@ -1,19 +1,14 @@
-## DEVELOPMENT ROADMAP
-- [x] Generate Django Admin CMS
-- [x] Generate Django Restful API with Swagger Docs
-- [x] Generate Fake Data builder
-- [x] Generate ReactJS app
+# Object-Actions Worksheet
 
-These are still needed:
-- [ ] Generate Cypress.io test suite
-- [ ] AppScrips to generate full Worksheet for given Object-Actions list
+All Select options under Fields Types (Column D) in the Object Fields sheet come from column A in the "selectors" sheet.
+If you have special field types, add them here. The checkboxes roughly describe what Fields are support by the different
+CMS config builders in this repository.
 
+  <a href="docs/field-types.png" target="_blank">
+      <img src="docs/field-types.png" alt="Field Types" height="200" />
+    </a>
 
-
-#### In order to test this project, you need a target project. Here's the one generated from this [Worksheet](https://docs.google.com/spreadsheets/d/1AkFY0dSelMAxoaLVA_knNHIYmL97rtVjE1zuqEonCyM/edit?usp=sharing) exported here as [object-fields-nod.csv](examples%2Fobject-fields-nod.csv) and [permissions-matrix-nod.csv](examples%2Fpermissions-matrix-nod.csv)
-
-#### This following code assumes your working directory is `/Users/user/Developer`
-
+--------------------------------------------------------------------------------
 1. **Clone Django Project**  
 ```sh
 git clone git@github.com:eliataylor/nod-backend.git nod_backend

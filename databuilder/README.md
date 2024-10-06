@@ -13,18 +13,18 @@ npm start
 #### To purge test data:
 python manage.py shell
 
-from djmote_app.models import Song
-from djmote_app.models import Playlist
-from djmote_app.models import PlaylistSongs
-from djmote_app.models import EventPlaylists
-from djmote_app.models import Venue
-from djmote_app.models import Event
-from djmote_app.models import Friendship
-from djmote_app.models import Invites
-from djmote_app.models import ActivityLog
-from djmote_app.models import SongRequests
-from djmote_app.models import EventCheckins
-from djmote_app.models import Likes
+from oaexample.models import Song
+from oaexample.models import Playlist
+from oaexample.models import PlaylistSongs
+from oaexample.models import EventPlaylists
+from oaexample.models import Venue
+from oaexample.models import Event
+from oaexample.models import Friendship
+from oaexample.models import Invites
+from oaexample.models import ActivityLog
+from oaexample.models import SongRequests
+from oaexample.models import EventCheckins
+from oaexample.models import Likes
 
 Song.objects.all().delete()
 Playlist.objects.all().delete()

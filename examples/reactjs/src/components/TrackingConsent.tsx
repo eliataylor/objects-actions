@@ -22,12 +22,12 @@ const StyledFab = styled(Fab)({
 });
 
 const TrackingConsent: React.FC = () => {
-    const [accepted, setAccepted] = useState(localStorage.getItem('gtag-nod') ? true : false);
+    const [accepted, setAccepted] = useState(localStorage.getItem('gtag-oaexample') ? true : false);
 
     if (accepted === true) return null;
 
     function handleAccepted() {
-        localStorage.setItem('gtag-nod', 'true');
+        localStorage.setItem('gtag-oaexample', 'true');
         setAccepted(true)
     }
 
