@@ -22,19 +22,19 @@
 
 |                 A: Objects to Actions                 |             B: Object Field Types              |                                                               C: Permissions Matrix                                                                |
 |:--------------------------------------------------:|:-------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------:|
-| <a href="docs/object-actions-nod.png" target="_blank"><img src="docs/object-actions-nod.png" alt="Objects / Actions" width="300" /></a> |  <a href="docs/objects-nod.png" target="_blank"><img src="docs/objects-nod.png" alt="Objects to Actions" height="300"/></a> | <a href="docs/permissions-matrix-nod.png" target="_blank"><img src="docs/permissions-matrix-nod.png" alt="Permission Matrix" height="300"/></a> |
+| <a href="docs/images/object-actions-nod.png" target="_blank"><img src="docs/images/object-actions-nod.png" alt="Objects / Actions" width="300" /></a> |  <a href="docs/images/objects-nod.png" target="_blank"><img src="docs/images/objects-nod.png" alt="Objects to Actions" height="300"/></a> | <a href="docs/images/permissions-matrix-nod.png" target="_blank"><img src="docs/images/permissions-matrix-nod.png" alt="Permission Matrix" height="300"/></a> |
 | ↓ | ↓ generates ↓ | ↓ |
 
 <hr />
 
 A secure API and CMS written in Django, with a fully integrated and authenticating ReactJS front-end:
 
-![docs/nod-oa-interface.png](docs/nod-oa-interface.png)
+![docs/images/nod-oa-interface.png](docs/images/nod-oa-interface.png)
 
 
 |                                                         Content Admin                                                          |                                                           API Documentation                                                           |                                                with Secure Authentication System                                                |
 |:------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------:|
-| <a href="docs/nod-backend_admin.png" target="_blank"><img src="docs/nod-backend_admin.png" alt="CMS Admin" height="200" /></a> | <a href="docs/nod-backend_swagger.png" target="_blank"><img src="docs/nod-backend_swagger.png" alt="Swagger Docs" height="200" /></a> | <a href="docs/nod-backend_redoc.png" target="_blank"><img src="docs/nod-backend_redoc.png" alt="Redoc Docs" height="200" /></a> |
+| <a href="docs/images/nod-backend_admin.png" target="_blank"><img src="docs/images/nod-backend_admin.png" alt="CMS Admin" height="200" /></a> | <a href="docs/images/nod-backend_swagger.png" target="_blank"><img src="docs/images/nod-backend_swagger.png" alt="Swagger Docs" height="200" /></a> | <a href="docs/images/nod-backend_redoc.png" target="_blank"><img src="docs/images/nod-backend_redoc.png" alt="Redoc Docs" height="200" /></a> |
 
 
 
