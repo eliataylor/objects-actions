@@ -25,10 +25,3 @@ This all comes from https://www.django-rest-framework.org/tutorial/quickstart
 
 </details>
 
-
-- add read_only_fields to Serializer
-- 
-
-
-
-

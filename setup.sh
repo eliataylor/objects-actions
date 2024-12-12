@@ -3,7 +3,7 @@
 projectname=${1:-test}
 
 # Convert projectname to alphanumeric, lowercase, and replace spaces with hyphens
-machinename=$(echo "$projectname" | tr -cs '[:alnum:]' '-' | tr '[:upper:]' '[:lower:]')
+machinename=$(echo "$projectname" | tr '[:upper:]' '[:lower:]' | sed 's/[^[:alnum:]]\+/-/g' | sed 's/^-\|-$//g')
 
 # Default to "test" if machinename is empty
 if [ -z "$machinename" ]; then
@@ -16,11 +16,11 @@ cp -R stack "$machinename"
 projectpath=$(realpath "$machinename")
 
 # Recursively replace "oaexample" with "$machinename" in all files (case-insensitive)
-find "$projectpath" -type f -exec sed -i '' "s/oaexample/$machinename/Ig" {} +
+find "$machinename" -type f -exec sed -i '' -e "s/oaexample/$machinename/Ig" {} +
 
 # Rename directories containing "oaexample" to "$machinename" recursively
-find "$projectpath" -depth -name "*oaexample*" | while read -r dir; do
-    newdir=$(echo "$dir" | sed "s/oaexample/$machinename/I")
+find "$machinename" -depth -name "*oaexample*" | while read -r dir; do
+    newdir=$(echo "$dir" | LC_ALL=C sed "s/oaexample/$machinename/I")
     mv "$dir" "$newdir"
 done
 
@@ -46,22 +46,3 @@ python generate.py admin --types="$projectpath/democrasee-objects.csv" --output_
 
 python generate.py typescript --types="$projectpath/democrasee-objects.csv" --output_dir="$projectpath/reactjs/src/object-actions/types/types.tsx"
 python generate.py typescript --types="$projectpath/democrasee-objects.csv" --output_dir="$projectpath/databuilder/src/types.ts"
-
-# Django setup
-cd "$projectpath/django"
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python manage.py makemigrations
-python manage.py migrate --run-syncdb
-python manage.py createsuperuser
-python manage.py runserver_plus "localapi.$machinename.com:8080" --cert-file "$ssl_cert_path"
-
-# ReactJS setup
-cd "$projectpath/reactjs"
-npm install
-npm run start-ssl
-
-# Databuilder setup
-cd "$projectpath/databuilder"
-npm install

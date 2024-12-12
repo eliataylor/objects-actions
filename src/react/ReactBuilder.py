@@ -1,6 +1,5 @@
 import json
-import os
-from utils import inject_generated_code, find_search_fields, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize, find_object_by_key_value
+from utils.utils import inject_generated_code, find_search_fields, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize, find_object_by_key_value
 from loguru import logger
 import ast
 

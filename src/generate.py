@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 from django.DjangoBuilder import DjangoBuilder
-from django.ReactBuilder import ReactBuilder
+from react.ReactBuilder import ReactBuilder
 from loguru import logger
 
 logger.add("runnerlogs.log", level="DEBUG")
@@ -12,7 +12,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate project files based on field types CSV.")
     parser.add_argument('command', choices=['admin', 'fake-data', 'typescript', 'reactjs', 'cypress'],
                         help="Target command for the generation.")
-    parser.add_argument('--project', required=True, help="project name")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--matrix', required=False, help="Path to the Permissions Matrix CSV file.")
     parser.add_argument('--output_dir', required=True, help="Path to the output directory.")

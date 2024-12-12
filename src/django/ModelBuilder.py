@@ -1,4 +1,4 @@
-from utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize, str_to_bool
+from utils.utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize, str_to_bool
 from loguru import logger
 import os
 import ast
@@ -12,7 +12,7 @@ class ModelBuilder:
         self.id_field = 'id'
         self.has_slug = False
         templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django/'
-        self.template_path = templates_dir + '/model.py'
+        self.template_path = templates_dir + 'model.py'
 
         self.fields = []
         self.methods = []

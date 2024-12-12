@@ -2,10 +2,9 @@ import os
 
 from loguru import logger
 import json
-from ModelBuilder import ModelBuilder
-from UserBuilder import UserBuilder
-from utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_search_fields, find_object_by_key_value
-
+from .ModelBuilder import ModelBuilder
+from .UserBuilder import UserBuilder
+from utils.utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_search_fields, find_object_by_key_value
 
 class DjangoBuilder:
     def __init__(self, csv_file, output_dir):

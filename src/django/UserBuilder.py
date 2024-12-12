@@ -1,7 +1,7 @@
-from utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize
+from utils.utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize
 from loguru import logger
 import os
-from ModelBuilder import ModelBuilder
+from .ModelBuilder import ModelBuilder
 
 class UserBuilder(ModelBuilder):
     def __init__(self, class_name):

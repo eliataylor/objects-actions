@@ -38,13 +38,3 @@
 
 https://loremflickr.com/cache/resized/2899_14217668178_6e80f204fa_b_640_480_nofilter.jpg
 https://loremflickr.com/cache/resized/5485_9128959279_54a521df49_c_640_480_nofilter.jpg
-TypeError: Converting circular structure to JSON
-    --> starting at object with constructor 'TLSSocket'
-    |     property 'parser' -> object with constructor 'HTTPParser'
-    --- property 'socket' closes the circle
-    at JSON.stringify (<anonymous>)
-    at IncomingMessage.<anonymous> (<anonymous>:1:27)
-    at WorldBuilder.<anonymous> (/home/elitaylor/Developer/tmt/object-actions/databuilder/src/WorldBuilder.ts:153:45)
-    at Generator.next (<anonymous>)
-    at fulfilled (/home/elitaylor/Developer/tmt/object-actions/databuilder/src/WorldBuilder.ts:29:58)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
