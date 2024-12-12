@@ -15,14 +15,17 @@ cp -R stack "$machinename"
 
 projectpath=$(realpath "$machinename")
 
+export LC_ALL=C # avoids issues with non-UTF-8 characters
 # Recursively replace "oaexample" with "$machinename" in all files (case-insensitive)
-find "$machinename" -type f -exec sed -i '' -e "s/oaexample/$machinename/Ig" {} +
+find $projectpath -type f -exec sed -i '' -e "s/oaexample/$machinename/Ig" {} +
 
 # Rename directories containing "oaexample" to "$machinename" recursively
 find "$machinename" -depth -name "*oaexample*" | while read -r dir; do
     newdir=$(echo "$dir" | LC_ALL=C sed "s/oaexample/$machinename/I")
     mv "$dir" "$newdir"
 done
+
+echo "Created new project directory: $projectpath"
 
 # Ensure the SSL certificate exists or create one
 ssl_cert_path="$HOME/.ssl/certificate.crt"
