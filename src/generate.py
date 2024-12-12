@@ -35,14 +35,11 @@ if __name__ == "__main__":
     logger.info(f"Input file: {types_path}")
     logger.info(f"Output directory: {output_dir}")
 
-    if command == 'admin':
+    if command == 'django':
         DjangoBuilder(types_path, output_dir)
-    elif command == 'reactjs' or command == 'typescript':
+    elif command == 'typescript':
         reactor = ReactBuilder(types_path, matrix_path, output_dir)
-        if command == 'typescript':
-            reactor.build_types()
-        else:
-            reactor.build_navigation()
+        reactor.build_types()
 
     else:
         logger.warning(f"Command '{command}' not yet implemented")
