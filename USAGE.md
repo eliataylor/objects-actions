@@ -4,8 +4,8 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
 If you have special field types, add them here. The checkboxes roughly describe what Fields are support by the different
 CMS config builders in this repository.
 
-  <a href="docs/field-types.png" target="_blank">
-      <img src="docs/field-types.png" alt="Field Types" height="200" />
+  <a href="docs/images/field-types.png" target="_blank">
+      <img src="docs/images/field-types.png" alt="Field Types" height="200" />
     </a>
 
 --------------------------------------------------------------------------------
