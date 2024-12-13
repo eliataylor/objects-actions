@@ -86,9 +86,9 @@ export default function AuthMenu() {
 
     )
     return (
-        <React.Fragment>
+        <div id={"AuthMenu"}>
             {process.env.REACT_APP_DEBUG ? <NavBarItem to='http://localhost:1080' icon='✉️' name='MailCatcher'/> : null}
             {user ? authNav : anonNav}
-        </React.Fragment>
+        </div>
     )
 }

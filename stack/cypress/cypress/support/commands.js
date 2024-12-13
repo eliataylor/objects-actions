@@ -121,6 +121,13 @@ Cypress.Commands.add("grab", (sel) => {
     // );
 });
 
+Cypress.Commands.add("clickIf",(selector) => {
+    if (cy.ifExists(selector)) {
+        cy.grab(selector).showClick();
+    }
+    cy.get('body')
+});
+
 Cypress.Commands.add("grabWithFallbacks", (url, routing) => {
     if (!cy.ifExists(`[href^="${url}"]`)) {
         cy.openDrawer();
@@ -149,7 +156,7 @@ Cypress.Commands.add("ifExists", (ele) => {
                 console.log("exists: " + ele)
                 return true;
             }
-            console.log("DOES NOT EXSITS: " + ele)
+            console.log("DOES NOT EXIST: " + ele)
             return false;
         })
 
@@ -195,7 +202,7 @@ Cypress.Commands.add('assertListView', () => {
 })
 
 Cypress.Commands.add('openDrawer', () => {
-    cy.grab('[aria-label="Open drawer"]').showClick(true);
+    cy.grab('[aria-label="Open Drawer"]').showClick(true);
 })
 
 Cypress.Commands.add('assertAuthenticated', () => {

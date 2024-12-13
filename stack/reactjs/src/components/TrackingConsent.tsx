@@ -33,7 +33,7 @@ const TrackingConsent: React.FC = () => {
 
     return <AppBar position="fixed" sx={{top: 'auto', bottom: 0, padding: 3}}>
         <Toolbar>
-            <StyledFab color="secondary" aria-label="add" onClick={() => handleAccepted()}>
+            <StyledFab aria-label={'Dismiss EULA Notice'} color="secondary" onClick={() => handleAccepted()}>
                 <Check fontSize={'large'}/>
             </StyledFab>
             <TrackingPermissions permissions={permissions}/>

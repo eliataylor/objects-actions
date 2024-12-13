@@ -152,6 +152,9 @@ export class WorldBuilder {
                 const apiUrl = `${process.env.REACT_APP_API_HOST}${hasUrl.api}/`
                 const response = await this.apiClient.post(apiUrl, formData, headers);
                 if (typeof this.responses[item.type] === 'undefined') this.responses[item.type] = [];
+
+                // TODO: write to cypress/cypress/fixtures
+
                 this.responses[item.type].push(response);
                 console.log(`Created ${item.type} --- ${JSON.stringify(response.data)}`)
             }

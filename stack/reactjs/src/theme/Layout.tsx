@@ -54,7 +54,7 @@ const Layout: React.FC = () => {
             <Grid item>
                 <IconButton
                     size={'large'}
-                    aria-label="open drawer"
+                    aria-label="Open Drawer"
                     onClick={handleDrawerOpen}
                 >
                     <MenuIcon color={'secondary'}/>
@@ -111,7 +111,7 @@ const Layout: React.FC = () => {
             >
                 <DrawerHeader>
                     <Logo height={80}/>
-                    <IconButton onClick={handleDrawerClose}>
+                    <IconButton aria-label={'Close Drawer'} onClick={handleDrawerClose}>
                         <ChevronRightIcon/>
                     </IconButton>
                 </DrawerHeader>

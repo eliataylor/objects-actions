@@ -7,14 +7,6 @@ export interface Params {
     ":gcuid": number;
 }
 
-export interface Allroles {
-    authenticated: number;
-    verified_cc: number;
-    verified_email: number;
-    "groups-founder": number;
-    "groups-member": number;
-}
-
 export interface Debug {
     url: string;
     password: string;
@@ -22,7 +14,6 @@ export interface Debug {
     path: string;
     params: Params;
     testrole: string;
-    allroles: Allroles;
 }
 
 export class Routing {
@@ -71,15 +62,6 @@ export class Helpers {
 
     constructor(fixture) {
         this.json = fixture?.entity;
-    }
-
-    dispatchToRedux() {
-        cy.window()
-            .its('store')
-            .invoke('getStore', {
-                type: 'ADD_TODO',
-                payload: {content: 'Dispatched TODO', completed: true},
-            })
     }
 
     public getProfile(st, verb) {

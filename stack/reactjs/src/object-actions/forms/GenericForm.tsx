@@ -265,6 +265,7 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
             <Grid container item xs={12} justifyContent={'space-between'}>
                 <Button onClick={handleSubmit}
                         disabled={syncing}
+                        aria-label={'Submit'}
                         startIcon={syncing ? <CircularProgress size={'small'} color={'primary'}/> : undefined}
                         variant="contained" color="primary">
                     Save
@@ -272,6 +273,7 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
 
                 {eid > 0 && <Button
                     disabled={syncing}
+                    aria-label={'Delete'}
                     startIcon={syncing ? <CircularProgress size={'small'} color={'primary'}/> : undefined}
                     onClick={handleDelete} variant="outlined" color="inherit">
                     Delete

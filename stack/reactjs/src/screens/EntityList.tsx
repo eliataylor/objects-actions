@@ -101,6 +101,7 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
             {showFab && <Fab color="secondary"
                              size="small"
                              sx={{position: 'fixed', right: 20, bottom: 20}}
+                             data-href={`/forms${hasUrl.screen}/0/add`}
                              onClick={() => navigate(`/forms${hasUrl.screen}/0/add`)}>
               <Add/>
             </Fab>}
