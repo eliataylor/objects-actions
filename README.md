@@ -36,47 +36,48 @@ A secure API and CMS written in Django, with a fully integrated and authenticati
 
 
 
-## Installation:
+# TO USE:
 
-#### Install Git, Brew, Python3, NVM, Node  
-`sh install.sh`
-
+### Install Git, Brew, Python3, NVM, Node  
+### `sh install.sh`
 This will only install these tools if they don't exist. You can skip this if you have these dependencies.
 
-#### Setup 
-`sh setup.sh newproject`
-
+### Build Your Stack
+### `sh setup.sh [project name] [object actions path].csv`
+<br />
 This will clone the entire [stack](stack) directory and change necessary names and variables to your project name.
 
-
-#### Install / Connect to MySQL  
-Modify your database credentials at [/newproject/django/.env#L16](/stack/django/.env#L16))
+### Install / Connect to MySQL  
+Update your database credentials here [newproject/django/.env](/stack/django/.env#L16)
+<br />
 If you don't have a mysql server, run `sh mysql_db.sh` to install docker and mysql inside a container and leave the .env file with it's default values.
 
 
-#### Start 
-`sh start.sh newproject`
+### Run your Web App, API, CMS, and Cypress tests 
+### `sh start.sh newproject`
 
 This will start these sites:
 - Django API: https://localapi.newproject.com:8080/api/schema/swagger
 - Django Admin: https://localapi.newproject.com:8080/admin/login
 - React WebApp: https://localhost.newproject.com:3000
 
-#### Fake Data 
+### Generate unlimited Fake Data 
 `sh fakedata.sh newproject`
+By default 5 of each object type will be created. You can change the numbers and control which users create content from [newproject/databuilder/src/WorldBuilder.ts#L168](stack/databuilder/src/WorldBuilder.ts#L168)
 
+---
 
-
-#### If you already have a Django or React project or just want to generate raw definitions view [USAGE.md](USAGE.md)
+#### If you already have a codebase or only want to generate TypeScript or Django code visit [USAGE.md](USAGE.md) to generate individual files 
 
 <hr />
 
-## Build your own project from Object/Actions spreadsheets
+# TO CUSTOMIZE:
 
-Copy and start your own from this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing).
-
-Or copy and edit this [Example version](https://docs.google.com/spreadsheets/d/1AkFY0dSelMAxoaLVA_knNHIYmL97rtVjE1zuqEonCyM/edit?usp=sharing) for a meal prep program:
+1. Copy and start your own from this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing). Or copy and edit this [Example version](https://docs.google.com/spreadsheets/d/1AkFY0dSelMAxoaLVA_knNHIYmL97rtVjE1zuqEonCyM/edit?usp=sharing) for a meal prep program:
+2. Down the CSV and re-run `sh setup.sh [project name] [object actions path].csv`
 
 --------------------------------------------------------------------------------
 
-### To contribute: [CONTRIBUTING.md](CONTRIBUTING.md)
+### TO CONTRIBUTE: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+### TO SPONSOR: [github.com/sponsors/eliataylor](https://github.com/sponsors/eliataylor)
