@@ -17,13 +17,13 @@ const ThemeProvider = ({children}) => {
 //                mode: darkMode ? 'dark' : 'light',
 //                mode : 'light',
                 background: {
-                    default: darkMode ? '#3B5700' : '#ffffff',
-                    paper: darkMode ? '#3B5700' : '#F5F5F5',
+                    default: darkMode ? '#000000' : '#ffffff',
+                    paper: darkMode ? '#202020' : '#F5F5F5',
                 },
                 contrastText: darkMode ? '#e1e1e1' : '#202020',
                 text: {
-                    primary: darkMode ? '#FFFFFF' : '#202020',
-//                    secondary: '#bf741f',
+                    primary: darkMode ? '#ffffff' : '#202020',
+                    secondary: darkMode ? '#dadada' : '#333333',
                 },
                 grey : {
                     500: '#9e9e9e'
@@ -34,10 +34,10 @@ const ThemeProvider = ({children}) => {
                 color: theme.palette.getContrastText(theme.palette.primary.main),
                  */
                 primary: {
-                    main: darkMode ? '#202020' : '#3B5700',
+                    main: darkMode ? '#B70404' : '#8c0505',
                 },
                 secondary: {
-                    main: '#bf741f'
+                    main: darkMode ? '#1973af' : '#185C8A',
                 },
                 warning: {
                     main: orange[500],
@@ -46,7 +46,7 @@ const ThemeProvider = ({children}) => {
                     main: green[500],
                 },
                 link: {
-                    main: darkMode ? '#b6b6b6' : '#3B5700',
+                    main: darkMode ? '#a6d8fb' : '#1973af',
                 }
             }
 

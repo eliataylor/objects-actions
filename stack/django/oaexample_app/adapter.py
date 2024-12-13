@@ -36,9 +36,15 @@ class CustomHeadlessAdapter(DefaultHeadlessAdapter):
         # Call the original method to get the default serialized data
         user_data = super().serialize_user(user, **kwargs)
 
-        # Add the profile_picture field to the response
+        # TODO: find first Image field type on Users model
         if hasattr(user, 'profile_picture'):
             user_data['profile_picture'] = user.profile_picture.url if user.profile_picture else None
+        elif hasattr(user, 'picture'):
+            user_data['picture'] = user.profile_picture.url if user.profile_picture else None
+        elif hasattr(user, 'image'):
+            user_data['picture'] = user.profile_picture.url if user.profile_picture else None
+        elif hasattr(user, 'cover'):
+            user_data['picture'] = user.profile_picture.url if user.profile_picture else None
 
         return user_data
 
