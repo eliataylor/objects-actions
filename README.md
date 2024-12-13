@@ -5,8 +5,6 @@
 
 - [x] Learn Relational Database Schema Design
 - [x] Quickly build idea App & API prototypes
-
-
 - [x] Scaffold Content Management Systems
 - [x] Scaffold Authentication and Access Permissions
 - [x] Scaffold Web App interface and API connectivity
@@ -38,22 +36,38 @@ A secure API and CMS written in Django, with a fully integrated and authenticati
 
 
 
+## Installation:
 
-## USAGE:
+#### Install Git, Brew, Python3, NVM, Node  
+`sh install.sh`
 
-#### Generate your Django models, views, serializers and urls:
-`python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/django/oaexample_app`
+This will only install these tools if they don't exist. You can skip this if you have these dependencies.
 
-#### Generate your TypeScript types, interfaces and URL patterns:
-`python django/generate.py typescript --types=examples/object-fields-nod.csv --output_dir=examples/reactjs/src/object-actions/types/types.tsx`
+#### Setup 
+`sh setup.sh newproject`
 
-#### Test API and Generate fake data for API
-`cd databuilder && npm install && npm start`
+This will clone the entire [stack](stack) directory and change necessary names and variables to your project name.
 
-#### Run Frontend example from object-actions/examples/reactjs:
-`cd object-actions/examples/reactjs && npm install && npm start`
 
-#### For step-by-step usage to build example projects see [USAGE.md](USAGE.md)
+#### Install / Connect to MySQL  
+Modify your database credentials at [/newproject/django/.env#L16](/stack/django/.env#L16))
+If you don't have a mysql server, run `sh mysql_db.sh` to install docker and mysql inside a container and leave the .env file with it's default values.
+
+
+#### Start 
+`sh start.sh newproject`
+
+This will start these sites:
+- Django API: https://localapi.newproject.com:8080/api/schema/swagger
+- Django Admin: https://localapi.newproject.com:8080/admin/login
+- React WebApp: https://localhost.newproject.com:3000
+
+#### Fake Data 
+`sh fakedata.sh newproject`
+
+
+
+#### If you already have a Django or React project or just want to generate raw definitions view [USAGE.md](USAGE.md)
 
 <hr />
 

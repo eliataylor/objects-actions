@@ -28,11 +28,5 @@ echo "Starting ReactJS"
 cd "$projectpath/reactjs"
 npm install
 npm run start-ssl
-# start react
-
-echo "Starting DataBuilder"
-cd "$projectpath/databuilder"
-npm install
-npm run start
 
 # run cypress
