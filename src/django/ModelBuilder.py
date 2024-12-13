@@ -1,7 +1,10 @@
+from platform import machine
+
 from utils.utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize, str_to_bool
 from loguru import logger
 import os
 import ast
+import re
 
 
 class ModelBuilder:
@@ -99,9 +102,15 @@ class ModelBuilder:
             return ""
 
         try:
-            list = ast.literal_eval(list)
+            if list[0] == '[':
+                list = ast.literal_eval(list)
+            else:
+                list = list.split(',')
             code = f"\n\tclass {field_name}Choices(models.TextChoices):"
             for name in list:
+                name = re.sub("[\"\']", "", name)
+                if name is None or name == '':
+                    continue
                 code += f'\n\t\t{create_machine_name(name, True)} = ("{create_machine_name(name, True)}", "{capitalize(name)}")'
         except Exception as e:
             logger.warning(
@@ -131,7 +140,7 @@ class ModelBuilder:
     def infer_field_type(self, field_type, field_name, field):
         if field_type == "id_auto_increment":
             return "models.AutoField(primary_key=True)"
-        elif  field_type == 'user_profiles' or field_type == 'user_account':
+        elif  field_type == 'user_profile' or field_type == 'user_account':
             if field['HowMany'] == 1:
                 return f"models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
             else:
@@ -139,11 +148,12 @@ class ModelBuilder:
         elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
             # TODO: Test OneToOneField, ManyToMany, ...
             model_name = create_object_name(field['Relationship'])
+            model_machine = create_machine_name(field['Relationship'])
             model_name = 'get_user_model()' if model_name == 'User Account' else f"'{model_name}'"
             if field['HowMany'] == 1:
                 return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
             else:
-                return f"models.ManyToManyField({model_name}, related_name='{field_name}_to_{model_name}')"
+                return f"models.ManyToManyField({model_name}, related_name='{field_name}_to_{model_machine}')"
         elif field_type == "text":
             return "models.CharField(max_length=255)"  # Adjust max_length as needed
         elif field_type == "textarea":
@@ -277,5 +287,5 @@ class ModelBuilder:
 
             return field_code
         else:
-            logger.warning(f"UNSUPPORTED FILE TYPE {field_type}")
+            logger.warning(f"UNSUPPORTED FILE TYPE {field_type}. Check {field_name}")
             return "models.TextField()"

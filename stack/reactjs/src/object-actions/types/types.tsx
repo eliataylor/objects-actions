@@ -41,6 +41,7 @@ export function parseFormURL(url: string): ParsedURL | null {
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
 export interface Users {
+	readonly id: number | string
 	_type: string
 	is_active?: boolean
 	is_staff?: boolean
@@ -49,105 +50,244 @@ export interface Users {
 	username?: string
 	first_name?: string
 	last_name?: string
-	readonly id: number;
-	phone: string;
-	email: string;
-	billing_name?: string | null;
-	billing_address?: string | null;
-	delivery_address?: string | null;
-}
-export interface Suppliers {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	url_alias?: string | null;
-	name: string;
-	photo?: string | null;
-	address?: string | null;
+	email?: string | null;
+	phone?: string | null;
 	website?: string | null;
+	bio?: string | null;
+	picture?: string | null;
+	cover_photo?: string | null;
+	resources?: RelEntity | null;
 }
-export interface Ingredients {
+export interface Officials {
 	readonly id: number | string
 	_type: string
 	created_at: number
 	modified_at: number
 	author?: number
-	name: string;
-	image?: string | null;
-	supplier?: RelEntity | null;
-	seasonal?: boolean | null;
-	in_season_price?: number | null;
-	out_of_season_price?: number | null;
-}
-export interface Tags {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	name: string;
-	icon?: string | null;
-}
-export interface Meals {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	url_alias?: string | null;
 	title: string;
-	description: string;
-	bld: string;
-	photo?: string[] | null;
-	internal_cost?: number | null;
-	public_price?: number | null;
-	tags?: RelEntity | null;
-	ingredients?: RelEntity | null;
-	suppliers?: RelEntity | null;
+	office_phone?: string | null;
+	office_email?: string | null;
+	social_links?: string | null;
+	party_affiliation?: RelEntity | null;
+	city: RelEntity;
 }
-export interface Plans {
+export interface Cities {
 	readonly id: number | string
 	_type: string
 	created_at: number
 	modified_at: number
 	author?: number
-	url_alias: string;
 	name: string;
 	description?: string | null;
-	meals: RelEntity;
-	price?: number | null;
-	date?: string | null;
+	postal_address?: string | null;
+	picture?: string | null;
+	cover_photo?: string | null;
+	sponsors?: RelEntity | null;
+	website?: string[] | null;
+	population?: number | null;
+	altitude?: number | null;
+	county?: string | null;
+	state_id?: RelEntity | null;
+	officials?: RelEntity | null;
+	land_area?: number | null;
+	water_area?: number | null;
+	total_area?: number | null;
+	density?: number | null;
+	timezone?: string | null;
 }
-export interface OrderItems {
+export interface Rallies {
+	readonly id: number | string
 	_type: string
 	created_at: number
 	modified_at: number
 	author?: number
-	readonly id: number;
-	date: string;
-	delivery_date: string;
-	meal?: RelEntity | null;
-	meal_menu?: RelEntity | null;
-	servings: number;
+	title: string;
+	description: string;
+	media?: string | null;
+	topics: RelEntity[];
+	comments?: string | null;
 }
-export interface Orders {
+export interface Publication {
+	readonly id: number | string
 	_type: string
 	created_at: number
 	modified_at: number
 	author?: number
-	readonly id: number;
-	customer: RelEntity;
-	created_date: string;
-	start_date: string;
-	final_price: number;
-	delivery_instructions?: string | null;
-	customizations: string;
-	glass_containers?: boolean | null;
-	recurring?: boolean | null;
-	order_items: RelEntity;
+	title: string;
+	description: string;
+	relationships?: RelEntity | null;
+	media?: string[] | null;
+	comments?: string | null;
+}
+export interface ActionPlan {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title?: string | null;
+	recommendation?: string | null;
+	exe_summary?: string | null;
+	analysis?: string | null;
+	background?: string | null;
+	coauthors?: RelEntity | null;
+	pro_argument?: string | null;
+	con_argument?: string | null;
+	prequesites: string;
+	timeline?: string | null;
+	rally?: RelEntity | null;
+}
+export interface Meetings {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title?: string | null;
+	rally?: RelEntity | null;
+	meeting_type: RelEntity;
+	speakers: RelEntity[];
+	moderators: RelEntity[];
+	sponsors?: RelEntity | null;
+	address?: string | null;
+	rooms: RelEntity;
+	start: string;
+	end: string;
+	agenda_json?: object | null;
+	duration?: number | null;
+	privacy?: number | null;
+}
+export interface Resources {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title: string;
+	description_html: string;
+	image: string;
+	postal_address?: string | null;
+	price_ccoin: number;
+	resource_type: RelEntity;
+}
+export interface Page {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title: string;
+	description_html: string;
+}
+export interface Invites {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	meeting: RelEntity;
+	user: RelEntity;
+	invited_by: RelEntity;
 	status: string;
+}
+export interface Subscriptions {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	subscriber: RelEntity;
+	rally: RelEntity;
+	meeting?: RelEntity | null;
+	status: string;
+}
+export interface Rooms {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: RelEntity | null;
+	start: string;
+	end: string;
+	rally?: RelEntity | null;
+	meeting?: RelEntity | null;
+	privacy?: string | null;
+	status?: string | null;
+	chat_thread?: string | null;
+	recording?: string | null;
+}
+export interface Attendees {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	room_id: RelEntity;
+	display_name?: string | null;
+	display_bg?: string | null;
+	role: string;
+	stream?: string | null;
+	is_muted?: boolean | null;
+	sharing_video?: boolean | null;
+	sharing_audio?: boolean | null;
+	sharing_screen?: boolean | null;
+	hand_raised?: boolean | null;
+	is_typing?: boolean | null;
+}
+export interface Topics {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+	icon?: string | null;
+	photo?: string | null;
+}
+export interface ResourceTypes {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+}
+export interface MeetingTypes {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+}
+export interface States {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+	website?: string | null;
+	icon?: string | null;
+}
+export interface Parties {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+	logo?: string | null;
+	website?: string | null;
+}
+export interface Stakeholders {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+	image?: string | null;
 }
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
 
@@ -166,7 +306,7 @@ export interface NewEntity {
     id: number | string
 }
 
-export type EntityTypes = Users | Suppliers | Ingredients | Tags | Meals | Plans | OrderItems | Orders; 
+export type EntityTypes = Users | Officials | Cities | Rallies | Publication | ActionPlan | Meetings | Resources | Page | Invites | Subscriptions | Rooms | Attendees | Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders; 
 
 export interface ApiListResponse<T = EntityTypes> {
     count: number;
@@ -208,66 +348,166 @@ export const NAVITEMS: NavItem[] = [
     ]
   },
   {
-    "name": "Suppliers",
-    "type": "Suppliers",
-    "api": "/api/suppliers",
-    "screen": "/suppliers",
-    "search_fields": [
-      "name"
-    ]
-  },
-  {
-    "name": "Ingredients",
-    "type": "Ingredients",
-    "api": "/api/ingredients",
-    "screen": "/ingredients",
-    "search_fields": [
-      "name"
-    ]
-  },
-  {
-    "name": "Tags",
-    "type": "Tags",
-    "api": "/api/tags",
-    "screen": "/tags",
-    "search_fields": [
-      "name"
-    ]
-  },
-  {
-    "name": "Meals",
-    "type": "Meals",
-    "api": "/api/meals",
-    "screen": "/meals",
+    "name": "Officials",
+    "type": "Officials",
+    "api": "/api/officials",
+    "screen": "/officials",
     "search_fields": [
       "title"
     ]
   },
   {
-    "name": "Plans",
-    "type": "Plans",
-    "api": "/api/plans",
-    "screen": "/plans",
+    "name": "Cities",
+    "type": "Cities",
+    "api": "/api/cities",
+    "screen": "/cities",
     "search_fields": [
       "name"
     ]
   },
   {
-    "name": "Order Items",
-    "type": "OrderItems",
-    "api": "/api/order_items",
-    "screen": "/order_items",
+    "name": "Rallies",
+    "type": "Rallies",
+    "api": "/api/rallies",
+    "screen": "/rallies",
     "search_fields": [
-      "meal__title",
-      "meal_menu__name"
+      "title"
     ]
   },
   {
-    "name": "Orders",
-    "type": "Orders",
-    "api": "/api/orders",
-    "screen": "/orders",
+    "name": "Publication",
+    "type": "Publication",
+    "api": "/api/publication",
+    "screen": "/publication",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "name": "Action Plan",
+    "type": "ActionPlan",
+    "api": "/api/action_plan",
+    "screen": "/action_plan",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "name": "Meetings",
+    "type": "Meetings",
+    "api": "/api/meetings",
+    "screen": "/meetings",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "name": "Resources",
+    "type": "Resources",
+    "api": "/api/resources",
+    "screen": "/resources",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "name": "Page",
+    "type": "Page",
+    "api": "/api/page",
+    "screen": "/page",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "name": "Invites",
+    "type": "Invites",
+    "api": "/api/invites",
+    "screen": "/invites",
+    "search_fields": [
+      "meeting__title"
+    ]
+  },
+  {
+    "name": "Subscriptions",
+    "type": "Subscriptions",
+    "api": "/api/subscriptions",
+    "screen": "/subscriptions",
+    "search_fields": [
+      "rally__title",
+      "meeting__title"
+    ]
+  },
+  {
+    "name": "Rooms",
+    "type": "Rooms",
+    "api": "/api/rooms",
+    "screen": "/rooms",
+    "search_fields": [
+      "rally__title",
+      "meeting__title"
+    ]
+  },
+  {
+    "name": "Attendees",
+    "type": "Attendees",
+    "api": "/api/attendees",
+    "screen": "/attendees",
     "search_fields": []
+  },
+  {
+    "name": "Topics",
+    "type": "Topics",
+    "api": "/api/topics",
+    "screen": "/topics",
+    "search_fields": [
+      "name"
+    ]
+  },
+  {
+    "name": "Resource Types",
+    "type": "ResourceTypes",
+    "api": "/api/resource_types",
+    "screen": "/resource_types",
+    "search_fields": [
+      "name"
+    ]
+  },
+  {
+    "name": "Meeting Types",
+    "type": "MeetingTypes",
+    "api": "/api/meeting_types",
+    "screen": "/meeting_types",
+    "search_fields": [
+      "name"
+    ]
+  },
+  {
+    "name": "States",
+    "type": "States",
+    "api": "/api/states",
+    "screen": "/states",
+    "search_fields": [
+      "name"
+    ]
+  },
+  {
+    "name": "Parties",
+    "type": "Parties",
+    "api": "/api/parties",
+    "screen": "/parties",
+    "search_fields": [
+      "name"
+    ]
+  },
+  {
+    "name": "Stakeholders",
+    "type": "Stakeholders",
+    "api": "/api/stakeholders",
+    "screen": "/stakeholders",
+    "search_fields": [
+      "name"
+    ]
   }
 ]
 //---OBJECT-ACTIONS-NAV-ITEMS-ENDS---//
@@ -293,12 +533,12 @@ interface ObjectOfObjects {
 }
 export const TypeFieldSchema: ObjectOfObjects = {
   "Users": {
-    "id": {
-      "machine": "id",
-      "singular": "ID",
-      "plural": "IDs",
-      "field_type": "id_auto_increment",
-      "data_type": "number",
+    "email": {
+      "machine": "email",
+      "singular": "Email",
+      "plural": "Emails",
+      "field_type": "email",
+      "data_type": "string",
       "cardinality": 1,
       "relationship": "",
       "default": "",
@@ -311,29 +551,17 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "plural": "Phones",
       "field_type": "phone",
       "data_type": "string",
-      "cardinality": 1,
+      "cardinality": 0,
       "relationship": "",
       "default": "",
-      "required": true,
+      "required": false,
       "example": ""
     },
-    "email": {
-      "machine": "email",
-      "singular": "Email",
-      "plural": "Emails",
-      "field_type": "email",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "billing_name": {
-      "machine": "billing_name",
-      "singular": "Billing Name",
-      "plural": "Billing Names",
-      "field_type": "text",
+    "website": {
+      "machine": "website",
+      "singular": "Website",
+      "plural": "Websites",
+      "field_type": "url",
       "data_type": "string",
       "cardinality": 1,
       "relationship": "",
@@ -341,44 +569,130 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "billing_address": {
-      "machine": "billing_address",
-      "singular": "Billing Addres",
-      "plural": "Billing Address",
-      "field_type": "address",
+    "bio": {
+      "machine": "bio",
+      "singular": "Bio",
+      "plural": "Bios",
+      "field_type": "textarea",
       "data_type": "string",
-      "cardinality": Infinity,
+      "cardinality": 1,
       "relationship": "",
       "default": "",
       "required": false,
       "example": ""
     },
-    "delivery_address": {
-      "machine": "delivery_address",
-      "singular": "Delivery Addres",
-      "plural": "Delivery Address",
-      "field_type": "address",
+    "picture": {
+      "machine": "picture",
+      "singular": "Picture",
+      "plural": "Pictures",
+      "field_type": "image",
       "data_type": "string",
-      "cardinality": Infinity,
+      "cardinality": 1,
       "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "cover_photo": {
+      "machine": "cover_photo",
+      "singular": "Cover Photo",
+      "plural": "Cover Photos",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "resources": {
+      "machine": "resources",
+      "singular": "Resourc",
+      "plural": "Resources",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "Resources",
       "default": "",
       "required": false,
       "example": ""
     }
   },
-  "Suppliers": {
-    "url_alias": {
-      "machine": "url_alias",
-      "singular": "URL Alias",
-      "plural": "URL Alias",
-      "field_type": "slug",
+  "Officials": {
+    "title": {
+      "machine": "title",
+      "singular": "Job Title",
+      "plural": "Job Titles",
+      "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
       "relationship": "",
-      "default": "name",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "office_phone": {
+      "machine": "office_phone",
+      "singular": "Office Phone",
+      "plural": "Office Phones",
+      "field_type": "phone",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
       "required": false,
       "example": ""
     },
+    "office_email": {
+      "machine": "office_email",
+      "singular": "Office Email",
+      "plural": "Office Emails",
+      "field_type": "email",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "social_links": {
+      "machine": "social_links",
+      "singular": "Social Media link",
+      "plural": "Social Media links",
+      "field_type": "url",
+      "data_type": "string",
+      "cardinality": Infinity,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "party_affiliation": {
+      "machine": "party_affiliation",
+      "singular": "Party",
+      "plural": "Partys",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Parties",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "city": {
+      "machine": "city",
+      "singular": "City",
+      "plural": "Citys",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "Cities",
+      "default": "",
+      "required": true,
+      "example": ""
+    }
+  },
+  "Cities": {
     "name": {
       "machine": "name",
       "singular": "Name",
@@ -391,6 +705,1166 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": true,
       "example": ""
     },
+    "description": {
+      "machine": "description",
+      "singular": "Description",
+      "plural": "Descriptions",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "postal_address": {
+      "machine": "postal_address",
+      "singular": "Postal Addres",
+      "plural": "Postal Address",
+      "field_type": "address",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "picture": {
+      "machine": "picture",
+      "singular": "Picture",
+      "plural": "Pictures",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "cover_photo": {
+      "machine": "cover_photo",
+      "singular": "Cover Photo",
+      "plural": "Cover Photos",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "sponsors": {
+      "machine": "sponsors",
+      "singular": "Sponsor",
+      "plural": "Sponsors",
+      "field_type": "user_profile",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "Users",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "website": {
+      "machine": "website",
+      "singular": "Website",
+      "plural": "Websites",
+      "field_type": "url",
+      "data_type": "string",
+      "cardinality": 3,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "population": {
+      "machine": "population",
+      "singular": "Population",
+      "plural": "Populations",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "altitude": {
+      "machine": "altitude",
+      "singular": "Altitude",
+      "plural": "Altitudes",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "county": {
+      "machine": "county",
+      "singular": "County",
+      "plural": "Countys",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "state_id": {
+      "machine": "state_id",
+      "singular": "State",
+      "plural": "States",
+      "field_type": "vocabulary_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "States",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "officials": {
+      "machine": "officials",
+      "singular": "Official",
+      "plural": "Officials",
+      "field_type": "user_profile",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "Users",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "land_area": {
+      "machine": "land_area",
+      "singular": "Land Area",
+      "plural": "Land Areas",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "water_area": {
+      "machine": "water_area",
+      "singular": "Water Area",
+      "plural": "Water Areas",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "total_area": {
+      "machine": "total_area",
+      "singular": "Total Area",
+      "plural": "Total Areas",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "density": {
+      "machine": "density",
+      "singular": "Density",
+      "plural": "Densitys",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "timezone": {
+      "machine": "timezone",
+      "singular": "Timezone",
+      "plural": "Timezones",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Rallies": {
+    "title": {
+      "machine": "title",
+      "singular": "Title",
+      "plural": "Titles",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "description": {
+      "machine": "description",
+      "singular": "Description",
+      "plural": "Descriptions",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "media": {
+      "machine": "media",
+      "singular": "Media",
+      "plural": "Medias",
+      "field_type": "media",
+      "data_type": "string",
+      "cardinality": Infinity,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "topics": {
+      "machine": "topics",
+      "singular": "Topic",
+      "plural": "Topics",
+      "field_type": "vocabulary_reference",
+      "data_type": "RelEntity",
+      "cardinality": 3,
+      "relationship": "Topics",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "comments": {
+      "machine": "comments",
+      "singular": "Comment",
+      "plural": "Comments",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": Infinity,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Publication": {
+    "title": {
+      "machine": "title",
+      "singular": "Title",
+      "plural": "Titles",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "description": {
+      "machine": "description",
+      "singular": "Description",
+      "plural": "Descriptions",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "relationships": {
+      "machine": "relationships",
+      "singular": "Relationship",
+      "plural": "Relationships",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Officials",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "media": {
+      "machine": "media",
+      "singular": "Media",
+      "plural": "Medias",
+      "field_type": "media",
+      "data_type": "string",
+      "cardinality": 3,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "comments": {
+      "machine": "comments",
+      "singular": "Comment",
+      "plural": "Comments",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": Infinity,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "ActionPlan": {
+    "title": {
+      "machine": "title",
+      "singular": "Title",
+      "plural": "Titles",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "recommendation": {
+      "machine": "recommendation",
+      "singular": "Recommendation",
+      "plural": "Recommendations",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "exe_summary": {
+      "machine": "exe_summary",
+      "singular": "Executive Summary",
+      "plural": "Executive Summarys",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "analysis": {
+      "machine": "analysis",
+      "singular": "Analysis and Policy Alternatives / Proposal",
+      "plural": "Analysis and Policy Alternatives / Proposals",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "background": {
+      "machine": "background",
+      "singular": "Background / Legislative History / Problem Statement",
+      "plural": "Background / Legislative History / Problem Statements",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "coauthors": {
+      "machine": "coauthors",
+      "singular": "CoAuthor",
+      "plural": "CoAuthors",
+      "field_type": "user_account",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "Users",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "pro_argument": {
+      "machine": "pro_argument",
+      "singular": "Pro Argument",
+      "plural": "Pro Arguments",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "con_argument": {
+      "machine": "con_argument",
+      "singular": "Con Argument",
+      "plural": "Con Arguments",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "prequesites": {
+      "machine": "prequesites",
+      "singular": "Prequesite",
+      "plural": "Prequesites",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "timeline": {
+      "machine": "timeline",
+      "singular": "Timeline",
+      "plural": "Timelines",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "rally": {
+      "machine": "rally",
+      "singular": "Rally",
+      "plural": "Rallys",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Rallies",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Meetings": {
+    "title": {
+      "machine": "title",
+      "singular": "Title",
+      "plural": "Titles",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "rally": {
+      "machine": "rally",
+      "singular": "Rally",
+      "plural": "Rallys",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Rallies",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "meeting_type": {
+      "machine": "meeting_type",
+      "singular": "Meeting Type",
+      "plural": "Meeting Types",
+      "field_type": "vocabulary_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "MeetingTypes",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "speakers": {
+      "machine": "speakers",
+      "singular": "Speaker",
+      "plural": "Speakers",
+      "field_type": "user_account",
+      "data_type": "RelEntity",
+      "cardinality": 7,
+      "relationship": "Users",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "moderators": {
+      "machine": "moderators",
+      "singular": "Moderator",
+      "plural": "Moderators",
+      "field_type": "user_account",
+      "data_type": "RelEntity",
+      "cardinality": 2,
+      "relationship": "Users",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "sponsors": {
+      "machine": "sponsors",
+      "singular": "Sponsor",
+      "plural": "Sponsors",
+      "field_type": "user_account",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "Users",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "address": {
+      "machine": "address",
+      "singular": "Postal Addres",
+      "plural": "Postal Address",
+      "field_type": "address",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "rooms": {
+      "machine": "rooms",
+      "singular": "Room",
+      "plural": "Rooms",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Rooms",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "start": {
+      "machine": "start",
+      "singular": "Start",
+      "plural": "Starts",
+      "field_type": "date_time",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "end": {
+      "machine": "end",
+      "singular": "End",
+      "plural": "Ends",
+      "field_type": "date_time",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "agenda_json": {
+      "machine": "agenda_json",
+      "singular": "Agenda JSON",
+      "plural": "Agenda JSONs",
+      "field_type": "json",
+      "data_type": "object",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "duration": {
+      "machine": "duration",
+      "singular": "Duration",
+      "plural": "Durations",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "privacy": {
+      "machine": "privacy",
+      "singular": "Privacy",
+      "plural": "Privacy",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Resources": {
+    "title": {
+      "machine": "title",
+      "singular": "Title",
+      "plural": "Titles",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "description_html": {
+      "machine": "description_html",
+      "singular": "Description HTML",
+      "plural": "Description HTMLs",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "image": {
+      "machine": "image",
+      "singular": "Image",
+      "plural": "Images",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "postal_address": {
+      "machine": "postal_address",
+      "singular": "Postal Addres",
+      "plural": "Postal Address",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "price_ccoin": {
+      "machine": "price_ccoin",
+      "singular": "Price (citizencoin)",
+      "plural": "Price (citizencoin)s",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "resource_type": {
+      "machine": "resource_type",
+      "singular": "Resource Type",
+      "plural": "Resource Types",
+      "field_type": "vocabulary_reference",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "ResourceTypes",
+      "default": "",
+      "required": true,
+      "example": ""
+    }
+  },
+  "Page": {
+    "title": {
+      "machine": "title",
+      "singular": "Title",
+      "plural": "Titles",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "description_html": {
+      "machine": "description_html",
+      "singular": "Description HTML",
+      "plural": "Description HTMLs",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    }
+  },
+  "Invites": {
+    "meeting": {
+      "machine": "meeting",
+      "singular": "Meeting",
+      "plural": "Meetings",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Meetings",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "user": {
+      "machine": "user",
+      "singular": "User",
+      "plural": "Users",
+      "field_type": "user_account",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Users",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "invited_by": {
+      "machine": "invited_by",
+      "singular": "Invited By",
+      "plural": "Invited Bys",
+      "field_type": "user_account",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Users",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "status": {
+      "machine": "status",
+      "singular": "Status",
+      "plural": "Status",
+      "field_type": "enum",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": "invited, rsvpd, attending, attended",
+      "options": [
+        {
+          "label": "Invited",
+          "id": "invited"
+        },
+        {
+          "label": " rsvpd",
+          "id": "rsvpd"
+        },
+        {
+          "label": " attending",
+          "id": "attending"
+        },
+        {
+          "label": " attended",
+          "id": "attended"
+        }
+      ]
+    }
+  },
+  "Subscriptions": {
+    "subscriber": {
+      "machine": "subscriber",
+      "singular": "Subscriber",
+      "plural": "Subscribers",
+      "field_type": "user_account",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Users",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "rally": {
+      "machine": "rally",
+      "singular": "Rally",
+      "plural": "Rallys",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Rallies",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "meeting": {
+      "machine": "meeting",
+      "singular": "Meeting",
+      "plural": "Meetings",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Meetings",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "status": {
+      "machine": "status",
+      "singular": "Status",
+      "plural": "Status",
+      "field_type": "enum",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": "\"approved\", \"denied\", \"active\", \"seen\"",
+      "options": [
+        {
+          "label": "Approved",
+          "id": "approved"
+        },
+        {
+          "label": " denied",
+          "id": "denied"
+        },
+        {
+          "label": " active",
+          "id": "active"
+        },
+        {
+          "label": " seen",
+          "id": "seen"
+        }
+      ]
+    }
+  },
+  "Rooms": {
+    "author": {
+      "machine": "author",
+      "singular": "Owner",
+      "plural": "Owners",
+      "field_type": "user_account",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Users",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "start": {
+      "machine": "start",
+      "singular": "Start",
+      "plural": "Starts",
+      "field_type": "date_time",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "end": {
+      "machine": "end",
+      "singular": "End",
+      "plural": "Ends",
+      "field_type": "date_time",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "rally": {
+      "machine": "rally",
+      "singular": "Rally",
+      "plural": "Rallys",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Rallies",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "meeting": {
+      "machine": "meeting",
+      "singular": "Meeting",
+      "plural": "Meetings",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Meetings",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "privacy": {
+      "machine": "privacy",
+      "singular": "Privacy",
+      "plural": "Privacy",
+      "field_type": "enum",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": "public, invite-only, requests,",
+      "options": [
+        {
+          "label": "Public",
+          "id": "public"
+        },
+        {
+          "label": " invite-only",
+          "id": "inviteonly"
+        },
+        {
+          "label": " requests",
+          "id": "requests"
+        }
+      ]
+    },
+    "status": {
+      "machine": "status",
+      "singular": "Status",
+      "plural": "Status",
+      "field_type": "enum",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": "live, scheduled, ended",
+      "options": [
+        {
+          "label": "Live",
+          "id": "live"
+        },
+        {
+          "label": " scheduled",
+          "id": "scheduled"
+        },
+        {
+          "label": " ended",
+          "id": "ended"
+        }
+      ]
+    },
+    "chat_thread": {
+      "machine": "chat_thread",
+      "singular": "Chat Thread",
+      "plural": "Chat Threads",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": Infinity,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "recording": {
+      "machine": "recording",
+      "singular": "Recording",
+      "plural": "Recordings",
+      "field_type": "video",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Attendees": {
+    "room_id": {
+      "machine": "room_id",
+      "singular": "Room ID",
+      "plural": "Room IDs",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Rooms",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "display_name": {
+      "machine": "display_name",
+      "singular": "Display Name",
+      "plural": "Display Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "display_bg": {
+      "machine": "display_bg",
+      "singular": "Display Bg",
+      "plural": "Display Bgs",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "role": {
+      "machine": "role",
+      "singular": "Role",
+      "plural": "Roles",
+      "field_type": "enum",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": "viewer, presenter, admin, chat moderator",
+      "options": [
+        {
+          "label": "Viewer",
+          "id": "viewer"
+        },
+        {
+          "label": " presenter",
+          "id": "presenter"
+        },
+        {
+          "label": " admin",
+          "id": "admin"
+        },
+        {
+          "label": " chat moderator",
+          "id": "chat_moderator"
+        }
+      ]
+    },
+    "stream": {
+      "machine": "stream",
+      "singular": "Stream",
+      "plural": "Streams",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "is_muted": {
+      "machine": "is_muted",
+      "singular": "Is Muted",
+      "plural": "Is Muteds",
+      "field_type": "boolean",
+      "data_type": "boolean",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "sharing_video": {
+      "machine": "sharing_video",
+      "singular": "Sharing Video",
+      "plural": "Sharing Videos",
+      "field_type": "boolean",
+      "data_type": "boolean",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "sharing_audio": {
+      "machine": "sharing_audio",
+      "singular": "Sharing Audio",
+      "plural": "Sharing Audios",
+      "field_type": "boolean",
+      "data_type": "boolean",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "sharing_screen": {
+      "machine": "sharing_screen",
+      "singular": "Sharing Screen",
+      "plural": "Sharing Screens",
+      "field_type": "boolean",
+      "data_type": "boolean",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "hand_raised": {
+      "machine": "hand_raised",
+      "singular": "Hand Raised",
+      "plural": "Hand Raiseds",
+      "field_type": "boolean",
+      "data_type": "boolean",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "is_typing": {
+      "machine": "is_typing",
+      "singular": "Is Typing",
+      "plural": "Is Typings",
+      "field_type": "boolean",
+      "data_type": "boolean",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Topics": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "icon": {
+      "machine": "icon",
+      "singular": "Icon",
+      "plural": "Icons",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
     "photo": {
       "machine": "photo",
       "singular": "Photo",
@@ -401,13 +1875,93 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "relationship": "",
       "default": "",
       "required": false,
-      "example": "media/suppliers"
+      "example": ""
+    }
+  },
+  "ResourceTypes": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "MeetingTypes": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "States": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
     },
-    "address": {
-      "machine": "address",
-      "singular": "Addres",
-      "plural": "Address",
-      "field_type": "address",
+    "website": {
+      "machine": "website",
+      "singular": "Website",
+      "plural": "Websites",
+      "field_type": "url",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "icon": {
+      "machine": "icon",
+      "singular": "Icon",
+      "plural": "Icons",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Parties": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "logo": {
+      "machine": "logo",
+      "singular": "Logo",
+      "plural": "Logos",
+      "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
       "relationship": "",
@@ -428,7 +1982,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
-  "Ingredients": {
+  "Stakeholders": {
     "name": {
       "machine": "name",
       "singular": "Name",
@@ -438,7 +1992,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "cardinality": 1,
       "relationship": "",
       "default": "",
-      "required": true,
+      "required": false,
       "example": ""
     },
     "image": {
@@ -451,525 +2005,67 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "relationship": "",
       "default": "",
       "required": false,
-      "example": "media/ingredients"
-    },
-    "supplier": {
-      "machine": "supplier",
-      "singular": "Supplier",
-      "plural": "Suppliers",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Suppliers",
-      "default": "",
-      "required": false,
       "example": ""
-    },
-    "seasonal": {
-      "machine": "seasonal",
-      "singular": "Seasonal",
-      "plural": "Seasonals",
-      "field_type": "boolean",
-      "data_type": "boolean",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "in_season_price": {
-      "machine": "in_season_price",
-      "singular": "In season Price",
-      "plural": "In season Prices",
-      "field_type": "decimal",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "out_of_season_price": {
-      "machine": "out_of_season_price",
-      "singular": "Out of season price",
-      "plural": "Out of season prices",
-      "field_type": "decimal",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "Tags": {
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "icon": {
-      "machine": "icon",
-      "singular": "Icon",
-      "plural": "Icons",
-      "field_type": "image",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": "media/ingredients"
-    }
-  },
-  "Meals": {
-    "url_alias": {
-      "machine": "url_alias",
-      "singular": "URL Alias",
-      "plural": "URL Alias",
-      "field_type": "slug",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "title",
-      "required": false,
-      "example": ""
-    },
-    "title": {
-      "machine": "title",
-      "singular": "Title",
-      "plural": "Titles",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "description": {
-      "machine": "description",
-      "singular": "Description",
-      "plural": "Descriptions",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "bld": {
-      "machine": "bld",
-      "singular": "BLD",
-      "plural": "BLDs",
-      "field_type": "enum",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": "['breakfast', 'lunch', 'dinner', 'desert', 'snack']",
-      "options": [
-        {
-          "label": "Breakfast",
-          "id": "breakfast"
-        },
-        {
-          "label": "Lunch",
-          "id": "lunch"
-        },
-        {
-          "label": "Dinner",
-          "id": "dinner"
-        },
-        {
-          "label": "Desert",
-          "id": "desert"
-        },
-        {
-          "label": "Snack",
-          "id": "snack"
-        }
-      ]
-    },
-    "photo": {
-      "machine": "photo",
-      "singular": "Photo",
-      "plural": "Photos",
-      "field_type": "media",
-      "data_type": "string",
-      "cardinality": 3,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": "media/calendar"
-    },
-    "internal_cost": {
-      "machine": "internal_cost",
-      "singular": "Internal Cost",
-      "plural": "Internal Costs",
-      "field_type": "decimal",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "public_price": {
-      "machine": "public_price",
-      "singular": "Public Price",
-      "plural": "Public Prices",
-      "field_type": "decimal",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "16",
-      "required": false,
-      "example": ""
-    },
-    "tags": {
-      "machine": "tags",
-      "singular": "Tag",
-      "plural": "Tags",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": Infinity,
-      "relationship": "Tags",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "ingredients": {
-      "machine": "ingredients",
-      "singular": "Ingredient",
-      "plural": "Ingredients",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": Infinity,
-      "relationship": "Ingredients",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "suppliers": {
-      "machine": "suppliers",
-      "singular": "Supplier",
-      "plural": "Suppliers",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": Infinity,
-      "relationship": "Suppliers",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "Plans": {
-    "url_alias": {
-      "machine": "url_alias",
-      "singular": "URL Alias",
-      "plural": "URL Alias",
-      "field_type": "slug",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "name",
-      "required": true,
-      "example": ""
-    },
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "description": {
-      "machine": "description",
-      "singular": "Description",
-      "plural": "Descriptions",
-      "field_type": "textarea",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "meals": {
-      "machine": "meals",
-      "singular": "Meal",
-      "plural": "Meals",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": Infinity,
-      "relationship": "Meals",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "price": {
-      "machine": "price",
-      "singular": "Price",
-      "plural": "Prices",
-      "field_type": "price",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": "USD"
-    },
-    "date": {
-      "machine": "date",
-      "singular": "Date",
-      "plural": "Dates",
-      "field_type": "date",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "OrderItems": {
-    "id": {
-      "machine": "id",
-      "singular": "ID",
-      "plural": "IDs",
-      "field_type": "id_auto_increment",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "date": {
-      "machine": "date",
-      "singular": "Date",
-      "plural": "Dates",
-      "field_type": "date",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "delivery_date": {
-      "machine": "delivery_date",
-      "singular": "Delivery Date",
-      "plural": "Delivery Dates",
-      "field_type": "date",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "meal": {
-      "machine": "meal",
-      "singular": "Meal",
-      "plural": "Meals",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Meals",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "meal_menu": {
-      "machine": "meal_menu",
-      "singular": "Meal Menu",
-      "plural": "Meal Menus",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Plans",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "servings": {
-      "machine": "servings",
-      "singular": "Serving",
-      "plural": "Servings",
-      "field_type": "integer",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "1",
-      "required": true,
-      "example": ""
-    }
-  },
-  "Orders": {
-    "id": {
-      "machine": "id",
-      "singular": "ID",
-      "plural": "IDs",
-      "field_type": "id_auto_increment",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "customer": {
-      "machine": "customer",
-      "singular": "Customer",
-      "plural": "Customers",
-      "field_type": "user_account",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Users",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "created_date": {
-      "machine": "created_date",
-      "singular": "Created Date",
-      "plural": "Created Dates",
-      "field_type": "date",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "start_date": {
-      "machine": "start_date",
-      "singular": "Start Date",
-      "plural": "Start Dates",
-      "field_type": "date",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "final_price": {
-      "machine": "final_price",
-      "singular": "Final Price",
-      "plural": "Final Prices",
-      "field_type": "decimal",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "delivery_instructions": {
-      "machine": "delivery_instructions",
-      "singular": "Delivery Instruction",
-      "plural": "Delivery Instructions",
-      "field_type": "textarea",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "customizations": {
-      "machine": "customizations",
-      "singular": "Customization",
-      "plural": "Customizations",
-      "field_type": "textarea",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "glass_containers": {
-      "machine": "glass_containers",
-      "singular": "Glass Container",
-      "plural": "Glass Containers",
-      "field_type": "boolean",
-      "data_type": "boolean",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "0",
-      "required": false,
-      "example": ""
-    },
-    "recurring": {
-      "machine": "recurring",
-      "singular": "Recurring",
-      "plural": "Recurrings",
-      "field_type": "boolean",
-      "data_type": "boolean",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "0",
-      "required": false,
-      "example": ""
-    },
-    "order_items": {
-      "machine": "order_items",
-      "singular": "Order Item",
-      "plural": "Order Items",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": Infinity,
-      "relationship": "OrderItems",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "status": {
-      "machine": "status",
-      "singular": "Status",
-      "plural": "Status",
-      "field_type": "enum",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "unpaid",
-      "required": true,
-      "example": "['paid', 'cancelled', 'unpaid']",
-      "options": [
-        {
-          "label": "Paid",
-          "id": "paid"
-        },
-        {
-          "label": "Cancelled",
-          "id": "cancelled"
-        },
-        {
-          "label": "Unpaid",
-          "id": "unpaid"
-        }
-      ]
     }
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

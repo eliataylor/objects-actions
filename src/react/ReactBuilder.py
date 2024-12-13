@@ -2,6 +2,7 @@ import json
 from utils.utils import inject_generated_code, find_search_fields, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize, find_object_by_key_value
 from loguru import logger
 import ast
+import re
 
 
 class ReactBuilder:
@@ -96,14 +97,20 @@ class ReactBuilder:
                 field_js['example'] = field['Example'].strip()
 
                 if field_type == 'enum':
-                    list = field_js['example']
+                    list = field_js['example'].strip()
                     if list == '':
                         logger.warning(
                             f"Field {field['Field Label']} has no list of structure of choices. Please list them as a flat json array.")
                     try:
-                        list = ast.literal_eval(list)
+                        if list[0] == '[':
+                            list = ast.literal_eval(list)
+                        else:
+                            list = list.split(',')
                         field_js['options'] = []
                         for name in list:
+                            name = re.sub("[\"\']", "", name)
+                            if name is None or name == '':
+                                continue
                             field_js['options'].append({
                                 "label":capitalize(name),
                                 "id": create_machine_name(name, True)

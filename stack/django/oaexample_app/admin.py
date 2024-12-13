@@ -2,20 +2,27 @@
 
 ####OBJECT-ACTIONS-ADMIN_IMPORTS-STARTS####
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-
-from .models import EventCheckins, InviteLinks
-from .models import Events
-from .models import Friendships
-from .models import Invites
-from .models import Likes
-from .models import Playlists
-from .models import SongRequests
-from .models import Songs
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import Users
-
-
+from .models import Officials
+from .models import Cities
+from .models import Rallies
+from .models import Publication
+from .models import ActionPlan
+from .models import Meetings
+from .models import Resources
+from .models import Page
+from .models import Invites
+from .models import Subscriptions
+from .models import Rooms
+from .models import Attendees
+from .models import Topics
+from .models import ResourceTypes
+from .models import MeetingTypes
+from .models import States
+from .models import Parties
+from .models import Stakeholders
 ####OBJECT-ACTIONS-ADMIN_IMPORTS-ENDS####
 from .models import AppTokens
 from django.utils.html import format_html
@@ -23,90 +30,143 @@ from django.utils.html import format_html
 ####OBJECT-ACTIONS-ADMIN_MODELS-STARTS####
 class UsersAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
-        (_('Additional Info'), {'fields': ('phone', 'profile_picture', 'birthday', 'gender', 'last_known_location', 'link_ig', 'link_spotify', 'link_apple')}),
+        (_('Additional Info'), {'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo', 'resources')}),
     )
     add_fieldsets = BaseUserAdmin.add_fieldsets + (
         (None, {
             'classes': ('wide',),
-            'fields': ('phone', 'profile_picture', 'birthday', 'gender', 'last_known_location', 'link_ig', 'link_spotify', 'link_apple'),
+            'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo', 'resources'),
         }),
-    )
-    def image_tag(self, obj):
-        if obj.profile_picture:
-            return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
-               obj.profile_picture.url)
-        return "No Image"
-
-    list_display = ('id', 'username', 'get_full_name', 'profile_picture', 'image_tag')
+    )                
 
 
 admin.site.register(Users, UsersAdmin)
 
-class SongsAdmin(admin.ModelAdmin):
-    search_fields = ['name', 'artist']
-    readonly_fields = ('id',)
+class OfficialsAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
 
-admin.site.register(Songs, SongsAdmin)
+admin.site.register(Officials, OfficialsAdmin)
 
-class PlaylistsAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-    list_display = ('id', 'social_source', 'name', 'event')
+class CitiesAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
 
-admin.site.register(Playlists, PlaylistsAdmin)
+admin.site.register(Cities, CitiesAdmin)
 
-class EventsAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-    search_fields = ['name', 'starts', 'ends']
-    autocomplete_fields = ['author', 'cohosts']
-    list_display = ('id', 'name', 'author', 'starts', 'ends')
+class RalliesAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
 
-admin.site.register(Events, EventsAdmin)
+admin.site.register(Rallies, RalliesAdmin)
 
-class FriendshipsAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-    autocomplete_fields = ['author', 'recipient']
-    list_display = ('id', 'author', 'recipient', 'status')
+class PublicationAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
 
-admin.site.register(Friendships, FriendshipsAdmin)
+admin.site.register(Publication, PublicationAdmin)
+
+class ActionPlanAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(ActionPlan, ActionPlanAdmin)
+
+class MeetingsAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(Meetings, MeetingsAdmin)
+
+class ResourcesAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(Resources, ResourcesAdmin)
+
+class PageAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(Page, PageAdmin)
 
 class InvitesAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-    autocomplete_fields = ['event', 'author', 'recipient']
-    list_display = ('id', 'author', 'recipient', 'event', 'status')
-
+	readonly_fields = ('id',)
 
 admin.site.register(Invites, InvitesAdmin)
 
-class InviteLinksAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-    autocomplete_fields = ['event', 'author']
-    list_display = ('id', 'url_alias', 'author', 'event', 'status', 'used')
+class SubscriptionsAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
 
-admin.site.register(InviteLinks, InviteLinksAdmin)
+admin.site.register(Subscriptions, SubscriptionsAdmin)
 
-class SongRequestsAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-    autocomplete_fields = ['event', 'author', 'song']
-    list_display = ('id', 'song', 'event', 'status')
+class RoomsAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
 
-admin.site.register(SongRequests, SongRequestsAdmin)
+admin.site.register(Rooms, RoomsAdmin)
 
-class EventCheckinsAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
+class AttendeesAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
 
-admin.site.register(EventCheckins, EventCheckinsAdmin)
+admin.site.register(Attendees, AttendeesAdmin)
 
-class LikesAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
-    list_display = ('id', 'author', 'type', 'created_at')
+class TopicsAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
 
-admin.site.register(Likes, LikesAdmin)
+admin.site.register(Topics, TopicsAdmin)
+
+class ResourceTypesAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(ResourceTypes, ResourceTypesAdmin)
+
+class MeetingTypesAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(MeetingTypes, MeetingTypesAdmin)
+
+class StatesAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(States, StatesAdmin)
+
+class PartiesAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(Parties, PartiesAdmin)
+
+class StakeholdersAdmin(admin.ModelAdmin):
+	readonly_fields = ('id',)
+
+admin.site.register(Stakeholders, StakeholdersAdmin)
 ####OBJECT-ACTIONS-ADMIN_MODELS-ENDS####
 
 
 class AppTokensAdmin(admin.ModelAdmin):
     readonly_fields = ()
 admin.site.register(AppTokens, AppTokensAdmin)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
