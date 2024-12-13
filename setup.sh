@@ -11,25 +11,26 @@ if [ -z "$machinename" ]; then
     machinename="test"
 fi
 
-projectpath=$(realpath "$machinename")
-
 # Copy the stack directory to the machine name if it doesn't exist
 if [ ! -d "$machinename" ]; then
     cp -R stack "$machinename"
-    export LC_ALL=C # avoids issues with non-UTF-8 characters
-    # Recursively replace "oaexample" with "$machinename" in all files (case-insensitive)
-    find $projectpath -type f -exec sed -i '' -e "s/oaexample/$machinename/Ig" {} +
-
-    # Rename directories containing "oaexample" to "$machinename" recursively
-    find "$machinename" -depth -name "*oaexample*" | while read -r dir; do
-        newdir=$(echo "$dir" | LC_ALL=C sed "s/oaexample/$machinename/I")
-        mv "$dir" "$newdir"
-    done
     echo "Copied stack to new project directory: $machinename"
 else
     echo "Project directory $machinename already exists. Skipping copy."
 fi
 
+projectpath=$(realpath "$machinename")
+
+export LC_ALL=C # avoids issues with non-UTF-8 characters
+echo "String replacing 'oaexample' with $machinename"
+# Recursively replace "oaexample" with "$machinename" in all files (case-insensitive)
+find $projectpath -type f -exec sed -i '' -e "s/oaexample/$machinename/Ig" {} +
+
+# Rename directories containing "oaexample" to "$machinename" recursively
+find "$machinename" -depth -name "*oaexample*" | while read -r dir; do
+    newdir=$(echo "$dir" | LC_ALL=C sed "s/oaexample/$machinename/I")
+    mv "$dir" "$newdir"
+done
 
 # Ensure the SSL certificate exists or create one
 ssl_cert_path="$HOME/.ssl/certificate.crt"
@@ -54,7 +55,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Run the Python scripts to generate files
-python generate.py admin --types="$csvpath" --output_dir="$projectpath/django/${machinename}_app"
+python -m generate django --types="$csvpath" --output_dir="$projectpath/django/${machinename}_app"
 
-python generate.py typescript --types="$csvpath" --output_dir="$projectpath/reactjs/src/object-actions/types/types.tsx"
-python generate.py typescript --types="$csvpath" --output_dir="$projectpath/databuilder/src/types.ts"
+python -m generate typescript --types="$csvpath" --output_dir="$projectpath/reactjs/src/object-actions/types/types.tsx"
+python -m generate typescript --types="$csvpath" --output_dir="$projectpath/databuilder/src/types.ts"

@@ -14,7 +14,12 @@ projectpath=$(realpath "$machinename")
 
 echo "Starting Django"
 cd "$projectpath/django"
-python -m venv .venv
+if [ ! -d .venv ]; then
+    python -m venv .venv
+    echo "Created new virtual environment."
+else
+    echo "Virtual environment already exists."
+fi
 source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py makemigrations "$machinename_app"
