@@ -125,7 +125,7 @@ class DjangoBuilder:
         outpath = os.path.join(self.output_dir, 'urls.py')
         extra_patterns = []
 
-        code = "\nOARouter = DefaultRouter()\n"
+        code = "\nOARouter = DefaultRouter(trailing_slash=False)\n"
         for class_name in self.json:
             path_name = create_machine_name(class_name)
             model_name = create_object_name(class_name)
@@ -144,7 +144,7 @@ class DjangoBuilder:
     
 urlpatterns += [
     path('account/provider/callback/', redirect_to_frontend, name='provider_callback_no_provider'),
-    {(",\n\t").join(extra_patterns)},    
+    {(",\n\t").join(extra_patterns) + ',' if len(extra_patterns) > 0 else ''}    
     path('api/users/<int:user_id>/<str:model_name>/', UserModelListView.as_view(), name='user-model-list'),
     path('api/users/<int:user_id>/<str:model_name>/stats/', UserStatsView.as_view(), name='user-model-stats'),
 

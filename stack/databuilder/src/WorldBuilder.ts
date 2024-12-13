@@ -82,7 +82,7 @@ export class WorldBuilder {
                 const creator = this.contentCreators[randomIndex]
                 console.log(`CREATOR ${creator.username}: `);
                 if (typeof creator['cookies'] === 'undefined' && typeof creator['username'] === 'string') {
-                    const loginResponse = await this.apiClient.login(<string>creator['username'], "1234")
+                    const loginResponse = await this.apiClient.login(<string>creator['email'], "APasswordYouShouldChange")
                     if (loginResponse.success) {
                         console.log('Login user successful: ' +  loginResponse.data.data.user.username);
                         this.contentCreators[randomIndex]['cookies'] = this.apiClient.getCookies()

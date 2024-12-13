@@ -1,17 +1,18 @@
 import React, {ChangeEvent, ReactElement, useState} from 'react';
-import {Button, Grid, MenuItem, TextField, Typography} from '@mui/material';
+import {Button, CircularProgress, FormHelperText, Grid, MenuItem, TextField, Typography} from '@mui/material';
 import {EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, RelEntity} from "../types/types";
 import AutocompleteField from "./AutocompleteField";
 import ApiClient from "../../config/ApiClient";
 import AutocompleteMultipleField from "./AutocompleteMultipleField";
 import ImageUpload, {Upload} from "./ImageUpload";
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-// import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, {Dayjs} from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import {useNavigate} from "react-router-dom";
 import ListItemText from "@mui/material/ListItemText";
+import {isDayJs} from "../../utils";
+import ProviderButton from "../../allauth/socialaccount/ProviderButton";
 
 dayjs.extend(utc)
 
@@ -27,44 +28,47 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
     const [entity, setEntity] = useState<EntityTypes>(original);
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     const navigate = useNavigate()
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const [syncing, setSyncing] = useState<boolean>(false);
+
+    const handleChange = (name: string, value: any) => {
         const newEntity = {...entity}
         // @ts-ignore
         newEntity[name] = value
         setEntity(newEntity);
+    };
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target;
+        handleChange(name, value)
     };
 
     const handleTimeChange = (newValue: Dayjs | null, name: string) => {
-        const newEntity = {...entity}
-        // @ts-ignore
-        newEntity[name] = newValue
-        setEntity(newEntity);
+        handleChange(name, newValue)
     };
 
     const handleSelect = (value: RelEntity[] | RelEntity | null, name: string) => {
-        const newEntity = {...entity}
-        // @ts-ignore
-        newEntity[name] = value
-        setEntity(newEntity);
+        handleChange(name, value)
     };
 
     const handleImage = (selected: Upload, field_name: string, index: number) => {
-        const newEntity = {...entity}
-        // @ts-ignore
-        newEntity[field_name] = selected.file
-        // todo: handle multiple images
-        setEntity(newEntity);
+        handleChange(field_name, selected.file)
     };
 
     const handleDelete = async () => {
         if (window.confirm("Are you sure you want to delete this?")) {
-            const apiUrl = `${process.env.REACT_APP_API_HOST}${navItem.api}/${eid}/`
+            const apiUrl = `${navItem.api}/${eid}`
+            setSyncing(true)
             const response = await ApiClient.delete(apiUrl);
-
+            setSyncing(false)
             if (response.success) {
-                navigate(navItem.screen)
-                alert('Submitted deleted');
+                if (navItem.type === 'Users') {
+                    window.location.href = '/'
+                } else {
+                    alert('Deleted');
+                    navigate(navItem.screen)
+                }
+            } else if (response.errors) {
+                setErrors(response.errors)
             } else if (response.error) {
                 // @ts-ignore
                 setErrors(response.error)
@@ -87,7 +91,14 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
                 hasImage = true;
             }
 
-            if (Array.isArray(val)) {
+            if (isDayJs(val)) {
+                const field = fields.find(f => f.machine === key)
+                if (field && field.field_type === 'date') {
+                    val = val.format("YYYY-MM-DD")
+                } else {
+                    val = val.format()
+                }
+            } else if (Array.isArray(val)) {
                 val = val.map(v => v.id)
             } else if (val && typeof val === 'object' && val.id) {
                 val = val.id
@@ -113,24 +124,117 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
             headers["Content-Type"] = "application/json"
         }
 
-        const apiUrl = `${process.env.REACT_APP_API_HOST}${navItem.api}/`
+        setSyncing(true)
         if (eid > 0) {
-            response = await ApiClient.patch(`${apiUrl}${eid}/`, formData, headers);
+            response = await ApiClient.patch(`${navItem.api}/${eid}`, formData, headers);
         } else {
-            response = await ApiClient.post(apiUrl, formData, headers);
+            response = await ApiClient.post(navItem.api, formData, headers);
         }
+        setSyncing(false)
         if (response.success && response.data) {
             const newEntity = response.data as EntityTypes
-            navigate(`/forms${navItem.screen}/${newEntity.id}/edit`)
-            alert('Submitted successfully');
+//            navigate(`/forms${navItem.screen}/${newEntity.id}/edit`)
+            navigate(`${navItem.screen}/${newEntity.id}`)
+//            alert('Submitted successfully');
             setErrors({})
             return
         }
-        if (response.error) {
+        if (response.errors) {
+            setErrors(response.errors)
+        } else if (response.error) {
             // @ts-ignore
             setErrors(response.error)
         }
     };
+
+    function renderField(field: FieldTypeDefinition, error: string[] | undefined) {
+        const baseVal: any = entity[field.machine as keyof EntityTypes]
+
+        let input: ReactElement | null = null;
+        if (field.field_type === 'enum') {
+            input = <TextField
+                fullWidth
+                select
+                name={field.machine}
+                label={field.singular}
+                type={field.data_type}
+                value={baseVal}
+                onChange={handleInputChange}
+                error={typeof error !== 'undefined'}
+            >
+                {field.options && field.options.map(opt => <MenuItem key={field.machine + opt.id} value={opt.id}>
+                    <ListItemText primary={opt.label}/>
+                </MenuItem>)}
+
+            </TextField>
+        } else if (field.field_type === 'date_time') {
+            input = <DateTimePicker
+                format="MMMM D, YYYY h:mm A"
+                label={field.singular}
+                sx={{width: '100%'}}
+                value={typeof baseVal === 'string' ?
+                    dayjs(baseVal).local()
+                    : baseVal}
+                onChange={(newVal) => handleTimeChange(newVal, field.machine)}/>
+        } else if (field.field_type === 'date') {
+            input = <DatePicker
+                format="MMMM D, YYYY"
+                label={field.singular}
+                sx={{width: '100%'}}
+                value={typeof baseVal === 'string' ?
+                    dayjs(baseVal).local()
+                    : baseVal}
+                onChange={(newVal) => handleTimeChange(newVal, field.machine)}/>
+        } else if (field.field_type === 'provider_url') {
+            const id = field.machine === 'link_spotify' ? 'spotify' : 'applemusic'
+            input = <ProviderButton
+                connected={baseVal ? true : false}
+                provider={{name: field.singular, id: id}}
+            />
+        } else if (field.field_type === 'image') {
+            input = <ImageUpload onSelect={handleImage} index={0}
+                                 field_name={field.machine}
+                                 selected={baseVal}
+            />
+        } else if (field.data_type === 'RelEntity') {
+            const subUrl = NAVITEMS.find(nav => nav.type === field.relationship);
+            input = field?.cardinality && field?.cardinality > 1 ?
+                <AutocompleteMultipleField type={field.relationship || ""}
+                                           search_fields={subUrl?.search_fields || []}
+                                           onSelect={handleSelect}
+                                           field_name={field.machine}
+                                           field_label={field.plural}
+                                           selected={!baseVal ? [] : (Array.isArray(baseVal) ? baseVal : [baseVal])}
+                />
+                :
+                <AutocompleteField type={field.relationship || ""}
+                                   search_fields={subUrl?.search_fields || []}
+                                   onSelect={handleSelect}
+                                   field_name={field.machine}
+                                   field_label={field.singular}
+                                   selected={baseVal}/>
+
+        } else {
+            input = <TextField
+                fullWidth
+                name={field.machine}
+                label={field.singular}
+                type={field.data_type}
+                value={baseVal}
+                onChange={handleInputChange}
+                error={typeof error !== 'undefined'}
+            />
+        }
+
+        if (error) {
+            return <React.Fragment>
+                {input}
+                <FormHelperText>{error.join(', ')}</FormHelperText>
+            </React.Fragment>
+        }
+
+        return input
+    }
 
     function errToString(err: any) {
         if (!err) return null;
@@ -142,86 +246,13 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
     return (
         <Grid container spacing={2}>
             {fields.map((field) => {
+                if (field.field_type === 'id_auto_increment') return null
                 let error: string[] | undefined = errors[field.machine]
                 if (error) {
                     delete errorcopy[field.machine]
                 }
-                const baseVal: any = entity[field.machine as keyof EntityTypes]
-                let input: ReactElement | null = null;
-                if (field.field_type === 'enum') {
-                    input = <TextField
-                        fullWidth
-                        select
-                        name={field.machine}
-                        label={field.singular}
-                        type={field.data_type}
-                        value={baseVal}
-                        onChange={handleChange}
-                        error={typeof error !== 'undefined'}
-                    >
-                        {field.options && field.options.map(opt => <MenuItem key={field.machine + opt.id} value={opt.id}>
-                            <ListItemText primary={opt.label}/>
-                        </MenuItem>)}
-
-                    </TextField>
-                } else if (field.field_type === 'date_time') {
-                    input = <React.Fragment>
-                        <Typography variant='caption' component={'div'}>{field.singular}</Typography>
-                        <DateTimePicker
-                            format="MMMM D, YYYY h:mm A"
-                            value={typeof baseVal === 'string' ?
-                                dayjs.utc(baseVal).local()
-                                : baseVal}
-                            onChange={(newVal) => handleTimeChange(newVal, field.machine)}/>
-                    </React.Fragment>
-                } else if (field.field_type === 'date') {
-                    input = <React.Fragment>
-                        <Typography variant='caption' component={'div'}>{field.singular}</Typography>
-                        <DatePicker
-                            format="MMMM D, YYYY"
-                            value={typeof baseVal === 'string' ?
-                                dayjs.utc(baseVal).local()
-                                : baseVal}
-                            onChange={(newVal) => handleTimeChange(newVal, field.machine)}/>
-                    </React.Fragment>
-                } else if (field.field_type === 'image') {
-                    input = <ImageUpload onSelect={handleImage} index={0}
-                                         field_name={field.machine}
-                                         selected={baseVal}
-                    />
-                } else if (field.data_type === 'RelEntity') {
-                    const subUrl = NAVITEMS.find(nav => nav.type === field.relationship);
-                    input = field?.cardinality && field?.cardinality > 1 ?
-                        <AutocompleteMultipleField type={field.relationship || ""}
-                                                   search_fields={subUrl?.search_fields || []}
-                                                   onSelect={handleSelect}
-                                                   field_name={field.machine}
-                                                   field_label={field.plural}
-                                                   selected={!baseVal ? [] : (Array.isArray(baseVal) ? baseVal : [baseVal])}
-                        />
-                        :
-                        <AutocompleteField type={field.relationship || ""}
-                                           search_fields={subUrl?.search_fields || []}
-                                           onSelect={handleSelect}
-                                           field_name={field.machine}
-                                           field_label={field.singular}
-                                           selected={baseVal}/>
-
-                } else {
-                    input = <TextField
-                        fullWidth
-                        name={field.machine}
-                        label={field.singular}
-                        type={field.data_type}
-                        value={baseVal}
-                        onChange={handleChange}
-                        error={typeof error !== 'undefined'}
-                    />
-                }
-
-
                 return <Grid item xs={12} key={field.machine}>
-                    {input}
+                    {renderField(field, error)}
                     {error && <Typography variant="body2" color="error">{errToString(error)}</Typography>}
                 </Grid>
             })}
@@ -232,12 +263,18 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
             })}
 
             <Grid container item xs={12} justifyContent={'space-between'}>
-                <Button onClick={handleSubmit} variant="contained" color="primary">
-                    Submit
+                <Button onClick={handleSubmit}
+                        disabled={syncing}
+                        startIcon={syncing ? <CircularProgress size={'small'} color={'primary'}/> : undefined}
+                        variant="contained" color="primary">
+                    Save
                 </Button>
 
-                {eid > 0 && <Button onClick={handleDelete} variant="outlined" color="inherit">
-                  Delete
+                {eid > 0 && <Button
+                    disabled={syncing}
+                    startIcon={syncing ? <CircularProgress size={'small'} color={'primary'}/> : undefined}
+                    onClick={handleDelete} variant="outlined" color="inherit">
+                    Delete
                 </Button>}
             </Grid>
         </Grid>

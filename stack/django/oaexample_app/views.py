@@ -10,89 +10,238 @@ import re
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .models import Users
 from .serializers import UsersSerializer
-from .models import Songs
-from .serializers import SongsSerializer
-from .models import Playlists
-from .serializers import PlaylistsSerializer
-from .models import Events
-from .serializers import EventsSerializer
-from .models import Friendships
-from .serializers import FriendshipsSerializer
+from .models import Officials
+from .serializers import OfficialsSerializer
+from .models import Cities
+from .serializers import CitiesSerializer
+from .models import Rallies
+from .serializers import RalliesSerializer
+from .models import Publication
+from .serializers import PublicationSerializer
+from .models import ActionPlan
+from .serializers import ActionPlanSerializer
+from .models import Meetings
+from .serializers import MeetingsSerializer
+from .models import Resources
+from .serializers import ResourcesSerializer
+from .models import Page
+from .serializers import PageSerializer
 from .models import Invites
 from .serializers import InvitesSerializer
-from .models import SongRequests
-from .serializers import SongRequestsSerializer
-from .models import EventCheckins
-from .serializers import EventCheckinsSerializer
-from .models import Likes
-from .serializers import LikesSerializer
+from .models import Subscriptions
+from .serializers import SubscriptionsSerializer
+from .models import Rooms
+from .serializers import RoomsSerializer
+from .models import Attendees
+from .serializers import AttendeesSerializer
+from .models import Topics
+from .serializers import TopicsSerializer
+from .models import ResourceTypes
+from .serializers import ResourceTypesSerializer
+from .models import MeetingTypes
+from .serializers import MeetingTypesSerializer
+from .models import States
+from .serializers import StatesSerializer
+from .models import Parties
+from .serializers import PartiesSerializer
+from .models import Stakeholders
+from .serializers import StakeholdersSerializer
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
+
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
+from rest_framework import viewsets, permissions, filters, generics
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.views import APIView
+from .services import send_sms
+import random
+
+class LimitedLimitOffsetPagination(LimitOffsetPagination):
+    max_limit = 100
+
+class PaginatedViewSet(viewsets.ModelViewSet):
+    pagination_class = LimitOffsetPagination
+
+    def apply_pagination(self, queryset):
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(queryset, self.request, view=self)
+
+        serializer_class = self.get_serializer_class_for_queryset(queryset)
+        serializer = serializer_class(paginated_queryset, many=True)
+
+        paginated_data = {
+            'count': paginator.count,  # Total number of items
+            'limit': paginator.limit,  # Number of items per page
+            'offset': paginator.offset,  # Starting position of the current page
+#            'next': paginator.get_next_link(),  # Link to the next page, if available
+#            'previous': paginator.get_previous_link(),  # Link to the previous page, if available
+            'results': serializer.data
+        }
+
+        return paginated_data
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return JsonResponse(serializer.data)
+
+    def apply_status_filter(self, queryset):
+        status_param = self.request.query_params.get('status')
+        if status_param:
+            status_list = status_param.split(',')
+            if len(status_list) > 1:
+                queryset = queryset.filter(status__in=status_list)
+            else:
+                queryset = queryset.filter(status=status_param)
+        return queryset
+
+    def get_serializer_class_for_queryset(self, queryset):
+        # Use model's meta information to dynamically select the serializer
+        model = queryset.model
+
+        # Map models to serializers
+        model_to_serializer = {}
+
+        # Return the corresponding serializer class
+        return model_to_serializer.get(model, self.get_serializer_class())
+
 
 ####OBJECT-ACTIONS-VIEWSETS-STARTS####
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.all().order_by('id')
     serializer_class = UsersSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['first_name', 'last_name']
 
-class SongsViewSet(viewsets.ModelViewSet):
-    queryset = Songs.objects.all().order_by('id')
-    serializer_class = SongsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class OfficialsViewSet(viewsets.ModelViewSet):
+    queryset = Officials.objects.all().order_by('id')
+    serializer_class = OfficialsSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+
+class CitiesViewSet(viewsets.ModelViewSet):
+    queryset = Cities.objects.all().order_by('id')
+    serializer_class = CitiesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-class PlaylistsViewSet(viewsets.ModelViewSet):
-    queryset = Playlists.objects.all().order_by('id')
-    serializer_class = PlaylistsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class RalliesViewSet(viewsets.ModelViewSet):
+    queryset = Rallies.objects.all().order_by('id')
+    serializer_class = RalliesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
+    search_fields = ['title']
 
-class EventsViewSet(viewsets.ModelViewSet):
-    queryset = Events.objects.all().order_by('id')
-    serializer_class = EventsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class PublicationViewSet(viewsets.ModelViewSet):
+    queryset = Publication.objects.all().order_by('id')
+    serializer_class = PublicationSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
+    search_fields = ['title']
 
-class EventsAliasView(generics.RetrieveAPIView):
-    queryset = Events.objects.all()
-    serializer_class = EventsSerializer
-    lookup_field = 'url_alias'
-class FriendshipsViewSet(viewsets.ModelViewSet):
-    queryset = Friendships.objects.all().order_by('id')
-    serializer_class = FriendshipsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class ActionPlanViewSet(viewsets.ModelViewSet):
+    queryset = ActionPlan.objects.all().order_by('id')
+    serializer_class = ActionPlanSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+
+class MeetingsViewSet(viewsets.ModelViewSet):
+    queryset = Meetings.objects.all().order_by('id')
+    serializer_class = MeetingsSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+
+class ResourcesViewSet(viewsets.ModelViewSet):
+    queryset = Resources.objects.all().order_by('id')
+    serializer_class = ResourcesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+
+class PageViewSet(viewsets.ModelViewSet):
+    queryset = Page.objects.all().order_by('id')
+    serializer_class = PageSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
 
 class InvitesViewSet(viewsets.ModelViewSet):
     queryset = Invites.objects.all().order_by('id')
     serializer_class = InvitesSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['event__name']
+    search_fields = ['meeting__title']
 
-class SongRequestsViewSet(viewsets.ModelViewSet):
-    queryset = SongRequests.objects.all().order_by('id')
-    serializer_class = SongRequestsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class SubscriptionsViewSet(viewsets.ModelViewSet):
+    queryset = Subscriptions.objects.all().order_by('id')
+    serializer_class = SubscriptionsSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['song__name', 'event__name', 'playlist__name']
+    search_fields = ['rally__title', 'meeting__title']
 
-class EventCheckinsViewSet(viewsets.ModelViewSet):
-    queryset = EventCheckins.objects.all().order_by('id')
-    serializer_class = EventCheckinsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class RoomsViewSet(viewsets.ModelViewSet):
+    queryset = Rooms.objects.all().order_by('id')
+    serializer_class = RoomsSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['event__name']
+    search_fields = ['rally__title', 'meeting__title']
 
-class LikesViewSet(viewsets.ModelViewSet):
-    queryset = Likes.objects.all().order_by('id')
-    serializer_class = LikesSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class AttendeesViewSet(viewsets.ModelViewSet):
+    queryset = Attendees.objects.all().order_by('id')
+    serializer_class = AttendeesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+class TopicsViewSet(viewsets.ModelViewSet):
+    queryset = Topics.objects.all().order_by('id')
+    serializer_class = TopicsSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['song__name', 'event__name', 'playlist__name']
+    search_fields = ['name']
+
+class ResourceTypesViewSet(viewsets.ModelViewSet):
+    queryset = ResourceTypes.objects.all().order_by('id')
+    serializer_class = ResourceTypesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+class MeetingTypesViewSet(viewsets.ModelViewSet):
+    queryset = MeetingTypes.objects.all().order_by('id')
+    serializer_class = MeetingTypesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+class StatesViewSet(viewsets.ModelViewSet):
+    queryset = States.objects.all().order_by('id')
+    serializer_class = StatesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+class PartiesViewSet(viewsets.ModelViewSet):
+    queryset = Parties.objects.all().order_by('id')
+    serializer_class = PartiesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+class StakeholdersViewSet(viewsets.ModelViewSet):
+    queryset = Stakeholders.objects.all().order_by('id')
+    serializer_class = StakeholdersSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
 ####OBJECT-ACTIONS-VIEWSETS-ENDS####
 
 
@@ -116,35 +265,63 @@ SEARCH_FIELDS_MAPPING = {
     "first_name",
     "last_name"
   ],
-  "Songs": [
+  "Officials": [
+    "title"
+  ],
+  "Cities": [
     "name"
   ],
-  "Playlists": [
-    "name"
+  "Rallies": [
+    "title"
   ],
-  "Events": [
-    "name"
+  "Publication": [
+    "title"
   ],
-  "Friendships": [],
+  "ActionPlan": [
+    "title"
+  ],
+  "Meetings": [
+    "title"
+  ],
+  "Resources": [
+    "title"
+  ],
+  "Page": [
+    "title"
+  ],
   "Invites": [
-    "event__name"
+    "meeting__title"
   ],
-  "SongRequests": [
-    "song__name",
-    "event__name",
-    "playlist__name"
+  "Subscriptions": [
+    "rally__title",
+    "meeting__title"
   ],
-  "EventCheckins": [
-    "event__name"
+  "Rooms": [
+    "rally__title",
+    "meeting__title"
   ],
-  "Likes": [
-    "song__name",
-    "event__name",
-    "playlist__name"
+  "Attendees": [],
+  "Topics": [
+    "name"
+  ],
+  "ResourceTypes": [
+    "name"
+  ],
+  "MeetingTypes": [
+    "name"
+  ],
+  "States": [
+    "name"
+  ],
+  "Parties": [
+    "name"
+  ],
+  "Stakeholders": [
+    "name"
   ]
 }
 
-SERIALZE_MODEL_MAP = { "Users": UsersSerializer,"Songs": SongsSerializer,"Playlists": PlaylistsSerializer,"Events": EventsSerializer,"Friendships": FriendshipsSerializer,"Invites": InvitesSerializer,"SongRequests": SongRequestsSerializer,"EventCheckins": EventCheckinsSerializer,"Likes": LikesSerializer }
+SERIALZE_MODEL_MAP = { "Users": UsersSerializer,"Officials": OfficialsSerializer,"Cities": CitiesSerializer,"Rallies": RalliesSerializer,"Publication": PublicationSerializer,"ActionPlan": ActionPlanSerializer,"Meetings": MeetingsSerializer,"Resources": ResourcesSerializer,"Page": PageSerializer,"Invites": InvitesSerializer,"Subscriptions": SubscriptionsSerializer,"Rooms": RoomsSerializer,"Attendees": AttendeesSerializer,"Topics": TopicsSerializer,"ResourceTypes": ResourceTypesSerializer,"MeetingTypes": MeetingTypesSerializer,"States": StatesSerializer,"Parties": PartiesSerializer,"Stakeholders": StakeholdersSerializer }
 
 class UserStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -237,6 +414,7 @@ class RenderFrontendIndex(APIView):
 
 
 from django.shortcuts import redirect
+from django.utils import timezone
 
 def redirect_to_frontend(request, provider=None):
 #    session = LoginSession(request, "social_login_redirected", settings.SESSION_COOKIE_NAME)
@@ -261,8 +439,144 @@ from allauth.socialaccount.sessions import LoginSession
 from rest_framework import status
 from .serializers import VerifyPhoneSerializer, PhoneNumberSerializer
 
-import random
 import os
+
+
+class SendCodeView(APIView):
+    permission_classes = [permissions.AllowAny]  # Allow any user to access this view
+
+    @extend_schema(
+        request=PhoneNumberSerializer,
+        responses={
+            200: OpenApiResponse(description='SMS sent successfully', examples={
+                'application/json': {"detail": "SMS sent successfully"}
+            }),
+            400: OpenApiResponse(description='Bad request', examples={
+                'application/json': {"phone_number": ["This field is required."]}
+            }),
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = PhoneNumberSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone']
+            code = str(random.randint(1000, 999999))
+            if phone_number == '+14159999999':
+                return JsonResponse({"detail": "Enter your Demo Account code"}, status=status.HTTP_200_OK)
+            message = f"Your oaexample.com verification code is {code}"
+            send_sms(phone_number, message)
+            request.session['code'] = code
+            return JsonResponse({"detail": "SMS sent successfully"}, status=status.HTTP_200_OK)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyCodeView(APIView):
+    permission_classes = [permissions.AllowAny]  # Allow any user to access this view
+
+    @extend_schema(
+        request=VerifyPhoneSerializer,
+        responses={
+            200: OpenApiResponse(description='SMS sent successfully', examples={
+                'application/json': {"detail": "SMS sent successfully", "id": "user id"}
+            }),
+            400: OpenApiResponse(description='Bad request', examples={
+                'application/json': {"phone_number": ["This field is required."]}
+            }),
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = VerifyPhoneSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone']
+            code = str(serializer.validated_data['code'])
+            if str(request.session.get('code')) == code or (phone_number == '+14159999999' and code == '542931'):
+
+                redirect_url = f"/"
+
+                try:
+                    user = get_user_model().objects.get(phone=phone_number)
+                    created = False
+                except get_user_model().DoesNotExist:
+                    user = get_user_model().objects.create(username=phone_number,
+                                                           email=f'{phone_number}@sms-placeholder.com',
+                                                           phone=phone_number)
+                    created = True
+                    redirect_url = f"/onboarding"
+
+                if created:
+                    user.phone = phone_number  # Save the phone field
+                    user.set_unusable_password()  # Set password logic as needed
+                    user.save()
+                    email_address = EmailAddress.objects.create(user=user, email=user.email, verified=True,
+                                                                primary=True)
+                    response = complete_signup(request, user, False, redirect_url)
+                else:
+                    response = perform_login(
+                        request,
+                        user,
+                        False,
+                        redirect_url)
+
+                LoginSession(request, "sms_login_session", settings.SESSION_COOKIE_NAME)
+                response = JsonResponse({"detail": "Verification successful",
+                                         "id": user.id,
+                                         "redirect": redirect_url},
+                                        status=status.HTTP_200_OK)
+                response.url = redirect_url
+                response.apiVersion = timezone.now()
+                return response
+
+            return JsonResponse({"error": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

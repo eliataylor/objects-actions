@@ -5,8 +5,6 @@
 
 - [x] Learn Relational Database Schema Design
 - [x] Quickly build idea App & API prototypes
-
-
 - [x] Scaffold Content Management Systems
 - [x] Scaffold Authentication and Access Permissions
 - [x] Scaffold Web App interface and API connectivity
@@ -38,31 +36,48 @@ A secure API and CMS written in Django, with a fully integrated and authenticati
 
 
 
+# TO USE:
 
-## USAGE:
+### Install Git, Brew, Python3, NVM, Node  
+### `sh install.sh`
+This will only install these tools if they don't exist. You can skip this if you have these dependencies.
 
-#### Generate your Django models, views, serializers and urls:
-`python django/generate.py admin --types=examples/object-fields-nod.csv --output_dir=examples/django/oaexample_app`
+### Build Your Stack
+### `sh setup.sh [project name] [object actions path].csv`
+<br />
+This will clone the entire [stack](stack) directory and change necessary names and variables to your project name.
 
-#### Generate your TypeScript types, interfaces and URL patterns:
-`python django/generate.py typescript --types=examples/object-fields-nod.csv --output_dir=examples/reactjs/src/object-actions/types/types.tsx`
+### Install / Connect to MySQL  
+Update your database credentials here [newproject/django/.env](/stack/django/.env#L16)
+<br />
+If you don't have a mysql server, run `sh mysql_db.sh` to install docker and mysql inside a container and leave the .env file with it's default values.
 
-#### Test API and Generate fake data for API
-`cd databuilder && npm install && npm start`
 
-#### Run Frontend example from object-actions/examples/reactjs:
-`cd object-actions/examples/reactjs && npm install && npm start`
+### Run your Web App, API, CMS, and Cypress tests 
+### `sh start.sh newproject`
 
-#### For step-by-step usage to build example projects see [USAGE.md](USAGE.md)
+This will start these sites:
+- Django API: https://localapi.newproject.com:8080/api/schema/swagger
+- Django Admin: https://localapi.newproject.com:8080/admin/login
+- React WebApp: https://localhost.newproject.com:3000
+
+### Generate unlimited Fake Data 
+`sh fakedata.sh newproject`
+By default 5 of each object type will be created. You can change the numbers and control which users create content from [newproject/databuilder/src/WorldBuilder.ts#L168](stack/databuilder/src/WorldBuilder.ts#L168)
+
+---
+
+#### If you already have a codebase or only want to generate TypeScript or Django code visit [USAGE.md](USAGE.md) to generate individual files 
 
 <hr />
 
-## Build your own project from Object/Actions spreadsheets
+# TO CUSTOMIZE:
 
-Copy and start your own from this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing).
-
-Or copy and edit this [Example version](https://docs.google.com/spreadsheets/d/1AkFY0dSelMAxoaLVA_knNHIYmL97rtVjE1zuqEonCyM/edit?usp=sharing) for a meal prep program:
+1. Copy and start your own from this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing). Or copy and edit this [Example version](https://docs.google.com/spreadsheets/d/1AkFY0dSelMAxoaLVA_knNHIYmL97rtVjE1zuqEonCyM/edit?usp=sharing) for a meal prep program:
+2. Down the CSV and re-run `sh setup.sh [project name] [object actions path].csv`
 
 --------------------------------------------------------------------------------
 
-### To contribute: [CONTRIBUTING.md](CONTRIBUTING.md)
+### TO CONTRIBUTE: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+### TO SPONSOR: [github.com/sponsors/eliataylor](https://github.com/sponsors/eliataylor)

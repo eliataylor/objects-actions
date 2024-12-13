@@ -48,15 +48,3 @@ else
     echo "Node.js is already installed."
 fi
 
-# Find or install MySQL
-if ! command_exists mysql; then
-    echo "MySQL not found. Installing..."
-    brew install mysql
-    echo "Starting MySQL service..."
-    brew services start mysql
-else
-    echo "MySQL is already installed."
-fi
-
-# Final message
-echo "All core required tools are installed and ready to use."

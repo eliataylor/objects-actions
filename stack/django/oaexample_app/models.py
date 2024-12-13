@@ -9,16 +9,20 @@ from allauth.account.signals import email_confirmed
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 import re
-from django.utils.text import slugify
-from rest_framework import generics
+from django.utils import timezone
+import os
 ####OBJECT-ACTIONS-MODELS_IMPORTS-ENDS####
-
 
 ####OBJECT-ACTIONS-MODELS-STARTS####
 def validate_phone_number(value):
 	phone_regex = re.compile(r'^\+?1?\d{9,15}$')
 	if not phone_regex.match(value):
 		raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+	
+def upload_file_path(instance, filename):
+	ext = filename.split('.')[-1]
+	filename = f"{instance.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+	return os.path.join('uploads/%Y-%m', filename)
 
 class Users(AbstractUser, BumpParentsModelMixin):
 	class Meta:
@@ -26,23 +30,14 @@ class Users(AbstractUser, BumpParentsModelMixin):
 		verbose_name_plural = "Users"
 		ordering = ['last_login']
 
-	
-	class GenderChoices(models.TextChoices):
-		male = ("male", "Male")
-		female = ("female", "Female")
-		other = ("other", "Other")
-	
-	def get_lat_lng(self): 
-		return self.last_known_location['lat'], self.last_known_location['lng']
+
 
 	phone = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='Phone', blank=True, null=True)
-	profile_picture = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Profile Picture')
-	birthday = models.DateField(blank=True, null=True, verbose_name='Birthday')
-	gender = models.CharField(max_length=20, choices=GenderChoices.choices, verbose_name='Gender', blank=True, null=True)
-	last_known_location = models.JSONField(verbose_name='Last Known Location', blank=True, null=True)
-	link_ig = models.URLField(blank=True, null=True, verbose_name='Instagram')
-	link_spotify = models.URLField(blank=True, null=True, verbose_name='Spotify')
-	link_apple = models.URLField(blank=True, null=True, verbose_name='Apple Music')
+	website = models.URLField(blank=True, null=True, verbose_name='Website')
+	bio = models.TextField(blank=True, null=True, verbose_name='Bio')
+	picture = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Picture')
+	cover_photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Cover Photo')
+	resources = models.ManyToManyField('Resources', related_name='resources_to_resources', blank=True, verbose_name='Resources')
 
 	def __str__(self):
 		if self.get_full_name().strip():
@@ -98,86 +93,127 @@ class SuperModel(models.Model):
 			return request.user
 		return None
 
-class Songs(SuperModel):
+
+class Officials(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Song"
-		verbose_name_plural = "Songs"
+		verbose_name = "Official"
+		verbose_name_plural = "Officials"
 
-	id = models.AutoField(primary_key=True)
-	spotify_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='Spotify ID')
-	apple_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='Apple ID')
-	name = models.CharField(max_length=255, verbose_name='Name')
-	artist = models.CharField(max_length=255, blank=True, null=True, verbose_name='Artist')
-	cover = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Cover')
+	title = models.CharField(max_length=255, verbose_name='Job Title')
+	office_phone = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='Office Phone', blank=True, null=True)
+	office_email = models.EmailField(blank=True, null=True, verbose_name='Office Email')
+	social_links = models.URLField(blank=True, null=True, verbose_name='Social Media links')
+	party_affiliation = models.ForeignKey('Parties', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Party')
+	city = models.ManyToManyField('Cities', related_name='city_to_cities', verbose_name='City')
 
-class Playlists(SuperModel):
+class Cities(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Playlist"
-		verbose_name_plural = "Playlists"
-	
-	class Social_sourceChoices(models.TextChoices):
-		spotify = ("spotify", "Spotify")
-		apple = ("apple", "Apple")
-	id = models.AutoField(primary_key=True)
-	social_source = models.CharField(max_length=20, choices=Social_sourceChoices.choices, verbose_name='Social Source', blank=True, null=True)
-	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='DJ')
-	name = models.CharField(max_length=255, verbose_name='Name')
-	image = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Image')
-	event = models.ForeignKey('Events', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Event')
-	playing_now = models.BooleanField(default=False, blank=True, null=True, verbose_name='Playing Now')
+		verbose_name = "City"
+		verbose_name_plural = "Cities"
 
-class Events(SuperModel):
+	name = models.CharField(max_length=255, verbose_name='Name')
+	description = models.TextField(blank=True, null=True, verbose_name='Description')
+	postal_address = models.CharField(max_length=255)
+	picture = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Picture')
+	cover_photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Cover Photo')
+	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_profile', blank=True, verbose_name='Sponsors')
+	website = models.URLField(blank=True, null=True, verbose_name='Website')
+	population = models.IntegerField(blank=True, null=True, verbose_name='Population')
+	altitude = models.IntegerField(blank=True, null=True, verbose_name='Altitude')
+	county = models.CharField(max_length=255, blank=True, null=True, verbose_name='County')
+	state_id = models.ForeignKey('States', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='State')
+	officials = models.ManyToManyField(get_user_model(), related_name='officials_to_user_profile', blank=True, verbose_name='Officials')
+	land_area = models.IntegerField(blank=True, null=True, verbose_name='Land Area')
+	water_area = models.IntegerField(blank=True, null=True, verbose_name='Water Area')
+	total_area = models.IntegerField(blank=True, null=True, verbose_name='Total Area')
+	density = models.IntegerField(blank=True, null=True, verbose_name='Density')
+	timezone = models.CharField(max_length=255, blank=True, null=True, verbose_name='Timezone')
+
+class Rallies(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Event"
-		verbose_name_plural = "Events"
-	
-	def save(self, *args, **kwargs):
-		if 'name' in kwargs:
-			self.name = kwargs.pop('name')
+		verbose_name = "Rally"
+		verbose_name_plural = "Rallies"
 
-		base_slug = slugify(self.name)
-		slug = base_slug
-		count = 1
-
-		while Events.objects.filter(url_alias=slug).exclude(id=self.id).exists():
-			slug = f"{base_slug}-{count}"
-			count += 1
-		self.url_alias = slug
-
-		super().save(*args, **kwargs)
-
-	
-	def get_lat_lng(self): 
-		return self.coordinates['lat'], self.coordinates['lng']
-	id = models.AutoField(primary_key=True)
-	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Host')
-	cohosts = models.ManyToManyField(get_user_model(), related_name='cohosts_to_user_account', blank=True, verbose_name='Co-Hosts')
-	url_alias = models.SlugField(unique=True, default="name", blank=True, null=True, verbose_name='URL Alias')
-	name = models.CharField(max_length=255, verbose_name='Name')
-	starts = models.DateTimeField(verbose_name='Starts')
-	ends = models.DateTimeField(verbose_name='Ends')
-	cover = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Cover')
+	title = models.CharField(max_length=255, verbose_name='Title')
 	description = models.TextField(verbose_name='Description')
-	address = models.CharField(max_length=255)
-	coordinates = models.JSONField(verbose_name='Coordinates', blank=True, null=True)
+	media = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Media')
+	topics = models.ManyToManyField('Topics', related_name='topics_to_topics', verbose_name='Topics')
+	comments = models.TextField(blank=True, null=True, verbose_name='Comments')
 
-class Friendships(SuperModel):
+class Publication(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Friendship"
-		verbose_name_plural = "Friendships"
-	
-	class StatusChoices(models.TextChoices):
-		pending = ("pending", "Pending")
-		accepted = ("accepted", "Accepted")
-		declined = ("declined", "Declined")
-		withdrawn = ("withdrawn", "Withdrawn")
-	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Sender')
-	recipient = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Recipient')
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status', default="pending")
+		verbose_name = "Publication"
+		verbose_name_plural = "Publications"
+
+	title = models.CharField(max_length=255, verbose_name='Title')
+	description = models.TextField(verbose_name='Description')
+	relationships = models.ForeignKey('Officials', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Relationships')
+	media = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Media')
+	comments = models.TextField(blank=True, null=True, verbose_name='Comments')
+
+class ActionPlan(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Action Plan"
+		verbose_name_plural = "Action Plans"
+
+	title = models.CharField(max_length=255, blank=True, null=True, verbose_name='Title')
+	recommendation = models.TextField(blank=True, null=True, verbose_name='Recommendation')
+	exe_summary = models.TextField(blank=True, null=True, verbose_name='Executive Summary')
+	analysis = models.TextField(blank=True, null=True, verbose_name='Analysis and Policy Alternatives / Proposal')
+	background = models.TextField(blank=True, null=True, verbose_name='Background / Legislative History / Problem Statement')
+	coauthors = models.ManyToManyField(get_user_model(), related_name='coauthors_to_user_account', blank=True, verbose_name='CoAuthors')
+	pro_argument = models.TextField(blank=True, null=True, verbose_name='Pro Argument')
+	con_argument = models.TextField(blank=True, null=True, verbose_name='Con Argument')
+	prequesites = models.TextField(verbose_name='Prequesites')
+	timeline = models.TextField(blank=True, null=True, verbose_name='Timeline')
+	rally = models.ForeignKey('Rallies', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Rally')
+
+class Meetings(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Meeting"
+		verbose_name_plural = "Meetings"
+
+	title = models.CharField(max_length=255, blank=True, null=True, verbose_name='Title')
+	rally = models.ForeignKey('Rallies', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Rally')
+	meeting_type = models.ForeignKey('MeetingTypes', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Meeting Type')
+	speakers = models.ManyToManyField(get_user_model(), related_name='speakers_to_user_account', verbose_name='Speakers')
+	moderators = models.ManyToManyField(get_user_model(), related_name='moderators_to_user_account', verbose_name='Moderators')
+	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_account', blank=True, verbose_name='Sponsors')
+	address = models.CharField(max_length=255)
+	rooms = models.ForeignKey('Rooms', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Rooms')
+	start = models.DateTimeField(verbose_name='Start')
+	end = models.DateTimeField(verbose_name='End')
+	agenda_json = models.JSONField(blank=True, null=True, verbose_name='Agenda JSON')
+	duration = models.IntegerField(blank=True, null=True, verbose_name='Duration')
+	privacy = models.IntegerField(blank=True, null=True, verbose_name='Privacy')
+
+class Resources(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Resourc"
+		verbose_name_plural = "Resources"
+
+	title = models.CharField(max_length=255, verbose_name='Title')
+	description_html = models.TextField(verbose_name='Description HTML')
+	image = models.ImageField(upload_to=upload_file_path, verbose_name='Image')
+	postal_address = models.CharField(max_length=255, blank=True, null=True, verbose_name='Postal Address')
+	price_ccoin = models.IntegerField(verbose_name='Price (citizencoin)')
+	resource_type = models.ManyToManyField('ResourceTypes', related_name='resource_type_to_resource_types', verbose_name='Resource Type')
+
+class Page(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Page"
+		verbose_name_plural = "Pages"
+
+	title = models.CharField(max_length=255, verbose_name='Title')
+	description_html = models.TextField(verbose_name='Description HTML')
 
 class Invites(SuperModel):
 	class Meta:
@@ -187,95 +223,160 @@ class Invites(SuperModel):
 	
 	class StatusChoices(models.TextChoices):
 		invited = ("invited", "Invited")
-		accepted = ("accepted", "Accepted")
-		declined = ("declined", "Declined")
-		withdrawn = ("withdrawn", "Withdrawn")
-	sender = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Sender')
-	recipient = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Recipient')
-	event = models.ForeignKey('Events', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Event')
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status', default="invited")
+		rsvpd = ("rsvpd", " rsvpd")
+		attending = ("attending", " attending")
+		attended = ("attended", " attended")
+	meeting = models.ForeignKey('Meetings', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Meeting')
+	user = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='User')
+	invited_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Invited By')
+	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status')
 
-class SongRequests(SuperModel):
+class Subscriptions(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Song Request"
-		verbose_name_plural = "Song Requests"
+		verbose_name = "Subscription"
+		verbose_name_plural = "Subscriptions"
 	
 	class StatusChoices(models.TextChoices):
-		requested = ("requested", "Requested")
-		accepted = ("accepted", "Accepted")
-		declined = ("declined", "Declined")
-		withdrawn = ("withdrawn", "Withdrawn")
-	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Requester')
-	song = models.ForeignKey('Songs', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Song')
-	event = models.ForeignKey('Events', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Event')
-	playlist = models.ForeignKey('Playlists', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Playlist')
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status', default="requested")
+		approved = ("approved", "Approved")
+		denied = ("denied", " denied")
+		active = ("active", " active")
+		seen = ("seen", " seen")
+	subscriber = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Subscriber')
+	rally = models.ForeignKey('Rallies', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Rally')
+	meeting = models.ForeignKey('Meetings', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Meeting')
+	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status')
 
-class EventCheckins(SuperModel):
+class Rooms(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Event Checkin"
-		verbose_name_plural = "Event Checkins"
+		verbose_name = "Room"
+		verbose_name_plural = "Rooms"
 	
-	def get_lat_lng(self): 
-		return self.coordinate['lat'], self.coordinate['lng']
+	class PrivacyChoices(models.TextChoices):
+		public = ("public", "Public")
+		inviteonly = ("inviteonly", " invite-only")
+		requests = ("requests", " requests")
 	
 	class StatusChoices(models.TextChoices):
-		entered = ("entered", "Entered")
-		left = ("left", "Left")
-	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='User')
-	event = models.ForeignKey('Events', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Event')
-	coordinate = models.JSONField(verbose_name='Coordinate')
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status', default="entered")
+		live = ("live", "Live")
+		scheduled = ("scheduled", " scheduled")
+		ended = ("ended", " ended")
+	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Owner')
+	start = models.DateTimeField(verbose_name='Start')
+	end = models.DateTimeField(verbose_name='End')
+	rally = models.ForeignKey('Rallies', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Rally')
+	meeting = models.ForeignKey('Meetings', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Meeting')
+	privacy = models.CharField(max_length=20, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True)
+	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status', blank=True, null=True)
+	chat_thread = models.CharField(max_length=255, blank=True, null=True, verbose_name='Chat Thread')
+	recording = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Recording')
 
-class Likes(SuperModel):
+class Attendees(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Like"
-		verbose_name_plural = "Likes"
+		verbose_name = "Attendee"
+		verbose_name_plural = "Attendees"
 	
-	class TypeChoices(models.TextChoices):
-		song = ("song", "Song")
-		event = ("event", "Event")
-		playlist = ("playlist", "Playlist")
-		request = ("request", "Request")
-		checkin = ("checkin", "Checkin")
-		friendship = ("friendship", "Friendship")
-	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Requester')
-	type = models.CharField(max_length=20, choices=TypeChoices.choices, verbose_name='Type')
-	song = models.ForeignKey('Songs', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Song')
-	event = models.ForeignKey('Events', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Event')
-	playlist = models.ForeignKey('Playlists', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Playlist')
+	class RoleChoices(models.TextChoices):
+		viewer = ("viewer", "Viewer")
+		presenter = ("presenter", " presenter")
+		admin = ("admin", " admin")
+		chat_moderator = ("chat_moderator", " chat moderator")
+	room_id = models.ForeignKey('Rooms', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Room ID')
+	display_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Display Name')
+	display_bg = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Display Bg')
+	role = models.CharField(max_length=20, choices=RoleChoices.choices, verbose_name='Role')
+	stream = models.CharField(max_length=255, blank=True, null=True, verbose_name='Stream')
+	is_muted = models.BooleanField(blank=True, null=True, verbose_name='Is Muted')
+	sharing_video = models.BooleanField(blank=True, null=True, verbose_name='Sharing Video')
+	sharing_audio = models.BooleanField(blank=True, null=True, verbose_name='Sharing Audio')
+	sharing_screen = models.BooleanField(blank=True, null=True, verbose_name='Sharing Screen')
+	hand_raised = models.BooleanField(blank=True, null=True, verbose_name='Hand Raised')
+	is_typing = models.BooleanField(blank=True, null=True, verbose_name='Is Typing')
+
+class Topics(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Topic"
+		verbose_name_plural = "Topics"
+
+	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
+	icon = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Icon')
+	photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Photo')
+
+class ResourceTypes(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Resource Type"
+		verbose_name_plural = "Resource Types"
+
+	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
+
+class MeetingTypes(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Meeting Type"
+		verbose_name_plural = "Meeting Types"
+
+	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
+
+class States(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "State"
+		verbose_name_plural = "States"
+
+	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
+	website = models.URLField(blank=True, null=True, verbose_name='Website')
+	icon = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Icon')
+
+class Parties(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Party"
+		verbose_name_plural = "Parties"
+
+	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
+	logo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Logo')
+	website = models.URLField(blank=True, null=True, verbose_name='Website')
+
+class Stakeholders(SuperModel):
+	class Meta:
+		abstract = False
+		verbose_name = "Stakeholder"
+		verbose_name_plural = "Stakeholders"
+
+	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
+	image = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Image')
 ####OBJECT-ACTIONS-MODELS-ENDS####
 
 
+# applemusic or anything not covered by AllAuth
+class AppTokens(models.Model):
+    class Meta:
+        abstract = False
+        verbose_name = "Social Token"
+        verbose_name_plural = "Social Tokens"
+        constraints = [
+            models.UniqueConstraint(fields=['author', 'provider'], name='unique_user_provider')
+        ]
 
+    def __str__(self):
+        return f"{str(self.author)} - {str(self.provider)}"
 
+    class ProviderList(models.TextChoices):
+        applemusic = ("applemusic", "applemusic")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, verbose_name='User')
+    provider = models.CharField(max_length=25, choices=ProviderList.choices, verbose_name='Provider',
+                                default="applemusic")
+    token = models.TextField(
+        verbose_name="token",
+    )
+    expires_at = models.DateTimeField(
+        blank=True, null=True, verbose_name="expires at"
+    )
 
 
 

@@ -1,11 +1,13 @@
 import os
 
+from corsheaders.defaults import default_headers
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'm(##s4x5rs))6f09xu_xq@1a3-*5sm@n8bh^9dm(p46-%t@et%')
 
-
+# APPEND_SLASH = False
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
 SUPERUSER_USERNAME = os.getenv('DJANGO_SUPERUSER_USERNAME', 'superadmin')
@@ -13,22 +15,36 @@ SUPERUSER_PASSWORD = os.getenv('DJANGO_SUPERUSER_PASSWORD', 'admin')
 SUPERUSER_EMAIL = os.getenv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 
 ALLOWED_HOSTS = [
+    "https://oaexample.taylormadetraffic.com",
+    "http://oaexample.taylormadetraffic.com",
+    "https://oaexample-api.taylormadetraffic.com",
+    "http://oaexample-api.taylormadetraffic.com",
     "oaexample.com",
     ".oaexample.com",
+    "oaexample-django-app-cloudrun-zzv45b5nya-uw.a.run.app",
     "prod_app.storage.googleapis.com",
+    "34.128.142.220",
+    "34.49.52.129"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://oaexample.taylormadetraffic.com",
+    "http://oaexample.taylormadetraffic.com",
+    "https://oaexample-api.taylormadetraffic.com",
+    "http://oaexample-api.taylormadetraffic.com",
     "https://oaexample-django-app-cloudrun-zzv45b5nya-uw.a.run.app",
     "https://prod_app.storage.googleapis.com"
     "https://oaexample.com",
     "https://*.oaexample.com",
+    'http://localhost.oaexample.com:3000',
+    'https://localhost.oaexample.com:3000',
+    'http://localhost-api.oaexample.com:8080',
+    'https://localhost-api.oaexample.com:8080'
 ]
-
-from corsheaders.defaults import default_headers
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'x-email-verification-key',  # used by allauth
+    'X-App-Client',  # used by mobile to toggle to Token auth
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -36,10 +52,23 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^http://\w+\.oaexample\.com$",
 ]
 CORS_ALLOWED_ORIGINS = [
+    "https://oaexample.taylormadetraffic.com",
+    "http://oaexample.taylormadetraffic.com",
+    "https://oaexample-api.taylormadetraffic.com",
+    "http://oaexample-api.taylormadetraffic.com",
+    'http://localhost.oaexample.com:3000',
+    'https://localhost.oaexample.com:3000',
+    'http://localhost-api.oaexample.com:8080',
+    'https://localhost-api.oaexample.com:8080',
     'https://oaexample.com',
     'https://www.oaexample.com',
+    'https://dev.oaexample.com',
+    "https://oaexample-django-app-cloudrun-zzv45b5nya-uw.a.run.app",
     "https://prod_app.storage.googleapis.com"
 ]
+
+CSRF_COOKIE_DOMAIN = '.oaexample.com'
+SESSION_COOKIE_DOMAIN = '.oaexample.com'
 
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = True
@@ -65,7 +94,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.contrib.humanize',
-#    'django.contrib.sites',
+    #    'django.contrib.sites',
     'storages',
     'rest_framework',
     'rest_framework.authtoken',
@@ -78,6 +107,7 @@ INSTALLED_APPS = [
     "allauth.account",
 
     "allauth.socialaccount",
+    'allauth.socialaccount.providers.spotify',
     'allauth.socialaccount.providers.google',
     "allauth.mfa",
     "allauth.headless",
@@ -100,6 +130,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     #    'csp.middleware.CSPMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
@@ -114,17 +145,13 @@ MFA_FORMS = {
     'deactivate_totp': 'allauth.mfa.forms.DeactivateTOTPForm',
 }
 
-GOOGLE_CALLBACK_URL = os.environ.get('GOOGLE_CALLBACK_URL', "")
-CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', "")
-SECRET = os.environ.get('GOOGLE_OAUTH_SECRET', "")
-KEY = os.environ.get('GOOGLE_OAUTH_KEY', "")
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        'oaexample_app.authentication.AuthenticationByDeviceType',
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 15,
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
@@ -171,6 +198,10 @@ DATABASES = {
         "PASSWORD": os.getenv("MYSQL_PASSWORD"),
         "HOST": os.getenv("MYSQL_HOST"),
         "PORT": 3306,
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True,
+        }
     }
 }
 
@@ -222,26 +253,29 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 AUTH_USER_MODEL = "oaexample_app.Users"
 
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # since SMS only is allowed
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_DISPLAY = lambda user: user.get_full_name()
 
 HEADLESS_ONLY = True
 
 DEFAULT_HTTP_PROTOCOL = 'https'
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "https://oaexample.com")
+print(f"USING frontend {FRONTEND_URL}")
+
 LOGIN_REDIRECT_URL = f"{FRONTEND_URL}/account/provider/callback"
 SIGNUP_REDIRECT_URL = f"{FRONTEND_URL}/account/provider/callback"
 
-# SOCIALACCOUNT_ADAPTER = 'oaexample_app.adapter.CustomHeadlessAdapter'
-# HEADLESS_ADAPTER  = 'oaexample_app.adapter.CustomHeadlessAdapter'
+HEADLESS_ADAPTER = 'oaexample_app.adapter.CustomHeadlessAdapter'
+SOCIALACCOUNT_ADAPTER = 'oaexample_app.adapter.MySocialAccountAdapter'
 # SOCIALACCOUNT_TOKEN_STRATEGY = 'oaexample_app.strategies.CustomTokenStrategy'
-
-print(f"USING frontend {FRONTEND_URL}")
 # ACCOUNT_ADAPTER = 'oaexample_app.adapter.UserAdapter'
 # ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
 
@@ -260,21 +294,21 @@ HEADLESS_FRONTEND_URLS = {
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True
 
-
-SOCIALACCOUNT_EMAIL_AUTHENTICATION=True
-SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT=True
-SOCIALACCOUNT_EMAIL_REQUIRED=True
-SOCIALACCOUNT_EMAIL_VERIFICATION=True
-SOCIALACCOUNT_STORE_TOKENS=True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+SOCIALACCOUNT_EMAIL_VERIFICATION = False
+SOCIALACCOUNT_STORE_TOKENS = True
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            "name" : "google",
+            "name": "google",
             "provider_id": "google",
             'client_id': os.environ.get('GOOGLE_OAUTH_CLIENT_ID', ""),
             'secret': os.environ.get('GOOGLE_OAUTH_SECRET', ""),
             'key': os.environ.get('GOOGLE_OAUTH_KEY', ""),
         },
+        'EMAIL_AUTHENTICATION': True,
         'FETCH_USERINFO': True,
         'SCOPE': [
             'profile',
@@ -283,20 +317,42 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {
             'access_type': 'online',
         }
-    }
+    },
+    "spotify": {
+        'SCOPE': ['user-read-email', 'user-top-read', 'user-read-recently-played', 'playlist-read-collaborative'],
+        'AUTH_PARAMS': {'access_type': 'offline'},
+        'METHOD': 'oauth2',
+        'FETCH_USERINFO': True,
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v1',
+        "APP": {
+
+            "name": "spotify",
+            "provider_id": "spotify",
+
+            "client_id": os.environ.get("SPOTIFY_CLIENT_ID"),
+            "secret": os.environ.get("SPOTIFY_SECRET"),
+            "callback_url": os.environ.get("SPOTIFY_REDIRECT_URI"),
+        }
+    },
+
 }
 
-# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # SMTP server configuration
-SENDGRID_API_KEY = os.environ.get("SMTP_PASSWORD")
+EMAIL_PASSWORD = os.environ.get("SMTP_PASSWORD")
 EMAIL_HOST = os.environ.get("SMTP_EMAIL_HOST", 'smtp.gmail.com')
 EMAIL_PORT = os.environ.get("SMTP_EMAIL_PORT", 587)
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 # EMAIL_HOST_USER = os.environ.get("SMTP_EMAIL_ADDRESS", "")
-EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
+
+if EMAIL_PASSWORD is None:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 
 # SendGrid
 EMAIL_HOST_USER = 'apikey'  # This is the string 'apikey', not the actual API key
@@ -305,6 +361,13 @@ ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "")
 EMAIL_USE_LOCALTIME = True
 
 # EMAIL_FILE_PATH = '/home/app-messages'  # change this to a proper location
+
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
+TWILIO_VERIFY_SERVICE_SID = os.environ.get("TWILIO_VERIFY_SERVICE_SID", "")
+TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
+
+APPLE_DEVELOPER_TOKEN = os.environ.get("APPLE_DEVELOPER_TOKEN", "")
 
 """
 import logging

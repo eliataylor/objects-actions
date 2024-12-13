@@ -2,9 +2,11 @@ import axios, {AxiosInstance} from 'axios';
 import tough, {Cookie, CookieJar} from 'tough-cookie';
 
 export interface HttpResponse<T> {
+    status: number;
     success: boolean;
     data: T | any;
     error?: string;
+    errors?: { [key: string]: any };
     started: number;
     ended: number;
 }
@@ -16,9 +18,11 @@ class ApiClient {
     constructor() {
         this.client = axios.create({
             withCredentials: true, // Ensures cookies are sent with requests
+            baseURL: process.env.REACT_APP_API_HOST,
             headers: {
                 'Referer': new URL(process.env.REACT_APP_API_HOST || '').host,  // Adding Referer header to simulate request origin
-                'Origin': process.env.REACT_APP_APP_HOST    // Adding Origin header to simulate request origin
+                'Origin': process.env.REACT_APP_APP_HOST,    // Adding Origin header to simulate request origin
+                "Content-Type": "application/json"
             },
             httpsAgent: new (require('https').Agent)({rejectUnauthorized: false}), // Handle HTTPS requests
         });
@@ -27,15 +31,26 @@ class ApiClient {
         // Interceptor to set CSRF token from cookies
         this.client.interceptors.request.use(async (config) => {
             const cookies = await this.cookieJar.getCookies(config.url || '');
-            const csrfTokenCookie = cookies.find(cookie => cookie.key === 'csrftoken');
+            const csrfTokenCookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
             if (csrfTokenCookie) {
                 config.headers['X-CSRFToken'] = csrfTokenCookie.value;
             }
 
+            if (process.env.REACT_APP_USE_TOKEN) {
+                config.headers['X-App-Client'] = "ios" // or android
+                config.headers['Authorization'] = `Bearer ${process.env.REACT_APP_USE_TOKEN}`;
+            }
+
             if (config.url) {
-                const [path, queryOrHash] = config.url.split(/(?=[?#])/);
-                if (path.endsWith('/')) {
-                    config.url = path.slice(0, -1) + (queryOrHash || '');
+                if (config.url.indexOf("?") > -1) {
+                    const parts = config.url.split("?");
+                    if (parts[0].endsWith('/')) {
+                        config.url = parts[0].slice(0, -1) + "?" + parts[1];
+                    }
+                } else {
+                    if (config.url.endsWith('/')) {
+                        config.url = config.url.slice(0, -1);
+                    }
                 }
             }
 
@@ -55,7 +70,8 @@ class ApiClient {
             await this.setCookies(url, setCookieHeader);
         }
 
-        const resp: HttpResponse<any> = {
+        let resp: HttpResponse<any> = {
+            status: 200,
             success: false,
             data: null,
             error: undefined,
@@ -66,27 +82,30 @@ class ApiClient {
         url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/login`
         try {
             const response = await this.post(url, {
+                username: email,
                 email,
                 password,
             });
-            resp.ended = new Date().getTime();
-            resp.data = response.data;
-            resp.success = true;
+            if (response.status !== 200) {
+                resp = this.returnErrors(response.data)
+                resp.status = response.status;
+            } else {
+                resp.data = response.data;
+                resp.success = true;
+            }
 
         } catch (error: any) {
-            resp.ended = new Date().getTime();
-            resp.data = error.response?.data
-            if (!resp.data) {
-                resp.data = (error as Error).message;
-            }
+            resp = this.returnErrors(error)
             console.error('Login failed:', error.message);
         }
+        resp.ended = new Date().getTime();
 
         return resp;
     }
 
     public async post<T>(url: string, data: any, headers: any = {}): Promise<HttpResponse<T>> {
-        const resp: HttpResponse<any> = {
+        let resp: HttpResponse<any> = {
+            status:200,
             success: false,
             data: null,
             error: undefined,
@@ -102,30 +121,33 @@ class ApiClient {
             response = await this.client.post(url, data,
                 {headers: mergedHeaders}
             );
-            resp.ended = new Date().getTime();
-            resp.data = response.data;
-            resp.success = true;
+            if (response.status !== 200) {
+                resp = this.returnErrors(response.data)
+                resp.status = response.status;
+            } else {
+                resp.data = response.data;
+                resp.success = true;
 
-            const setCookieHeader = response.headers['set-cookie'];
-            if (setCookieHeader) {
-                // TODO: change if changes!?!
-                await this.setCookies(url, setCookieHeader);
+
+                const setCookieHeader = response.headers['set-cookie'];
+                if (setCookieHeader) {
+                    // TODO: change if changes!?!
+                    await this.setCookies(url, setCookieHeader);
+                }
             }
 
         } catch (error: any) {
-            resp.data = error.response?.data
-            if (!resp.data) {
-                resp.data = (error as Error).message;
-            }
-            resp.ended = new Date().getTime();
+            resp = this.returnErrors(error)
             console.error('Post failed:', resp.data);
         }
+        resp.ended = new Date().getTime();
 
         return resp;
     }
 
     public async get<T>(url: string): Promise<HttpResponse<T>> {
-        const resp: HttpResponse<any> = {
+        let resp: HttpResponse<any> = {
+            status:200,
             success: false,
             data: null,
             error: undefined,
@@ -136,17 +158,18 @@ class ApiClient {
         try {
             const headers = await this.getCookieHeaders(url);
             const response = await this.client.get<T>(url, {headers});
-            resp.ended = new Date().getTime();
-            resp.data = response.data;
-            resp.success = true;
-        } catch (error: any) {
-            resp.data = error.response?.data
-            if (!resp.data) {
-                resp.data = (error as Error).message;
+            if (response.status !== 200) {
+                resp = this.returnErrors(response.data)
+                resp.status = response.status;
+            } else {
+                resp.data = response.data;
+                resp.success = true;
             }
-            resp.ended = new Date().getTime();
+        } catch (error: any) {
+            resp = this.returnErrors(error)
             console.error('Post failed:', error.message);
         }
+        resp.ended = new Date().getTime();
 
         return resp;
     }
@@ -172,8 +195,47 @@ class ApiClient {
         });
     }
 
-    changeCookies(cookie:string, url:string) {
-        this.cookieJar.setCookieSync(cookie, url);
+    public returnErrors(error: any): HttpResponse<any> {
+
+        let resp: HttpResponse<any> = {
+            status: 400,
+            success: false,
+            data: null,
+            error: undefined,
+            started: new Date().getTime(),
+            ended: 0
+        };
+
+        if (!error) return resp;
+        if (typeof error === 'string') return resp;
+
+        let found = undefined;
+        if (axios.isAxiosError(error) && error.response) {
+            error = error.response.data;
+        } else if (axios.isAxiosError(error)) {
+            error = error.message;
+        }
+
+        if (error.error) {
+            found = error.error
+        } else if (error.detail) {
+            found = error.detail
+        } else if (error) {
+            found = error
+        }
+        if (found && typeof found === 'object') {
+            resp.errors = found
+            found = Object.entries(found).map(([key, err]) => {
+                if (typeof err === 'string') return `${key}: ${err}`
+                return `${key}: ${Array.isArray(err) ? err.join(', ') : err}`
+            })
+            found = found.join("\n\r ");
+        }
+
+        resp.error = found
+        resp.ended = new Date().getTime();
+
+        return resp;
     }
 
     getCookies() {

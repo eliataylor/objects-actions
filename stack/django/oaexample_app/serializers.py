@@ -1,21 +1,27 @@
-
-
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-STARTS####
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ManyToManyField
 from .models import Users
-from .models import Songs
-from .models import Playlists
-from .models import Events
-from .models import Friendships
+from .models import Officials
+from .models import Cities
+from .models import Rallies
+from .models import Publication
+from .models import ActionPlan
+from .models import Meetings
+from .models import Resources
+from .models import Page
 from .models import Invites
-from .models import SongRequests
-from .models import EventCheckins
-from .models import Likes
+from .models import Subscriptions
+from .models import Rooms
+from .models import Attendees
+from .models import Topics
+from .models import ResourceTypes
+from .models import MeetingTypes
+from .models import States
+from .models import Parties
+from .models import Stakeholders
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
-
-
 
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
 class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
@@ -105,37 +111,77 @@ class UsersSerializer(CustomSerializer):
     class Meta:
         model = Users
         fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]
-class SongsSerializer(CustomSerializer):
+class OfficialsSerializer(CustomSerializer):
     class Meta:
-        model = Songs
+        model = Officials
         fields = '__all__'
-class PlaylistsSerializer(CustomSerializer):
+class CitiesSerializer(CustomSerializer):
     class Meta:
-        model = Playlists
+        model = Cities
         fields = '__all__'
-class EventsSerializer(CustomSerializer):
+class RalliesSerializer(CustomSerializer):
     class Meta:
-        model = Events
+        model = Rallies
         fields = '__all__'
-class FriendshipsSerializer(CustomSerializer):
+class PublicationSerializer(CustomSerializer):
     class Meta:
-        model = Friendships
+        model = Publication
+        fields = '__all__'
+class ActionPlanSerializer(CustomSerializer):
+    class Meta:
+        model = ActionPlan
+        fields = '__all__'
+class MeetingsSerializer(CustomSerializer):
+    class Meta:
+        model = Meetings
+        fields = '__all__'
+class ResourcesSerializer(CustomSerializer):
+    class Meta:
+        model = Resources
+        fields = '__all__'
+class PageSerializer(CustomSerializer):
+    class Meta:
+        model = Page
         fields = '__all__'
 class InvitesSerializer(CustomSerializer):
     class Meta:
         model = Invites
         fields = '__all__'
-class SongRequestsSerializer(CustomSerializer):
+class SubscriptionsSerializer(CustomSerializer):
     class Meta:
-        model = SongRequests
+        model = Subscriptions
         fields = '__all__'
-class EventCheckinsSerializer(CustomSerializer):
+class RoomsSerializer(CustomSerializer):
     class Meta:
-        model = EventCheckins
+        model = Rooms
         fields = '__all__'
-class LikesSerializer(CustomSerializer):
+class AttendeesSerializer(CustomSerializer):
     class Meta:
-        model = Likes
+        model = Attendees
+        fields = '__all__'
+class TopicsSerializer(CustomSerializer):
+    class Meta:
+        model = Topics
+        fields = '__all__'
+class ResourceTypesSerializer(CustomSerializer):
+    class Meta:
+        model = ResourceTypes
+        fields = '__all__'
+class MeetingTypesSerializer(CustomSerializer):
+    class Meta:
+        model = MeetingTypes
+        fields = '__all__'
+class StatesSerializer(CustomSerializer):
+    class Meta:
+        model = States
+        fields = '__all__'
+class PartiesSerializer(CustomSerializer):
+    class Meta:
+        model = Parties
+        fields = '__all__'
+class StakeholdersSerializer(CustomSerializer):
+    class Meta:
+        model = Stakeholders
         fields = '__all__'
 ####OBJECT-ACTIONS-SERIALIZERS-ENDS####
 
@@ -148,34 +194,6 @@ class PhoneNumberSerializer(serializers.Serializer):
 class VerifyPhoneSerializer(serializers.Serializer):
     phone = serializers.CharField()
     code = serializers.CharField()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

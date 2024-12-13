@@ -17,11 +17,11 @@ urlpatterns = [
     path('', include("oaexample_app.urls")),
 
     # YOUR PATTERNS
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema', SpectacularAPIView.as_view(), name='schema'),
 
     # Optional UI:
-    path('api/schema/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('api/schema/swagger', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
+    path('api/schema/redoc', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
 ]
 

@@ -1,14 +1,15 @@
 .idea
 .env
-*/.env
 .venv
 databuilder/public/profilepics
 databuilder/dist
-private.txt
 templates/reactjs/.env
 .DS_Store
 __pycache__
 runnerlogs.log
 node_modules
+
+stack/reactjs/package-lock.json
+stack/databuilder/package-lock.json
 
 *Zone.Identifier

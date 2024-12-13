@@ -1,0 +1,22 @@
+{% extends "allauth/layouts/base.html" %}
+{% load allauth %}
+{% block body %}
+    <div class="flex-grow-1 d-flex flex-row">
+        <main class="col-md-10">
+            <div class="container">
+                {% if messages %}F
+                    <div class="pt-4">
+                        {% for message in messages %}
+                            {% element alert level=message.tags %}
+                                {% slot message %}
+                                    {{ message }}
+                                {% endslot %}
+                            {% endelement %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+{% endblock %}

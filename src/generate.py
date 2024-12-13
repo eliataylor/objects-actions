@@ -10,7 +10,7 @@ logger.add(sys.stdout, level="INFO")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate project files based on field types CSV.")
-    parser.add_argument('command', choices=['admin', 'fake-data', 'typescript', 'reactjs', 'cypress'],
+    parser.add_argument('command', choices=['django', 'fake-data', 'typescript', 'cypress'],
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--matrix', required=False, help="Path to the Permissions Matrix CSV file.")
