@@ -203,7 +203,7 @@ class AttendeesViewSet(viewsets.ModelViewSet):
     queryset = Attendees.objects.all().order_by('id')
     serializer_class = AttendeesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
+    
 class TopicsViewSet(viewsets.ModelViewSet):
     queryset = Topics.objects.all().order_by('id')
     serializer_class = TopicsSerializer
@@ -531,6 +531,27 @@ class VerifyCodeView(APIView):
             return JsonResponse({"error": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)
 
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

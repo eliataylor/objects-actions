@@ -9,22 +9,20 @@ from allauth.account.signals import email_confirmed
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 import re
+from django.utils import timezone
+import os
 ####OBJECT-ACTIONS-MODELS_IMPORTS-ENDS####
-
-def upload_file_path(instance, filename):
-    # Get the file extension
-    ext = filename.split('.')[-1]
-    # Construct a unique filename with user ID and timestamp
-    filename = f"{instance.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
-    # Return the complete path
-    return os.path.join('uploads/%Y-%m', filename)
-
 
 ####OBJECT-ACTIONS-MODELS-STARTS####
 def validate_phone_number(value):
 	phone_regex = re.compile(r'^\+?1?\d{9,15}$')
 	if not phone_regex.match(value):
 		raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+	
+def upload_file_path(instance, filename):
+	ext = filename.split('.')[-1]
+	filename = f"{instance.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+	return os.path.join('uploads/%Y-%m', filename)
 
 class Users(AbstractUser, BumpParentsModelMixin):
 	class Meta:
@@ -37,8 +35,8 @@ class Users(AbstractUser, BumpParentsModelMixin):
 	phone = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='Phone', blank=True, null=True)
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 	bio = models.TextField(blank=True, null=True, verbose_name='Bio')
-	picture = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Picture')
-	cover_photo = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Cover Photo')
+	picture = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Picture')
+	cover_photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Cover Photo')
 	resources = models.ManyToManyField('Resources', related_name='resources_to_resources', blank=True, verbose_name='Resources')
 
 	def __str__(self):
@@ -95,6 +93,7 @@ class SuperModel(models.Model):
 			return request.user
 		return None
 
+
 class Officials(SuperModel):
 	class Meta:
 		abstract = False
@@ -117,8 +116,8 @@ class Cities(SuperModel):
 	name = models.CharField(max_length=255, verbose_name='Name')
 	description = models.TextField(blank=True, null=True, verbose_name='Description')
 	postal_address = models.CharField(max_length=255)
-	picture = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Picture')
-	cover_photo = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Cover Photo')
+	picture = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Picture')
+	cover_photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Cover Photo')
 	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_profile', blank=True, verbose_name='Sponsors')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 	population = models.IntegerField(blank=True, null=True, verbose_name='Population')
@@ -140,7 +139,7 @@ class Rallies(SuperModel):
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description = models.TextField(verbose_name='Description')
-	media = models.FileField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Media')
+	media = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Media')
 	topics = models.ManyToManyField('Topics', related_name='topics_to_topics', verbose_name='Topics')
 	comments = models.TextField(blank=True, null=True, verbose_name='Comments')
 
@@ -153,7 +152,7 @@ class Publication(SuperModel):
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description = models.TextField(verbose_name='Description')
 	relationships = models.ForeignKey('Officials', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Relationships')
-	media = models.FileField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Media')
+	media = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Media')
 	comments = models.TextField(blank=True, null=True, verbose_name='Comments')
 
 class ActionPlan(SuperModel):
@@ -202,7 +201,7 @@ class Resources(SuperModel):
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description_html = models.TextField(verbose_name='Description HTML')
-	image = models.ImageField(upload_to='uploads/%Y-%m', verbose_name='Image')
+	image = models.ImageField(upload_to=upload_file_path, verbose_name='Image')
 	postal_address = models.CharField(max_length=255, blank=True, null=True, verbose_name='Postal Address')
 	price_ccoin = models.IntegerField(verbose_name='Price (citizencoin)')
 	resource_type = models.ManyToManyField('ResourceTypes', related_name='resource_type_to_resource_types', verbose_name='Resource Type')
@@ -271,7 +270,7 @@ class Rooms(SuperModel):
 	privacy = models.CharField(max_length=20, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status', blank=True, null=True)
 	chat_thread = models.CharField(max_length=255, blank=True, null=True, verbose_name='Chat Thread')
-	recording = models.FileField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Recording')
+	recording = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Recording')
 
 class Attendees(SuperModel):
 	class Meta:
@@ -286,7 +285,7 @@ class Attendees(SuperModel):
 		chat_moderator = ("chat_moderator", " chat moderator")
 	room_id = models.ForeignKey('Rooms', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Room ID')
 	display_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Display Name')
-	display_bg = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Display Bg')
+	display_bg = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Display Bg')
 	role = models.CharField(max_length=20, choices=RoleChoices.choices, verbose_name='Role')
 	stream = models.CharField(max_length=255, blank=True, null=True, verbose_name='Stream')
 	is_muted = models.BooleanField(blank=True, null=True, verbose_name='Is Muted')
@@ -303,8 +302,8 @@ class Topics(SuperModel):
 		verbose_name_plural = "Topics"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	icon = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Icon')
-	photo = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Photo')
+	icon = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Icon')
+	photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Photo')
 
 class ResourceTypes(SuperModel):
 	class Meta:
@@ -330,7 +329,7 @@ class States(SuperModel):
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
-	icon = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Icon')
+	icon = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Icon')
 
 class Parties(SuperModel):
 	class Meta:
@@ -339,7 +338,7 @@ class Parties(SuperModel):
 		verbose_name_plural = "Parties"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	logo = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Logo')
+	logo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Logo')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 
 class Stakeholders(SuperModel):
@@ -349,7 +348,7 @@ class Stakeholders(SuperModel):
 		verbose_name_plural = "Stakeholders"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	image = models.ImageField(upload_to='uploads/%Y-%m', blank=True, null=True, verbose_name='Image')
+	image = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Image')
 ####OBJECT-ACTIONS-MODELS-ENDS####
 
 
@@ -378,6 +377,20 @@ class AppTokens(models.Model):
     expires_at = models.DateTimeField(
         blank=True, null=True, verbose_name="expires at"
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

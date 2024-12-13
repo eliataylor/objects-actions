@@ -262,6 +262,15 @@ class ModelBuilder:
         elif field_type == "boolean":
             return "models.BooleanField()"
         elif field_type == "image" or field_type == 'video' or field_type == 'media':
+
+            self.append_import("from django.utils import timezone")
+            self.append_import("import os")
+
+            self.functions.append("""\ndef upload_file_path(instance, filename):
+\text = filename.split('.')[-1]
+\tfilename = f"{instance.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+\treturn os.path.join('uploads/%Y-%m', filename)""")
+
             if field_type == "image":
                 fieldType = 'ImageField'
             else:
@@ -269,7 +278,7 @@ class ModelBuilder:
 
             prefix = field.get('Example')
             if prefix is None or prefix == '':
-                return f"models.{fieldType}(upload_to='uploads/%Y-%m')"
+                return f"models.{fieldType}(upload_to=upload_file_path)"
             else:
                 return f"models.{fieldType}(upload_to='{prefix}')"
         elif field_type == "flat list":

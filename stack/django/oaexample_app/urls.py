@@ -52,9 +52,10 @@ OARouter.register('stakeholders', StakeholdersViewSet, basename='stakeholders')
 
 if urlpatterns is None:
     urlpatterns = []
-
+    
 urlpatterns += [
     path('account/provider/callback/', redirect_to_frontend, name='provider_callback_no_provider'),
+        
     path('api/users/<int:user_id>/<str:model_name>/', UserModelListView.as_view(), name='user-model-list'),
     path('api/users/<int:user_id>/<str:model_name>/stats/', UserStatsView.as_view(), name='user-model-stats'),
 
@@ -77,6 +78,20 @@ urlpatterns += [
     # path('accounts/login/callback/', IndexView.as_view(), name='provider_callback_no_provider'),
 
 ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

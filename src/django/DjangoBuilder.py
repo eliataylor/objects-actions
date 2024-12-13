@@ -144,7 +144,7 @@ class DjangoBuilder:
     
 urlpatterns += [
     path('account/provider/callback/', redirect_to_frontend, name='provider_callback_no_provider'),
-    {(",\n\t").join(extra_patterns)},    
+    {(",\n\t").join(extra_patterns) + ',' if len(extra_patterns) > 0 else ''}    
     path('api/users/<int:user_id>/<str:model_name>/', UserModelListView.as_view(), name='user-model-list'),
     path('api/users/<int:user_id>/<str:model_name>/stats/', UserStatsView.as_view(), name='user-model-stats'),
 
