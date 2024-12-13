@@ -40,11 +40,11 @@ class CustomHeadlessAdapter(DefaultHeadlessAdapter):
         if hasattr(user, 'profile_picture'):
             user_data['profile_picture'] = user.profile_picture.url if user.profile_picture else None
         elif hasattr(user, 'picture'):
-            user_data['picture'] = user.profile_picture.url if user.profile_picture else None
+            user_data['picture'] = user.picture.url if user.picture else None
         elif hasattr(user, 'image'):
-            user_data['picture'] = user.profile_picture.url if user.profile_picture else None
+            user_data['image'] = user.image.url if user.image else None
         elif hasattr(user, 'cover'):
-            user_data['picture'] = user.profile_picture.url if user.profile_picture else None
+            user_data['cover'] = user.cover.url if user.cover else None
 
         return user_data
 
