@@ -18,11 +18,9 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py makemigrations
-python manage.py migrate --run-syncdb
+python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver_plus "localapi.$projectpath.com:8080" --cert-file ~/.ssh/certificate.crt
-
-exit
 
 echo "Starting ReactJS"
 cd "$projectpath/reactjs"
