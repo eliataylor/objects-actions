@@ -1,6 +1,8 @@
 .idea
 .env
 .venv
+stack/cypress/cypress/e2e/examples
+stack/django/oaexample_app/migrations
 databuilder/public/profilepics
 databuilder/dist
 templates/reactjs/.env
