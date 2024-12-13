@@ -3,7 +3,6 @@
 from allauth.headless.tokens.base import AbstractTokenStrategy
 from allauth.socialaccount.models import SocialToken, SocialAccount
 
-
 class CustomTokenStrategy(AbstractTokenStrategy):
     def store_token(self, request, token):
         user = request.user

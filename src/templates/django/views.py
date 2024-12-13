@@ -107,6 +107,7 @@ class RenderFrontendIndex(APIView):
 
 
 from django.shortcuts import redirect
+from django.utils import timezone
 
 def redirect_to_frontend(request, provider=None):
 #    session = LoginSession(request, "social_login_redirected", settings.SESSION_COOKIE_NAME)

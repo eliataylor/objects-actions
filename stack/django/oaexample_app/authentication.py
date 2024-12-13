@@ -4,6 +4,11 @@ from rest_framework.permissions import AllowAny
 import logging
 logger = logging.getLogger(__name__)
 
+"""
+This class is only needed if you want to support Cookies for the WebApp and Tokens for the mobile app.
+Tokens makes login possible from other install Apps that support OAuth login, since cookies cannot be shared from the WebView or native Browser
+"""
+
 class AuthenticationByDeviceType(BaseAuthentication):
 
     def authenticate(self, request):

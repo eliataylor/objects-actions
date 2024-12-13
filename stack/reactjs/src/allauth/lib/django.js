@@ -1,6 +1,5 @@
 function getCookie (name) {
   let cookieValue = null
-  console.log(process.env.REACT_APP_CSRF_COOKIE_NAME, document.cookie)
 
   if (document.cookie && document.cookie !== '') {
     const cookies = document.cookie.split(';')

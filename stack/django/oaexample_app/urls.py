@@ -67,17 +67,12 @@ urlpatterns += [
 
 
 from .views import SendCodeView, VerifyCodeView
-
 urlpatterns += [
-
     path('objectactions/auth/sms', SendCodeView.as_view(), name='send_code'),
     path('objectactions/auth/verify-sms', VerifyCodeView.as_view(), name='verify_code'),
-
-    # path('account/<str:provider>/login/callback/', redirect_to_frontend, name='provider_callback'),
-    # path('accounts/<str:provider>/login/callback/', IndexView.as_view(), name='provider_callback'),
-    # path('accounts/login/callback/', IndexView.as_view(), name='provider_callback_no_provider'),
-
 ]
+
+
 
 
 

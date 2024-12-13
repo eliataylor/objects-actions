@@ -1,4 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
+import {getCSRFToken} from "../allauth/lib/django";
 
 export interface HttpResponse<T = any> {
     success: boolean;
@@ -17,7 +18,7 @@ class ApiClient {
 
         // Interceptor to set CSRF token from cookies
         this.client.interceptors.request.use((config) => {
-            const csrfToken = this.getCookie('csrftoken');
+            const csrfToken = getCSRFToken();
             if (csrfToken) {
                 config.headers['X-CSRFToken'] = csrfToken;
             }

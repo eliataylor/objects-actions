@@ -2,7 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
-# from utils.models import BumpParentsModelMixin
+from utils.models import BumpParentsModelMixin
 from allauth.account.models import EmailAddress
 from django.dispatch import receiver
 from allauth.account.signals import email_confirmed
@@ -18,17 +18,19 @@ def validate_phone_number(value):
 	phone_regex = re.compile(r'^\+?1?\d{9,15}$')
 	if not phone_regex.match(value):
 		raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-
+	
 def upload_file_path(instance, filename):
 	ext = filename.split('.')[-1]
 	filename = f"{instance.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
 	return os.path.join('uploads/%Y-%m', filename)
 
-class Users(AbstractUser):
+class Users(AbstractUser, BumpParentsModelMixin):
 	class Meta:
 		verbose_name = "User"
 		verbose_name_plural = "Users"
 		ordering = ['last_login']
+
+
 
 	phone = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='Phone', blank=True, null=True)
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
@@ -218,7 +220,7 @@ class Invites(SuperModel):
 		abstract = False
 		verbose_name = "Invite"
 		verbose_name_plural = "Invites"
-
+	
 	class StatusChoices(models.TextChoices):
 		invited = ("invited", "Invited")
 		rsvpd = ("rsvpd", " rsvpd")
@@ -234,7 +236,7 @@ class Subscriptions(SuperModel):
 		abstract = False
 		verbose_name = "Subscription"
 		verbose_name_plural = "Subscriptions"
-
+	
 	class StatusChoices(models.TextChoices):
 		approved = ("approved", "Approved")
 		denied = ("denied", " denied")
@@ -250,12 +252,12 @@ class Rooms(SuperModel):
 		abstract = False
 		verbose_name = "Room"
 		verbose_name_plural = "Rooms"
-
+	
 	class PrivacyChoices(models.TextChoices):
 		public = ("public", "Public")
 		inviteonly = ("inviteonly", " invite-only")
 		requests = ("requests", " requests")
-
+	
 	class StatusChoices(models.TextChoices):
 		live = ("live", "Live")
 		scheduled = ("scheduled", " scheduled")
@@ -275,7 +277,7 @@ class Attendees(SuperModel):
 		abstract = False
 		verbose_name = "Attendee"
 		verbose_name_plural = "Attendees"
-
+	
 	class RoleChoices(models.TextChoices):
 		viewer = ("viewer", "Viewer")
 		presenter = ("presenter", " presenter")
@@ -375,6 +377,8 @@ class AppTokens(models.Model):
     expires_at = models.DateTimeField(
         blank=True, null=True, verbose_name="expires at"
     )
+
+
 
 
 

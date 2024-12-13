@@ -300,6 +300,24 @@ SOCIALACCOUNT_EMAIL_REQUIRED = False
 SOCIALACCOUNT_EMAIL_VERIFICATION = False
 SOCIALACCOUNT_STORE_TOKENS = True
 SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            "name": "google",
+            "provider_id": "google",
+            'client_id': os.environ.get('GOOGLE_OAUTH_CLIENT_ID', ""),
+            'secret': os.environ.get('GOOGLE_OAUTH_SECRET', ""),
+            'key': os.environ.get('GOOGLE_OAUTH_KEY', ""),
+        },
+        'EMAIL_AUTHENTICATION': True,
+        'FETCH_USERINFO': True,
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    },
     "spotify": {
         'SCOPE': ['user-read-email', 'user-top-read', 'user-read-recently-played', 'playlist-read-collaborative'],
         'AUTH_PARAMS': {'access_type': 'offline'},
@@ -316,20 +334,25 @@ SOCIALACCOUNT_PROVIDERS = {
             "secret": os.environ.get("SPOTIFY_SECRET"),
             "callback_url": os.environ.get("SPOTIFY_REDIRECT_URI"),
         }
-    }
+    },
+
 }
 
-# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # SMTP server configuration
-SENDGRID_API_KEY = os.environ.get("SMTP_PASSWORD")
+EMAIL_PASSWORD = os.environ.get("SMTP_PASSWORD")
 EMAIL_HOST = os.environ.get("SMTP_EMAIL_HOST", 'smtp.gmail.com')
 EMAIL_PORT = os.environ.get("SMTP_EMAIL_PORT", 587)
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 # EMAIL_HOST_USER = os.environ.get("SMTP_EMAIL_ADDRESS", "")
-EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
+
+if EMAIL_PASSWORD is None:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 
 # SendGrid
 EMAIL_HOST_USER = 'apikey'  # This is the string 'apikey', not the actual API key

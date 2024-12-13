@@ -48,10 +48,8 @@ from .models import Stakeholders
 from .serializers import StakeholdersSerializer
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
-from django.utils.dateparse import parse_datetime
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from rest_framework import viewsets, permissions, filters, generics
-from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
 from .services import send_sms
@@ -59,7 +57,6 @@ import random
 
 class LimitedLimitOffsetPagination(LimitOffsetPagination):
     max_limit = 100
-
 
 class PaginatedViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
@@ -417,6 +414,7 @@ class RenderFrontendIndex(APIView):
 
 
 from django.shortcuts import redirect
+from django.utils import timezone
 
 def redirect_to_frontend(request, provider=None):
 #    session = LoginSession(request, "social_login_redirected", settings.SESSION_COOKIE_NAME)
@@ -531,6 +529,9 @@ class VerifyCodeView(APIView):
             return JsonResponse({"error": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)
 
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 

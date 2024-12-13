@@ -23,10 +23,6 @@ from .models import Parties
 from .models import Stakeholders
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
 
-from django.contrib.auth import get_user_model
-from django.core.exceptions import FieldDoesNotExist
-from google.auth.exceptions import DefaultCredentialsError
-
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
 class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
     def __init__(self, **kwargs):
@@ -198,6 +194,8 @@ class PhoneNumberSerializer(serializers.Serializer):
 class VerifyPhoneSerializer(serializers.Serializer):
     phone = serializers.CharField()
     code = serializers.CharField()
+
+
 
 
 
