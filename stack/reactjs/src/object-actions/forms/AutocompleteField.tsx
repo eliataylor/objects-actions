@@ -1,8 +1,9 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Autocomplete, Avatar, CircularProgress, ListItem, ListItemAvatar, ListItemText, TextField} from '@mui/material';
+import {Avatar, CircularProgress, ListItem, Autocomplete, ListItemAvatar, ListItemText} from '@mui/material';
 import ApiClient from "../../config/ApiClient";
 import {NAVITEMS, RelEntity} from "../types/types";
 import {Search} from "@mui/icons-material";
+import TextField from "@mui/material/TextField";
 
 export interface AcOption {
     label: string;
@@ -97,9 +98,7 @@ const AutocompleteField: React.FC<AcFieldProps> = ({
                 setSelectedOption(newValue);
                 if (newValue) {
                     const selectedRels = {
-                        id: newValue.value,
-                        str: newValue.label,
-                        _type: type
+                        id: newValue.value, str: newValue.label, _type: type
                     };
                     onSelect(selectedRels, field_name);
                 }
@@ -109,33 +108,31 @@ const AutocompleteField: React.FC<AcFieldProps> = ({
             }}
             renderOption={(props, option) => (
                 <ListItem {...props}>
-                    {option.image && (
-                        <ListItemAvatar>
-                            <Avatar src={option.image}/>
-                        </ListItemAvatar>
-                    )}
-                    <ListItemText primary={option.label}/>
+                    {
+                        option.image && (
+                            <ListItemAvatar>
+                                <Avatar src={
+                                    option.image}/>
+                            </ListItemAvatar>
+                        )}
+                    <ListItemText primary={
+                        option.label}/>
                 </ListItem>
             )}
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    label={selectedOption ? field_label : `Search ${field_label}`}
-                    variant="outlined"
+                    placeholder={`Search ${field_label}`}
+                    variant="standard"
                     InputProps={{
                         ...params.InputProps,
-                        endAdornment: (
-                            <>
-                                {loading ? <CircularProgress color="inherit" size={20}/> : null}
-                                {params.InputProps.endAdornment}
-                            </>
-                        ),
+                        endAdornment: loading ? <CircularProgress color="inherit" size={20}/> : null,
                         startAdornment: (
                             <>
-                                <Search/>
-                                {params.InputProps.endAdornment}
+                                <Search sx={{color: 'text.disabled', marginRight: .5, marginLeft: 1}}/>
+                                {params.InputProps.startAdornment}
                             </>
-                        ),
+                        )
                     }}
                 />
             )}

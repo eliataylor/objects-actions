@@ -5,6 +5,7 @@ export interface HttpResponse<T = any> {
     success: boolean;
     data?: T | null;
     error?: string;
+    errors?: { [key: string]: any };
 }
 
 class ApiClient {
@@ -44,10 +45,33 @@ class ApiClient {
         }, (error) => {
             return Promise.reject(error);
         });
+
+
+        /*
+        this.client.interceptors.response.use(res => {
+            if (res.data.apiversion) {
+                var appversion = localStorage.getItem(Config.api.tokName + '_apiversion');
+                if (appversion && parseInt(appversion) < parseInt(res.data.apiversion)) {
+                    if (res.config.url.indexOf(Config.api.base + '/auth') === 0) { // on initial load and any form submissions that require menu updates
+                        // localStorage.setItem(Config.api.tokName + '_apiversion', (res.data.apiversion) ? res.data.apiversion : Math.floor(new Date().getTime()/1000));
+                    } else {
+                        localStorage.setItem(Config.api.tokName + '_apiversion', res.data.apiversion);
+                        localStorage.removeItem("cliptypes")// or else this will repeat every request
+                        if (window.confirm("We've launched some breaking changes. Please reload this page to get the latest release.")) {
+                            document.location.reload();
+                        }
+                    }
+                }
+            }
+            return res;
+        });
+         */
+
+
     }
 
     public async post<T>(url: string, data: any, headers: any = {}): Promise<HttpResponse<T>> {
-        const resp: HttpResponse<any> = {
+        let resp: HttpResponse<any> = {
             success: false,
             data: null,
             error: undefined,
@@ -58,14 +82,14 @@ class ApiClient {
             resp.data = response.data;
             resp.success = true;
         } catch (error: any) {
-            resp.error = this.errorToString(error)
+            resp = this.returnErrors(error)
         }
 
         return resp;
     }
 
     public async put<T>(url: string, data: any, headers: any = {}): Promise<HttpResponse<T>> {
-        const resp: HttpResponse<any> = {
+        let resp: HttpResponse<any> = {
             success: false,
             data: null,
             error: undefined,
@@ -76,14 +100,14 @@ class ApiClient {
             resp.data = response.data;
             resp.success = true;
         } catch (error: any) {
-            resp.error = this.errorToString(error)
+            resp = this.returnErrors(error)
         }
 
         return resp;
     }
 
     public async patch<T>(url: string, data: any, headers: any = {}): Promise<HttpResponse<T>> {
-        const resp: HttpResponse<any> = {
+        let resp: HttpResponse<T> = {
             success: false,
             data: null,
             error: undefined,
@@ -94,14 +118,14 @@ class ApiClient {
             resp.data = response.data;
             resp.success = true;
         } catch (error: any) {
-            resp.error = this.errorToString(error)
+            resp = this.returnErrors(error)
         }
 
         return resp;
     }
 
     public async get<T>(url: string): Promise<HttpResponse<T>> {
-        const resp: HttpResponse<T> = {
+        let resp: HttpResponse<T> = {
             success: false,
             data: null,
             error: undefined
@@ -112,15 +136,15 @@ class ApiClient {
             resp.data = response.data;
             resp.success = true;
         } catch (error: any) {
-            resp.error = this.errorToString(error)
-            console.error('Get failed:', error.message);
+            resp = this.returnErrors(error)
+            console.error('Get failed:', resp);
         }
 
         return resp;
     }
 
     public async delete<T>(url: string): Promise<HttpResponse<T>> {
-        const resp: HttpResponse<any> = {
+        let resp: HttpResponse<T> = {
             success: false,
             data: null,
             error: undefined
@@ -131,29 +155,46 @@ class ApiClient {
             resp.data = response.data;
             resp.success = true;
         } catch (error: any) {
-            resp.error = this.errorToString(error)
-            console.error('Get failed:', error.message);
+            resp = this.returnErrors(error)
         }
 
         return resp;
     }
 
-    private errorToString(error: any) {
-        let found = undefined;
-        if (!error) return found;
-        if (typeof error === 'string') return error;
+    public returnErrors(error: any): HttpResponse<any> {
 
+        const resp: HttpResponse<any> = {
+            success: false,
+            data: null,
+            error: error,
+        };
+
+        if (!error) return resp;
+        if (typeof error === 'string') return resp;
+
+        let found = undefined;
         if (axios.isAxiosError(error) && error.response) {
-            found = error.response.data;
-        } else if (error.error) {
+            error = error.response.data;
+        }
+        if (error.error) {
             found = error.error
+        } else if (error.detail) {
+            found = error.detail
         } else if (error) {
             found = error
         }
         if (found && typeof found === 'object') {
-            found = Object.values(found).join(", ");
+            resp.errors = found
+            found = Object.entries(found).map(([key, err]) => {
+                if (typeof err === 'string') return `${key}: ${err}`
+                return `${key}: ${Array.isArray(err) ? err.join(', ') : err}`
+            })
+            found = found.join("\n\r ");
         }
-        return found;
+
+        resp.error = found
+
+        return resp;
     }
 
     private getCookie(name: string): string | null {
