@@ -29,7 +29,7 @@ from .views import StakeholdersViewSet
 urlpatterns = [path('', RenderFrontendIndex.as_view(), name='index')]
 
 ####OBJECT-ACTIONS-URLS-STARTS####
-OARouter = DefaultRouter()
+OARouter = DefaultRouter(trailing_slash=False)
 OARouter.register('users', UsersViewSet, basename='users')
 OARouter.register('officials', OfficialsViewSet, basename='officials')
 OARouter.register('cities', CitiesViewSet, basename='cities')
@@ -71,6 +71,8 @@ urlpatterns += [
     path('objectactions/auth/sms', SendCodeView.as_view(), name='send_code'),
     path('objectactions/auth/verify-sms', VerifyCodeView.as_view(), name='verify_code'),
 ]
+
+
 
 
 

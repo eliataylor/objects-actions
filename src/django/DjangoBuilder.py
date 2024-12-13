@@ -125,7 +125,7 @@ class DjangoBuilder:
         outpath = os.path.join(self.output_dir, 'urls.py')
         extra_patterns = []
 
-        code = "\nOARouter = DefaultRouter()\n"
+        code = "\nOARouter = DefaultRouter(trailing_slash=False)\n"
         for class_name in self.json:
             path_name = create_machine_name(class_name)
             model_name = create_object_name(class_name)

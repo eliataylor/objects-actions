@@ -175,7 +175,10 @@ class ApiClient {
         let found = undefined;
         if (axios.isAxiosError(error) && error.response) {
             error = error.response.data;
+        } else if (axios.isAxiosError(error)) {
+            error = error.message;
         }
+
         if (error.error) {
             found = error.error
         } else if (error.detail) {
