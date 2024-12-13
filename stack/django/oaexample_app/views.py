@@ -200,7 +200,7 @@ class AttendeesViewSet(viewsets.ModelViewSet):
     queryset = Attendees.objects.all().order_by('id')
     serializer_class = AttendeesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+
 class TopicsViewSet(viewsets.ModelViewSet):
     queryset = Topics.objects.all().order_by('id')
     serializer_class = TopicsSerializer
@@ -393,7 +393,11 @@ class UserModelListView(generics.GenericAPIView):
 
 class RenderFrontendIndex(APIView):
     def get(self, request, *args, **kwargs):
-        with open(os.getenv("FRONTEND_INDEX_HTML", "index.html"), 'r') as file:
+        indexpath = os.getenv("FRONTEND_INDEX_HTML", "index.html")
+        if not os.path.isfile(indexpath):
+            return HttpResponse('Ok', content_type='text/html')
+
+        with open(indexpath, 'r') as file:
             html_content = file.read()
 
         modified_html = html_content

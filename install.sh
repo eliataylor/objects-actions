@@ -48,3 +48,11 @@ else
     echo "Node.js is already installed."
 fi
 
+# Find or install K6
+if ! command_exists k6; then
+    echo "k6 not found. Installing..."
+    brew install k6
+else
+    echo "k6 is already installed."
+fi
+
