@@ -40,7 +40,7 @@ const EntityView: React.FC = () => {
 
     if (typeof entityData === 'string') return <div>{entityData}</div>
 
-    return <EntityCard entity={entityData}/>
+    return <div id={"EntityView"}><EntityCard entity={entityData}/></div>
 
 };
 

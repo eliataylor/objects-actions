@@ -244,7 +244,7 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
 
     const errorcopy = {...errors}
     return (
-        <Grid container spacing={2}>
+        <Grid id={"GenericForm"} container spacing={2}>
             {fields.map((field) => {
                 if (field.field_type === 'id_auto_increment') return null
                 let error: string[] | undefined = errors[field.machine]

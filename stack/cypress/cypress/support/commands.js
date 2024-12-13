@@ -25,15 +25,6 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 import {Routing} from "./context";
-// import moment from "moment";
-
-/*
-// doesn't work
-Cypress.Commands.add("dispatchRedux", (action) => {
-    return cy.window().its('store').invoke('dispatch', action)
-});
-
-*/
 
 // cypress/support/commands.js
 Cypress.Commands.add(
@@ -41,63 +32,47 @@ Cypress.Commands.add(
     (email, pass) => {
         cy.request({
             method: 'GET',
-            url: Cypress.env("apiURL") + '/_allauth/browser/v1/config'
-        }).then(({body}) => {
+            url: Cypress.env("REACT_APP_API_HOST") + '/_allauth/browser/v1/config'
+        }).then((response) => {
 
-            cy.getCookie('csrftoken').then((cookie) => {
-                const csrfToken = cookie ? cookie.value : '';
+            const setCookieHeader = response.headers['set-cookie'];
+            const csrfCookie = setCookieHeader.find((cookie) => cookie.startsWith('csrftoken='));
+            if (!csrfCookie) {
+                throw new Error('CSRF token cookie not found in server response');
+            }
+            const csrfToken = csrfCookie.split(';')[0].split('=')[1];
 
-                console.log(`Background logging in as ${email} with CSRF token`, csrfToken);
+            // Set the cookie in Cypress
+            cy.setCookie('csrftoken', csrfToken);
 
-                cy.request({
-                    method: 'POST',
-                    url: `${Cypress.env("apiURL")}/_allauth/browser/v1/auth/login`,
-                    headers: {
-                        "Content-Type": "application/json",
-                        'X-CSRFToken': cookie
-                    },
-                    body: {
-                        username: email,
-                        password: pass
-                    },
-                }).then(({body}) => {
-                    console.log('RECEIVED LOGIN: ', body)
-                    let route = '/';
-                    cy.visit(route);
-                    cy.addHand('dark');
-                    cy.wait('@waitForProfile').its('response.body').should('have.property', 'data')
-                })
+            console.log(`Background logging in as ${email} with CSRF token`, csrfToken);
+
+            cy.intercept('GET', `${Cypress.env("REACT_APP_API_HOST")}/_allauth/browser/v1/auth/login`).as('waitForLogin');
+
+            cy.request({
+                withCredentials: true,
+                httpsAgent: new (require('https').Agent)({rejectUnauthorized: false}), // Handle HTTPS requests
+                method: 'POST',
+                url: `${Cypress.env("REACT_APP_API_HOST")}/_allauth/browser/v1/auth/login`,
+                headers: {
+                    'Referer': new URL(Cypress.env('REACT_APP_APP_HOST') || '').host,  // Adding Referer header to simulate request origin
+                    'Origin': Cypress.env('REACT_APP_APP_HOST'),    // Adding Origin header to simulate request origin
+                    "Content-Type": "application/json",
+                    'X-CSRFToken': csrfToken
+                },
+                body: {
+                    email: email,
+                    password: pass
+                },
+            }).then(({body}) => {
+                console.log('RECEIVED LOGIN: ', body)
+                cy.visit(Cypress.env("REACT_APP_APP_HOST"));
+                cy.addHand('dark');
             })
-
         })
 
     }
 )
-
-Cypress.Commands.add("login", (email, pass) => {
-    cy.visit('/signin', {timeout: 30000});
-    cy.intercept({
-        method: 'POST',
-        url: Cypress.env("apiURL") + '/oauth/token?_format=json'
-    }).as('waitForToken');
-    cy.intercept({
-        method: 'GET',
-        url: Cypress.env("apiURL") + '/appstartup*'
-    }).as('waitForProfile');
-
-    cy.addHand('dark');
-    cy.grab('input[name=email]').type(email);
-    cy.grab('input[name=password]').type(pass);
-    cy.grab('button[aria-label="Login Button"]').showClick();
-    cy.wait('@waitForToken').its('response.body').should('have.property', 'access_token').then((interception) => {
-        console.log('CanDO access token: ', interception)
-    })
-    cy.wait('@waitForProfile').its('response.body').should('have.property', 'profile').then((interception) => {
-        console.log('CanDO profile: ', interception) // make sure it's set in redux though!?!
-        cy.wait(1400); // wait for redux updated
-        // cy.window().its('store').invoke('dispatch', 'logInSuccess')
-    })
-});
 
 Cypress.Commands.add("showClick",
     {prevSubject: "element"},
@@ -204,11 +179,11 @@ Cypress.Commands.add("addHand", (theme) => {
 
 
 Cypress.Commands.add('assertMenuReady', () => {
-    cy.get('header', {timeout: 10000}).should('exist');
+    cy.get('#NavMenu', {timeout: 10000}).should('exist');
 })
 
 Cypress.Commands.add('assertForm', () => {
-    cy.get('form.taForm').should('exist');
+    cy.get('#GenericForm').should('exist');
 })
 
 Cypress.Commands.add('assertEntityView', () => {
@@ -216,7 +191,7 @@ Cypress.Commands.add('assertEntityView', () => {
 })
 
 Cypress.Commands.add('assertListView', () => {
-    cy.get('#Dashboard').should('exist');
+    cy.get('#EntityList').should('exist');
 })
 
 Cypress.Commands.add('openDrawer', () => {

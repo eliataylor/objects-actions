@@ -20,7 +20,7 @@ class ApiClient {
             withCredentials: true, // Ensures cookies are sent with requests
             baseURL: process.env.REACT_APP_API_HOST,
             headers: {
-                'Referer': new URL(process.env.REACT_APP_API_HOST || '').host,  // Adding Referer header to simulate request origin
+                'Referer': new URL(process.env.REACT_APP_APP_HOST || '').host,  // Adding Referer header to simulate request origin
                 'Origin': process.env.REACT_APP_APP_HOST,    // Adding Origin header to simulate request origin
                 "Content-Type": "application/json"
             },

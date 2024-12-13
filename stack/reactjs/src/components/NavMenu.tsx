@@ -10,7 +10,7 @@ const NavMenu = () => {
     const location = useLocation()
 
     return (
-        <List>
+        <List id={"NavMenu"}>
             <AuthMenu/>
 
             <Divider sx={{marginBottom: 1, marginTop: 1, backgroundColor: "primary.dark"}}/>

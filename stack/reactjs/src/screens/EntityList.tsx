@@ -80,7 +80,7 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
     if (!hasUrl) return <div>Invalid URL...</div>
 
     return (
-        <Box sx={{padding: 2}}>
+        <Box sx={{padding: 2}} id={"EntityList"}>
             {!listData ? <div>Loading...</div>
             : typeof listData === 'string' ? <div>{listData}</div>
                 :
