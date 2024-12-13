@@ -37,7 +37,8 @@ class CustomHeadlessAdapter(DefaultHeadlessAdapter):
         user_data = super().serialize_user(user, **kwargs)
 
         # Add the profile_picture field to the response
-        user_data['profile_picture'] = user.profile_picture.url if user.profile_picture else None
+        if hasattr(user, 'profile_picture'):
+            user_data['profile_picture'] = user.profile_picture.url if user.profile_picture else None
 
         return user_data
 
