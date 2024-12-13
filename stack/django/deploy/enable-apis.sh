@@ -3,14 +3,15 @@
 # Please make sure you have enable billing for your project
 # Please make sure you enable Service Usage API https://console.cloud.google.com/project/_/apis/library/serviceusage.googleapis.com
 # Before running this script
-show_section_header "Enabling necessary Google Cloud APIs..."
+REQUIRED_VARS=("GCP_PROJECT_ID")
 
-# Define required environment variables for this script
-source "./common.sh"
+SCRIPT_DIR=$(dirname "$0")
+source "${SCRIPT_DIR}/common.sh"
+
+show_section_header "Enabling necessary Google Cloud APIs..."
 
 login_owner "roles/owner"
 
-# Section 2: Enable necessary Google Cloud APIs
 show_loading "Enabling Google Cloud APIs"
 apis=(
     "cloudresourcemanager.googleapis.com"

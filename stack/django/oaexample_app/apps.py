@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class NodAppConfig(AppConfig):
+class MyAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'oaexample_app'

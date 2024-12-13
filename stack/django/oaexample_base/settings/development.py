@@ -15,25 +15,28 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.oaexample\.com$",
     r"^http://\w+\.oaexample\.com$",
 ]
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS += [
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
     'http://localhost.oaexample.com',
     'https://oaexample.com',
     'https://www.oaexample.com',
+    'https://dev.oaexample.com',
     'http://localhost:3000',
     'https://localhost:3000',
     'http://127.0.0.1:3000',
     'https://127.0.0.1:3000',
-    # Add other development domains as needed
+    "http://*", "https://*",
+    "http://*:3000", "https://*:3000",
+    "http://*:8080", "https://*:8080",
 ]
 
 # CSRF settings
-CSRF_TRUSTED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS += [
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
-    'http://localapi.oaexample.com:8080',
-    'https://localapi.oaexample.com:8080',
+    'http://localhost-api.oaexample.com:8080',
+    'https://localhost-api.oaexample.com:8080',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://localhost:3000',
@@ -41,12 +44,10 @@ CSRF_TRUSTED_ORIGINS = [
     'https://localhost:8080',
     'https://127.0.0.1:8080',
     "http://*", "https://*",
-    # Add other development domains as needed
+    "http://*:3000", "https://*:3000",
+    "http://*:8080", "https://*:8080",
 ]
 CORS_ALLOW_ALL_ORIGINS = True
-
-CSRF_COOKIE_DOMAIN='.oaexample.com'
-SESSION_COOKIE_DOMAIN='.oaexample.com'
 
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True

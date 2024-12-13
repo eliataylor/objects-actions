@@ -1,75 +1,106 @@
-
-
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-STARTS####
+import logging
+
+from django.db.models import ImageField
 from rest_framework import serializers
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import ManyToManyField
-from .models import Users
-from .models import Songs
-from .models import Playlists
+
+from .models import EventCheckins, InviteLinks
 from .models import Events
 from .models import Friendships
 from .models import Invites
-from .models import SongRequests
-from .models import EventCheckins
 from .models import Likes
+from .models import Playlists
+from .models import SongRequests
+from .models import Songs
+from .models import Users
+
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
 
-
+logger = logging.getLogger(__name__)
+from django.contrib.auth import get_user_model
+from django.core.exceptions import FieldDoesNotExist
+from google.auth.exceptions import DefaultCredentialsError
 
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
-class SubFieldRelatedField(serializers.PrimaryKeyRelatedField):
-    def __init__(self, **kwargs):
-        self.slug_field = kwargs.pop('slug_field', None)
-        super(SubFieldRelatedField, self).__init__(**kwargs)
 
-    def to_internal_value(self, data):
-        if self.pk_field is not None:
-            field_label = self.pk_field.label
-            if isinstance(data, dict):
-                if field_label in data:
-                    datag = data[field_label]
-                    data = self.pk_field.to_internal_value(datag)
-                else:
-                    data = self.queryset.model.objects.create(**data)
-                    data.save()
-                return data
-            elif self.slug_field is not None and isinstance(data, str):
-                queryset = self.get_queryset()
-                args = {self.slug_field: data}
-                return queryset.get(**args)
-            else:
-                data = self.pk_field.to_internal_value(data)
-        else:
-            if isinstance(data, dict):
-                data = self.queryset.model.objects.get_or_create(**data)
-                return data
-        queryset = self.get_queryset()
-        try:
-            if isinstance(data, bool):
-                raise TypeError
-            return queryset.get(pk=data)
-        except ObjectDoesNotExist:
-            self.fail('does_not_exist', pk_value=data)
-        except (TypeError, ValueError):
-            self.fail('incorrect_type', data_type=type(data).__name__)
-
+from django.db.models import Q
 
 class CustomSerializer(serializers.ModelSerializer):
-    # serializer_related_field = SubFieldRelatedField
     def create(self, validated_data):
-        request = self.context.get('request', None)
-        if request and hasattr(request, 'user') and request.user.is_authenticated:
-            if 'author' in self.Meta.model._meta.get_fields():
+        if self.has_field("author"):
+            request = self.context.get('request', None)
+            if request and hasattr(request, 'user') and request.user.is_authenticated:
                 validated_data['author'] = request.user
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        request = self.context.get('request', None)
-        if request and hasattr(request, 'user') and request.user.is_authenticated:
-            if 'author' in self.Meta.model._meta.get_fields():
+        if self.has_field("author") and instance.author is None:
+            request = self.context.get('request', None)
+            if request and hasattr(request, 'user') and request.user.is_authenticated:
                 validated_data['author'] = request.user
         return super().update(instance, validated_data)
+
+    def has_field(self, field_name):
+        model = self.Meta.model
+        try:
+            model._meta.get_field(field_name)
+            return True
+        except FieldDoesNotExist:
+            return False
+
+    def get_serializer_class_for_instance(self, instance):
+        # Construct the serializer class name
+        serializer_class_name = f"{instance.__class__.__name__}Serializer"
+        # Fetch the serializer class from globals
+        serializer_class = globals().get(serializer_class_name)
+        if not serializer_class:
+            raise ValueError(f"Serializer class {serializer_class_name} not found")
+        return serializer_class
+
+    def normalize_instance(self, related_instance, base_field):
+        relEntity = {
+            "id": related_instance.pk,
+            "str": str(related_instance),
+            "_type": related_instance.__class__.__name__,
+            "entity" : {}
+        }
+
+        if isinstance(related_instance, get_user_model()):
+            relEntity['entity']['full_name'] = related_instance.getName()
+
+        request = self.context.get('request')
+        if request:
+            subentities = request.query_params.getlist('getrelated', [])
+            subfields = request.query_params.getlist('subfields', [])
+        else:
+            subentities = []
+            subfields = []
+
+        if base_field.lower() in subentities:
+            serializer_class = self.get_serializer_class_for_instance(related_instance)
+            serializer = serializer_class(related_instance, context=self.context)
+            relEntity['entity'] = serializer.data
+        else:
+            for sub_field in related_instance._meta.get_fields():
+                if sub_field.name in subfields:
+                    rel_field = getattr(related_instance, sub_field.name)
+                    relEntity['entity'][sub_field.name] = str(rel_field)
+                elif isinstance(sub_field, ImageField):
+                    image_field = getattr(related_instance, sub_field.name)
+                    if image_field:
+                        try:
+                            relEntity['img'] = image_field.url
+                            break
+                        except DefaultCredentialsError:
+                            relEntity['img'] = None
+                            logger.error(f" Google Cloud credentials not found. Trying to access {sub_field.name}")
+                elif sub_field.name == 'remote_image':
+                    relEntity['img'] = getattr(related_instance, sub_field.name)
+
+        if len(relEntity['entity']) == 0:
+            del relEntity['entity']
+
+        return relEntity
 
     def to_representation(self, instance):
         # Get the original representation
@@ -80,52 +111,92 @@ class CustomSerializer(serializers.ModelSerializer):
         for field in self.Meta.model._meta.get_fields():
             if field.is_relation and hasattr(instance, field.name):
                 field_name = field.name
-                related_instance = getattr(instance, field_name)
 
                 if field.many_to_one:
+                    related_instance = getattr(instance, field_name)
                     if related_instance is not None:
-                        representation[field_name] = {
-                            "id": related_instance.pk,
-                            "str": str(related_instance),
-                            "_type": related_instance.__class__.__name__,
-                        }
+                        representation[field_name] = self.normalize_instance(related_instance, field_name)
 
                 elif field.many_to_many:
+                    related_instance = getattr(instance, field_name)
                     related_instances = related_instance.all()
-                    representation[field_name] = [
-                        {
-                            "id": related.pk,
-                            "str": str(related),
-                            "_type": related.__class__.__name__,
-                        } for related in related_instances
-                    ]
+                    representation[field_name] = []
+                    for related in related_instances:
+                        representation[field_name].append(self.normalize_instance(related, field_name) )
 
         return representation
+
 class UsersSerializer(CustomSerializer):
     class Meta:
         model = Users
         fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['username'] = instance.username
+        representation['full_name'] = instance.get_full_name()
+
+        return representation
+
 class SongsSerializer(CustomSerializer):
     class Meta:
         model = Songs
-        fields = '__all__'
+        fields = ['name', 'author', 'id', 'spotify_id', 'apple_id', 'artist', 'remote_image', 'playlist']
+
+
 class PlaylistsSerializer(CustomSerializer):
     class Meta:
         model = Playlists
         fields = '__all__'
-class EventsSerializer(CustomSerializer):
-    class Meta:
-        model = Events
-        fields = '__all__'
-class FriendshipsSerializer(CustomSerializer):
-    class Meta:
-        model = Friendships
-        fields = '__all__'
+
 class InvitesSerializer(CustomSerializer):
     class Meta:
         model = Invites
         fields = '__all__'
+
+    def validate_status(self, status_want):
+        request = self.context.get('request')
+        instance = getattr(self, 'instance', None)
+
+        if instance: # (for updates or partial updates)
+            event = instance.event  # Use the referenced Event object
+            canManage = request.user == event.author or request.user in event.cohosts.all()
+
+            if not canManage:
+                has_friendship = Friendships.objects.filter(
+                    Q(status="accepted") &
+                    (
+                            (Q(author=request.user) & (
+                                    Q(recipient__in=event.cohosts.all()) | Q(recipient=event.author))) |
+                            (Q(recipient=request.user) & (
+                                    Q(author__in=event.cohosts.all()) | Q(author=event.author)))
+                    )
+                ).first()
+
+                if status_want == 'requested' and has_friendship:
+                    status_want = 'accepted'
+
+                if status_want == 'accepted' and not has_friendship:
+                    status_want = 'requested'
+
+        return status_want
+
+class InviteLinksSerializer(CustomSerializer):
+    class Meta:
+        model = InviteLinks
+        fields = '__all__'
+class EventsSerializer(CustomSerializer):
+    # invites = InvitesSerializer(many=True, read_only=True)
+    class Meta:
+        model = Events
+        fields = '__all__'
+        # fields = ['id', 'author', 'created_at', 'modified_at', 'cohosts', 'url_alias', 'name', 'starts', 'ends', 'cover', 'description', 'address', 'coordinates', 'invites']
+class FriendshipsSerializer(CustomSerializer):
+    class Meta:
+        model = Friendships
+        fields = '__all__'
 class SongRequestsSerializer(CustomSerializer):
+    likes_count = serializers.IntegerField(read_only=True)
     class Meta:
         model = SongRequests
         fields = '__all__'
@@ -148,79 +219,3 @@ class PhoneNumberSerializer(serializers.Serializer):
 class VerifyPhoneSerializer(serializers.Serializer):
     phone = serializers.CharField()
     code = serializers.CharField()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

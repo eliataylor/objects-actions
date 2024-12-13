@@ -4,13 +4,13 @@
 REQUIRED_VARS=("GCP_PROJECT_ID" \
               "GCP_REGION" \
               "DJANGO_ENV" \
-              "GCP_DOCKER_REPO_ZONE" \
-              "GCP_DOCKER_REPO_NAME" \
               "GCP_SERVICE_NAME" \
               "GCP_BUCKET_API_NAME" \
               "DJANGO_SUPERUSER_EMAIL" \
               "DJANGO_SUPERUSER_USERNAME" \
-              "MYSQL_IP" \
+              "GCP_MYSQL_PROJECT_ID" \
+              "GCP_MYSQL_ZONE" \
+              "GCP_MYSQL_INSTANCE" \
               "GCP_MYSQL_HOST" \
               "MYSQL_DATABASE" \
               "DJANGO_ALLOWED_HOSTS" \
@@ -21,9 +21,21 @@ REQUIRED_VARS=("GCP_PROJECT_ID" \
               "DEFAULT_FROM_EMAIL" \
               "GOOGLE_CALLBACK_URL" \
               "FRONTEND_URL" \
-              "GOOGLE_OAUTH_CLIENT_ID" )
+              "FRONTEND_INDEX_HTML" \
+              "GOOGLE_OAUTH_CLIENT_ID" \
+              "GOOGLE_PLACES_KEY" \
+              "APPLE_KEY_ID" \
+              "APPLE_DEVELOPER_TOKEN" \
+              "APPLE_TEAM_ID" \
+              "APPLE_KEY" \
+              "SPOTIFY_CLIENT_ID" \
+              "SPOTIFY_REDIRECT_URI" \
+              "TWILIO_PHONE_NUMBER" \
+              "TWILIO_ACCOUNT_SID" \
+              "TWILIO_VERIFY_SERVICE_SID" )
 
 SCRIPT_DIR=$(dirname "$0")
+source "${SCRIPT_DIR}/functions.sh"
 source "${SCRIPT_DIR}/common.sh"
 
 show_section_header "DEPLOY CLOUD RUN FROM SOURCE"
@@ -32,10 +44,12 @@ login_service_account $GCP_SA_KEY_PATH $GCP_PROJECT_ID $GCP_SERVICE_NAME
 
 show_loading "Deploying container to Cloud Run..."
 #    --image $GCP_DOCKER_REPO_ZONE-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_DOCKER_REPO_NAME/$GCP_SERVICE_NAME:latest \
-#     --image gcr.io/$GCP_PROJECT_ID/$GCP_PROJECT_ID-cloudrun \
+#    --image gcr.io/$GCP_PROJECT_ID/$GCP_PROJECT_ID-cloudrun \
+
 gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --region $GCP_REGION \
     --source . \
+    --cpu 1 \
     --platform managed \
     --service-account $GCP_SERVICE_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com \
     --port 8080 \
@@ -58,14 +72,21 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-env-vars DEFAULT_FROM_EMAIL=$DEFAULT_FROM_EMAIL \
     --set-env-vars GOOGLE_CALLBACK_URL=$GOOGLE_CALLBACK_URL \
     --set-env-vars FRONTEND_URL=$FRONTEND_URL \
+    --set-env-vars FRONTEND_INDEX_HTML=$FRONTEND_INDEX_HTML \
     --set-env-vars GOOGLE_OAUTH_CLIENT_ID=$GOOGLE_OAUTH_CLIENT_ID \
     --set-env-vars APPLE_KEY_ID=$APPLE_KEY_ID \
     --set-env-vars APPLE_BUNDLE_ID=$APPLE_BUNDLE_ID \
     --set-env-vars APPLE_TEAM_ID=$APPLE_TEAM_ID \
     --set-env-vars SPOTIFY_CLIENT_ID=$SPOTIFY_CLIENT_ID \
+    --set-env-vars SPOTIFY_REDIRECT_URI=$SPOTIFY_REDIRECT_URI \
+    --set-env-vars TWILIO_PHONE_NUMBER=$TWILIO_PHONE_NUMBER \
+    --set-env-vars TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID \
+    --set-env-vars TWILIO_VERIFY_SERVICE_SID=$TWILIO_VERIFY_SERVICE_SID \
     --set-secrets APPLE_KEY=APPLE_KEY:latest \
+    --set-secrets APPLE_DEVELOPER_TOKEN=APPLE_DEVELOPER_TOKEN:latest \
     --set-secrets GOOGLE_OAUTH_SECRET=GOOGLE_OAUTH_SECRET:latest \
     --set-secrets GOOGLE_OAUTH_KEY=GOOGLE_OAUTH_KEY:latest \
+    --set-secrets GOOGLE_PLACES_KEY=GOOGLE_PLACES_KEY:latest \
     --set-secrets SMTP_PASSWORD=SMTP_PASSWORD:latest \
     --set-secrets SPOTIFY_SECRET=SPOTIFY_SECRET:latest \
     --set-secrets TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest \

@@ -13,7 +13,7 @@ if DJANGO_ENV == 'production':
 
 elif DJANGO_ENV == 'testing':
     if os.path.exists(ROOT_DIR + '/.env.testing'):
-        load_dotenv(dotenv_path=ROOT_DIR + '/.env.gcp', override=True)
+        load_dotenv(dotenv_path=ROOT_DIR + '/.env.testing', override=True)
     from .testing import *
 
 else:

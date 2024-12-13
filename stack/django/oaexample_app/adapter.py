@@ -1,6 +1,6 @@
-import os
-from allauth.account.adapter import DefaultAccountAdapter
-from utils.helpers import send_sms
+import logging
+logger = logging.getLogger(__name__)
+from allauth.headless.adapter import DefaultHeadlessAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
 """
@@ -27,21 +27,33 @@ class UserAdapter(DefaultAccountAdapter):
         if user_phone_number:
             send_sms(user_phone_number, f"Thank you for your signing up, Please verify..\n{activate_url}")
         print(activate_url)
+       
 """
 
 
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+class CustomHeadlessAdapter(DefaultHeadlessAdapter):
+    def serialize_user(self, user, **kwargs):
+        # Call the original method to get the default serialized data
+        user_data = super().serialize_user(user, **kwargs)
+
+        # Add the profile_picture field to the response
+        user_data['profile_picture'] = user.profile_picture.url if user.profile_picture else None
+
+        return user_data
+
+
 
 class MySocialAccountAdapter(DefaultSocialAccountAdapter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def save_user(self, request, user, form, commit=False):
-        user = super().save_user(request, user, form, commit)
-        data = form.cleaned_data
-        if data.get('phone_number') is not None:
-            user.phone_number = data.get('phone_number')
-            user.save()
+    def save_user(self, request, user, form=None):
+        user = super().save_user(request, user, form)
+        if form:
+            data = form.cleaned_data
+            if data.get('phone_number') is not None:
+                user.phone_number = data.get('phone_number')
+                user.save()
         return user
 
     def save_token(self, request, sociallogin):
@@ -51,30 +63,11 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         token.app = sociallogin.token.app
         token.save()
 
+    def populate_user(self, request, sociallogin, common_fields):
+        logger.info("POPULATE USER - SOCIAL ADAPTER")
+        logger.info(sociallogin)
+        logger.info(common_fields)
+        """
+        sociallogin.account.extra_data = {'display_name': '1210368404', 'external_urls': {'spotify': 'https://open.spotify.com/user/1210368404'}, 'href': 'https://api.spotify.com/v1/users/1210368404', 'id': '1210368404', 'images': [], 'type': 'user', 'uri': 'spotify:user:1210368404', 'followers': {'href': None, 'total': 33}, 'email': 'eli@taylormadetraffic.com'}
+        """
 
-# adapters.py
-
-from allauth.headless.adapter import DefaultHeadlessAdapter
-from allauth.socialaccount.models import SocialToken, SocialAccount
-
-class CustomHeadlessAdapter(DefaultHeadlessAdapter):
-    def pre_social_login(self, request, sociallogin):
-        user = sociallogin.user
-        if user.id:
-            return  # User already exists, do nothing
-
-        token = sociallogin.token
-        if token:
-            self.save_social_token(user, token, sociallogin.account.provider)
-
-    def save_social_token(self, user, token, provider):
-        # Save the token in the database
-        social_token, created = SocialToken.objects.update_or_create(
-            account__user=user,
-            account__provider=provider,
-            defaults={
-                'token': token.token,
-                'token_secret': token.token_secret,
-                'expires_at': token.expires_at,
-            },
-        )
