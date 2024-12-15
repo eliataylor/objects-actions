@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, CardContent, Grid, Typography} from "@mui/material";
+import {Card, CardContent, Grid, ListItem, ListItemAvatar, Typography} from "@mui/material";
 import {EntityTypes, FieldTypeDefinition, getProp, NAVITEMS, TypeFieldSchema} from "./types/types";
 import ListItemText, {ListItemTextProps} from "@mui/material/ListItemText";
 import CardHeader, {CardHeaderProps} from '@mui/material/CardHeader';
@@ -7,6 +7,7 @@ import {Link, useNavigate} from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import {Edit, ReadMore} from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
+import RelEntityHead from "./RelEntityHead";
 
 interface EntityCardProps {
     entity: EntityTypes;
@@ -20,7 +21,7 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
     const content: React.ReactNode[] = []
 
     const hasUrl = NAVITEMS.find(nav => nav.type === entity['_type']);
-    if (!hasUrl) return <Typography>Unknown Type</Typography>
+    if (!hasUrl) return <Typography>Unknown Entity Type</Typography>
 
     const defintions = TypeFieldSchema[hasUrl.type]
     const imageField: FieldTypeDefinition | undefined = Object.values(defintions).find(d => d.field_type === 'image')
@@ -64,47 +65,59 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
         let val: any = entity[key as keyof EntityTypes]
         if (typeof val === 'boolean') val = val.toString()
         if (!val) val = '';
-        if (val === '') {
-            console.log('null');
-        } else if (displayed.indexOf(key) === -1) {
-            const atts: ListItemTextProps = {primary: key, secondary: val}
-            const field = defintions[key]
-            if (field) {
-                atts.primary = field.cardinality && field.cardinality > 1 || field.field_type === 'integer' ? field.plural.toLowerCase() : field.singular.toLowerCase();
-                if (val && typeof val === 'object') {
-                    atts.secondary = JSON.stringify(val, null, 2)
-                    if (Array.isArray(val)) {
-                        const list = val.map(v => {
-                            const relNavItem = NAVITEMS.find(nav => nav.type === v['_type']);
-                            if (relNavItem) {
-                                return <div key={`rel-${v['id']}`}><Link
-                                    to={`${relNavItem.screen}/${v['id']}`}> {v['str']}</Link></div>
-                            }
-                        })
-                        if (list.length > 0) {
-                            atts.secondary = list;
-                        }
-                    }
-                    if (typeof val['id'] !== 'undefined' && typeof val['_type'] !== 'undefined' && typeof val['str'] !== 'undefined') {
-                        const relNavItem = NAVITEMS.find(nav => nav.type === val['_type']);
+        if (displayed.indexOf(key) > -1) {
+            return true;
+        }
+        const atts: ListItemTextProps = {primary: key, secondary: val}
+        const field = defintions[key]
+        if (field) {
+            atts.primary = field.cardinality && field.cardinality > 1 || field.field_type === 'integer' ? field.plural.toLowerCase() : field.singular.toLowerCase();
+            if (val && typeof val === 'object') {
+                atts.secondary = JSON.stringify(val, null, 2)
+                if (Array.isArray(val)) {
+                    const list = val.map(v => {
+                        const relNavItem = NAVITEMS.find(nav => nav.type === v['_type']);
                         if (relNavItem) {
-                            atts.secondary = <Link to={`${relNavItem.screen}/${val['id']}`}> {val['str']}</Link>
+                            return <div key={`rel-${v['id']}`}><Link
+                                to={`${relNavItem.screen}/${v['id']}`}> {v['str']}</Link></div>
                         }
+                    })
+                    if (list.length > 0) {
+                        atts.secondary = list;
                     }
-                } else if (key === 'modified_at' || field.field_type === 'date_time' || field.field_type === 'date') {
-                    atts.secondary = new Intl.DateTimeFormat('en-US', {
-                        dateStyle: 'full',
-                        timeStyle: 'long'
-                    }).format(new Date(val))
-                } else if (field.field_type === 'slug') {
-                    atts.secondary = <Link to={`/${entity['_type'].toLowerCase()}/${val}`}> {val}</Link>
                 }
-            } else if (typeof atts.secondary === 'object') {
+                if (typeof val['id'] !== 'undefined' && typeof val['_type'] !== 'undefined' && typeof val['str'] !== 'undefined') {
+                    content.push(<RelEntityHead key={`prop${key}-${i}`} rel={val} label={field.singular} />)
+                    return true;
+                }
+            } else if (key === 'modified_at' || field.field_type === 'date_time' || field.field_type === 'date') {
+                atts.secondary = new Intl.DateTimeFormat('en-US', {
+                    dateStyle: 'full',
+                    timeStyle: 'long'
+                }).format(new Date(val))
+            } else if (field.field_type === 'slug') {
+                atts.secondary = <Link to={`/${entity['_type'].toLowerCase()}/${val}`}> {val}</Link>
+            }
+        } else if (typeof atts.secondary === 'object') {
+            if (key === 'author') {
+                content.push(<RelEntityHead key={`prop${key}-${i}`} rel={val} label={'Author'} />)
+                return true;
+            } else {
                 atts.secondary = <Typography sx={{wordBreak: 'break-word'}}
                                              variant={'body2'}>{JSON.stringify(atts.secondary, null, 2)}</Typography>
             }
+        }
+        if (field && field.field_type === 'image') {
+            content.push(<ListItem key={`prop${key}-${i}`}>
+                <ListItemAvatar>
+                    <Avatar src={val}/>
+                </ListItemAvatar>
+                <ListItemText  {...atts}  />
+            </ListItem>)
+        } else {
             content.push(<ListItemText key={`prop${key}-${i}`} {...atts} />)
         }
+
     });
 
 

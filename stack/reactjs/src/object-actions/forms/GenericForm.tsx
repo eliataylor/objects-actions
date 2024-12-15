@@ -251,7 +251,7 @@ const GenericForm: React.FC<GenericFormProps> = ({fields, navItem, original}) =>
                 if (error) {
                     delete errorcopy[field.machine]
                 }
-                return <Grid item xs={12} key={field.machine}>
+                return <Grid item xs={12} key={field.machine} arial-label={`Form Field ${field.machine}`}>
                     {renderField(field, error)}
                     {error && <Typography variant="body2" color="error">{errToString(error)}</Typography>}
                 </Grid>

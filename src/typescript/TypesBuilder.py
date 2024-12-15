@@ -5,7 +5,7 @@ import ast
 import re
 
 
-class ReactBuilder:
+class TypesBuilder:
     def __init__(self, field_csv, matrix_csv, types_filepath):
         self.types_filepath = types_filepath
 
@@ -44,6 +44,8 @@ class ReactBuilder:
                 code.append(f"\tusername?: string")
                 code.append(f"\tfirst_name?: string")
                 code.append(f"\tlast_name?: string")
+                if find_object_by_key_value(self.json[class_name], "Field Name", "groups") is None:
+                    code.append(f"\tgroups?: string[]")
 
             constant = {}
 
@@ -202,9 +204,3 @@ interface ObjectOfObjects {{
     [key: string]: {{ [key: string]: FieldTypeDefinition }};
 }}
 export const TypeFieldSchema: ObjectOfObjects = {json.dumps(constants, indent=2).strip()}""", 'TYPE-CONSTANTS')
-
-
-
-
-    def build_navigation(self):
-        test = 1

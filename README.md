@@ -65,6 +65,11 @@ This will start these sites:
 `sh fakedata.sh newproject`
 By default 5 of each object type will be created. You can change the numbers and control which users create content from [newproject/databuilder/src/WorldBuilder.ts#L168](stack/databuilder/src/WorldBuilder.ts#L168)
 
+### Test your WebApp 
+`sh fakedata.sh newproject`
+By default 5 of each object type will be created. You can change the numbers and control which users create content from [newproject/databuilder/src/WorldBuilder.ts#L168](stack/databuilder/src/WorldBuilder.ts#L168)
+
+
 ---
 
 #### If you already have a codebase or only want to generate TypeScript or Django code visit [USAGE.md](USAGE.md) to generate individual files 

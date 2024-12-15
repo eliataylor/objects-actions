@@ -1,7 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
-import { AuthChangeEvent, useAuth, useAuthChange, useAuthStatus } from './hooks'
+import { AuthChangeEvent, useAuthChange, useAuthStatus } from './hooks'
 import { AuthenticatorType, Flows } from '../lib/allauth'
-import { isValidUserName} from "../../utils";
 import {Box} from "@mui/material";
 
 export const URLs = Object.freeze({
@@ -64,22 +63,6 @@ export function AuthenticatedRoute ({ children }) {
     return <Navigate to={`${URLs.LOGIN_URL}?${next}`}/>
   }
 }
-
-export function AuthenticatedCompletedProfileRoute ({ children }) {
-  const location = useLocation()
-  const me = useAuth()?.data?.user
-  const next = `next=${encodeURIComponent(location.pathname + location.search)}`
-  if (!me) {
-    return <Navigate to={`/account/login?${next}`}/>
-  }
-  if (me.profile_picture && isValidUserName(me.display)) {
-    return children
-  } else {
-
-    return <Navigate to={`/onboarding?${next}`}/>
-  }
-}
-
 
 export function AnonymousRoute ({ children }) {
   const [, status] = useAuthStatus()

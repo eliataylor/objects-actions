@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import tough, {Cookie, CookieJar} from 'tough-cookie';
+import {Users} from "./types";
 
 export interface HttpResponse<T> {
     status: number;
@@ -9,6 +10,7 @@ export interface HttpResponse<T> {
     errors?: { [key: string]: any };
     started: number;
     ended: number;
+    cookie?: string;
 }
 
 class ApiClient {
@@ -20,7 +22,7 @@ class ApiClient {
             withCredentials: true, // Ensures cookies are sent with requests
             baseURL: process.env.REACT_APP_API_HOST,
             headers: {
-                'Referer': new URL(process.env.REACT_APP_APP_HOST || '').host,  // Adding Referer header to simulate request origin
+                'Referer': process.env.REACT_APP_APP_HOST,  // Adding Referer header to simulate request origin
                 'Origin': process.env.REACT_APP_APP_HOST,    // Adding Origin header to simulate request origin
                 "Content-Type": "application/json"
             },
@@ -61,7 +63,20 @@ class ApiClient {
 
     }
 
+    public initResponse(): HttpResponse<any> {
+        return {
+            status: 200,
+            success: false,
+            data: null,
+            error: undefined,
+            started: new Date().getTime(),
+            ended: 0
+        };
+    }
+
     public async login(email: string, password: string): Promise<HttpResponse<any>> {
+
+        this.cookieJar.removeAllCookiesSync()
 
         let url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/config`
         const config = await this.client.get(url);
@@ -70,14 +85,7 @@ class ApiClient {
             await this.setCookies(url, setCookieHeader);
         }
 
-        let resp: HttpResponse<any> = {
-            status: 200,
-            success: false,
-            data: null,
-            error: undefined,
-            started: new Date().getTime(),
-            ended: 0
-        };
+        let resp = this.initResponse()
 
         url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/login`
         try {
@@ -103,22 +111,59 @@ class ApiClient {
         return resp;
     }
 
+    public async register(baseData: Users): Promise<HttpResponse<any>> {
+
+        this.cookieJar.removeAllCookiesSync()
+
+        let url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/config`
+
+        const config = await this.client.get(url);
+        const setCookieHeader = config.headers['set-cookie'];
+        if (setCookieHeader) {
+            await this.setCookies(url, setCookieHeader);
+        }
+
+        let resp = this.initResponse()
+
+        url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/signup`
+        try {
+            const response = await this.post(url, baseData);
+            if (response.status !== 200) {
+                resp = this.returnErrors(response.data)
+                resp.status = response.status;
+            } else {
+                resp.data = response.data;
+                resp.success = true;
+            }
+
+        } catch (error: any) {
+            resp = this.returnErrors(error)
+            console.error('Login failed:', error.message);
+        }
+
+        const cookies = await this.cookieJar.getCookies(url || '');
+        let cookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
+        if (cookie) {
+            resp.cookie = cookie.value
+        }
+
+        resp.ended = new Date().getTime();
+
+        return resp;
+    }
+
     public async post<T>(url: string, data: any, headers: any = {}): Promise<HttpResponse<T>> {
-        let resp: HttpResponse<any> = {
-            status:200,
-            success: false,
-            data: null,
-            error: undefined,
-            started: new Date().getTime(),
-            ended: 0,
-        };
+        let resp = this.initResponse()
         let response = null;
+        const eid = url.split('/').pop()
+        let method = parseInt(eid || '') > 1 ? 'patch' : 'post';
 
         try {
             // Merge headers with cookies
             const mergedHeaders = await this.getMergedHeaders(url, headers);
 
-            response = await this.client.post(url, data,
+            // @ts-ignore
+            response = await this.client[method](url, data,
                 {headers: mergedHeaders}
             );
             if (response.status !== 200) {
@@ -127,7 +172,6 @@ class ApiClient {
             } else {
                 resp.data = response.data;
                 resp.success = true;
-
 
                 const setCookieHeader = response.headers['set-cookie'];
                 if (setCookieHeader) {
@@ -138,7 +182,7 @@ class ApiClient {
 
         } catch (error: any) {
             resp = this.returnErrors(error)
-            console.error('Post failed:', resp.data);
+            console.error(`${method} failed:`, resp.data);
         }
         resp.ended = new Date().getTime();
 
@@ -146,14 +190,7 @@ class ApiClient {
     }
 
     public async get<T>(url: string): Promise<HttpResponse<T>> {
-        let resp: HttpResponse<any> = {
-            status:200,
-            success: false,
-            data: null,
-            error: undefined,
-            started: new Date().getTime(),
-            ended: 0,
-        };
+        let resp = this.initResponse()
 
         try {
             const headers = await this.getCookieHeaders(url);
@@ -196,15 +233,7 @@ class ApiClient {
     }
 
     public returnErrors(error: any): HttpResponse<any> {
-
-        let resp: HttpResponse<any> = {
-            status: 400,
-            success: false,
-            data: null,
-            error: undefined,
-            started: new Date().getTime(),
-            ended: 0
-        };
+        let resp = this.initResponse()
 
         if (!error) return resp;
         if (typeof error === 'string') return resp;
@@ -240,6 +269,10 @@ class ApiClient {
 
     getCookies() {
         return this.cookieJar.getSetCookieStringsSync(process.env.REACT_APP_API_HOST || "*");
+    }
+
+    public async setCookie(url: string, cookie: string): Promise<void> {
+        this.cookieJar.setCookieSync(cookie, url);
     }
 
     public async setCookies(url: string, setCookieHeader: string[]): Promise<void> {

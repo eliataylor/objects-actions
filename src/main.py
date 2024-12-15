@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 from DjangoBuilder import DjangoBuilder
-from ReactBuilder import ReactBuilder
+from TypesBuilder import TypesBuilder
 from loguru import logger
 
 logger.add("runnerlogs.log", level="DEBUG")
@@ -36,7 +36,6 @@ if __name__ == "__main__":
     logger.info(f"Output directory: {output_dir}")
 
     DjangoBuilder(types_path, output_dir)
-    reactor = ReactBuilder(types_path, matrix_path, output_dir)
+    reactor = TypesBuilder(types_path, matrix_path, output_dir)
     reactor.build_types()
-    reactor.build_navigation()
 

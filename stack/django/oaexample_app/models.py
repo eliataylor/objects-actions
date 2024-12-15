@@ -18,11 +18,19 @@ def validate_phone_number(value):
 	phone_regex = re.compile(r'^\+?1?\d{9,15}$')
 	if not phone_regex.match(value):
 		raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-	
+
 def upload_file_path(instance, filename):
-	ext = filename.split('.')[-1]
-	filename = f"{instance.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
-	return os.path.join('uploads/%Y-%m', filename)
+	ext = filename.split('.')[-1]  # e.g. "jpg"
+	# add datetime suffix to avoid collisions
+	new_filename = f"{filename}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+	# WARN: watch for overwrites when using DataBuilder or any batch upload
+
+	# Use strftime to create a "year-month" folder dynamically
+	date_folder = timezone.now().strftime('%Y-%m')
+
+	# Construct the final upload path: "uploads/<yyyy-mm>/<filename>"
+	return os.path.join('uploads', date_folder, new_filename)
+
 
 class Users(AbstractUser, BumpParentsModelMixin):
 	class Meta:
@@ -44,6 +52,8 @@ class Users(AbstractUser, BumpParentsModelMixin):
 			return self.get_full_name()
 		elif self.get_short_name().strip():
 			return self.get_short_name()
+		elif self.username.strip():
+			return self.username
 		else:
 			return str(self.id) # never expose the email
 
@@ -220,7 +230,7 @@ class Invites(SuperModel):
 		abstract = False
 		verbose_name = "Invite"
 		verbose_name_plural = "Invites"
-	
+
 	class StatusChoices(models.TextChoices):
 		invited = ("invited", "Invited")
 		rsvpd = ("rsvpd", " rsvpd")
@@ -236,7 +246,7 @@ class Subscriptions(SuperModel):
 		abstract = False
 		verbose_name = "Subscription"
 		verbose_name_plural = "Subscriptions"
-	
+
 	class StatusChoices(models.TextChoices):
 		approved = ("approved", "Approved")
 		denied = ("denied", " denied")
@@ -252,12 +262,12 @@ class Rooms(SuperModel):
 		abstract = False
 		verbose_name = "Room"
 		verbose_name_plural = "Rooms"
-	
+
 	class PrivacyChoices(models.TextChoices):
 		public = ("public", "Public")
 		inviteonly = ("inviteonly", " invite-only")
 		requests = ("requests", " requests")
-	
+
 	class StatusChoices(models.TextChoices):
 		live = ("live", "Live")
 		scheduled = ("scheduled", " scheduled")
@@ -277,7 +287,7 @@ class Attendees(SuperModel):
 		abstract = False
 		verbose_name = "Attendee"
 		verbose_name_plural = "Attendees"
-	
+
 	class RoleChoices(models.TextChoices):
 		viewer = ("viewer", "Viewer")
 		presenter = ("presenter", " presenter")

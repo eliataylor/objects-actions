@@ -50,6 +50,7 @@ export interface Users {
 	username?: string
 	first_name?: string
 	last_name?: string
+    groups: string[];
 	email?: string | null;
 	phone?: string | null;
 	website?: string | null;

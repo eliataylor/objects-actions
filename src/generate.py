@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 from django.DjangoBuilder import DjangoBuilder
-from react.ReactBuilder import ReactBuilder
+from typescript.TypesBuilder import TypesBuilder
 from loguru import logger
 
 logger.add("runnerlogs.log", level="DEBUG")
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     if command == 'django':
         DjangoBuilder(types_path, output_dir)
     elif command == 'typescript':
-        reactor = ReactBuilder(types_path, matrix_path, output_dir)
+        reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_types()
 
     else:
