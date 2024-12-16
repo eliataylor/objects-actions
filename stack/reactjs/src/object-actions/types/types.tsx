@@ -1,296 +1,3 @@
-type CRUDVerb = 'add' | 'edit' | 'delete';
-type FormObjectId = `${string}/${number}`;
-type NestedObjectIds<T extends string> =
-    T extends `${FormObjectId}/${infer Rest}` ?
-        `${FormObjectId}/${NestedObjectIds<Rest>}` :
-        T;
-
-// Type for the full URL pattern with optional nested pairs
-export type FormURL<T extends string> = `/forms/${NestedObjectIds<T>}/${CRUDVerb}`;
-
-// type ExampleUpdateURL = FormURL<'user/123/profile/456/settings/789', 'update'>;  // "/forms/user/123/profile/456/settings/789/update"
-// type ExampleCreateURL = FormURL<'product/0', 'create'>;  // "/forms/product/1/create"
-
-interface ParsedURL {
-    object: string;
-    id: number;
-    verb: CRUDVerb;
-}
-
-export function parseFormURL(url: string): ParsedURL | null {
-    // Regular expression to capture object/id pairs and the verb
-    const pattern = /^\/forms(\/[a-zA-Z0-9_-]+\/\d+)+(\/(add|edit|delete))$/;
-    const match = url.match(pattern);
-
-    if (!match) {
-        return null; // URL does not match the expected pattern
-    }
-
-    // Extract the object/id pairs and verb from the URL
-    const segments = url.split('/');
-    const verb = segments.pop() as CRUDVerb; // The last segment is the verb
-    segments.shift(); // Remove the empty initial segment (before 'forms')
-    segments.shift(); // Remove the 'forms' segment
-
-    // Extract the last object/id pair
-    const id = parseInt(segments.pop() as string, 10); // The second last segment is the ID
-    const object = segments.pop() as string; // The third last segment is the object
-
-    return {object, id, verb};
-}
-
-//---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
-export interface Users {
-	readonly id: number | string
-	_type: string
-	is_active?: boolean
-	is_staff?: boolean
-	last_login?: string
-	date_joined?: string
-	username?: string
-	first_name?: string
-	last_name?: string
-	email?: string | null;
-	phone?: string | null;
-	website?: string | null;
-	bio?: string | null;
-	picture?: string | null;
-	cover_photo?: string | null;
-	resources?: RelEntity | null;
-}
-export interface Officials {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	title: string;
-	office_phone?: string | null;
-	office_email?: string | null;
-	social_links?: string | null;
-	party_affiliation?: RelEntity | null;
-	city: RelEntity;
-}
-export interface Cities {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	name: string;
-	description?: string | null;
-	postal_address?: string | null;
-	picture?: string | null;
-	cover_photo?: string | null;
-	sponsors?: RelEntity | null;
-	website?: string[] | null;
-	population?: number | null;
-	altitude?: number | null;
-	county?: string | null;
-	state_id?: RelEntity | null;
-	officials?: RelEntity | null;
-	land_area?: number | null;
-	water_area?: number | null;
-	total_area?: number | null;
-	density?: number | null;
-	timezone?: string | null;
-}
-export interface Rallies {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	title: string;
-	description: string;
-	media?: string | null;
-	topics: RelEntity[];
-	comments?: string | null;
-}
-export interface Publication {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	title: string;
-	description: string;
-	relationships?: RelEntity | null;
-	media?: string[] | null;
-	comments?: string | null;
-}
-export interface ActionPlan {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	title?: string | null;
-	recommendation?: string | null;
-	exe_summary?: string | null;
-	analysis?: string | null;
-	background?: string | null;
-	coauthors?: RelEntity | null;
-	pro_argument?: string | null;
-	con_argument?: string | null;
-	prequesites: string;
-	timeline?: string | null;
-	rally?: RelEntity | null;
-}
-export interface Meetings {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	title?: string | null;
-	rally?: RelEntity | null;
-	meeting_type: RelEntity;
-	speakers: RelEntity[];
-	moderators: RelEntity[];
-	sponsors?: RelEntity | null;
-	address?: string | null;
-	rooms: RelEntity;
-	start: string;
-	end: string;
-	agenda_json?: object | null;
-	duration?: number | null;
-	privacy?: number | null;
-}
-export interface Resources {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	title: string;
-	description_html: string;
-	image: string;
-	postal_address?: string | null;
-	price_ccoin: number;
-	resource_type: RelEntity;
-}
-export interface Page {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	title: string;
-	description_html: string;
-}
-export interface Invites {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	meeting: RelEntity;
-	user: RelEntity;
-	invited_by: RelEntity;
-	status: string;
-}
-export interface Subscriptions {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	subscriber: RelEntity;
-	rally: RelEntity;
-	meeting?: RelEntity | null;
-	status: string;
-}
-export interface Rooms {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: RelEntity | null;
-	start: string;
-	end: string;
-	rally?: RelEntity | null;
-	meeting?: RelEntity | null;
-	privacy?: string | null;
-	status?: string | null;
-	chat_thread?: string | null;
-	recording?: string | null;
-}
-export interface Attendees {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	room_id: RelEntity;
-	display_name?: string | null;
-	display_bg?: string | null;
-	role: string;
-	stream?: string | null;
-	is_muted?: boolean | null;
-	sharing_video?: boolean | null;
-	sharing_audio?: boolean | null;
-	sharing_screen?: boolean | null;
-	hand_raised?: boolean | null;
-	is_typing?: boolean | null;
-}
-export interface Topics {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	name?: string | null;
-	icon?: string | null;
-	photo?: string | null;
-}
-export interface ResourceTypes {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	name?: string | null;
-}
-export interface MeetingTypes {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	name?: string | null;
-}
-export interface States {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	name?: string | null;
-	website?: string | null;
-	icon?: string | null;
-}
-export interface Parties {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	name?: string | null;
-	logo?: string | null;
-	website?: string | null;
-}
-export interface Stakeholders {
-	readonly id: number | string
-	_type: string
-	created_at: number
-	modified_at: number
-	author?: number
-	name?: string | null;
-	image?: string | null;
-}
-//---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
-
 
 
 //---OBJECT-ACTIONS-API-RESP-STARTS---//
@@ -333,6 +40,7 @@ export interface NavItem {
         api: string;
         icon?: string;
         type: string;
+        model_type?: string;
         search_fields: string[];
 
 }
@@ -607,8 +315,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "resources": {
       "machine": "resources",
-      "singular": "Resourc",
-      "plural": "Resources",
+      "singular": "Resources",
+      "plural": "Resourceses",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -657,8 +365,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "social_links": {
       "machine": "social_links",
-      "singular": "Social Media link",
-      "plural": "Social Media links",
+      "singular": "Social Media links",
+      "plural": "Social Media linkss",
       "field_type": "url",
       "data_type": "string",
       "cardinality": Infinity,
@@ -719,8 +427,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "postal_address": {
       "machine": "postal_address",
-      "singular": "Postal Addres",
-      "plural": "Postal Address",
+      "singular": "Postal Address",
+      "plural": "Postal Addresses",
       "field_type": "address",
       "data_type": "string",
       "cardinality": 1,
@@ -755,8 +463,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "sponsors": {
       "machine": "sponsors",
-      "singular": "Sponsor",
-      "plural": "Sponsors",
+      "singular": "Sponsors",
+      "plural": "Sponsorss",
       "field_type": "user_profile",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -827,8 +535,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "officials": {
       "machine": "officials",
-      "singular": "Official",
-      "plural": "Officials",
+      "singular": "Officials",
+      "plural": "Officialss",
       "field_type": "user_profile",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -937,8 +645,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "topics": {
       "machine": "topics",
-      "singular": "Topic",
-      "plural": "Topics",
+      "singular": "Topics",
+      "plural": "Topicss",
       "field_type": "vocabulary_reference",
       "data_type": "RelEntity",
       "cardinality": 3,
@@ -949,8 +657,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "comments": {
       "machine": "comments",
-      "singular": "Comment",
-      "plural": "Comments",
+      "singular": "Comments",
+      "plural": "Commentss",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": Infinity,
@@ -987,8 +695,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "relationships": {
       "machine": "relationships",
-      "singular": "Relationship",
-      "plural": "Relationships",
+      "singular": "Relationships",
+      "plural": "Relationshipss",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
@@ -1011,8 +719,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "comments": {
       "machine": "comments",
-      "singular": "Comment",
-      "plural": "Comments",
+      "singular": "Comments",
+      "plural": "Commentss",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": Infinity,
@@ -1085,8 +793,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "coauthors": {
       "machine": "coauthors",
-      "singular": "CoAuthor",
-      "plural": "CoAuthors",
+      "singular": "CoAuthors",
+      "plural": "CoAuthorss",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -1121,8 +829,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "prequesites": {
       "machine": "prequesites",
-      "singular": "Prequesite",
-      "plural": "Prequesites",
+      "singular": "Prequesites",
+      "plural": "Prequesiteses",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
@@ -1195,8 +903,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "speakers": {
       "machine": "speakers",
-      "singular": "Speaker",
-      "plural": "Speakers",
+      "singular": "Speakers",
+      "plural": "Speakerss",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 7,
@@ -1207,8 +915,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "moderators": {
       "machine": "moderators",
-      "singular": "Moderator",
-      "plural": "Moderators",
+      "singular": "Moderators",
+      "plural": "Moderatorss",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 2,
@@ -1219,8 +927,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "sponsors": {
       "machine": "sponsors",
-      "singular": "Sponsor",
-      "plural": "Sponsors",
+      "singular": "Sponsors",
+      "plural": "Sponsorss",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -1231,8 +939,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "address": {
       "machine": "address",
-      "singular": "Postal Addres",
-      "plural": "Postal Address",
+      "singular": "Postal Address",
+      "plural": "Postal Addresses",
       "field_type": "address",
       "data_type": "string",
       "cardinality": 1,
@@ -1243,8 +951,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "rooms": {
       "machine": "rooms",
-      "singular": "Room",
-      "plural": "Rooms",
+      "singular": "Rooms",
+      "plural": "Roomss",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
@@ -1280,7 +988,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "agenda_json": {
       "machine": "agenda_json",
       "singular": "Agenda JSON",
-      "plural": "Agenda JSONs",
+      "plural": "Agenda JSONS",
       "field_type": "json",
       "data_type": "object",
       "cardinality": 1,
@@ -1304,7 +1012,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "privacy": {
       "machine": "privacy",
       "singular": "Privacy",
-      "plural": "Privacy",
+      "plural": "Privacys",
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
@@ -1330,7 +1038,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "description_html": {
       "machine": "description_html",
       "singular": "Description HTML",
-      "plural": "Description HTMLs",
+      "plural": "Description HTMLS",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
@@ -1353,8 +1061,8 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "postal_address": {
       "machine": "postal_address",
-      "singular": "Postal Addres",
-      "plural": "Postal Address",
+      "singular": "Postal Address",
+      "plural": "Postal Addresses",
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
@@ -1404,7 +1112,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "description_html": {
       "machine": "description_html",
       "singular": "Description HTML",
-      "plural": "Description HTMLs",
+      "plural": "Description HTMLS",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
@@ -1454,7 +1162,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "status": {
       "machine": "status",
       "singular": "Status",
-      "plural": "Status",
+      "plural": "Statuses",
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
@@ -1522,7 +1230,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "status": {
       "machine": "status",
       "singular": "Status",
-      "plural": "Status",
+      "plural": "Statuses",
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
@@ -1614,7 +1322,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "privacy": {
       "machine": "privacy",
       "singular": "Privacy",
-      "plural": "Privacy",
+      "plural": "Privacys",
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
@@ -1640,7 +1348,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "status": {
       "machine": "status",
       "singular": "Status",
-      "plural": "Status",
+      "plural": "Statuses",
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
@@ -1692,7 +1400,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "room_id": {
       "machine": "room_id",
       "singular": "Room ID",
-      "plural": "Room IDs",
+      "plural": "Room IDS",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
@@ -2013,23 +1721,258 @@ export const TypeFieldSchema: ObjectOfObjects = {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
+export interface Users {
+	readonly id: number | string
+	_type: string
+	is_active?: boolean
+	is_staff?: boolean
+	last_login?: string
+	date_joined?: string
+	username?: string
+	first_name?: string
+	last_name?: string
+	groups?: string[]
+	email?: string | null;
+	phone?: string | null;
+	website?: string | null;
+	bio?: string | null;
+	picture?: string | null;
+	cover_photo?: string | null;
+	resources?: RelEntity | null;
+}
+export interface Officials {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title: string;
+	office_phone?: string | null;
+	office_email?: string | null;
+	social_links?: string | null;
+	party_affiliation?: RelEntity | null;
+	city: RelEntity;
+}
+export interface Cities {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name: string;
+	description?: string | null;
+	postal_address?: string | null;
+	picture?: string | null;
+	cover_photo?: string | null;
+	sponsors?: RelEntity | null;
+	website?: string[] | null;
+	population?: number | null;
+	altitude?: number | null;
+	county?: string | null;
+	state_id?: RelEntity | null;
+	officials?: RelEntity | null;
+	land_area?: number | null;
+	water_area?: number | null;
+	total_area?: number | null;
+	density?: number | null;
+	timezone?: string | null;
+}
+export interface Rallies {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title: string;
+	description: string;
+	media?: string | null;
+	topics: RelEntity[];
+	comments?: string | null;
+}
+export interface Publication {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title: string;
+	description: string;
+	relationships?: RelEntity | null;
+	media?: string[] | null;
+	comments?: string | null;
+}
+export interface ActionPlan {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title?: string | null;
+	recommendation?: string | null;
+	exe_summary?: string | null;
+	analysis?: string | null;
+	background?: string | null;
+	coauthors?: RelEntity | null;
+	pro_argument?: string | null;
+	con_argument?: string | null;
+	prequesites: string;
+	timeline?: string | null;
+	rally?: RelEntity | null;
+}
+export interface Meetings {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title?: string | null;
+	rally?: RelEntity | null;
+	meeting_type: RelEntity;
+	speakers: RelEntity[];
+	moderators: RelEntity[];
+	sponsors?: RelEntity | null;
+	address?: string | null;
+	rooms: RelEntity;
+	start: string;
+	end: string;
+	agenda_json?: object | null;
+	duration?: number | null;
+	privacy?: number | null;
+}
+export interface Resources {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title: string;
+	description_html: string;
+	image: string;
+	postal_address?: string | null;
+	price_ccoin: number;
+	resource_type: RelEntity;
+}
+export interface Page {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	title: string;
+	description_html: string;
+}
+export interface Invites {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	meeting: RelEntity;
+	user: RelEntity;
+	invited_by: RelEntity;
+	status: string;
+}
+export interface Subscriptions {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	subscriber: RelEntity;
+	rally: RelEntity;
+	meeting?: RelEntity | null;
+	status: string;
+}
+export interface Rooms {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: RelEntity | null;
+	start: string;
+	end: string;
+	rally?: RelEntity | null;
+	meeting?: RelEntity | null;
+	privacy?: string | null;
+	status?: string | null;
+	chat_thread?: string | null;
+	recording?: string | null;
+}
+export interface Attendees {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	room_id: RelEntity;
+	display_name?: string | null;
+	display_bg?: string | null;
+	role: string;
+	stream?: string | null;
+	is_muted?: boolean | null;
+	sharing_video?: boolean | null;
+	sharing_audio?: boolean | null;
+	sharing_screen?: boolean | null;
+	hand_raised?: boolean | null;
+	is_typing?: boolean | null;
+}
+export interface Topics {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+	icon?: string | null;
+	photo?: string | null;
+}
+export interface ResourceTypes {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+}
+export interface MeetingTypes {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+}
+export interface States {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+	website?: string | null;
+	icon?: string | null;
+}
+export interface Parties {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+	logo?: string | null;
+	website?: string | null;
+}
+export interface Stakeholders {
+	readonly id: number | string
+	_type: string
+	created_at: number
+	modified_at: number
+	author?: number
+	name?: string | null;
+	image?: string | null;
+}
+//---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
 
 
 

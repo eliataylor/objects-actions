@@ -6,7 +6,7 @@
 
 #### Generate your TypeScript types, interfaces and URL patterns:
 
-`python -m django/generate typescript --types=examples/object-fields-nod.csv --output_dir=examples/reactjs/src/object-actions/types/types.tsx`
+`python -m django/generate typescript --types=examples/object-fields-nod.csv --output_dir=examples/reactjs/src/object-actions/types/types.ts`
 
 #### Test API and Generate fake data for API
 

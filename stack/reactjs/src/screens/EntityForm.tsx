@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import GenericForm from '../object-actions/forms/GenericForm';
 import {Box, CircularProgress, Grid, Typography} from '@mui/material';
-import {EntityTypes, NAVITEMS, parseFormURL, TypeFieldSchema} from '../object-actions/types/types'
+import {EntityTypes, NAVITEMS, TypeFieldSchema} from '../object-actions/types/types'
+import {canDo, parseFormURL} from '../object-actions/types/access'
 import {useLocation, useParams} from "react-router-dom";
 import ApiClient from "../config/ApiClient";
+import {useAuth} from "../allauth/auth";
 
 const EntityForm = () => {
 
@@ -13,6 +15,7 @@ const EntityForm = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const location = useLocation();
+    const me = useAuth()?.data?.user
 
     const target = parseFormURL(location.pathname)
 
@@ -48,6 +51,11 @@ const EntityForm = () => {
     }
     const hasUrl = NAVITEMS.find(nav => nav.screen === `/${target.object}`);
     if (!hasUrl) return <Typography>Unknown Type</Typography>
+
+    const apiUrl = (id && parseInt(id) > 0) ? `${hasUrl.api}/${id}` : hasUrl.api;
+
+    const allow = canDo('add', apiUrl, me, entity)
+
 
     const fields = Object.values(TypeFieldSchema[hasUrl.type])
 

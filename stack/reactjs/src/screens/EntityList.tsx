@@ -6,6 +6,7 @@ import TablePaginator from "../components/TablePaginator";
 import ApiClient from "../config/ApiClient";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Add} from "@mui/icons-material";
+import {getEndpoints} from "../object-actions/types/access";
 
 interface EntityListProps {
     model?: string;
@@ -38,6 +39,8 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
         } else {
             apiUrl += hasUrl.api
         }
+
+        const endpoints = getEndpoints(apiUrl);
 
         const params = new URLSearchParams();
 

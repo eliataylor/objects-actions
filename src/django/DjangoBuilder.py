@@ -4,10 +4,10 @@ from loguru import logger
 import json
 from .ModelBuilder import ModelBuilder
 from .UserBuilder import UserBuilder
-from utils.utils import inject_generated_code, create_machine_name, create_object_name, build_json_from_csv, find_search_fields, find_object_by_key_value
+from utils.utils import inject_generated_code, create_machine_name, create_object_name, build_types_from_csv, find_search_fields, find_object_by_key_value
 
 class DjangoBuilder:
-    def __init__(self, csv_file, output_dir):
+    def __init__(self, types_path, matrix_path, output_dir):
         self.output_dir = output_dir
         self.app_name = os.path.basename(output_dir)
 
@@ -57,7 +57,9 @@ class DjangoBuilder:
         # TODO: generate CRUD query methods based on Permissions Matrix
         # TODO: personalize the CustomPagination class
 
-        self.json = build_json_from_csv(csv_file)
+        self.json = build_types_from_csv(types_path)
+        # self.perms_json = build_types_from_csv(matrix_path) if matrix_path is not None else []
+
         self.build_models()
         self.build_serializers()
         self.build_viewsets()

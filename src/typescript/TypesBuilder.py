@@ -1,15 +1,31 @@
 import json
-from utils.utils import inject_generated_code, find_search_fields, create_machine_name, create_object_name, infer_field_datatype, build_json_from_csv, capitalize, pluralize, find_object_by_key_value
+from utils.utils import inject_generated_code, build_permissions_from_csv, find_model_details, find_search_fields, create_machine_name, create_object_name, infer_field_datatype, build_types_from_csv, capitalize, find_object_by_key_value
 from loguru import logger
 import ast
 import re
-
+import inflect
 
 class TypesBuilder:
     def __init__(self, field_csv, matrix_csv, types_filepath):
+        self.pluralizer = inflect.engine()
         self.types_filepath = types_filepath
+        self.field_csv = field_csv
+        self.json = build_types_from_csv(field_csv)
+        self.perms_json = build_permissions_from_csv(matrix_csv, self.json) if matrix_csv is not None else []
+        perms_path = types_filepath.replace('types.tsx', 'permissions.json')
+        with open(perms_path, 'w') as file:
+            file.write(json.dumps(self.perms_json, indent=2))
+        self.build_permissions()
 
-        self.json = build_json_from_csv(field_csv)
+    def build_permissions(self):
+        allverbs = {}
+        for endpoint in self.perms_json:
+            allverbs[endpoint['verb']] = True
+
+        perms_path = self.types_filepath.replace('types.tsx', 'access.tsx')
+        inject_generated_code(perms_path, f"\n export type CRUDVerb = '{("' | '").join(allverbs)}';", 'PERMS-VERBS')
+        pass
+
 
     def build_types(self):
 
@@ -51,9 +67,16 @@ class TypesBuilder:
 
             types.append(type_name)
 
-            urlItems.append({"name":class_name, "type":type_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}",
+            navItem = {"name":class_name, "type":type_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}",
                              'search_fields': find_search_fields(self.json, class_name)
-            })
+            }
+
+            model_type = find_model_details(self.field_csv, class_name)
+            if model_type is not None:
+                navItem.model_type = model_type.model_type
+                # navItem.examples = model_type.model_type
+
+            urlItems.append(navItem)
 
             for field in self.json[class_name]:
                 field_type = field['Field Type']
@@ -71,8 +94,8 @@ class TypesBuilder:
                 field_js = {}
                 field_js['machine'] = field_name
                 field_label = capitalize(field['Field Label'])
-                field_js["singular"] = pluralize(field_label, 1)
-                field_js["plural"] = pluralize(field_label, 2)
+                field_js["singular"] = self.pluralizer.plural(field_label, 1)
+                field_js["plural"] = self.pluralizer.plural(field_label, 2)
 
                 field_def = "\t"
 
@@ -141,8 +164,6 @@ class TypesBuilder:
             code.append("}")
             interfaces.append("\n".join(code))
 
-        inject_generated_code(self.types_filepath, "\n".join(interfaces).strip(), 'TYPE-SCHEMA')
-
         type_defintions = f"""export interface RelEntity {{
     id: string | number;
     str: string;
@@ -181,6 +202,7 @@ export function getProp<T extends EntityTypes, K extends keyof T>(entity: Entity
         api: string;
         icon?: string;
         type: string;
+        model_type?: string;
         search_fields: string[];
 
 }}
@@ -204,3 +226,6 @@ interface ObjectOfObjects {{
     [key: string]: {{ [key: string]: FieldTypeDefinition }};
 }}
 export const TypeFieldSchema: ObjectOfObjects = {json.dumps(constants, indent=2).strip()}""", 'TYPE-CONSTANTS')
+
+        inject_generated_code(self.types_filepath, "\n".join(interfaces).strip(), 'TYPE-SCHEMA')
+

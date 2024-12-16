@@ -31,6 +31,22 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
             return 1; // TODO
         case 'text':
             if (field_name === 'name') {
+                // democrasee
+
+                if (model_type == 'Cities') {
+                    return faker.location.city()
+                }
+                if (model_type == 'States') {
+                    return faker.location.state()
+                }
+                if (model_type == 'Topics') {
+                    return faker.company.catchPhrase()
+                }
+                if (model_type == "ResourceTypes") {
+                    return faker.commerce.department()
+                }
+
+                //djmote
                 if (model_type == 'Venues') {
                     return `${faker.location.buildingNumber()} ${faker.location.street()}`
                 }
@@ -44,6 +60,12 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
                     return `${faker.commerce.department()} ${faker.music.genre()}`
                 }
                 return faker.person.fullName()
+            }
+            if (field_name === 'title') {
+                if (model_type == 'ActionPlan') {
+                    return faker.company.buzzPhrase()
+                }
+
             }
             if (field_name === 'description') {
                 return faker.commerce.productDescription()

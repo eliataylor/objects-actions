@@ -1,4 +1,4 @@
-from utils.utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize
+from utils.utils import create_machine_name, create_object_name, addArgs, capitalize
 from loguru import logger
 import os
 from .ModelBuilder import ModelBuilder

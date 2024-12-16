@@ -10,7 +10,7 @@ logger.add(sys.stdout, level="INFO")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate project files based on field types CSV.")
-    parser.add_argument('command', choices=['django', 'fake-data', 'typescript', 'cypress'],
+    parser.add_argument('command', choices=['django', 'typescript'],
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--matrix', required=False, help="Path to the Permissions Matrix CSV file.")
@@ -36,10 +36,11 @@ if __name__ == "__main__":
     logger.info(f"Output directory: {output_dir}")
 
     if command == 'django':
-        DjangoBuilder(types_path, output_dir)
+        DjangoBuilder(types_path, matrix_path, output_dir)
     elif command == 'typescript':
         reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_types()
+
 
     else:
         logger.warning(f"Command '{command}' not yet implemented")

@@ -1,13 +1,170 @@
 import csv
-import re
-import os
-import sys
 import json
-
+import os
+import re
+import sys
 from loguru import logger
+import pandas as pd
+import inflect
+
+def find_model_details(csv_file, model_name):
+    with open(csv_file, 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            obj_type = row['TYPES']
+            if obj_type == model_name:
+                if row['Field Type'].lower() == 'vocabulary':
+                    return {'model_type': 'vocabulary', 'examples': row['Examples']}
+
+    return None
 
 
-def build_json_from_csv(csv_file):
+def normalize_crud_verb(crud_verb):
+    # Define a dictionary with variations for each CRUD verb
+    crud_mapping = {
+        "view": ["read", "view"],
+        "add": ["create", "add", "insert"],
+        "edit": ["update", "edit", "modify"],
+        "delete": ["delete", "remove", "destroy"]
+    }
+
+    # Normalize the crud_verb to lowercase and remove extra spaces
+    crud_verb = crud_verb.strip().lower()
+
+    # Iterate over the crud_mapping dictionary and return the corresponding normalized verb
+    for normalized_verb, variations in crud_mapping.items():
+        if crud_verb in variations:
+            return normalized_verb
+
+    # If no match is found, return the original crud_verb (optional: raise error if invalid)
+    return crud_verb
+
+def parse_relative_url(url: str, object_types):
+    # Remove leading/trailing slashes
+    url = url.strip("/")
+    pattern = r"\[(id|[a-zA-Z_]+)\]|\{(id|[a-zA-Z_]+)\}|\:(id|[a-zA-Z_]+)" # [pid], {pid}, :pid
+    url = re.sub(pattern, ":id", url)
+
+    segments = url.split("/")
+
+    context = {"context":[], "endpoint":url}
+
+    verbstomatch = ['view', 'read', 'add', 'create', 'insert', 'edit', 'update', 'delete', 'remove', 'destroy', 'block']
+
+    # Loop through the segments in reverse
+    for i in range(len(segments) - 1, -1, -1):
+        segment = segments[i]
+
+        previous = segments[i-1] if i > 0 else ''
+
+        # If the ID is already set, this segment is the verb
+        if 'verb' not in context and previous == ':id':
+            context['verb'] = segment
+        elif segment in verbstomatch and 'verb' not in context:
+            context['verb'] = segment
+        elif segment.isdigit():
+            if "id_index" not in context:
+                context['id_index'] = i
+        elif segment == 'id':
+            if "id_index" not in context:
+                context['id_index'] = i
+        elif segment == ':id':
+            if "id_index" not in context:
+                context['id_index'] = i
+        else:
+            object_name = findObjectClassByPathSegment(segment, object_types)
+            context['context'].insert(0, object_name)
+
+    return context
+
+
+
+def findObjectClassByPathSegment(segment: str, object_types):
+    pluralizer = inflect.engine()
+    singular = pluralizer.plural(segment,1)
+    plural = pluralizer.plural(segment, 2)
+
+    for object_type in object_types:
+        if object_type == singular or object_type == plural:
+            return create_object_name(object_type)
+        if object_type == create_object_name(singular) or object_type == create_object_name(plural):
+            return create_object_name(object_type)
+        if object_type.lower() == create_machine_name(segment, True) or object_type.lower() == create_machine_name(plural, True):
+            return create_object_name(object_type)
+
+    logger.critical(f"Context did not find matching object by {segment}")
+    return segment
+
+
+def build_permissions_from_csv(csv_path, object_types):
+    df = pd.read_csv(csv_path)
+
+    # Find the position of the "ROLES" column
+    roles_start_idx = df.columns.get_loc('ROLES')
+
+    # Find the position of the "STEPS" column
+    steps_idx = df.columns.get_loc('RULES')
+
+    # Extract the roles from row 2, between "ROLES" and "STEPS", dynamically
+    roles = df.iloc[0, roles_start_idx:steps_idx].dropna().tolist()
+
+    # Initialize the final permissions dictionary
+    permissions = []
+
+    # Iterate through each object type provided in the input
+    for object_type in object_types:
+        print(f"Processing object type: {object_type}")
+
+        # Flag to determine when we start capturing permissions
+        capturing_permissions = False
+
+        # Iterate through all rows in the dataset
+        for idx, row in df.iterrows():
+            # If the row contains the object type, we start capturing permissions
+            if row.iloc[0] == object_type:
+                capturing_permissions = True
+                continue  # Skip the object type row itself
+
+            # Stop capturing permissions when the next object type appears
+            if pd.notna(row.iloc[0]) and capturing_permissions and row.iloc[0] not in object_types:
+                capturing_permissions = False
+
+            # If we are capturing permissions, process the relevant data
+            if capturing_permissions:
+                # Extract CRUD verb (e.g., "Read", "Create", "Update")
+                verb_name = row.iloc[1].strip() if pd.notna(row.iloc[1]) else ""
+
+                # Extract the context (own/any)
+                ownership = row.iloc[2].strip() if pd.notna(row.iloc[2]) else ""
+
+                # Extract the endpoint from the "STEPS" column
+                endpoint = row.iloc[steps_idx] if pd.notna(row.iloc[steps_idx]) else f"/{object_type}"
+                alias = row.iloc[steps_idx+1] if pd.notna(row.iloc[steps_idx+1]) else ""
+
+                segments = parse_relative_url(endpoint, object_types)
+
+                # Identify roles with "TRUE" permissions
+                allowed_roles = [
+                    roles[i] for i in range(len(roles)) if row.iloc[roles_start_idx + i] == 'TRUE'
+                ]
+
+                if "verb" not in segments:
+                    segments['verb'] = create_machine_name(verb_name)
+
+                if allowed_roles:
+                    permission_dict = {
+                        **segments,
+                        "ownership": ownership,
+                        "roles": allowed_roles,
+                    }
+                    if alias:
+                        permission_dict["alias"] = alias
+                    permissions.append(permission_dict)
+
+    return permissions
+
+
+def build_types_from_csv(csv_file):
     # Initialize an empty dictionary to store JSON object
     json_data = {}
 
@@ -17,6 +174,7 @@ def build_json_from_csv(csv_file):
         reader = csv.DictReader(csvfile)
 
         cur_type = None
+        is_vocab = False
         # Iterate over each row in the CSV
         for row in reader:
             # Extract the type from the row
@@ -25,6 +183,7 @@ def build_json_from_csv(csv_file):
                 if row['Field Name'].lower() == 'user':
                     logger.info(f'making {obj_type} the internal auth user model')
                     cur_type = 'User'
+                    is_vocab = True if row['Field Label'] == 'vocabulary' else False
                 else:
                     cur_type = obj_type
 
@@ -56,7 +215,6 @@ def build_json_from_csv(csv_file):
             else:
                 row['Required'] = False
 
-
             # Check if the type already exists in the JSON object
             if cur_type in json_data:
                 # Append the row to the existing array
@@ -85,10 +243,12 @@ def find_object_by_key_value(fields, prop, value):
             return obj
     return None
 
+
 def str_to_bool(value):
     if isinstance(value, str):
         return value.lower() not in ('false', '0')
     return bool(value)
+
 
 def inject_generated_code(output_file_path, code, prefix):
     comments = "####" if ".py" in output_file_path else "//---"
@@ -108,7 +268,7 @@ def inject_generated_code(output_file_path, code, prefix):
 
         start = html.find(start_delim)
         if start < 0:
-            start = len(html) # append to END of file
+            start = len(html)  # append to END of file
             code = f"\n{start_delim}\n{code}\n{end_delim}"
         else:
             start += len(start_delim)
@@ -132,7 +292,7 @@ def addArgs(target, new_args):
     # Split the target string into function name and arguments
     start = target.find('(')
     func_name = target[:start]
-    args_str = target[start+1:len(target)-1]
+    args_str = target[start + 1:len(target) - 1]
     args = args_str.split(',')
 
     # Remove leading and trailing whitespace from each argument
@@ -185,7 +345,7 @@ def infer_field_datatype(field_type):
     elif field_type == "address-structured":
         return "object"
     elif field_type == "address":
-        return "string" # TODO: create address object
+        return "string"  # TODO: create address object
     elif field_type == "url":
         return "string"
     elif field_type == "uuid":
@@ -211,42 +371,13 @@ def infer_field_datatype(field_type):
     else:
         return "string"
 
+
 def capitalize(string):
     return string[:1].upper() + string[1:] if string else string
 
-def pluralize(word, count):
-    if word.lower() == 'status' or word.lower() == 'url alias' or word.lower() == 'privacy':
-        return word
-
-    """Pluralizes a word based on the count."""
-    if count == 1:
-        if word.endswith('ies'):
-            return word[:-3] + 'y'  # Singularize 'ies' to 'y'
-        elif word.endswith('es'):
-            if word[-3] in 'sxc':
-                return word[:-2]  # Remove 'es' added for words ending in 's', 'x', 'c'
-            elif word[-4:] in ['ches', 'shes']:
-                return word[:-2]  # Remove 'es' added for words ending in 'sh', 'ch'
-            else:
-                return word[:-1]  # Remove 'es' added in general
-        elif word.endswith('s'):
-            return word[:-1]  # Remove 's' added in general
-        else:
-            return word  # Return original word if none of the above conditions are met
-    elif count > 1:
-        # Check if the word ends with common plural suffixes; if so, return the word as-is
-        if word.endswith('ies') or word.endswith('es') or word.endswith('s'):
-            return word
-        elif word[-1] in 'sx' or word[-2:] in ['sh', 'ch']:
-            return word + 'es'  # Add 'es' for words ending in 's', 'x', 'sh', 'ch'
-        else:
-            return word + 's'  # Add 's' in general for plural form
-    else:
-        return word  # Handle unexpected cases where count is less than 1
-
-
 def create_object_name(label):
     return re.sub(r'[^a-zA-Z0-9_\s]', '', label).replace(' ', '')
+
 
 def create_machine_name(label, lower=True):
     # Remove special characters and spaces, replace them with underscores

@@ -1,10 +1,9 @@
-from platform import machine
-
-from utils.utils import create_machine_name, create_object_name, addArgs, capitalize, pluralize, str_to_bool
+from utils.utils import create_machine_name, create_object_name, addArgs, capitalize, str_to_bool
 from loguru import logger
 import os
 import ast
 import re
+import inflect
 
 
 class ModelBuilder:
@@ -23,6 +22,8 @@ class ModelBuilder:
         self.imports = []
         self.requirements = []
 
+        self.pluralizer = inflect.engine()
+
     def to_string(self):
         with open(self.template_path, 'r') as fm:
             model_template = fm.read()
@@ -30,8 +31,8 @@ class ModelBuilder:
         code_source = model_template.replace('__CLASSNAME__', self.model_name)
 
         # TODO: use Field Name column from
-        code_source = code_source.replace('__SINGULAR__', f'"{pluralize(self.class_name, 1)}"')
-        code_source = code_source.replace('__PLURAL__', f'"{pluralize(self.class_name, 2)}"')
+        code_source = code_source.replace('__SINGULAR__', f'"{self.pluralizer.plural(self.class_name, 1)}"')
+        code_source = code_source.replace('__PLURAL__', f'"{self.pluralizer.plural(self.class_name, 2)}"')
 
         code_source = code_source.replace(' ' * 4, '\t')
 
