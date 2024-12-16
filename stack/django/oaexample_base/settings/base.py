@@ -147,8 +147,8 @@ MFA_FORMS = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        'oaexample_app.authentication.AuthenticationByDeviceType',
-        'rest_framework.authentication.TokenAuthentication',
+#        'oaexample_app.authentication.AuthenticationByDeviceType',
+#        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',

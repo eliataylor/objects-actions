@@ -1,4 +1,4 @@
-import {EntityTypes, RelEntity} from "./types";
+import {EntityTypes} from "./types";
 import permissions from './permissions.json';
 
 export interface MySession {
@@ -13,19 +13,7 @@ export interface MySession {
 
 //---OBJECT-ACTIONS-PERMS-VERBS-STARTS---//
 
-export type CRUDVerb =
-    'view_list'
-    | 'view_profile'
-    | 'add'
-    | 'edit'
-    | 'delete'
-    | 'block'
-    | 'view'
-    | 'meeting'
-    | 'apply-to-speak'
-    | 'approve'
-    | 'reject';
-
+ export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | 'view' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject';
 //---OBJECT-ACTIONS-PERMS-VERBS-ENDS---//
 
 interface AccessPoint {
@@ -64,20 +52,32 @@ export function getEndpoints(url: string, verb:CRUDVerb): AccessPoint[] {
 
     const matches = (permissions as unknown as AccessPoint[]).filter((perms: AccessPoint) => {
         if (perms.context.join('/').toLowerCase() === targetUrl) {
-            if (perms.verb === endpoint.verb) {
+            if (perms.verb === verb) {
                 return true
             }
         }
         return false;
     })
 
-    console.log('MATCHING ', matches)
     return matches;
 }
 
 
-export function canDo(verb:CRUDVerb, url: string, me: MySession | null, obj: EntityTypes | RelEntity): boolean {
-    const matches = getEndpoints(url, verb)
+export function canDo(verb:CRUDVerb, url: string, me: MySession | null, obj: EntityTypes): boolean {
+    const byurl = getEndpoints(url, verb)
+
+    console.log('MATCHING ', byurl)
+    // @ts-ignore
+    const isMine = me && (typeof obj['author'] !== 'undefined' && me.id === obj.author.id);
+
+    if (verb === 'add') {
+        const byowner = byurl.filter((perm: AccessPoint) => perm.ownership === (isMine === true ? 'own' : 'others'))
+    }
+
+
+    if (isMine) {
+
+    }
 
     /*
     if (typeof permissions[core] !== "undefined") {
@@ -90,8 +90,8 @@ export function canDo(verb:CRUDVerb, url: string, me: MySession | null, obj: Ent
     if (obj._type === endpoint.context[0]) {
 
     }
+    */
 
-     */
     return true
 }
 
@@ -134,6 +134,48 @@ export function parseFormURL(url: string): ParsedURL | null {
 
     return {object, id, verb};
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

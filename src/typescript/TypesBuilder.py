@@ -16,6 +16,7 @@ class TypesBuilder:
         with open(perms_path, 'w') as file:
             file.write(json.dumps(self.perms_json, indent=2))
         self.build_permissions()
+        exit()
 
     def build_permissions(self):
         allverbs = {}
@@ -26,31 +27,30 @@ class TypesBuilder:
         inject_generated_code(perms_path, f"\n export type CRUDVerb = '{("' | '").join(allverbs)}';", 'PERMS-VERBS')
         pass
 
-
     def build_types(self):
 
         types = []
         constants = {}
-        interfaces = []
+        supermodel = f"""\nexport interface SuperModel {{
+    readonly id: number | string; 
+    author: RelEntity;
+    created_at: string;
+    modified_at: string;
+    _type: string;
+}}\n"""
+        interfaces = [supermodel]
         urlItems = []
         for class_name in self.json:
             type_name = capitalize(create_object_name(class_name))
             machine_name = create_machine_name(class_name, True)
-
-            noId = True
-
-            code = [f"export interface {type_name} {{"]
-            code.append(f"\t_type: string") # also User
+            path_segment = create_machine_name(class_name, True, '-')
 
             if machine_name != 'users':
-                # provided by SuperModel
-                if find_object_by_key_value(self.json[class_name], "Field Name", "created_at") is None:
-                    code.append(f"\tcreated_at: number")
-                if find_object_by_key_value(self.json[class_name], "Field Name", "modified_at") is None:
-                    code.append(f"\tmodified_at: number")
-                if find_object_by_key_value(self.json[class_name], "Field Name", "author") is None:
-                    code.append(f"\tauthor?: number")
+                code = [f"export interface {type_name} extends SuperModel {{"]
             else:
+                code = [f"export interface {type_name} {{"]
+                code.append(f"\treadonly id: number | string")
+                code.append(f"\t_type: string")
                 code.append(f"\tis_active?: boolean")
                 code.append(f"\tis_staff?: boolean")
                 code.append(f"\tlast_login?: string")
@@ -67,9 +67,15 @@ class TypesBuilder:
 
             types.append(type_name)
 
-            navItem = {"name":class_name, "type":type_name, "api":f"/api/{machine_name}", "screen":f"/{machine_name}",
-                             'search_fields': find_search_fields(self.json, class_name)
-            }
+            navItem = {"singular":self.pluralizer.singular_noun(class_name)}
+            navItem['plural'] = class_name if class_name.endswith('ies') else self.pluralizer.plural_noun(navItem['singular'])
+            navItem = {**navItem,
+                       "type":type_name,
+                       "segment": path_segment,
+                       "api":f"/api/{path_segment}",
+                       "screen":f"/{path_segment}",
+                       "search_fields": find_search_fields(self.json, class_name)
+                       }
 
             model_type = find_model_details(self.field_csv, class_name)
             if model_type is not None:
@@ -157,8 +163,8 @@ class TypesBuilder:
 
                 code.append(field_def)
 
-            if noId is True:
-               code.insert(1, f"\treadonly id: number | string")  # also User
+#            if noId is True:
+#               code.insert(1, f"\treadonly id: number | string")  # also User
 
             constants[type_name] = constant
             code.append("}")
@@ -176,7 +182,7 @@ export interface NewEntity {{
     id: number | string
 }}
 
-export type EntityTypes = {" | ".join(types)}; 
+export type EntityTypes = {" | ".join(types)};
 
 export interface ApiListResponse<T = EntityTypes> {{
     count: number;
@@ -197,7 +203,9 @@ export function getProp<T extends EntityTypes, K extends keyof T>(entity: Entity
         inject_generated_code(self.types_filepath, type_defintions.strip(), 'API-RESP')
 
         navItems = f"""export interface NavItem {{
-        name: string;
+        singular: string;
+        plural: string;
+        segment: string;
         screen: string;
         api: string;
         icon?: string;

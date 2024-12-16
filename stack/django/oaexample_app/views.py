@@ -6,7 +6,10 @@ from django.http import JsonResponse
 from django.core.management import call_command
 from django.apps import apps
 from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.utils import timezone
 import re
+import os
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .models import Users
 from .serializers import UsersSerializer
@@ -16,16 +19,16 @@ from .models import Cities
 from .serializers import CitiesSerializer
 from .models import Rallies
 from .serializers import RalliesSerializer
-from .models import Publication
-from .serializers import PublicationSerializer
-from .models import ActionPlan
-from .serializers import ActionPlanSerializer
+from .models import Publications
+from .serializers import PublicationsSerializer
+from .models import ActionPlans
+from .serializers import ActionPlansSerializer
 from .models import Meetings
 from .serializers import MeetingsSerializer
 from .models import Resources
 from .serializers import ResourcesSerializer
-from .models import Page
-from .serializers import PageSerializer
+from .models import Pages
+from .serializers import PagesSerializer
 from .models import Invites
 from .serializers import InvitesSerializer
 from .models import Subscriptions
@@ -140,16 +143,16 @@ class RalliesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-class PublicationViewSet(viewsets.ModelViewSet):
-    queryset = Publication.objects.all().order_by('id')
-    serializer_class = PublicationSerializer
+class PublicationsViewSet(viewsets.ModelViewSet):
+    queryset = Publications.objects.all().order_by('id')
+    serializer_class = PublicationsSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-class ActionPlanViewSet(viewsets.ModelViewSet):
-    queryset = ActionPlan.objects.all().order_by('id')
-    serializer_class = ActionPlanSerializer
+class ActionPlansViewSet(viewsets.ModelViewSet):
+    queryset = ActionPlans.objects.all().order_by('id')
+    serializer_class = ActionPlansSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
@@ -168,9 +171,9 @@ class ResourcesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-class PageViewSet(viewsets.ModelViewSet):
-    queryset = Page.objects.all().order_by('id')
-    serializer_class = PageSerializer
+class PagesViewSet(viewsets.ModelViewSet):
+    queryset = Pages.objects.all().order_by('id')
+    serializer_class = PagesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
@@ -200,7 +203,7 @@ class AttendeesViewSet(viewsets.ModelViewSet):
     queryset = Attendees.objects.all().order_by('id')
     serializer_class = AttendeesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
+    
 class TopicsViewSet(viewsets.ModelViewSet):
     queryset = Topics.objects.all().order_by('id')
     serializer_class = TopicsSerializer
@@ -274,10 +277,10 @@ SEARCH_FIELDS_MAPPING = {
   "Rallies": [
     "title"
   ],
-  "Publication": [
+  "Publications": [
     "title"
   ],
-  "ActionPlan": [
+  "ActionPlans": [
     "title"
   ],
   "Meetings": [
@@ -286,7 +289,7 @@ SEARCH_FIELDS_MAPPING = {
   "Resources": [
     "title"
   ],
-  "Page": [
+  "Pages": [
     "title"
   ],
   "Invites": [
@@ -321,7 +324,7 @@ SEARCH_FIELDS_MAPPING = {
   ]
 }
 
-SERIALZE_MODEL_MAP = { "Users": UsersSerializer,"Officials": OfficialsSerializer,"Cities": CitiesSerializer,"Rallies": RalliesSerializer,"Publication": PublicationSerializer,"ActionPlan": ActionPlanSerializer,"Meetings": MeetingsSerializer,"Resources": ResourcesSerializer,"Page": PageSerializer,"Invites": InvitesSerializer,"Subscriptions": SubscriptionsSerializer,"Rooms": RoomsSerializer,"Attendees": AttendeesSerializer,"Topics": TopicsSerializer,"ResourceTypes": ResourceTypesSerializer,"MeetingTypes": MeetingTypesSerializer,"States": StatesSerializer,"Parties": PartiesSerializer,"Stakeholders": StakeholdersSerializer }
+SERIALZE_MODEL_MAP = { "Users": UsersSerializer,"Officials": OfficialsSerializer,"Cities": CitiesSerializer,"Rallies": RalliesSerializer,"Publications": PublicationsSerializer,"ActionPlans": ActionPlansSerializer,"Meetings": MeetingsSerializer,"Resources": ResourcesSerializer,"Pages": PagesSerializer,"Invites": InvitesSerializer,"Subscriptions": SubscriptionsSerializer,"Rooms": RoomsSerializer,"Attendees": AttendeesSerializer,"Topics": TopicsSerializer,"ResourceTypes": ResourceTypesSerializer,"MeetingTypes": MeetingTypesSerializer,"States": StatesSerializer,"Parties": PartiesSerializer,"Stakeholders": StakeholdersSerializer }
 
 class UserStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -393,11 +396,11 @@ class UserModelListView(generics.GenericAPIView):
 
 class RenderFrontendIndex(APIView):
     def get(self, request, *args, **kwargs):
-        indexpath = os.getenv("FRONTEND_INDEX_HTML", "index.html")
-        if not os.path.isfile(indexpath):
+        file_path = os.getenv("FRONTEND_INDEX_HTML", "index.html")
+        if not os.path.isfile(file_path):
             return HttpResponse('Ok', content_type='text/html')
 
-        with open(indexpath, 'r') as file:
+        with open(file_path, 'r') as file:
             html_content = file.read()
 
         modified_html = html_content
@@ -407,31 +410,28 @@ class RenderFrontendIndex(APIView):
         def prepend_host(match):
             url = match.group(1)
             if url.startswith('/') or not url.startswith(('http://', 'https://')):
-                return f'{match.group(0)[:5]}{frontend_url}{url.lstrip("/")}"'
+                return f'{match.group(0)[:5]}{frontend_url}/{url.lstrip("/")}"'
             return match.group(0)
 
         # Prepend the host to all relative src and href URLs
         modified_html = re.sub(r'src="([^"]+)"', prepend_host, modified_html)
         modified_html = re.sub(r'href="([^"]+)"', prepend_host, modified_html)
 
+        # react-scripts bundle instead of compiled version
+        if ":3000" in frontend_url:
+            modified_html = modified_html.replace('</head>',
+                                                  f'<script defer="" src="{frontend_url}/static/js/bundle.js"></script></head>')
+
         return HttpResponse(modified_html, content_type='text/html')
 
-
-from django.shortcuts import redirect
-from django.utils import timezone
-
 def redirect_to_frontend(request, provider=None):
-#    session = LoginSession(request, "social_login_redirected", settings.SESSION_COOKIE_NAME)
-
     frontend_url = settings.FRONTEND_URL
-    redirect_path = "/account/provider/callback/"
+    redirect_path = request.path
+    query_params = request.GET.copy()
     if provider:
-        response = redirect(f'{frontend_url}{redirect_path}?provider={provider}')
-    else:
-        response = redirect(f'{frontend_url}{redirect_path}')
-
-#    response.url = redirect_url
-#    session.save(response)
+        query_params['provider'] = provider
+    query_string = query_params.urlencode()
+    response = redirect(f'{frontend_url}{redirect_path}?{query_string}')
     return response
 ####OBJECT-ACTIONS-CORE-ENDS####
 
@@ -533,6 +533,51 @@ class VerifyCodeView(APIView):
             return JsonResponse({"error": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)
 
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

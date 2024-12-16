@@ -6,11 +6,11 @@ from .models import Users
 from .models import Officials
 from .models import Cities
 from .models import Rallies
-from .models import Publication
-from .models import ActionPlan
+from .models import Publications
+from .models import ActionPlans
 from .models import Meetings
 from .models import Resources
-from .models import Page
+from .models import Pages
 from .models import Invites
 from .models import Subscriptions
 from .models import Rooms
@@ -123,13 +123,13 @@ class RalliesSerializer(CustomSerializer):
     class Meta:
         model = Rallies
         fields = '__all__'
-class PublicationSerializer(CustomSerializer):
+class PublicationsSerializer(CustomSerializer):
     class Meta:
-        model = Publication
+        model = Publications
         fields = '__all__'
-class ActionPlanSerializer(CustomSerializer):
+class ActionPlansSerializer(CustomSerializer):
     class Meta:
-        model = ActionPlan
+        model = ActionPlans
         fields = '__all__'
 class MeetingsSerializer(CustomSerializer):
     class Meta:
@@ -139,9 +139,9 @@ class ResourcesSerializer(CustomSerializer):
     class Meta:
         model = Resources
         fields = '__all__'
-class PageSerializer(CustomSerializer):
+class PagesSerializer(CustomSerializer):
     class Meta:
-        model = Page
+        model = Pages
         fields = '__all__'
 class InvitesSerializer(CustomSerializer):
     class Meta:
@@ -194,6 +194,36 @@ class PhoneNumberSerializer(serializers.Serializer):
 class VerifyPhoneSerializer(serializers.Serializer):
     phone = serializers.CharField()
     code = serializers.CharField()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

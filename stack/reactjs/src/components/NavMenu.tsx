@@ -21,7 +21,7 @@ const NavMenu = () => {
                             key={`navmenu-${item.screen}`} component={Link} to={item.screen}
                             selected={location.pathname === item.screen}
                         >
-                            <ListItemText primary={item.name}/>
+                            <ListItemText primary={item.plural}/>
                         </ListItemButton>
                     )
                 })}

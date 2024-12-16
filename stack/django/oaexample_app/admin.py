@@ -8,11 +8,11 @@ from .models import Users
 from .models import Officials
 from .models import Cities
 from .models import Rallies
-from .models import Publication
-from .models import ActionPlan
+from .models import Publications
+from .models import ActionPlans
 from .models import Meetings
 from .models import Resources
-from .models import Page
+from .models import Pages
 from .models import Invites
 from .models import Subscriptions
 from .models import Rooms
@@ -57,15 +57,15 @@ class RalliesAdmin(admin.ModelAdmin):
 
 admin.site.register(Rallies, RalliesAdmin)
 
-class PublicationAdmin(admin.ModelAdmin):
+class PublicationsAdmin(admin.ModelAdmin):
 	readonly_fields = ('id',)
 
-admin.site.register(Publication, PublicationAdmin)
+admin.site.register(Publications, PublicationsAdmin)
 
-class ActionPlanAdmin(admin.ModelAdmin):
+class ActionPlansAdmin(admin.ModelAdmin):
 	readonly_fields = ('id',)
 
-admin.site.register(ActionPlan, ActionPlanAdmin)
+admin.site.register(ActionPlans, ActionPlansAdmin)
 
 class MeetingsAdmin(admin.ModelAdmin):
 	readonly_fields = ('id',)
@@ -77,10 +77,10 @@ class ResourcesAdmin(admin.ModelAdmin):
 
 admin.site.register(Resources, ResourcesAdmin)
 
-class PageAdmin(admin.ModelAdmin):
+class PagesAdmin(admin.ModelAdmin):
 	readonly_fields = ('id',)
 
-admin.site.register(Page, PageAdmin)
+admin.site.register(Pages, PagesAdmin)
 
 class InvitesAdmin(admin.ModelAdmin):
 	readonly_fields = ('id',)
@@ -137,6 +137,36 @@ admin.site.register(Stakeholders, StakeholdersAdmin)
 class AppTokensAdmin(admin.ModelAdmin):
     readonly_fields = ()
 admin.site.register(AppTokens, AppTokensAdmin)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

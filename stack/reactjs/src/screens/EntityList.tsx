@@ -40,8 +40,6 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
             apiUrl += hasUrl.api
         }
 
-        const endpoints = getEndpoints(apiUrl);
-
         const params = new URLSearchParams();
 
         if (page > 0) {
@@ -90,7 +88,7 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
                 <React.Fragment>
                     <AppBar position={'sticky'} sx={{marginBottom: 10}} color={'inherit'}>
                         <Grid pl={1} container justifyContent={'space-between'} alignContent={'center'} alignItems={'center'}>
-                            <Grid item>{hasUrl.name}</Grid>
+                            <Grid item>{hasUrl.plural}</Grid>
                             <TablePaginator totalItems={listData.count} onPageChange={handlePagination}/>
                         </Grid>
                     </AppBar>

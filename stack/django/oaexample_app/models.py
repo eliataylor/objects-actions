@@ -18,7 +18,7 @@ def validate_phone_number(value):
 	phone_regex = re.compile(r'^\+?1?\d{9,15}$')
 	if not phone_regex.match(value):
 		raise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-
+	
 def upload_file_path(instance, filename):
 	ext = filename.split('.')[-1]  # e.g. "jpg"
 	# add datetime suffix to avoid collisions
@@ -31,11 +31,10 @@ def upload_file_path(instance, filename):
 	# Construct the final upload path: "uploads/<yyyy-mm>/<filename>"
 	return os.path.join('uploads', date_folder, new_filename)
 
-
 class Users(AbstractUser, BumpParentsModelMixin):
 	class Meta:
-		verbose_name = "User"
-		verbose_name_plural = "Users"
+		verbose_name = "Users"
+		verbose_name_plural = "Userss"
 		ordering = ['last_login']
 
 
@@ -107,8 +106,8 @@ class SuperModel(models.Model):
 class Officials(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Official"
-		verbose_name_plural = "Officials"
+		verbose_name = "Officials"
+		verbose_name_plural = "Officialss"
 
 	title = models.CharField(max_length=255, verbose_name='Job Title')
 	office_phone = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='Office Phone', blank=True, null=True)
@@ -120,8 +119,8 @@ class Officials(SuperModel):
 class Cities(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "City"
-		verbose_name_plural = "Cities"
+		verbose_name = "Cities"
+		verbose_name_plural = "Citieses"
 
 	name = models.CharField(max_length=255, verbose_name='Name')
 	description = models.TextField(blank=True, null=True, verbose_name='Description')
@@ -144,8 +143,8 @@ class Cities(SuperModel):
 class Rallies(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Rally"
-		verbose_name_plural = "Rallies"
+		verbose_name = "Rallies"
+		verbose_name_plural = "Rallieses"
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description = models.TextField(verbose_name='Description')
@@ -153,11 +152,11 @@ class Rallies(SuperModel):
 	topics = models.ManyToManyField('Topics', related_name='topics_to_topics', verbose_name='Topics')
 	comments = models.TextField(blank=True, null=True, verbose_name='Comments')
 
-class Publication(SuperModel):
+class Publications(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Publication"
-		verbose_name_plural = "Publications"
+		verbose_name = "Publications"
+		verbose_name_plural = "Publicationss"
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description = models.TextField(verbose_name='Description')
@@ -165,11 +164,11 @@ class Publication(SuperModel):
 	media = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Media')
 	comments = models.TextField(blank=True, null=True, verbose_name='Comments')
 
-class ActionPlan(SuperModel):
+class ActionPlans(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Action Plan"
-		verbose_name_plural = "Action Plans"
+		verbose_name = "Action Plans"
+		verbose_name_plural = "Action Planss"
 
 	title = models.CharField(max_length=255, blank=True, null=True, verbose_name='Title')
 	recommendation = models.TextField(blank=True, null=True, verbose_name='Recommendation')
@@ -186,8 +185,8 @@ class ActionPlan(SuperModel):
 class Meetings(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Meeting"
-		verbose_name_plural = "Meetings"
+		verbose_name = "Meetings"
+		verbose_name_plural = "Meetingss"
 
 	title = models.CharField(max_length=255, blank=True, null=True, verbose_name='Title')
 	rally = models.ForeignKey('Rallies', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Rally')
@@ -206,8 +205,8 @@ class Meetings(SuperModel):
 class Resources(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Resourc"
-		verbose_name_plural = "Resources"
+		verbose_name = "Resources"
+		verbose_name_plural = "Resourceses"
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description_html = models.TextField(verbose_name='Description HTML')
@@ -216,11 +215,11 @@ class Resources(SuperModel):
 	price_ccoin = models.IntegerField(verbose_name='Price (citizencoin)')
 	resource_type = models.ManyToManyField('ResourceTypes', related_name='resource_type_to_resource_types', verbose_name='Resource Type')
 
-class Page(SuperModel):
+class Pages(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Page"
-		verbose_name_plural = "Pages"
+		verbose_name = "Pages"
+		verbose_name_plural = "Pageses"
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description_html = models.TextField(verbose_name='Description HTML')
@@ -228,9 +227,9 @@ class Page(SuperModel):
 class Invites(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Invite"
-		verbose_name_plural = "Invites"
-
+		verbose_name = "Invites"
+		verbose_name_plural = "Inviteses"
+	
 	class StatusChoices(models.TextChoices):
 		invited = ("invited", "Invited")
 		rsvpd = ("rsvpd", " rsvpd")
@@ -244,9 +243,9 @@ class Invites(SuperModel):
 class Subscriptions(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Subscription"
-		verbose_name_plural = "Subscriptions"
-
+		verbose_name = "Subscriptions"
+		verbose_name_plural = "Subscriptionss"
+	
 	class StatusChoices(models.TextChoices):
 		approved = ("approved", "Approved")
 		denied = ("denied", " denied")
@@ -260,19 +259,19 @@ class Subscriptions(SuperModel):
 class Rooms(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Room"
-		verbose_name_plural = "Rooms"
-
+		verbose_name = "Rooms"
+		verbose_name_plural = "Roomss"
+	
 	class PrivacyChoices(models.TextChoices):
 		public = ("public", "Public")
 		inviteonly = ("inviteonly", " invite-only")
 		requests = ("requests", " requests")
-
+	
 	class StatusChoices(models.TextChoices):
 		live = ("live", "Live")
 		scheduled = ("scheduled", " scheduled")
 		ended = ("ended", " ended")
-	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Owner')
+	author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Owner')
 	start = models.DateTimeField(verbose_name='Start')
 	end = models.DateTimeField(verbose_name='End')
 	rally = models.ForeignKey('Rallies', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Rally')
@@ -285,9 +284,9 @@ class Rooms(SuperModel):
 class Attendees(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Attendee"
-		verbose_name_plural = "Attendees"
-
+		verbose_name = "Attendees"
+		verbose_name_plural = "Attendeeses"
+	
 	class RoleChoices(models.TextChoices):
 		viewer = ("viewer", "Viewer")
 		presenter = ("presenter", " presenter")
@@ -308,8 +307,8 @@ class Attendees(SuperModel):
 class Topics(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Topic"
-		verbose_name_plural = "Topics"
+		verbose_name = "Topics"
+		verbose_name_plural = "Topicss"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 	icon = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Icon')
@@ -318,24 +317,24 @@ class Topics(SuperModel):
 class ResourceTypes(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Resource Type"
-		verbose_name_plural = "Resource Types"
+		verbose_name = "Resource Types"
+		verbose_name_plural = "Resource Typeses"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 
 class MeetingTypes(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Meeting Type"
-		verbose_name_plural = "Meeting Types"
+		verbose_name = "Meeting Types"
+		verbose_name_plural = "Meeting Typeses"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 
 class States(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "State"
-		verbose_name_plural = "States"
+		verbose_name = "States"
+		verbose_name_plural = "Stateses"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
@@ -344,8 +343,8 @@ class States(SuperModel):
 class Parties(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Party"
-		verbose_name_plural = "Parties"
+		verbose_name = "Parties"
+		verbose_name_plural = "Partieses"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 	logo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Logo')
@@ -354,8 +353,8 @@ class Parties(SuperModel):
 class Stakeholders(SuperModel):
 	class Meta:
 		abstract = False
-		verbose_name = "Stakeholder"
-		verbose_name_plural = "Stakeholders"
+		verbose_name = "Stakeholders"
+		verbose_name_plural = "Stakeholderss"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 	image = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Image')
@@ -387,6 +386,36 @@ class AppTokens(models.Model):
     expires_at = models.DateTimeField(
         blank=True, null=True, verbose_name="expires at"
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

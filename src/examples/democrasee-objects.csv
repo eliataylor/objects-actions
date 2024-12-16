@@ -42,14 +42,14 @@ Rallies,,,,,,,,
 ,Topics,,vocabulary reference,3,1,Topics,,
 ,Comments,,textarea,unlimited,0,,,
 ,,,,,,,,
-Publication,,,,,,,,
+Publications,,,,,,,,
 ,Title,,text,1,1,,,
 ,Description,,textarea,1,1,,,
 ,Relationships,,type reference,1,0,Officials,,
 ,Media,,media,3,0,,,
 ,Comments,,textarea,unlimited,0,,,
 ,,,,,,,,
-Action Plan,,,,,,,,
+Action Plans,,,,,,,,
 ,Title,,text,1,0,,,
 ,Recommendation,,textarea,1,0,,,
 ,Executive Summary,exe_summary,textarea,1,0,,,
@@ -85,7 +85,7 @@ Resources,,,,,,,,
 ,Price (citizencoin),price_ccoin,integer,1,1,,,
 ,Resource Type,,vocabulary reference,unlimited,1,Resource Types,,
 ,,,,,,,,
-Page,,,,,,,,
+Pages,,,,,,,,
 ,Title,,text,1,1,,,
 ,Description HTML,,textarea,1,1,,,
 ,,,,,,,,
@@ -103,12 +103,12 @@ Subscriptions,,,,,,,,
 ,Status,,enum,1,1,,,"""approved"", ""denied"", ""active"", ""seen"""
 ,,,,,,,,
 Rooms,,,,,,,,
-,Owner,author,User Account,,,Users,,
+,Owner,author,User Account,1,1,Users,,
 ,Start,,date time,1,1,,,
 ,End,,date time,1,1,,,
 ,Rally,,type reference,,,Rallies,,
 ,Meeting,,type reference,,,Meetings,,
-,Privacy,,enum,,,,,"public, invite-only, requests, "
+,Privacy,,enum,,,,,"public, invite-only, requests"
 ,Status,,enum,,,,,"live, scheduled, ended"
 ,Chat Thread,,text,unlimited,0,,,
 ,Recording,,video,,,,,
@@ -127,27 +127,27 @@ Attendees,,,,,,,,
 ,Is Typing,,boolean,1,,,,
 ,,,,,,,,
 ,,,,,,,,
-Topics,,,,,,,,"(technology, agriculture, health care, ...)"
+Topics,vocabulary,,,,,,,"(technology, agriculture, health care, ...)"
 ,Name,,text,,,,,
 ,Icon,,image,1,0,,,
 ,Photo,,image,1,0,,,
 ,,,,,,,,
-Resource Types,,,,,,,,"(consulting, sales, labor, ....)"
+Resource Types,vocabulary,,,,,,,"(consulting, sales, labor, ....)"
 ,Name,,text,,,,,
 ,,,,,,,,
-Meeting Types,,,,,,,,"(rally-2-discuss, rally-2-write, rally-2-move, city council meeting, hearing, ...)"
+Meeting Types,vocabulary,,,,,,,"(rally-2-discuss, rally-2-write, rally-2-move, city council meeting, hearing, ...)"
 ,Name,,text,,,,,
 ,,,,,,,,
-States,,,,,,,,"(california, new york, arizona)"
+States,vocabulary,,,,,,,"(california, new york, arizona)"
 ,Name,,text,,,,,
 ,Website,,URL,1,0,,,
 ,Icon,,image,1,0,,,
 ,,,,,,,,
-Parties,,,,,,,,"(democratic, republican, indedepent, liberaterian)"
+Parties,vocabulary,,,,,,,"(democratic, republican, indedepent, liberaterian)"
 ,Name,,text,,,,,
 ,Logo,,image,1,0,,,
 ,Website,,URL,1,0,,,
 ,,,,,,,,
-Stakeholders,,,,,,,,"(youth, elderly, mechanics, gardeners, police officers....)"
+Stakeholders,vocabulary,,,,,,,"(youth, elderly, mechanics, gardeners, police officers....)"
 ,Name,,text,,,,,
 ,Image,,image,1,0,,,

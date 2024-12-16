@@ -34,7 +34,7 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
     const titles = ['title', 'name', 'first_name', 'last_name', 'slug', 'id']
     for (let key of titles) {
         if (key in entity) {
-            headerProps.title = getProp(entity, key)
+            headerProps.title = getProp(entity, key) as string;
             displayed.push(key)
             break;
         }

@@ -73,27 +73,33 @@ def parse_relative_url(url: str, object_types):
                 context['id_index'] = i
         else:
             object_name = findObjectClassByPathSegment(segment, object_types)
-            context['context'].insert(0, object_name)
+            if object_name:
+                context['context'].insert(0, object_name)
 
     return context
 
 
-
 def findObjectClassByPathSegment(segment: str, object_types):
     pluralizer = inflect.engine()
+
+    segment = re.sub(r'[^a-zA-Z0-9\s]', ' ', segment).strip().lower()
+
     singular = pluralizer.plural(segment,1)
     plural = pluralizer.plural(segment, 2)
 
     for object_type in object_types:
-        if object_type == singular or object_type == plural:
+        ot = object_type.lower()
+        if ot == singular or ot == plural:
             return create_object_name(object_type)
-        if object_type == create_object_name(singular) or object_type == create_object_name(plural):
+        if ot == create_object_name(singular) or ot == create_object_name(plural):
             return create_object_name(object_type)
-        if object_type.lower() == create_machine_name(segment, True) or object_type.lower() == create_machine_name(plural, True):
+        if ot == create_machine_name(singular, True) or ot == create_machine_name(plural, True):
+            return create_object_name(object_type)
+        if ot == create_machine_name(singular, True, '-') or ot == create_machine_name(plural, True, '-'):
             return create_object_name(object_type)
 
     logger.critical(f"Context did not find matching object by {segment}")
-    return segment
+    return None
 
 
 def build_permissions_from_csv(csv_path, object_types):
@@ -151,15 +157,18 @@ def build_permissions_from_csv(csv_path, object_types):
                 if "verb" not in segments:
                     segments['verb'] = create_machine_name(verb_name)
 
-                if allowed_roles:
-                    permission_dict = {
-                        **segments,
-                        "ownership": ownership,
-                        "roles": allowed_roles,
-                    }
-                    if alias:
-                        permission_dict["alias"] = alias
+                permission_dict = {
+                    **segments,
+                    "ownership": ownership,
+                    "roles": allowed_roles,
+                }
+                if alias:
+                    permission_dict["alias"] = alias
+
+                if permission_dict['verb'] is not None and permission_dict['verb'] != '':
                     permissions.append(permission_dict)
+                else:
+                    pass
 
     return permissions
 
@@ -379,9 +388,12 @@ def create_object_name(label):
     return re.sub(r'[^a-zA-Z0-9_\s]', '', label).replace(' ', '')
 
 
-def create_machine_name(label, lower=True):
+def create_machine_name(label, lower=True, punctuation='_'):
     # Remove special characters and spaces, replace them with underscores
-    machine_name = re.sub(r'[^a-zA-Z0-9_\s]', '', label).strip().replace(' ', '_')
+    if punctuation == '-':
+        machine_name = re.sub(r'[^a-zA-Z0-9\-\s]', '', label).strip().replace(' ', punctuation)
+    else:
+        machine_name = re.sub(r'[^a-zA-Z0-9_\s]', '', label).strip().replace(' ', punctuation)
     if lower is True:
         machine_name = machine_name.lower()
     return machine_name

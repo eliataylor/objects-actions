@@ -20,7 +20,7 @@ const RelEntityHead: React.FC<RelEntityHeadProps> = ({rel, label}) => {
 
     const hasUrl = NAVITEMS.find(nav => nav.type === rel['_type']);
 
-    headerProps.title = <Typography variant={'body1'}>{label ? label : (!hasUrl) ? rel['_type'] : hasUrl.name} </Typography>
+    headerProps.title = <Typography variant={'body1'}>{label ? label : (!hasUrl) ? rel['_type'] : hasUrl.singular} </Typography>
     headerProps.subheader = <Typography variant={'body2'}>{(!hasUrl) ? rel.str :
         <Link to={`${hasUrl.screen}/${rel.id}`}>{rel.str}</Link>}</Typography>
 

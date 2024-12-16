@@ -268,9 +268,16 @@ class ModelBuilder:
             self.append_import("import os")
 
             self.functions.append("""\ndef upload_file_path(instance, filename):
-\text = filename.split('.')[-1]
-\tfilename = f"{instance.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
-\treturn os.path.join('uploads/%Y-%m', filename)""")
+\text = filename.split('.')[-1]  # e.g. "jpg"
+\t# add datetime suffix to avoid collisions
+\tnew_filename = f"{filename}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+\t# WARN: watch for overwrites when using DataBuilder or any batch upload
+
+\t# Use strftime to create a "year-month" folder dynamically
+\tdate_folder = timezone.now().strftime('%Y-%m')
+
+\t# Construct the final upload path: "uploads/<yyyy-mm>/<filename>"
+\treturn os.path.join('uploads', date_folder, new_filename)""")
 
             if field_type == "image":
                 fieldType = 'ImageField'

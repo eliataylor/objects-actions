@@ -16,7 +16,7 @@ export const getModelName = (model: string) => {
     const hasUrl = NAVITEMS.find(nav => {
         return model === nav.type;
     });
-    if (hasUrl) return hasUrl.name
+    if (hasUrl) return hasUrl.singular
     return model
 
 }

@@ -36,10 +36,13 @@ class DjangoBuilder:
                                   "from django.core.management import call_command",
                                   "from django.apps import apps",
                                   "from django.http import HttpResponse",
-                                  "import re",
+                                  "from django.shortcuts import redirect",
+                                  "from django.utils import timezone",
+                                  "import re", "import os",
                                   "from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse"
                                   ],
                         "urls": [
+                            "from django.urls import re_path",
                             "from rest_framework.routers import DefaultRouter",
                             "from django.urls import include, path",
                             "from .views import UserModelListView",
@@ -129,7 +132,7 @@ class DjangoBuilder:
 
         code = "\nOARouter = DefaultRouter(trailing_slash=False)\n"
         for class_name in self.json:
-            path_name = create_machine_name(class_name)
+            path_name = create_machine_name(class_name, True, '-')
             model_name = create_object_name(class_name)
             code += f"OARouter.register('{path_name}', {model_name}ViewSet, basename='{path_name}')\n"
             self.append_import("urls", f"from .views import {model_name}ViewSet")
@@ -145,13 +148,13 @@ class DjangoBuilder:
     urlpatterns = []
     
 urlpatterns += [
-    path('account/provider/callback/', redirect_to_frontend, name='provider_callback_no_provider'),
+    re_path(r'^account/.*$', redirect_to_frontend, name='provider_callback_no_provider'),
     {(",\n\t").join(extra_patterns) + ',' if len(extra_patterns) > 0 else ''}    
-    path('api/users/<int:user_id>/<str:model_name>/', UserModelListView.as_view(), name='user-model-list'),
-    path('api/users/<int:user_id>/<str:model_name>/stats/', UserStatsView.as_view(), name='user-model-stats'),
+    path('api/users/<int:user_id>/<str:model_name>/list', UserModelListView.as_view(), name='user-model-list'),
+    path('api/users/<int:user_id>/<str:model_name>/stats', UserStatsView.as_view(), name='user-model-stats'),
 
-    path('migrate/', migrate, name='migrate'),
-    path('collectstatic/', collectstatic, name='collectstatic'),
+    path('migrate', migrate, name='migrate'),
+    path('collectstatic', collectstatic, name='collectstatic'),
     path('api/', include(OARouter.urls)),
 ]"""
 

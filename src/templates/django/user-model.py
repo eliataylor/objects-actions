@@ -13,6 +13,8 @@ class __CLASSNAME__(AbstractUser, BumpParentsModelMixin):
             return self.get_full_name()
         elif self.get_short_name().strip():
             return self.get_short_name()
+        elif self.username.strip():
+            return self.username
         else:
             return str(self.id) # never expose the email
 

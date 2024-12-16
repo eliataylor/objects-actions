@@ -104,7 +104,7 @@ const UserView: React.FC = () => {
                       <Typography variant={'subtitle2'} mr={2}>{stats[item.type]}</Typography>}
 
                     <Typography variant={'subtitle2'}>
-                        {item.name}
+                        {item.plural}
                     </Typography>
 
                 </AccordionSummary>
