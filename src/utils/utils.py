@@ -117,58 +117,61 @@ def build_permissions_from_csv(csv_path, object_types):
     # Initialize the final permissions dictionary
     permissions = []
 
+    object_type = False
+
     # Iterate through each object type provided in the input
-    for object_type in object_types:
-        print(f"Processing object type: {object_type}")
+    for idx, row in df.iterrows():
 
-        # Flag to determine when we start capturing permissions
-        capturing_permissions = False
+        if row.iloc[0] in object_types:
+            object_type = row.iloc[0]
+            print(f"Processing object type: {object_type}")
 
-        # Iterate through all rows in the dataset
-        for idx, row in df.iterrows():
-            # If the row contains the object type, we start capturing permissions
-            if row.iloc[0] == object_type:
-                capturing_permissions = True
-                continue  # Skip the object type row itself
+        if object_type is False:
+            continue
 
-            # Stop capturing permissions when the next object type appears
-            if pd.notna(row.iloc[0]) and capturing_permissions and row.iloc[0] not in object_types:
-                capturing_permissions = False
+        # If the row contains the object type, we start capturing permissions
+        if row.iloc[0] == object_type:
+            capturing_permissions = True
+            continue  # Skip the object type row itself
 
-            # If we are capturing permissions, process the relevant data
-            if capturing_permissions:
-                # Extract CRUD verb (e.g., "Read", "Create", "Update")
-                verb_name = row.iloc[1].strip() if pd.notna(row.iloc[1]) else ""
+        # Stop capturing permissions when the next object type appears
+#        if pd.notna(row.iloc[0]) and object_type and row.iloc[0] not in object_types:
+#            capturing_permissions = False
 
-                # Extract the context (own/any)
-                ownership = row.iloc[2].strip() if pd.notna(row.iloc[2]) else ""
+        # If we are capturing permissions, process the relevant data
+        if capturing_permissions:
+            # Extract CRUD verb (e.g., "Read", "Create", "Update")
+            verb_name = row.iloc[1].strip() if pd.notna(row.iloc[1]) else ""
 
-                # Extract the endpoint from the "STEPS" column
-                endpoint = row.iloc[steps_idx] if pd.notna(row.iloc[steps_idx]) else f"/{object_type}"
-                alias = row.iloc[steps_idx+1] if pd.notna(row.iloc[steps_idx+1]) else ""
+            # Extract the context (own/any)
+            ownership = row.iloc[2].strip() if pd.notna(row.iloc[2]) else ""
 
-                segments = parse_relative_url(endpoint, object_types)
+            # Extract the endpoint from the "STEPS" column
+            endpoint = row.iloc[steps_idx] if pd.notna(row.iloc[steps_idx]) else f"/{object_type}"
+            alias = row.iloc[steps_idx+1] if pd.notna(row.iloc[steps_idx+1]) else ""
 
-                # Identify roles with "TRUE" permissions
-                allowed_roles = [
-                    roles[i] for i in range(len(roles)) if row.iloc[roles_start_idx + i] == 'TRUE'
-                ]
+            segments = parse_relative_url(endpoint, object_types)
 
-                if "verb" not in segments:
-                    segments['verb'] = create_machine_name(verb_name)
+            # Identify roles with "TRUE" permissions
+            allowed_roles = [
+                roles[i] for i in range(len(roles)) if row.iloc[roles_start_idx + i] == 'TRUE'
+            ]
 
-                permission_dict = {
-                    **segments,
-                    "ownership": ownership,
-                    "roles": allowed_roles,
-                }
-                if alias:
-                    permission_dict["alias"] = alias
+            if "verb" not in segments:
+                segments['verb'] = create_machine_name(verb_name)
 
-                if permission_dict['verb'] is not None and permission_dict['verb'] != '':
-                    permissions.append(permission_dict)
-                else:
-                    pass
+            permission_dict = {
+                **segments,
+                "ownership": ownership,
+                "roles": allowed_roles,
+            }
+            if alias:
+                permission_dict["alias"] = alias
+
+            if permission_dict['verb'] is not None and permission_dict['verb'] != '':
+                permissions.append(permission_dict)
+            else:
+                pass
 
     return permissions
 

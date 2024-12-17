@@ -46,6 +46,9 @@ class CustomHeadlessAdapter(DefaultHeadlessAdapter):
         elif hasattr(user, 'cover'):
             user_data['cover'] = user.cover.url if user.cover else None
 
+        if hasattr(user, 'groups'):
+            user_data['groups'] = list(user.groups.values_list("name", flat=True))
+
         return user_data
 
 

@@ -52,10 +52,16 @@ const EntityForm = () => {
     const hasUrl = NAVITEMS.find(nav => nav.screen === `/${target.object}`);
     if (!hasUrl) return <Typography>Unknown Type</Typography>
 
-    const apiUrl = (id && parseInt(id) > 0) ? `${hasUrl.api}/${id}` : hasUrl.api;
+    let allow = true
+    if (id && parseInt(id) > 0) {
+        allow = canDo('edit', `${hasUrl.segment}/${id}`, me, entity)
+    } else {
+        allow = canDo('add', hasUrl.segment, me, entity)
+    }
 
-    const allow = canDo('add', apiUrl, me, entity)
-
+    if (!allow) {
+        return <Typography>Not allowed</Typography>
+    }
 
     const fields = Object.values(TypeFieldSchema[hasUrl.type])
 

@@ -31,8 +31,10 @@ class ModelBuilder:
         code_source = model_template.replace('__CLASSNAME__', self.model_name)
 
         # TODO: use Field Name column from
-        code_source = code_source.replace('__SINGULAR__', f'"{self.pluralizer.plural(self.class_name, 1)}"')
-        code_source = code_source.replace('__PLURAL__', f'"{self.pluralizer.plural(self.class_name, 2)}"')
+        singular = self.pluralizer.singular_noun(self.class_name)
+        code_source = code_source.replace('__SINGULAR__', f'"{singular}"')
+        plural = self.class_name if self.class_name.endswith('ies') else self.pluralizer.plural_noun(singular)
+        code_source = code_source.replace('__PLURAL__', f'"{plural}"')
 
         code_source = code_source.replace(' ' * 4, '\t')
 
@@ -205,7 +207,7 @@ class ModelBuilder:
 
             # TODO: move to classwide helper
             self.functions.append("""\ndef validate_phone_number(value):
-\tphone_regex = re.compile(r'^\+?1?\d{9,15}$')
+\tphone_regex = re.compile(r'^\\+?1?\\d{9,15}$')
 \tif not phone_regex.match(value):
 \t\traise ValidationError("Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")""")
 

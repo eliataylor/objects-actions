@@ -8,12 +8,12 @@ export interface MySession {
     email: string;
     username: string;
     picture: string;
-    groups?: { [key: string]: string };
+    groups?: string[];
 }
 
 //---OBJECT-ACTIONS-PERMS-VERBS-STARTS---//
 
- export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | 'view' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject';
+ export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | 'view' | 'subscribe' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject' | 'user' | 'rooms';
 //---OBJECT-ACTIONS-PERMS-VERBS-ENDS---//
 
 interface AccessPoint {
@@ -26,7 +26,7 @@ interface AccessPoint {
     alias?: string;
 }
 
-export function getEndpoints(url: string, verb:CRUDVerb): AccessPoint[] {
+export function getEndpoints(url: string, verb: CRUDVerb): AccessPoint[] {
     url = url.replace('/api', '')
     url = url.replace(/^\/|\/$/g, "");
     const segments = url.split("/");
@@ -62,37 +62,39 @@ export function getEndpoints(url: string, verb:CRUDVerb): AccessPoint[] {
     return matches;
 }
 
+export function can_view(verb: CRUDVerb, url: string, me: MySession | null, obj: EntityTypes): boolean {
+    return true;
+}
 
-export function canDo(verb:CRUDVerb, url: string, me: MySession | null, obj: EntityTypes): boolean {
+
+export function canDo(verb: CRUDVerb, url: string, me: MySession | null, obj: EntityTypes): boolean {
     const byurl = getEndpoints(url, verb)
+    console.log(`MATCHING ${url} - ${verb}`, byurl)
 
-    console.log('MATCHING ', byurl)
+    if (!me) {
+        const others = byurl.find(endpoint => endpoint.ownership === 'others');
+        if (!others) return false;
+        return others.roles.some((element) => myGroups.has(element))
+    }
+
     // @ts-ignore
-    const isMine = me && (typeof obj['author'] !== 'undefined' && me.id === obj.author.id);
+    const isMine = typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
 
-    if (verb === 'add') {
-        const byowner = byurl.filter((perm: AccessPoint) => perm.ownership === (isMine === true ? 'own' : 'others'))
-    }
+    const myGroups = new Set(me?.groups && me?.groups.length > 0 ? me.groups : ['anonymous']);
 
-
-    if (isMine) {
-
-    }
-
-    /*
-    if (typeof permissions[core] !== "undefined") {
-        const perms: { [type: string]: AccessPoint[] } = permissions[core];
-        if (typeof perms !== 'undefined') {
-
+    for (let i = 0; i < byurl.length; i++) {
+        if (isMine && byurl[i].ownership === 'own') {
+            if (byurl[i].roles.some((element) => myGroups.has(element))) {
+                return true;
+            }
+        } else if (!isMine && byurl[i].ownership === 'others') {
+            if (byurl[i].roles.some((element) => myGroups.has(element))) {
+                return true;
+            }
         }
     }
 
-    if (obj._type === endpoint.context[0]) {
-
-    }
-    */
-
-    return true
+    return false
 }
 
 type FormObjectId = `${string}/${number}`;
@@ -134,6 +136,9 @@ export function parseFormURL(url: string): ParsedURL | null {
 
     return {object, id, verb};
 }
+
+
+
 
 
 

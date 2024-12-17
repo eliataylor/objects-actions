@@ -6,7 +6,7 @@ import TablePaginator from "../components/TablePaginator";
 import ApiClient from "../config/ApiClient";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Add} from "@mui/icons-material";
-import {getEndpoints} from "../object-actions/types/access";
+import {canDo, getEndpoints} from "../object-actions/types/access";
 
 interface EntityListProps {
     model?: string;
@@ -79,6 +79,8 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
 
 
     if (!hasUrl) return <div>Invalid URL...</div>
+
+    // const allow = canDo('view', hasUrl.segment, me, entity)
 
     return (
         <Box sx={{padding: 2}} id={"EntityList"}>

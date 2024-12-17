@@ -42,7 +42,7 @@
     "verb": "view_profile",
     "ownership": "others",
     "roles": [
-      "authenticated"
+      "verified"
     ]
   },
   {
@@ -61,40 +61,8 @@
     "context": [
       "Users"
     ],
-    "endpoint": "user/add",
-    "verb": "add",
-    "ownership": "others",
-    "roles": [],
-    "alias": "/admin/user/add"
-  },
-  {
-    "context": [
-      "Users"
-    ],
     "endpoint": "user/:id/edit",
     "verb": "edit",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Users"
-    ],
-    "endpoint": "user/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": []
-  },
-  {
-    "context": [
-      "Users"
-    ],
-    "endpoint": "user/:id/delete",
-    "verb": "delete",
     "id_index": 1,
     "ownership": "own",
     "roles": [
@@ -108,8 +76,10 @@
     "endpoint": "user/:id/delete",
     "verb": "delete",
     "id_index": 1,
-    "ownership": "others",
-    "roles": []
+    "ownership": "own",
+    "roles": [
+      "authenticated"
+    ]
   },
   {
     "context": [
@@ -120,8 +90,7 @@
     "id_index": 1,
     "ownership": "others",
     "roles": [
-      "authenticated",
-      "paid user"
+      "verified"
     ]
   },
   {
@@ -158,11 +127,7 @@
     "verb": "add",
     "ownership": "own",
     "roles": [
-      "paid user",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -172,7 +137,9 @@
     "endpoint": "city/add",
     "verb": "add",
     "ownership": "others",
-    "roles": []
+    "roles": [
+      "verified"
+    ]
   },
   {
     "context": [
@@ -183,9 +150,7 @@
     "id_index": 1,
     "ownership": "own",
     "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
+      "verified"
     ]
   },
   {
@@ -197,10 +162,7 @@
     "id_index": 1,
     "ownership": "others",
     "roles": [
-      "paid user",
-      "admin",
-      "rally speaker",
-      "rally moderator"
+      "admin"
     ]
   },
   {
@@ -211,7 +173,9 @@
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": []
+    "roles": [
+      "verified"
+    ]
   },
   {
     "context": [
@@ -221,7 +185,9 @@
     "verb": "delete",
     "id_index": 1,
     "ownership": "others",
-    "roles": []
+    "roles": [
+      "admin"
+    ]
   },
   {
     "context": [
@@ -232,13 +198,7 @@
     "id_index": 1,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -250,13 +210,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -268,14 +222,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -285,16 +232,9 @@
     "endpoint": "city/:id/sponsor/add",
     "verb": "add",
     "id_index": 1,
-    "ownership": "others",
+    "ownership": "own",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "authenticated"
     ]
   },
   {
@@ -306,88 +246,6 @@
     "id_index": 1,
     "ownership": "others",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/add",
-    "verb": "add",
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/add",
-    "verb": "add",
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
       "authenticated"
     ]
   },
@@ -395,11 +253,63 @@
     "context": [
       "Rallies"
     ],
+    "endpoint": "rally/:id",
+    "id_index": 1,
+    "verb": "view",
+    "ownership": "own",
+    "roles": [
+      "anonymous",
+      "authenticated"
+    ]
+  },
+  {
+    "context": [
+      "Rallies"
+    ],
+    "endpoint": "rally/:id",
+    "id_index": 1,
+    "verb": "view",
+    "ownership": "others",
+    "roles": [
+      "anonymous",
+      "authenticated"
+    ]
+  },
+  {
+    "context": [
+      "Rallies"
+    ],
+    "endpoint": "rally/add",
+    "verb": "add",
+    "ownership": "own",
+    "roles": [
+      "verified"
+    ]
+  },
+  {
+    "context": [
+      "Rallies"
+    ],
+    "endpoint": "rally/:id/edit",
+    "verb": "edit",
+    "id_index": 1,
+    "ownership": "own",
+    "roles": [
+      "verified"
+    ]
+  },
+  {
+    "context": [
+      "Rallies"
+    ],
     "endpoint": "rally/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "others",
-    "roles": []
+    "roles": [
+      "admin",
+      "rally moderator"
+    ]
   },
   {
     "context": [
@@ -409,7 +319,9 @@
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": []
+    "roles": [
+      "verified"
+    ]
   },
   {
     "context": [
@@ -419,7 +331,47 @@
     "verb": "delete",
     "id_index": 1,
     "ownership": "others",
-    "roles": []
+    "roles": [
+      "admin"
+    ]
+  },
+  {
+    "context": [
+      "Rallies"
+    ],
+    "endpoint": "rally/:id/subscribe",
+    "verb": "subscribe",
+    "id_index": 1,
+    "ownership": "own",
+    "roles": [
+      "verified"
+    ]
+  },
+  {
+    "context": [
+      "Rallies",
+      "Subscriptions"
+    ],
+    "endpoint": "rally/:id/subscription/:id/edit",
+    "verb": "edit",
+    "id_index": 3,
+    "ownership": "own",
+    "roles": [
+      "verified"
+    ]
+  },
+  {
+    "context": [
+      "Rallies",
+      "Subscriptions"
+    ],
+    "endpoint": "rally/:id/subscription/:id/delete",
+    "verb": "delete",
+    "id_index": 3,
+    "ownership": "own",
+    "roles": [
+      "verified"
+    ]
   },
   {
     "context": [
@@ -430,13 +382,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "rally attendee"
     ]
   },
   {
@@ -448,14 +394,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "rally attendee"
     ]
   },
   {
@@ -467,12 +406,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker"
+      "rally attendee"
     ]
   },
   {
@@ -484,10 +418,7 @@
     "id_index": 3,
     "ownership": "others",
     "roles": [
-      "paid user",
       "admin",
-      "city sponsor",
-      "rally speaker",
       "rally moderator"
     ]
   },
@@ -501,8 +432,7 @@
     "ownership": "own",
     "roles": [
       "anonymous",
-      "authenticated",
-      "city sponsor"
+      "authenticated"
     ]
   },
   {
@@ -515,8 +445,7 @@
     "ownership": "others",
     "roles": [
       "anonymous",
-      "authenticated",
-      "city sponsor"
+      "authenticated"
     ]
   },
   {
@@ -527,6 +456,7 @@
     "verb": "add",
     "ownership": "own",
     "roles": [
+      "admin",
       "city sponsor"
     ]
   },
@@ -538,6 +468,7 @@
     "verb": "add",
     "ownership": "others",
     "roles": [
+      "admin",
       "city sponsor"
     ]
   },
@@ -550,6 +481,7 @@
     "id_index": 1,
     "ownership": "own",
     "roles": [
+      "admin",
       "city sponsor"
     ]
   },
@@ -562,6 +494,7 @@
     "id_index": 1,
     "ownership": "others",
     "roles": [
+      "admin",
       "city sponsor"
     ]
   },
@@ -574,6 +507,7 @@
     "id_index": 1,
     "ownership": "own",
     "roles": [
+      "admin",
       "city sponsor"
     ]
   },
@@ -586,6 +520,7 @@
     "id_index": 1,
     "ownership": "others",
     "roles": [
+      "admin",
       "city sponsor"
     ]
   },
@@ -599,13 +534,7 @@
     "ownership": "own",
     "roles": [
       "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "authenticated"
     ]
   },
   {
@@ -617,13 +546,8 @@
     "verb": "view",
     "ownership": "others",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "anonymous",
+      "authenticated"
     ]
   },
   {
@@ -632,13 +556,9 @@
     ],
     "endpoint": "action-plan/add",
     "verb": "add",
-    "ownership": "",
+    "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
+      "verified"
     ]
   },
   {
@@ -650,13 +570,7 @@
     "id_index": 1,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -667,11 +581,7 @@
     "verb": "edit",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
+    "roles": []
   },
   {
     "context": [
@@ -682,10 +592,7 @@
     "id_index": 1,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor"
+      "verified"
     ]
   },
   {
@@ -696,11 +603,7 @@
     "verb": "delete",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
+    "roles": []
   },
   {
     "context": [
@@ -711,13 +614,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -729,13 +626,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -747,13 +638,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -765,9 +650,7 @@
     "id_index": 3,
     "ownership": "others",
     "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
+      "admin"
     ]
   },
   {
@@ -780,13 +663,7 @@
     "ownership": "own",
     "roles": [
       "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "authenticated"
     ]
   },
   {
@@ -798,13 +675,8 @@
     "verb": "meeting",
     "ownership": "others",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "anonymous",
+      "authenticated"
     ]
   },
   {
@@ -816,27 +688,7 @@
     "id_index": 1,
     "ownership": "own",
     "roles": [
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
+      "rally attendee",
       "rally speaker",
       "rally moderator"
     ]
@@ -849,12 +701,21 @@
     "endpoint": "rally/:id/meeting/:id/edit",
     "verb": "edit",
     "id_index": 3,
-    "ownership": "others",
+    "ownership": "own",
     "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
+      "verified"
     ]
+  },
+  {
+    "context": [
+      "Rallies",
+      "Meetings"
+    ],
+    "endpoint": "rally/:id/meeting/:id/edit",
+    "verb": "edit",
+    "id_index": 3,
+    "ownership": "others",
+    "roles": []
   },
   {
     "context": [
@@ -866,9 +727,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
+      "verified"
     ]
   },
   {
@@ -881,7 +740,8 @@
     "id_index": 3,
     "ownership": "others",
     "roles": [
-      "admin"
+      "admin",
+      "rally moderator"
     ]
   },
   {
@@ -894,7 +754,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated"
+      "rally attendee"
     ]
   },
   {
@@ -907,7 +767,7 @@
     "id_index": 5,
     "ownership": "own",
     "roles": [
-      "authenticated"
+      "verified"
     ]
   },
   {
@@ -920,7 +780,7 @@
     "id_index": 5,
     "ownership": "own",
     "roles": [
-      "authenticated"
+      "verified"
     ]
   },
   {
@@ -946,7 +806,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated"
+      "verified"
     ]
   },
   {
@@ -959,7 +819,7 @@
     "id_index": 5,
     "ownership": "others",
     "roles": [
-      "authenticated"
+      "verified"
     ]
   },
   {
@@ -972,7 +832,7 @@
     "id_index": 3,
     "ownership": "own",
     "roles": [
-      "authenticated"
+      "verified"
     ]
   },
   {
@@ -983,9 +843,9 @@
     "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/delete",
     "verb": "delete",
     "id_index": 5,
-    "ownership": "others",
+    "ownership": "own",
     "roles": [
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -996,9 +856,9 @@
     "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/approve",
     "verb": "approve",
     "id_index": 5,
-    "ownership": "others",
+    "ownership": "own",
     "roles": [
-      "rally moderator"
+      "verified"
     ]
   },
   {
@@ -1009,173 +869,183 @@
     "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/reject",
     "verb": "reject",
     "id_index": 5,
-    "ownership": "others",
+    "ownership": "own",
     "roles": [
-      "rally moderator"
+      "verified"
     ]
   },
   {
     "context": [
-      "Officials"
+      "Invites"
     ],
-    "endpoint": "official/:id",
+    "endpoint": "invites/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "city sponsor"
+      "verified"
     ]
   },
   {
     "context": [
-      "Officials"
+      "Invites"
     ],
-    "endpoint": "official/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/add",
+    "endpoint": "invites",
     "verb": "add",
     "ownership": "own",
     "roles": [
-      "city sponsor"
+      "verified"
     ]
   },
   {
     "context": [
-      "Officials"
+      "Invites"
     ],
-    "endpoint": "official/add",
-    "verb": "add",
-    "ownership": "others",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/edit",
+    "endpoint": "invites/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "own",
     "roles": [
-      "city sponsor"
+      "verified"
     ]
   },
   {
     "context": [
-      "Officials"
+      "Invites"
     ],
-    "endpoint": "official/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/delete",
+    "endpoint": "invites/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
     "roles": [
-      "city sponsor"
+      "verified"
     ]
   },
   {
     "context": [
-      "Officials"
+      "Meetings"
     ],
-    "endpoint": "official/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
+    "endpoint": "meeting/:id/user/:id",
+    "id_index": 3,
+    "verb": "user",
+    "ownership": "own",
+    "roles": [
+      "verified",
+      "admin",
+      "rally attendee"
+    ]
+  },
+  {
+    "context": [
+      "Meetings"
+    ],
+    "endpoint": "meeting/:id/user/:id",
+    "id_index": 3,
+    "verb": "user",
     "ownership": "others",
     "roles": [
-      "city sponsor"
+      "admin",
+      "rally attendee"
     ]
   },
   {
     "context": [
-      "ActionPlans"
+      "Meetings"
     ],
-    "endpoint": "action-plan/:id",
+    "endpoint": "meeting/:id/user/:id",
+    "id_index": 3,
+    "verb": "user",
+    "ownership": "own",
+    "roles": [
+      "verified",
+      "rally attendee"
+    ]
+  },
+  {
+    "context": [
+      "Meetings"
+    ],
+    "endpoint": "meeting/:id/user/:id",
+    "id_index": 3,
+    "verb": "user",
+    "ownership": "own",
+    "roles": [
+      "verified",
+      "rally attendee"
+    ]
+  },
+  {
+    "context": [
+      "Meetings"
+    ],
+    "endpoint": "meeting/:id/user/:id",
+    "id_index": 3,
+    "verb": "user",
+    "ownership": "own",
+    "roles": [
+      "verified",
+      "rally attendee"
+    ]
+  },
+  {
+    "context": [
+      "Invites"
+    ],
+    "endpoint": "invites/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
     "roles": [
       "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "authenticated"
     ]
   },
   {
     "context": [
-      "ActionPlans"
+      "Invites"
     ],
-    "endpoint": "action-plan/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/add",
+    "endpoint": "invites",
     "verb": "add",
+    "ownership": "own",
+    "roles": [
+      "admin"
+    ]
+  },
+  {
+    "context": [
+      "Invites"
+    ],
+    "endpoint": "invites/:id/edit",
+    "verb": "edit",
+    "id_index": 1,
+    "ownership": "own",
+    "roles": [
+      "admin"
+    ]
+  },
+  {
+    "context": [
+      "Invites"
+    ],
+    "endpoint": "invites/:id/delete",
+    "verb": "delete",
+    "id_index": 1,
+    "ownership": "own",
+    "roles": [
+      "admin"
+    ]
+  },
+  {
+    "context": [
+      "Meetings"
+    ],
+    "endpoint": "meeting/:id/rooms",
+    "verb": "rooms",
+    "id_index": 1,
     "ownership": "",
     "roles": [
-      "authenticated",
-      "paid user",
       "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
+      "rally attendee",
       "city sponsor",
       "city official",
       "rally speaker",
@@ -1184,394 +1054,27 @@
   },
   {
     "context": [
-      "ActionPlans"
+      "Rooms"
     ],
-    "endpoint": "action-plan/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/add",
-    "verb": "add",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting",
-    "verb": "meeting",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "admin"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment",
-    "verb": "comment",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor",
-    "verb": "sponsor",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak",
-    "verb": "apply-to-speak",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/approve",
-    "verb": "approve",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/reject",
-    "verb": "reject",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Cities"
-    ],
-    "endpoint": "city/:id",
+    "endpoint": "rooms/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
     "roles": [
-      "anonymous",
-      "authenticated"
+      "verified"
     ]
   },
   {
     "context": [
-      "Cities"
+      "Rooms"
     ],
-    "endpoint": "city/:id",
+    "endpoint": "rooms/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
     "roles": [
-      "anonymous",
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Cities"
-    ],
-    "endpoint": "city/add",
-    "verb": "add",
-    "ownership": "own",
-    "roles": [
-      "paid user",
+      "admin",
+      "rally attendee",
       "city sponsor",
       "city official",
       "rally speaker",
@@ -1580,970 +1083,177 @@
   },
   {
     "context": [
-      "Cities"
+      "Rooms"
     ],
-    "endpoint": "city/add",
+    "endpoint": "rooms/:id",
+    "id_index": 1,
     "verb": "add",
-    "ownership": "others",
-    "roles": []
+    "ownership": "own",
+    "roles": [
+      "admin",
+      "rally attendee",
+      "city sponsor",
+      "city official",
+      "rally speaker",
+      "rally moderator"
+    ]
   },
   {
     "context": [
-      "Cities"
+      "Rooms"
     ],
-    "endpoint": "city/:id/edit",
+    "endpoint": "rooms/:id",
+    "id_index": 1,
     "verb": "edit",
-    "id_index": 1,
     "ownership": "own",
     "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
+      "verified"
     ]
   },
   {
     "context": [
-      "Cities"
+      "Rooms"
     ],
-    "endpoint": "city/:id/edit",
-    "verb": "edit",
+    "endpoint": "rooms/:id",
     "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Cities"
-    ],
-    "endpoint": "city/:id/delete",
     "verb": "delete",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": []
-  },
-  {
-    "context": [
-      "Cities"
-    ],
-    "endpoint": "city/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": []
-  },
-  {
-    "context": [
-      "Cities"
-    ],
-    "endpoint": "city/:id/comment/add",
-    "verb": "add",
-    "id_index": 1,
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
     "context": [
-      "Cities"
+      "Subscriptions"
     ],
-    "endpoint": "city/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Cities"
-    ],
-    "endpoint": "city/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Cities"
-    ],
-    "endpoint": "city/:id/sponsor/add",
-    "verb": "add",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Cities"
-    ],
-    "endpoint": "city/:id/sponsor/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id",
+    "endpoint": "subscriptions/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
+      "verified",
       "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
+      "rally attendee",
       "rally moderator"
     ]
   },
   {
     "context": [
-      "Rallies"
+      "Subscriptions"
     ],
-    "endpoint": "rally/:id",
+    "endpoint": "subscriptions/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
       "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
+      "rally attendee",
       "rally moderator"
     ]
   },
   {
     "context": [
-      "Rallies"
+      "Subscriptions"
     ],
-    "endpoint": "rally/add",
+    "endpoint": "subscriptions/:id",
+    "id_index": 1,
     "verb": "add",
     "ownership": "own",
     "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
+      "verified",
+      "rally attendee"
     ]
   },
   {
     "context": [
-      "Rallies"
+      "Subscriptions"
     ],
-    "endpoint": "rally/add",
-    "verb": "add",
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/edit",
+    "endpoint": "subscriptions/:id",
+    "id_index": 1,
     "verb": "edit",
+    "ownership": "own",
+    "roles": [
+      "verified",
+      "rally attendee"
+    ]
+  },
+  {
+    "context": [
+      "Subscriptions"
+    ],
+    "endpoint": "subscriptions/:id",
     "id_index": 1,
+    "verb": "delete",
     "ownership": "own",
     "roles": [
-      "authenticated"
+      "verified",
+      "rally attendee"
     ]
   },
   {
     "context": [
-      "Rallies"
+      "Resources"
     ],
-    "endpoint": "rally/:id/edit",
-    "verb": "edit",
+    "endpoint": "resources/:id",
     "id_index": 1,
-    "ownership": "others",
-    "roles": []
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": []
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": []
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/comment/:id/add",
-    "verb": "add",
-    "id_index": 3,
+    "verb": "view_list",
     "ownership": "own",
     "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
+      "verified"
     ]
   },
   {
     "context": [
-      "Rallies"
+      "Resources"
     ],
-    "endpoint": "rally/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id",
+    "endpoint": "resources/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "city sponsor"
+      "verified"
     ]
   },
   {
     "context": [
-      "Officials"
+      "Resources"
     ],
-    "endpoint": "official/:id",
+    "endpoint": "resources/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
     "roles": [
-      "anonymous",
-      "authenticated",
-      "city sponsor"
+      "verified"
     ]
   },
   {
     "context": [
-      "Officials"
+      "Resources"
     ],
-    "endpoint": "official/add",
-    "verb": "add",
-    "ownership": "own",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/add",
-    "verb": "add",
-    "ownership": "others",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/edit",
-    "verb": "edit",
+    "endpoint": "resources/:id",
     "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/add",
-    "verb": "add",
-    "ownership": "",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/add",
-    "verb": "add",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting",
-    "verb": "meeting",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "admin"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment",
-    "verb": "comment",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor",
-    "verb": "sponsor",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak",
-    "verb": "apply-to-speak",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/approve",
-    "verb": "approve",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/reject",
-    "verb": "reject",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/add",
     "verb": "add",
     "ownership": "own",
     "roles": [
       "paid user",
-      "admin",
-      "city sponsor"
+      "rally attendee",
+      "city sponsor",
+      "city official",
+      "rally speaker",
+      "rally moderator"
     ]
   },
   {
     "context": [
-      "Rallies"
+      "Resources"
     ],
-    "endpoint": "rally/add",
-    "verb": "add",
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/edit",
+    "endpoint": "resources/:id",
+    "id_index": 1,
     "verb": "edit",
-    "id_index": 1,
     "ownership": "own",
     "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": []
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": []
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": []
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/comment/:id/add",
-    "verb": "add",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
       "paid user",
-      "admin",
+      "rally attendee",
       "city sponsor",
       "city official",
       "rally speaker",
@@ -2552,1245 +1262,18 @@
   },
   {
     "context": [
-      "Rallies"
+      "Resources"
     ],
-    "endpoint": "rally/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id",
+    "endpoint": "resources/:id",
     "id_index": 1,
-    "verb": "view",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/add",
-    "verb": "add",
-    "ownership": "own",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/add",
-    "verb": "add",
-    "ownership": "others",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/delete",
     "verb": "delete",
-    "id_index": 1,
     "ownership": "own",
     "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Officials"
-    ],
-    "endpoint": "official/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
       "paid user",
-      "admin",
+      "rally attendee",
       "city sponsor",
       "city official",
       "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/add",
-    "verb": "add",
-    "ownership": "",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/add",
-    "verb": "add",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting",
-    "verb": "meeting",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "admin"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment",
-    "verb": "comment",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor",
-    "verb": "sponsor",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak",
-    "verb": "apply-to-speak",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/approve",
-    "verb": "approve",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/reject",
-    "verb": "reject",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id",
-    "id_index": 1,
-    "verb": "view",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/add",
-    "verb": "add",
-    "ownership": "",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/edit",
-    "verb": "edit",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/delete",
-    "verb": "delete",
-    "id_index": 1,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/add",
-    "verb": "add",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "ActionPlans"
-    ],
-    "endpoint": "action-plan/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting",
-    "verb": "meeting",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "admin"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment",
-    "verb": "comment",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor",
-    "verb": "sponsor",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak",
-    "verb": "apply-to-speak",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/approve",
-    "verb": "approve",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/reject",
-    "verb": "reject",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting/:id",
-    "id_index": 3,
-    "verb": "meeting",
-    "ownership": "others",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies"
-    ],
-    "endpoint": "rally/:id/meeting",
-    "verb": "meeting",
-    "id_index": 1,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated",
-      "paid user",
-      "admin",
-      "city sponsor",
-      "city official",
-      "rally speaker",
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/edit",
-    "verb": "edit",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "paid user",
-      "admin",
-      "city sponsor"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/delete",
-    "verb": "delete",
-    "id_index": 3,
-    "ownership": "others",
-    "roles": [
-      "admin"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment",
-    "verb": "comment",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/edit",
-    "verb": "edit",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor",
-    "verb": "sponsor",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/sponsor/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak",
-    "verb": "apply-to-speak",
-    "id_index": 3,
-    "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/delete",
-    "verb": "delete",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/approve",
-    "verb": "approve",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
-  },
-  {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
-    "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/reject",
-    "verb": "reject",
-    "id_index": 5,
-    "ownership": "others",
-    "roles": [
       "rally moderator"
     ]
   }
