@@ -867,10 +867,10 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "prequesites": {
-      "machine": "prequesites",
-      "singular": "Prequesites",
-      "plural": "Prequesiteses",
+    "prerequisites": {
+      "machine": "prerequisites",
+      "singular": "Prerequisites",
+      "plural": "Prerequisiteses",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
@@ -1839,7 +1839,7 @@ export interface ActionPlans extends SuperModel {
 	coauthors?: RelEntity | null;
 	pro_argument?: string | null;
 	con_argument?: string | null;
-	prequesites: string;
+	prerequisites: string;
 	timeline?: string | null;
 	rally?: RelEntity | null;
 }
@@ -1932,6 +1932,18 @@ export interface Stakeholders extends SuperModel {
 	image?: string | null;
 }
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

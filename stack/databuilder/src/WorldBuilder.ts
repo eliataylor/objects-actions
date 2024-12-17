@@ -104,7 +104,7 @@ export class WorldBuilder {
             console.log(`Error ${item.type} --- ${response.error}`)
         } else {
             console.log(`Created ${item.type} --- ${JSON.stringify(response.data)}`)
-            this.saveFixture(`object-add-${hasUrl.type}-${response.data.id}.json`, response.data.data);
+            this.saveFixture(`object-add-${hasUrl.type}-${response.data.id}.json`, response.data);
         }
         return response;
     }
@@ -123,11 +123,16 @@ export class WorldBuilder {
                     const randomIndex = Math.floor(Math.random() * relResponse.data.results.length);
                     // @ts-ignore
                     entity[field.machine] = relResponse.data.results[randomIndex].id || relResponse.data.results[randomIndex].slug
+
+                    if (field.cardinality as number > 1) {
+                        entity[field.machine] = [entity[field.machine]]
+                    }
                 } else {
                     console.warn(`relationship ${relType} has no data yet`)
                 }
+
             } else if (field.field_type === 'image') {
-                const imageUrl = faker.image.urlLoremFlickr({category: hasUrl.name.toLowerCase()})
+                const imageUrl = faker.image.urlLoremFlickr({category: hasUrl.plural.toLowerCase()})
                 console.log(`Going to load ${imageUrl}`)
                 const imageResponse = await axios.get(imageUrl, {responseType: 'stream'});
                 if (imageResponse.status !== 200) {
@@ -137,7 +142,7 @@ export class WorldBuilder {
                     entity[field.machine] = imageResponse.data;
                 }
             } else {
-                entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.name)
+                entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
                 if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
                     entity.hasImage = true;
                 }
@@ -160,6 +165,7 @@ export class WorldBuilder {
     }
 
     public async loadAuthor(role: string) {
+        // @ts-ignore
         let author = this.allCreators.find(user => user.groups?.indexOf(role) > -1);
         if (author && author.cookie) return author
         if (author && author.email) {
@@ -175,6 +181,7 @@ export class WorldBuilder {
 
     public async loadAuthorByRole(role: string) {
         const contributors = await this.getContentCreators();
+        // @ts-ignore
         let authors = contributors.filter(user => user.groups?.indexOf(role) > -1);
 
         if (!authors.length) {

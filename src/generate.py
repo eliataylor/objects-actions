@@ -36,10 +36,14 @@ if __name__ == "__main__":
     logger.info(f"Output directory: {output_dir}")
 
     if command == 'django':
-        DjangoBuilder(types_path, matrix_path, output_dir)
+        builder = DjangoBuilder(types_path, matrix_path, output_dir)
+        if matrix_path:
+            builder.build_permissions()
     elif command == 'typescript':
         reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_types()
+        if matrix_path:
+            reactor.build_permissions()
 
 
     else:

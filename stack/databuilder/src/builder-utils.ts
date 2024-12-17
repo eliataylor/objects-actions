@@ -99,7 +99,8 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
         case 'email':
             return faker.internet.email();
         case 'phone':
-            return faker.phone.number();
+            // @ts-ignore
+            return faker.phone.number({ style: 'international' })
         case 'address':
             const state = faker.location.state({abbreviated:true})
             return `${faker.location.streetAddress()} ${faker.location.city()} ${state} ${faker.location.zipCode({state})}`;

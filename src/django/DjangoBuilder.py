@@ -1,10 +1,12 @@
+import json
 import os
 
 from loguru import logger
-import json
+from utils.utils import inject_generated_code, build_permissions_from_csv, create_machine_name, create_object_name, build_types_from_csv, find_search_fields, find_object_by_key_value, capitalize
+
 from .ModelBuilder import ModelBuilder
 from .UserBuilder import UserBuilder
-from utils.utils import inject_generated_code, create_machine_name, create_object_name, build_types_from_csv, find_search_fields, find_object_by_key_value
+
 
 class DjangoBuilder:
     def __init__(self, types_path, matrix_path, output_dir):
@@ -50,6 +52,10 @@ class DjangoBuilder:
                             "from .views import RenderFrontendIndex",
                             "from .views import redirect_to_frontend",
                             "from .views import migrate, collectstatic"
+                        ],
+                        "permissions": [
+                            "from rest_framework import permissions",
+                            "from rest_framework.permissions import BasePermission"
                         ]}
 
         self.requirements = []
@@ -61,12 +67,14 @@ class DjangoBuilder:
         # TODO: personalize the CustomPagination class
 
         self.json = build_types_from_csv(types_path)
-        # self.perms_json = build_types_from_csv(matrix_path) if matrix_path is not None else []
 
         self.build_models()
         self.build_serializers()
         self.build_viewsets()
         self.build_urls()
+        if matrix_path:
+            self.matrix_path = matrix_path
+            self.build_permissions()
 
     def append_import(self, key, val):
         if val not in self.imports[key]:
@@ -140,7 +148,8 @@ class DjangoBuilder:
             has_slug = find_object_by_key_value(self.json[class_name], "Field Type", "slug")
             if has_slug:
                 self.append_import("urls", f"from .views import {model_name}AliasView")
-                extra_patterns.append(f"path('u/{model_name.lower()}/<slug:{has_slug["Field Name"]}>/', {model_name}AliasView.as_view(), name='{model_name.lower()}-alias-view')")
+                extra_patterns.append(
+                    f"path('u/{model_name.lower()}/<slug:{has_slug["Field Name"]}>/', {model_name}AliasView.as_view(), name='{model_name.lower()}-alias-view')")
 
         inject_generated_code(outpath, '\n'.join(self.imports["urls"]), 'URL-IMPORTS')
 
@@ -173,7 +182,8 @@ urlpatterns += [
             model_name = create_object_name(class_name)
             code = tpl.replace('__CLASSNAME__', model_name)
             if model_name == 'Users':
-                code = code.replace("fields = '__all__'", "fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]")
+                code = code.replace("fields = '__all__'",
+                                    "fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]")
             parts.append(code)
 
             self.append_import("serializers", f"from .models import {model_name}")
@@ -208,7 +218,6 @@ urlpatterns += [
 
             parts.append(code)
 
-
             has_slug = find_object_by_key_value(self.json[class_name], "Field Type", "slug")
             if has_slug:
                 parts.append(f"""class {model_name}AliasView(generics.RetrieveAPIView):
@@ -218,7 +227,6 @@ urlpatterns += [
 
             self.append_import("views", f"from .models import {model_name}")
             self.append_import("views", f"from .serializers import {model_name}Serializer")
-
 
         inject_generated_code(outpath, '\n'.join(self.imports["views"]).strip(), 'VIEWSET-IMPORTS')
 
@@ -231,3 +239,30 @@ urlpatterns += [
             inject_generated_code(outpath, core.strip(), 'CORE')
 
         inject_generated_code(outpath, "\n".join(parts).strip(), 'VIEWSETS')
+
+    def build_permissions(self):
+        matrix = build_permissions_from_csv(self.matrix_path, self.json)
+        if matrix is None or 'permissions' not in matrix:
+            return None
+
+        outpath = os.path.join(self.output_dir, 'permissions.py')
+
+        with open(self.templates_dir + '/permission.py', 'r') as fm:
+            tpl = fm.read().strip()
+        with open(self.templates_dir + '/permissions.py', 'r') as fm:
+            permissions_helpers = fm.read().strip()
+
+        parts = []
+        for role in matrix['all_roles']:
+            class_key = f"Is{create_object_name(capitalize(role))}User"
+            model_name = create_object_name(role)
+
+            code = tpl.replace('__ROLE_CLASS__', class_key)
+            code = code.replace('__ROLE_NAME__', role)
+            parts.append(code)
+
+            # import to Views to use??
+            self.append_import("views", f"from .models import {class_key}")
+
+        inject_generated_code(outpath, '\n'.join(self.imports["permissions"]), 'PERMISSIONS-IMPORTS')
+        inject_generated_code(outpath, permissions_helpers + "\n" + "\n".join(parts).strip(), 'PERMISSIONS')

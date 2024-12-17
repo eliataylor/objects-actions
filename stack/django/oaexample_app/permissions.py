@@ -1,25 +1,102 @@
+
+
+####OBJECT-ACTIONS-PERMISSIONS-IMPORTS-STARTS####
 from rest_framework import permissions
+from rest_framework.permissions import BasePermission
+####OBJECT-ACTIONS-PERMISSIONS-IMPORTS-ENDS####
 
-class IsAuthor(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        # User must be authenticated
-        if not request.user.is_authenticated:
-            return False
 
-        user = request.user
 
-        # Check if the user is the author or a cohost
-        if obj.author == user:
-            return True
+####OBJECT-ACTIONS-PERMISSIONS-STARTS####
+from django.contrib.auth.decorators import permission_required
 
-        return False
-
-class ORPermission(permissions.BasePermission):
-    def __init__(self, *permissions):
-        self.permissions = permissions
-
+@permission_required('app.change_post', raise_exception=True)
+def edit_post(request, post_id):
+    # View logic here
+    pass
+class IsAnonymousUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
     def has_permission(self, request, view):
-        return any(permission().has_permission(request, view) for permission in self.permissions)
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='anonymous').exists()
+class IsAuthenticatedUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='authenticated').exists()
+class IsVerifiedUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='verified').exists()
+class IsPaiduserUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='paid user').exists()
+class IsAdminUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='admin').exists()
+class IsRallyattendeeUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='rally attendee').exists()
+class IsCitysponsorUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='city sponsor').exists()
+class IsCityofficialUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='city official').exists()
+class IsRallyspeakerUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='rally speaker').exists()
+class IsRallymoderatorUser(BasePermission):
+    """
+    Custom permission to only allow users in the 'Admin' group to access the view.
+    """
+    def has_permission(self, request, view):
+        # Check if the user belongs to the 'Admin' group
+        return request.user.groups.filter(name='rally moderator').exists()
+####OBJECT-ACTIONS-PERMISSIONS-ENDS####
 
-    def has_object_permission(self, request, view, obj):
-        return any(permission().has_object_permission(request, view, obj) for permission in self.permissions)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

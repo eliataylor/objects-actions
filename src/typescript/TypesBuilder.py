@@ -10,22 +10,22 @@ class TypesBuilder:
         self.pluralizer = inflect.engine()
         self.types_filepath = types_filepath
         self.field_csv = field_csv
+        self.matrix_csv = matrix_csv
         self.json = build_types_from_csv(field_csv)
-        self.perms_json = build_permissions_from_csv(matrix_csv, self.json) if matrix_csv is not None else []
-        perms_path = types_filepath.replace('types.tsx', 'permissions.json')
-        with open(perms_path, 'w') as file:
-            file.write(json.dumps(self.perms_json, indent=2))
-        self.build_permissions()
-        exit()
 
     def build_permissions(self):
-        allverbs = {}
-        for endpoint in self.perms_json:
-            allverbs[endpoint['verb']] = True
+        matrix = build_permissions_from_csv(self.matrix_csv, self.json) if self.matrix_csv is not None else None
+        if matrix is None or 'permissions' not in matrix:
+            return None
 
         perms_path = self.types_filepath.replace('types.tsx', 'access.tsx')
-        inject_generated_code(perms_path, f"\n export type CRUDVerb = '{("' | '").join(allverbs)}';", 'PERMS-VERBS')
-        pass
+        inject_generated_code(perms_path, f"\n export type CRUDVerb = '{("' | '").join(matrix['all_verbs'])}';", 'PERMS-VERBS')
+        inject_generated_code(perms_path, f"\n export type PermRoles = '{("' | '").join(matrix['all_roles'])}';", 'PERMS-ROLES')
+
+        perms_path = self.types_filepath.replace('types.tsx', 'permissions.json')
+        with open(perms_path, 'w') as file:
+            file.write(json.dumps(matrix['permissions'], indent=2))
+
 
     def build_types(self):
 

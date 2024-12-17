@@ -10,7 +10,7 @@ export interface HttpResponse<T> {
     errors?: { [key: string]: any };
     started: number;
     ended: number;
-    cookie?: string;
+    cookie?: Cookie;
 }
 
 class ApiClient {
@@ -94,7 +94,7 @@ class ApiClient {
                 email,
                 password,
             });
-            if (response.status !== 200) {
+            if (response.status < 200 || response.status > 299) {
                 resp = this.returnErrors(response.data)
                 resp.status = response.status;
             } else {
@@ -106,6 +106,13 @@ class ApiClient {
             resp = this.returnErrors(error)
             console.error('Login failed:', error.message);
         }
+
+        const cookies = await this.cookieJar.getCookies(url || '');
+        let cookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
+        if (cookie) {
+            resp.cookie = cookie
+        }
+
         resp.ended = new Date().getTime();
 
         return resp;
@@ -128,7 +135,7 @@ class ApiClient {
         url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/signup`
         try {
             const response = await this.post(url, baseData);
-            if (response.status !== 200) {
+            if (response.status < 200 || response.status > 299) {
                 resp = this.returnErrors(response.data)
                 resp.status = response.status;
             } else {
@@ -144,7 +151,7 @@ class ApiClient {
         const cookies = await this.cookieJar.getCookies(url || '');
         let cookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
         if (cookie) {
-            resp.cookie = cookie.value
+            resp.cookie = cookie
         }
 
         resp.ended = new Date().getTime();
@@ -166,7 +173,7 @@ class ApiClient {
             response = await this.client[method](url, data,
                 {headers: mergedHeaders}
             );
-            if (response.status !== 200) {
+            if (response.status < 200 || response.status > 299) {
                 resp = this.returnErrors(response.data)
                 resp.status = response.status;
             } else {
@@ -195,7 +202,7 @@ class ApiClient {
         try {
             const headers = await this.getCookieHeaders(url);
             const response = await this.client.get<T>(url, {headers});
-            if (response.status !== 200) {
+            if (response.status < 200 || response.status > 299) {
                 resp = this.returnErrors(response.data)
                 resp.status = response.status;
             } else {
@@ -271,11 +278,11 @@ class ApiClient {
         return this.cookieJar.getSetCookieStringsSync(process.env.REACT_APP_API_HOST || "*");
     }
 
-    public async setCookie(url: string, cookie: string): Promise<void> {
-        this.cookieJar.setCookieSync(cookie, url);
+    public async setCookie(url: string, cookie: string)  {
+        return this.cookieJar.setCookieSync(cookie, url);
     }
 
-    public async setCookies(url: string, setCookieHeader: string[]): Promise<void> {
+    public setCookies(url: string, setCookieHeader: string[]) {
         setCookieHeader.forEach((cookieStr) => {
             const cookie = Cookie.parse(cookieStr);
             if (cookie) {

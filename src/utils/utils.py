@@ -112,10 +112,11 @@ def build_permissions_from_csv(csv_path, object_types):
     steps_idx = df.columns.get_loc('RULES')
 
     # Extract the roles from row 2, between "ROLES" and "STEPS", dynamically
-    roles = df.iloc[0, roles_start_idx:steps_idx].dropna().tolist()
+    all_roles = df.iloc[0, roles_start_idx:steps_idx].dropna().tolist()
 
     # Initialize the final permissions dictionary
     permissions = []
+    all_verbs = {}
 
     object_type = False
 
@@ -154,11 +155,14 @@ def build_permissions_from_csv(csv_path, object_types):
 
             # Identify roles with "TRUE" permissions
             allowed_roles = [
-                roles[i] for i in range(len(roles)) if row.iloc[roles_start_idx + i] == 'TRUE'
+                all_roles[i] for i in range(len(all_roles)) if row.iloc[roles_start_idx + i] == 'TRUE'
             ]
 
             if "verb" not in segments:
                 segments['verb'] = create_machine_name(verb_name)
+
+            all_verbs[segments['verb']] = True
+
 
             permission_dict = {
                 **segments,
@@ -173,7 +177,7 @@ def build_permissions_from_csv(csv_path, object_types):
             else:
                 pass
 
-    return permissions
+    return {'all_roles': all_roles, 'all_verbs': all_verbs, 'permissions':permissions}
 
 
 def build_types_from_csv(csv_file):

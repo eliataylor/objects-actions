@@ -12,9 +12,14 @@ export interface MySession {
 }
 
 //---OBJECT-ACTIONS-PERMS-VERBS-STARTS---//
-
- export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | 'view' | 'subscribe' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject' | 'user' | 'rooms';
+ export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | '' | 'view' | 'subscribe' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject' | 'user' | 'rooms';
 //---OBJECT-ACTIONS-PERMS-VERBS-ENDS---//
+
+
+//---OBJECT-ACTIONS-PERMS-ROLES-STARTS---//
+ export type PermRoles = 'anonymous' | 'authenticated' | 'verified' | 'paid user' | 'admin' | 'rally attendee' | 'city sponsor' | 'city official' | 'rally speaker' | 'rally moderator';
+//---OBJECT-ACTIONS-PERMS-ROLES-ENDS---//
+
 
 interface AccessPoint {
     verb: CRUDVerb;
@@ -65,7 +70,6 @@ export function getEndpoints(url: string, verb: CRUDVerb): AccessPoint[] {
 export function can_view(verb: CRUDVerb, url: string, me: MySession | null, obj: EntityTypes): boolean {
     return true;
 }
-
 
 export function canDo(verb: CRUDVerb, url: string, me: MySession | null, obj: EntityTypes): boolean {
     const byurl = getEndpoints(url, verb)
@@ -136,68 +140,3 @@ export function parseFormURL(url: string): ParsedURL | null {
 
     return {object, id, verb};
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
