@@ -39,7 +39,6 @@ describe("oaexample load and populate add forms", async () => {
     beforeEach(() => {
         cy.loginBackground(Cypress.env("email"), Cypress.env("password")).then(e => {
             console.log(e);
-
             cy.clickIf('[aria-label="Dismiss EULA Notice"]')
         });
     })
@@ -51,7 +50,10 @@ describe("oaexample load and populate add forms", async () => {
         cy.assertMenuReady();
 
         NAVITEMS.forEach(navItem => {
-            cy.clickIf('[aria-label="Open Drawer"]')
+
+            if (Cypress.env("viewportWidth") <= 600) {
+                cy.clickIf('[aria-label="Open Drawer"]')
+            }
 
             cy.intercept('GET', `${navItem.api}*`).as(`Get${navItem.type}`) // wildcard for query params
             cy.grab(`#ObjectTypesMenu a[href="${navItem.screen}" i]`).showClick();
@@ -60,7 +62,9 @@ describe("oaexample load and populate add forms", async () => {
                 expect(interception.response.statusCode).to.eq(200);
             });
 
-            cy.clickIf('[aria-label="Close Drawer"]')
+            if (Cypress.env("viewportWidth") <= 600) {
+                cy.clickIf('[aria-label="Close Drawer"]')
+            }
 
             cy.intercept('GET', `/forms${navItem.screen}/0/add*`).as(`GetForm${navItem.type}`) // wildcard for query params
             cy.grab(`[data-href="/forms${navItem.screen}/0/add" i]`).showClick();

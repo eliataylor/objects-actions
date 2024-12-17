@@ -58,12 +58,9 @@ export default function AuthMenu() {
     )
     const authNav = (
         <React.Fragment>
-            <ListItemButton onClick={handleClick}>
-                <ListItemIcon>
-                   {open ? <ExpandLess/> : <ExpandMore/>}
-                </ListItemIcon>
-                <ListItemText primary="My Account" sx={{marginRight:1}} />
-                <Settings/>
+            <ListItemButton dense={true} style={{justifyContent:'space-between'}} onClick={handleClick}>
+                <ListItemText primary="My Account" />
+                   {open ? <ExpandLess/> : <Settings />}
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" sx={{pl: 1}}>

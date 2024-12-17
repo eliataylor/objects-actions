@@ -27,6 +27,8 @@
 
 A secure API and CMS written in Django, with a fully integrated and authenticating ReactJS front-end:
 
+![stack/cypress/cypress/videos/load-form.cy.ts.mp4](stack/cypress/cypress/videos/load-form.cy.ts.mp4)
+
 ![docs/images/nod-oa-interface.png](docs/images/nod-oa-interface.png)
 
 
@@ -65,9 +67,13 @@ This will start these sites:
 `sh fakedata.sh newproject`
 By default 5 of each object type will be created. You can change the numbers and control which users create content from [newproject/databuilder/src/WorldBuilder.ts#L168](stack/databuilder/src/WorldBuilder.ts#L168)
 
-### Test your WebApp 
-`sh fakedata.sh newproject`
+### Test your WebApp with Cypress.io
+`sh test-frontend.sh newproject`
 By default 5 of each object type will be created. You can change the numbers and control which users create content from [newproject/databuilder/src/WorldBuilder.ts#L168](stack/databuilder/src/WorldBuilder.ts#L168)
+
+### Test your API with K6
+`sh test-backend.sh newproject`
+By default the load testing runs for 30 seconds. You can change the settings here [newproject/k6/localhost.js](stack/k6/localhost.js#L4)
 
 
 ---

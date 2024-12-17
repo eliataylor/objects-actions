@@ -60,7 +60,7 @@ const EntityForm = () => {
     }
 
     if (!allow) {
-        return <Typography>Not allowed</Typography>
+//        return <Typography>Not allowed</Typography>
     }
 
     const fields = Object.values(TypeFieldSchema[hasUrl.type])
