@@ -25,9 +25,11 @@
 
 <hr />
 
-A secure API and CMS written in Django, with a fully integrated and authenticating ReactJS front-end:
+A secure API and CMS written in Django, a fully integrated and authenticating ReactJS front-end, and testing suites with Cypress.io and K6:
 
-![stack/cypress/cypress/videos/load-form.cy.ts.mp4](stack/cypress/cypress/videos/load-form.cy.ts.mp4)
+
+https://github.com/user-attachments/assets/3065f1a1-9fa6-4420-99c2-f3aa4bcce373
+
 
 ![docs/images/nod-oa-interface.png](docs/images/nod-oa-interface.png)
 
