@@ -74,14 +74,14 @@ class DjangoBuilder:
             self.build_viewsets()
             self.build_urls()
         else:
-            logger.warning(f'Cannot find {types_path}')
+            logger.warning(f'Cannot find Object Types {types_path}')
             sys.exit(0)
 
         if matrix_path or not os.path.exists(matrix_path):
             self.matrix_path = matrix_path
             self.build_permissions()
         else:
-            logger.warning(f'Cannot find {matrix_path}')
+            logger.warning(f'Cannot find Permissions Matrix {matrix_path}')
             sys.exit(0)
 
     def append_import(self, key, val):

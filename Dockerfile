@@ -13,12 +13,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     npm install -g npm@latest
 
 # Install K6 (latest version)
-# RUN curl -s https://packagecloud.io/install/repositories/loadimpact/k6/script.deb.sh | bash && apt-get update && bash apt-get install -y k6
+RUN curl -L -o k6.deb https://github.com/grafana/k6/releases/download/v0.50.0/k6-v0.50.0-linux-amd64.deb && \
+    apt-get install -y ./k6.deb && \
+    rm k6.deb
 
 # Copy the project files
 COPY . /app
 
-# Clean pre-generated directories
+# Clean pre-generated directories from contributor testing
 RUN rm -rf "/app/stack/cypress/node_modules" \
     && rm -rf "/app/stack/databuilder/node_modules" \
     && rm -rf "/app/stack/django/.venv" \

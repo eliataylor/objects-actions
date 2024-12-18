@@ -39,7 +39,15 @@ services:
     ports:
       - "8080:8080"
       - "3000:3000"
-    command: ["bash", "./start.sh"]
+    command:
+      - bash
+      - "./start.sh"
+      - "--project"
+      - "newproject"
+      - "--types"
+      - "src/examples/democrasee-objects.csv"
+      - "--permissions"
+      - "src/examples/democrasee-permissions.csv"
 
   fakedata:
     build: .
@@ -48,7 +56,11 @@ services:
       - start
     volumes:
       - .:/app
-    command: ["bash", "./fakedata.sh"]
+    command:
+      - bash
+      - "./fakedata.sh"
+      - "--project"
+      - "newproject"
 
   test-frontend:
     build: .
