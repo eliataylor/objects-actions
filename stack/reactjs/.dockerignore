@@ -5,11 +5,10 @@ docs
 */.venv
 node_modules
 */node_modules
-package-lock.json
-*/package-lock.json
 *.pyc
 __pycache__/
 */__pycache__/
-media/uploads
-*.pyo
-*.log
+
+build/
+dist/
+.DS_Store

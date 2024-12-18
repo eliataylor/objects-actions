@@ -1,7 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/common.sh"
-
-cd "$SCRIPT_DIR/src"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) # /app in docker
 
 # Run the Python scripts to generate files
 echo "Building Django with types $csvpath and permissions $permissionspath"

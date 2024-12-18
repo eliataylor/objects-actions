@@ -1,4 +1,5 @@
 services:
+  # MySQL Database Service
   mysql:
     image: mysql:8.0
     container_name: mysql8_container
@@ -18,105 +19,47 @@ services:
       timeout: 5s
       retries: 5
 
-  setup:
-    build: .
-    container_name: setup-service
+  # Django Service
+  django:
+    build:
+      context: ./stack/django
+      dockerfile: Dockerfile
+    container_name: django-service
+    volumes:
+      - django-generated:/app/generated
+      - $HOME/.ssl:/root/.ssl
     environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./setup.sh"
-      - "--project"
-      - "$PROJECTNAME"
-    healthcheck:
-      test: ["CMD", "test", "-f", "/app/$PROJECTNAME/setup_complete"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  load-sheets:
-    build: .
-    container_name: load-sheets-service
+      DEBUG: "1"
+      DJANGO_ENV: "development"
+      DJANGO_DEBUG: "True"
+    env_file:
+      - ./stack/django/.env
     depends_on:
-      setup:
-        condition: service_healthy
-    environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./load-sheets.sh"
-      - "--project"
-      - "$PROJECTNAME"
-      - "--types"
-      - "$TYPES"
-      - "--permissions"
-      - "$PERMISSIONS"
-
-  start-django:
-    build: .
-    container_name: start-django-service
-    depends_on:
-      setup:
-        condition: service_healthy
       mysql:
         condition: service_healthy
     ports:
       - "8080:8080"
-    environment:
-      PROJECTNAME: "newproject"
-    command:
-      - bash
-      - "./start.sh"
-      - "--project"
-      - "$PROJECTNAME"
+    extra_hosts:
+      - "localapi.oaexample.com:127.0.0.1"
 
-  start-react:
-    build: .
-    container_name: start-react-service
+  # ReactJS Frontend Service
+  reactjs:
+    build:
+      context: ./stack/reactjs
+      dockerfile: Dockerfile
+    container_name: reactjs-service
+    volumes:
+      - reactjs-generated:/app/generated
+      - $HOME/.ssl:/root/.ssl
     depends_on:
-      start-django:
-        condition: service_healthy
-      load-sheets:
-        condition: service_healthy
+      django:
+        condition: service_started
     ports:
       - "3000:3000"
-    environment:
-      PROJECTNAME: "newproject"
-    command:
-      - bash
-      - "./start.sh"
-      - "--project"
-      - "$PROJECTNAME"
-      -
-  fakedata:
-    build: .
-    container_name: fakedata-service
-    depends_on:
-      start-django:
-        condition: service_healthy
-    environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./fakedata.sh"
-      - "--project"
-      - "$PROJECTNAME"
-
-  test-frontend:
-    build: .
-    container_name: testing-frontend
-    depends_on:
-      fakedata:
-        condition: service_healthy
-      start-react:
-        condition: service_healthy
-    environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./test-frontend.sh"
-      - "--project"
-      - "$PROJECTNAME"
+    extra_hosts:
+      - "localhost.oaexample.com:127.0.0.1"
 
 volumes:
+  django-generated:
+  reactjs-generated:
   mysql-data:

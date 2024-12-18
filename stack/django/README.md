@@ -27,8 +27,8 @@
 6. **Run the development server:**
 
     ```sh
-    python manage.py runserver 8000
-    python manage.py runserver_plus localapi.oaexample.com:8080 --cert-file ~/.ssh/oaexample.crt
+    python manage.py runserver 8080
+    python manage.py runserver_plus localapi.oaexample.com:8080 --cert-file ~/.ssh/certificate.crt
     ```
 
 ------
