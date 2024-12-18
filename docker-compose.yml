@@ -13,5 +13,61 @@ services:
       MYSQL_USER: localuser
       MYSQL_PASSWORD: localpassword
 
+  setup:
+    build: .
+    container_name: setup-service
+    volumes:
+      - .:/app
+    command:
+      - bash
+      - "./setup.sh"
+      - "--project"
+      - "newproject"
+      - "--types"
+      - "src/examples/democrasee-objects.csv"
+      - "--permissions"
+      - "src/examples/democrasee-permissions.csv"
+
+
+  start:
+    build: .
+    container_name: start-service
+    depends_on:
+      - mysql
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+      - "3000:3000"
+    command: ["bash", "./start.sh"]
+
+  fakedata:
+    build: .
+    container_name: fakedata-service
+    depends_on:
+      - start
+    volumes:
+      - .:/app
+    command: ["bash", "./fakedata.sh"]
+
+  test-frontend:
+    build: .
+    container_name: testing-frontend
+    depends_on:
+      - start
+    volumes:
+      - .:/app
+    command: ["bash", "./test-frontend.sh"]
+
+  test-backend:
+    build: .
+    container_name: testing-backend
+    depends_on:
+      - start
+    volumes:
+      - .:/app
+    command: ["bash", "./test-backend.sh"]
+
+
 volumes:
   mysql-data:

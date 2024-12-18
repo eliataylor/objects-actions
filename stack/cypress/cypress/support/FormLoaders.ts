@@ -1,8 +1,7 @@
-import {Helpers, Routing} from "./context";
+import {Helpers} from "./context";
 
 export default class FormLoaders {
 
-    routing: Routing
     helpers: Helpers
     typeToHTMLType = {
         "string": "input",
@@ -38,8 +37,7 @@ export default class FormLoaders {
         */
     };
 
-    constructor(routing: Routing, helpers) {
-        this.routing = routing;
+    constructor(helpers) {
         this.helpers = helpers;
         this.navigate = this.navigate.bind(this);
     }

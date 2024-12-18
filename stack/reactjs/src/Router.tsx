@@ -39,6 +39,7 @@ import Reauthenticate from './allauth/account/Reauthenticate'
 import Sessions from './allauth/usersessions/Sessions'
 import SmsSigninOrUp from "./allauth/SmsSigninOrUp";
 import UserView from "./screens/UserView";
+import ReadMe from "./object-actions/docs/ReadMe";
 
 function createRouter() {
     const allRoutes = [
@@ -189,6 +190,7 @@ function createRouter() {
         allRoutes[0].children.push({path: `/forms${item.screen}/0/add`, element: <EntityForm/>})
     })
 
+    allRoutes[0].children.push({path: `/readme`, element: <ReadMe />})
 
     return createBrowserRouter(allRoutes)
 }

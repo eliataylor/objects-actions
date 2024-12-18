@@ -16,47 +16,6 @@ export interface Debug {
     testrole: string;
 }
 
-export class Routing {
-    private debug: Debug;
-    private dest: string = ""
-
-    constructor(dest, debug) {
-        this.debug = debug;
-        this.dest = dest;
-    }
-
-    getDestination() {
-        return this.dest;
-    }
-
-    public getParam(p) {
-        return this.debug.params[":" + p];
-    }
-
-    public isList() {
-        const last = this.dest.split("/").pop();
-        return ['members', 'groups', 'playlists', 'tracks', 'rewards', 'bets', 'activity', 'emails', 'episodes', 'challenges', 'complications'].indexOf(last) > -1
-    }
-
-    public isForm() {
-        const last = this.dest.split("/").pop();
-        return ['add', 'edit', 'start'].indexOf(last) > -1
-    }
-
-    public isEntityView() {
-        const last = this.dest.split("/").pop();
-        return (parseInt(last) > 0)
-    }
-
-    public makeUrl(path, params) {
-        for (let key in params) {
-            path = path.replace(key, params[key]);
-        }
-        return path;
-    }
-
-}
-
 export class Helpers {
     private json: any;
 

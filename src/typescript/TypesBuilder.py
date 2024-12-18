@@ -4,11 +4,13 @@ from loguru import logger
 import ast
 import re
 import inflect
+import os
 
 class TypesBuilder:
-    def __init__(self, field_csv, matrix_csv, types_filepath):
+    def __init__(self, field_csv, matrix_csv, output_dir):
         self.pluralizer = inflect.engine()
-        self.types_filepath = types_filepath
+        self.output_dir = output_dir
+        self.types_filepath = os.path.join(self.output_dir, 'types.ts')
         self.field_csv = field_csv
         self.matrix_csv = matrix_csv
         self.json = build_types_from_csv(field_csv)
@@ -18,11 +20,11 @@ class TypesBuilder:
         if matrix is None or 'permissions' not in matrix:
             return None
 
-        perms_path = self.types_filepath.replace('types.tsx', 'access.tsx')
+        perms_path = os.path.join(self.output_dir, 'access.tsx')
         inject_generated_code(perms_path, f"\n export type CRUDVerb = '{("' | '").join(matrix['all_verbs'])}';", 'PERMS-VERBS')
         inject_generated_code(perms_path, f"\n export type PermRoles = '{("' | '").join(matrix['all_roles'])}';", 'PERMS-ROLES')
 
-        perms_path = self.types_filepath.replace('types.tsx', 'permissions.json')
+        perms_path = os.path.join(self.output_dir, 'permissions.json')
         with open(perms_path, 'w') as file:
             file.write(json.dumps(matrix['permissions'], indent=2))
 

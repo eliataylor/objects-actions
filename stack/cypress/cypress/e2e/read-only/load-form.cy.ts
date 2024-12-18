@@ -5,34 +5,8 @@ const typeToHTMLType = {
     "text": "input",
     "textarea": "input",
     "text_format": "textarea",
-    "text_long": "textarea",
-    /*
-    "text_with_summary": "textarea",
-    "string_long": "textarea",
-    "email": "input",
-    "password": "input",
-    "telephone": "input",
-    "float": "input",
-    'decimal': "input",
-    'integer': "input",
-    'boolean': "select",
-    "select": "select",
-    "radios": "select",
-    "checkboxes": "checkbox",
-    "list_string": "select",
-    "datetime": "input",
-    "daterange": "input",
-    "fieldset": "input",
-    "link": "input",
-    "path": "input",
-    "color_field_type": "input",
-    'image': "input",
-    'managed_file': "input",
-    'entity_reference': "input",
-    "voting_api_field": "input",
-    "language":"hidden",
-    'hidden': "hidden",
-    */
+    "text_long": "textarea"
+    // TODO: implement other OA field types to validate against DOM
 }
 
 describe("oaexample load and populate add forms", async () => {

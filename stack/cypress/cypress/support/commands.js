@@ -8,23 +8,6 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 //
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-
-import {Routing} from "./context";
 
 // cypress/support/commands.js
 Cypress.Commands.add(
@@ -86,10 +69,7 @@ Cypress.Commands.add("showClick",
 );
 
 Cypress.Commands.add("grab", (sel) => {
-    // cy.wrap(
-//        new Promise((resolve, reject) => {
     cy.get(sel, {force: true, includeShadowDom: true, timeout: 6000}).first().then(($el) => {
-        // const $el = $body.length > 1 ? $body.first() : $body;
         const midY = $el.offset().top + $el.height() / 2;
         const midX = $el.offset().left + ($el.get(0).nodeName.toLowerCase() === "input" ? 5 : $el.width() / 2);
 
@@ -117,8 +97,6 @@ Cypress.Commands.add("grab", (sel) => {
             }
         );
     });
-    // }), {timeout:8000}
-    // );
 });
 
 Cypress.Commands.add("clickIf",(selector) => {
@@ -128,26 +106,8 @@ Cypress.Commands.add("clickIf",(selector) => {
     cy.get('body')
 });
 
-Cypress.Commands.add("grabWithFallbacks", (url, routing) => {
-    if (!cy.ifExists(`[href^="${url}"]`)) {
-        cy.openDrawer();
-        if (!cy.ifExists(`[href^="${url}"]`)) {
-            cy.grab(`[aria-label="Expand Group Menu ${routing.getParam('gid')}"]`).showClick();
-        }
-    }
-    const dest = url === routing.getDestination() ? routing : new Routing(url)
-    cy.grab(`[href^="${url}"]`).showClick();
-    if (dest.isEntityView() === true) {
-        cy.assertEntityView()
-    } else if (dest.isForm() === true) {
-        cy.assertForm()
-    } else if (dest.isList() === true) {
-        cy.assertListView()
-    }
-});
 
 Cypress.Commands.add("ifExists", (ele) => {
-    //console.warn("ifExists",ele)
     return cy.get('body')
         .find(ele)
         .its("length")

@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 from loguru import logger
 from utils.utils import inject_generated_code, build_permissions_from_csv, create_machine_name, create_object_name, build_types_from_csv, find_search_fields, find_object_by_key_value, capitalize
@@ -66,15 +67,22 @@ class DjangoBuilder:
         # TODO: generate CRUD query methods based on Permissions Matrix
         # TODO: personalize the CustomPagination class
 
-        self.json = build_types_from_csv(types_path)
+        if types_path or not os.path.exists(types_path):
+            self.json = build_types_from_csv(types_path)
+            self.build_models()
+            self.build_serializers()
+            self.build_viewsets()
+            self.build_urls()
+        else:
+            logger.warning(f'Cannot find {types_path}')
+            sys.exit(0)
 
-        self.build_models()
-        self.build_serializers()
-        self.build_viewsets()
-        self.build_urls()
-        if matrix_path:
+        if matrix_path or not os.path.exists(matrix_path):
             self.matrix_path = matrix_path
             self.build_permissions()
+        else:
+            logger.warning(f'Cannot find {matrix_path}')
+            sys.exit(0)
 
     def append_import(self, key, val):
         if val not in self.imports[key]:

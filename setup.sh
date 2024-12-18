@@ -1,28 +1,29 @@
 #!/bin/bash
-
-projectname=${1:-test}
-csvpath=${2:-examples/democrasee-objects.csv}
-
-# Convert projectname to alphanumeric, lowercase, and replace spaces with hyphens
-machinename=$(echo "$projectname" | tr '[:upper:]' '[:lower:]' | sed 's/[^[:alnum:]]\+/-/g' | sed 's/^\-\|\-$//g')
-
-# Default to "test" if machinename is empty
-if [ -z "$machinename" ]; then
-    machinename="test"
-fi
+source "$(dirname "$0")/common.sh"
 
 # Copy the stack directory to the machine name if it doesn't exist
 if [ ! -d "$machinename" ]; then
     cp -R stack "$machinename"
+    rm -rf "$machinename/cypress/node_modules"
+    rm -rf "$machinename/cypress/cypress/fixtures/*"
+    rm -rf "$machinename/cypress/cypress/downloads/*"
+    rm -rf "$machinename/cypress/cypress/screenshots/*"
+    rm -rf "$machinename/cypress/cypress/videos/*"
+    rm -rf "$machinename/cypress/cypress/e2e/examples"
+    rm -rf "$machinename/databuilder/node_modules"
+    rm -rf "$machinename/django/.venv"
+    rm -rf "$machinename/django/media/uploads"
+    rm -rf "$machinename/django/$machinename_app/migrations/*"
+    rm -rf "$machinename/k6/results/*"
+    rm -rf "$machinename/reactjs/node_modules"
     echo "Copied stack to new project directory: $machinename"
 else
     echo "Project directory $machinename already exists. Skipping copy."
 fi
 
-projectpath=$(realpath "$machinename")
-
 export LC_ALL=C # avoids issues with non-UTF-8 characters
 echo "String replacing 'oaexample' with $machinename"
+
 # Recursively replace "oaexample" with "$machinename" in all files (case-insensitive)
 find $projectpath -type f -exec sed -i '' -e "s/oaexample/$machinename/Ig" {} +
 
@@ -45,6 +46,7 @@ fi
 
 # Navigate to src and set up the virtual environment if it doesn't exist
 cd src
+
 if [ ! -d .venv ]; then
     python -m venv .venv
     echo "Created new virtual environment."
@@ -55,7 +57,9 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Run the Python scripts to generate files
-python -m generate django --types="$csvpath" --output_dir="$projectpath/django/${machinename}_app"
+python -m generate django --types="$csvpath" --matrix="$permissionspath" --output_dir="$projectpath/django/${machinename}_app"
 
-python -m generate typescript --types="$csvpath" --output_dir="$projectpath/reactjs/src/object-actions/types/types.tsx"
-python -m generate typescript --types="$csvpath" --output_dir="$projectpath/databuilder/src/types.ts"
+python -m generate typescript --types="$csvpath" --matrix="$permissionspath" --output_dir="$projectpath/reactjs/src/object-actions/types/"
+python -m generate typescript --types="$csvpath" --matrix="$permissionspath" --output_dir="$projectpath/databuilder/src/"
+python -m generate typescript --types="$csvpath" --matrix="$permissionspath" --output_dir="$projectpath/cypress/cypress/support/"
+python -m generate typescript --types="$csvpath" --matrix="$permissionspath" --output_dir="$projectpath/k6/"

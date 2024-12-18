@@ -98,7 +98,7 @@ def findObjectClassByPathSegment(segment: str, object_types):
         if ot == create_machine_name(singular, True, '-') or ot == create_machine_name(plural, True, '-'):
             return create_object_name(object_type)
 
-    logger.critical(f"Context did not find matching object by {segment}")
+    logger.warning(f"Context did not find matching object by {segment}")
     return None
 
 
@@ -119,6 +119,7 @@ def build_permissions_from_csv(csv_path, object_types):
     all_verbs = {}
 
     object_type = False
+    capturing_permissions = False
 
     # Iterate through each object type provided in the input
     for idx, row in df.iterrows():
