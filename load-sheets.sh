@@ -1,5 +1,10 @@
 #!/bin/bash
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) # /app in docker
+source "$(dirname "$0")/common.sh"
+
+cd "$SCRIPT_DIR/src"
+
+# ./load-sheets.sh --project "oaexample" --types "/Users/trackauthoritymusic/Developer/tmt/object-actions/src/examples/democrasee-objects.csv" --permissions "/Users/trackauthoritymusic/Developer/tmt/object-actions/src/examples/democrasee-permissions.csv"
+source .venv/bin/activate
 
 # Run the Python scripts to generate files
 echo "Building Django with types $csvpath and permissions $permissionspath"

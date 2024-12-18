@@ -170,9 +170,12 @@ class ApiClient {
             const mergedHeaders = await this.getMergedHeaders(url, headers);
 
             // @ts-ignore
-            response = await this.client[method](url, data,
-                {headers: mergedHeaders}
-            );
+            response = await this.client.request({
+                url,
+                method,
+                data,
+                headers: mergedHeaders
+            });
             if (response.status < 200 || response.status > 299) {
                 resp = this.returnErrors(response.data)
                 resp.status = response.status;

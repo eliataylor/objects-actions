@@ -66,4 +66,4 @@ permissionspath=$(resolve_absolute_path "${permissions:-permissions.csv}")
 
 
 # Export all variables for use in scripts
-export machinename csvpath permissionspath output SCRIPT_DIR stackpath
+export machinename csvpath permissionspath output SCRIPT_DIR stackpath projectname

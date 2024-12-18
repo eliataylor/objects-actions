@@ -32,10 +32,7 @@ async function start() {
     if (args.action === 'objects-add') {
         // const creators = await builder.getContentCreators();
 
-        // TODO: generally types must be inserted in an order!
-        let manual = NAVITEMS.find(nav => nav.type === 'States');
-        await builder.buildObject({...manual, count: 5});
-
+        // WARN: for now, types should eb inserted in order by field dependency
         for (const nav of NAVITEMS) {
             for (let i = 0; i < args.count; i++) {
                 await builder.buildObject({...nav, count: 5});

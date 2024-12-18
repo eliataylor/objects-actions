@@ -59,6 +59,22 @@ services:
     extra_hosts:
       - "localhost.oaexample.com:127.0.0.1"
 
+  fakedata:
+    build:
+      context: ./stack/databuilder
+      dockerfile: Dockerfile
+    container_name: fakedata-service
+    depends_on:
+      django:
+        condition: service_started
+    environment:
+      PROJECTNAME: "${PROJECTNAME:-newproject}"
+    command:
+      - bash
+      - "./fakedata.sh"
+      - "--project"
+      - "$PROJECTNAME"
+
 volumes:
   django-generated:
   reactjs-generated:

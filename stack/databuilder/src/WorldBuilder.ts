@@ -5,8 +5,10 @@ import {fakeFieldData} from "./builder-utils";
 import {faker} from '@faker-js/faker/locale/en_US';
 import fs from "fs";
 import path from "path";
-
+//const { FormData, Blob } = require('node:stream/web'); // Native FormData
+// const { FormData, Blob } = require('node:buffer');
 const FormData = require('form-data');
+const http = require('http');
 
 interface Creators extends Users {
     cookie?: string[];
@@ -36,6 +38,43 @@ export class WorldBuilder {
         fs.writeFileSync(`${this.fixturePath}/${name}.json`, JSON.stringify(data));
     }
 
+    serializePayload(entity: any) {
+        const headers: any = {}
+
+        let formData:any = null;
+        if (typeof entity.hasImage === 'undefined') {
+            headers["Content-Type"] = "application/json"
+            formData = entity;
+        } else {
+            delete entity.hasImage;
+            formData = new FormData();
+            for (let key in entity) {
+                if (Array.isArray(entity[key])) {
+                    console.log(`appending array ${key} to FormData`)
+                    entity[key].forEach((value:any, index:number) => {
+                        formData.append(`${key}[${index}]`, value);
+                    });
+                } else if (entity[key] instanceof Blob || entity[key] instanceof http.IncomingMessage) {
+                    console.log(`appending file ${key} blob`)
+                    formData.append(key, entity[key]);
+                } else if (typeof entity[key] === 'object' && entity[key] !== null) {
+                    // Handle nested objects
+                    for (let nestedKey in entity[key]) {
+                        formData.append(`${key}.${nestedKey}`, entity[key][nestedKey]);
+                    }
+                } else {
+                    // Append other types normally
+                    formData.append(key, entity[key]);
+                }
+            }
+            // headers["Content-Type"] = `multipart/form-data`
+            Object.assign(headers, formData.getHeaders())
+        }
+
+
+        return {formData, headers};
+    }
+
     public async registerUser(config: any) {
         const baseData = config.base ?? {};
         if (!baseData.password) baseData.password = process.env.REACT_APP_LOGIN_PASS;
@@ -46,17 +85,16 @@ export class WorldBuilder {
         if (!baseData.username) baseData.username = faker.person.firstName();
         const registered = await this.apiClient.register(baseData);
         this.saveFixture(`user-add-${registered.data.id}`, registered)
-        const profile = await this.updateUserProfile(registered.data.data.user);
+        const profile = await this.updateUserProfile({id:registered.data.data.user.id});
         return profile;
     }
 
     public async updateUserProfile(user: any) {
-        const fields = TypeFieldSchema["Users"]
-        const baseData: any = {id: user.id};
         // @ts-ignore
-        user = await this.populateEntity(user, NAVITEMS.find(nav => nav.type === "Users"))
+        const entity = await this.populateEntity(user, NAVITEMS.find(nav => nav.type === "Users"))
+        const {formData, headers} = this.serializePayload(entity);
         const apiUrl = `${process.env.REACT_APP_API_HOST}/api/users/${user.id}`
-        const profile = await this.apiClient.post(apiUrl, baseData);
+        const profile = await this.apiClient.post(apiUrl, formData, headers);
         this.saveFixture(`user-edit-${profile.data.id}`, profile)
         return profile.data;
     }
@@ -80,23 +118,8 @@ export class WorldBuilder {
         const creator = await this.loadAuthor('superuser')
 
         let entity: any = {author: creator.id};
-        const headers: any = {
-            'accept': 'application/json'
-        }
         entity = await this.populateEntity(entity, hasUrl)
-
-        let formData = null;
-        if (typeof entity.hasImage !== 'undefined') {
-            formData = new FormData();
-            for (let key in entity) {
-                formData.append(key, entity[key])
-            }
-            // headers["Content-Type"] = `multipart/form-data`
-            Object.assign(headers, formData.getHeaders())
-        } else {
-            headers["Content-Type"] = "application/json"
-            formData = entity;
-        }
+        const {formData, headers} = this.serializePayload(entity);
 
         const apiUrl = `${process.env.REACT_APP_API_HOST}${hasUrl.api}/`
         const response = await this.apiClient.post(apiUrl, formData, headers);
@@ -133,11 +156,11 @@ export class WorldBuilder {
 
             } else if (field.field_type === 'image') {
                 const imageUrl = faker.image.urlLoremFlickr({category: hasUrl.plural.toLowerCase()})
-                console.log(`Going to load ${imageUrl}`)
                 const imageResponse = await axios.get(imageUrl, {responseType: 'stream'});
                 if (imageResponse.status !== 200) {
                     throw new Error(`Failed to fetch image from ${imageUrl}`);
                 } else {
+                    console.log(`Going to load ${imageUrl}`)
                     entity.hasImage = true;
                     entity[field.machine] = imageResponse.data;
                 }
