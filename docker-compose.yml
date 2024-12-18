@@ -34,13 +34,12 @@ services:
       timeout: 5s
       retries: 5
 
-
   load-sheets:
     build: .
     container_name: load-sheets-service
     depends_on:
       setup:
-        condition: service_started
+        condition: service_healthy
     environment:
       PROJECTNAME: "${PROJECTNAME:-newproject}"
     command:
@@ -53,39 +52,48 @@ services:
       - "--permissions"
       - "$PERMISSIONS"
 
-  start:
+  start-django:
     build: .
-    container_name: start-service
+    container_name: start-django-service
     depends_on:
       setup:
-        condition: service_started
-      load-sheets:
-        condition: service_started
+        condition: service_healthy
       mysql:
         condition: service_healthy
     ports:
       - "8080:8080"
-      - "3000:3000"
     environment:
       PROJECTNAME: "newproject"
-      TYPES: "objects.csv"
-      PERMISSIONS: "permissions.csv"
     command:
       - bash
       - "./start.sh"
       - "--project"
       - "$PROJECTNAME"
-      - "--types"
-      - "$TYPES"
-      - "--permissions"
-      - "$PERMISSIONS"
 
+  start-react:
+    build: .
+    container_name: start-react-service
+    depends_on:
+      start-django:
+        condition: service_healthy
+      load-sheets:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      PROJECTNAME: "newproject"
+    command:
+      - bash
+      - "./start.sh"
+      - "--project"
+      - "$PROJECTNAME"
+      -
   fakedata:
     build: .
     container_name: fakedata-service
     depends_on:
-      start:
-        condition: service_started
+      start-django:
+        condition: service_healthy
     environment:
       PROJECTNAME: "${PROJECTNAME:-newproject}"
     command:
@@ -99,7 +107,9 @@ services:
     container_name: testing-frontend
     depends_on:
       fakedata:
-        condition: service_started
+        condition: service_healthy
+      start-react:
+        condition: service_healthy
     environment:
       PROJECTNAME: "${PROJECTNAME:-newproject}"
     command:

@@ -2,6 +2,6 @@
 source "$(dirname "$0")/common.sh"
 
 echo "Starting Cypress.io"
-cd "$projectpath/cypress"
+cd "$stackpath/cypress"
 npm install
 npm run cy:run

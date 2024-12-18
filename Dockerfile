@@ -3,14 +3,24 @@ FROM python:3.11-slim AS base
 WORKDIR /app
 
 # Install core dependencies (Git, curl, build tools) and prepare environment
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git curl build-essential apt-transport-https gnupg ca-certificates && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        build-essential \
+        apt-transport-https \
+        gnupg \
+        ca-certificates \
+        gcc \
+        libmariadb3 \
+        pkg-config \
+        python3-dev \
+        libssl-dev && \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
+    npm install -g npm@latest && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-# Install Node.js and npm (LTS version) from NodeSource
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g npm@latest
 
 # Install K6 (latest version)
 # RUN curl -L -o k6.deb https://github.com/grafana/k6/releases/download/v0.55.0/k6-v0.55.0-linux-amd64.deb && \

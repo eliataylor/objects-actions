@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Resolve relative paths to absolute based on the location of setup.sh
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) # /app in docker
 
 # Default values
 projectname="newproject"  # Default project name
@@ -49,8 +49,7 @@ if [ ! -d "$machinename" ]; then
 fi
 
 # Get the absolute path
-projectpath=$(realpath "$machinename")
-stackpath=$(realpath "$machinename/stack")
+stackpath=$(realpath "$machinename") # /app/newproject in docker
 
 resolve_absolute_path() {
     local path="$1"
@@ -62,9 +61,9 @@ resolve_absolute_path() {
 }
 
 # Resolve paths for types and permissions
-csvpath=$(resolve_absolute_path "${types:-examples/democrasee-objects.csv}")
-permissionspath=$(resolve_absolute_path "${permissions:-examples/democrasee-permissions.csv}")
+csvpath=$(resolve_absolute_path "${types:-objects.csv}")
+permissionspath=$(resolve_absolute_path "${permissions:-permissions.csv}")
 
 
 # Export all variables for use in scripts
-export machinename projectpath csvpath permissionspath output SCRIPT_DIR stackpath
+export machinename csvpath permissionspath output SCRIPT_DIR stackpath
