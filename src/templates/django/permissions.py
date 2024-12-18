@@ -3,7 +3,7 @@ from allauth.account.models import EmailAddress
 from django.core.exceptions import ObjectDoesNotExist
 
 
-@permission_required('oaexample.__VERB_____OBJECT__', raise_exception=True)
+@permission_required('.__VERB_____OBJECT__', raise_exception=True)
 def edit_post(request, post_id):
     # View logic here
     pass

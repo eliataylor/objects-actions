@@ -1,11 +1,12 @@
 #!/bin/bash
 source "$(dirname "$0")/common.sh"
 
-echo "Starting Django"
-cd "$projectpath/django"
+echo "Starting Django in $stackpath/django"
+cd "$stackpath/django"
+
 if [ ! -d .venv ]; then
     python -m venv .venv
-    echo "Created new virtual environment."
+    echo "Created new virtual environment"
 else
     echo "Virtual environment already exists."
 fi
@@ -16,10 +17,10 @@ python manage.py migrate
 python manage.py migrate --run-syncdb
 python manage.py makemigrations
 python manage.py createsuperuser
-python manage.py runserver_plus "localapi.$projectpath.com:8080" --cert-file ~/.ssh/certificate.crt
+python manage.py runserver_plus "localapi.$machinename.com:8080" --cert-file ~/.ssh/certificate.crt
 
-echo "Starting ReactJS"
-cd "$projectpath/reactjs"
+echo "Starting ReactJS in $stackpath/reactjs"
+cd "$stackpath/reactjs"
 npm install
 npm run start-ssl
 

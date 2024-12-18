@@ -1,5 +1,5 @@
 """
-ASGI config for oaexample_base project.
+ASGI config for _base project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'oaexample_base.settings.production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', '_base.settings.production')
 
 application = get_asgi_application()

@@ -1,5 +1,5 @@
 {
-  "name": "oaexample",
+  "name": "",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -33,7 +33,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start-ssl": "HTTPS=true SSL_CRT_FILE=~/.ssl/certificate.crt HOST=localhost.oaexample.com react-scripts start",
+    "start-ssl": "HTTPS=true SSL_CRT_FILE=~/.ssl/certificate.crt HOST=localhost..com react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

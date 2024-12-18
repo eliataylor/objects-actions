@@ -1,7 +1,7 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: lamp_mysql
+    container_name: mysql8_container
     ports:
       - "3306:3306"
     volumes:
@@ -12,74 +12,101 @@ services:
       MYSQL_DATABASE: localdb
       MYSQL_USER: localuser
       MYSQL_PASSWORD: localpassword
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   setup:
     build: .
     container_name: setup-service
-    volumes:
-      - .:/app
+    environment:
+      PROJECTNAME: "${PROJECTNAME:-newproject}"
     command:
       - bash
       - "./setup.sh"
       - "--project"
-      - "newproject"
-      - "--types"
-      - "src/examples/democrasee-objects.csv"
-      - "--permissions"
-      - "src/examples/democrasee-permissions.csv"
+      - "$PROJECTNAME"
+    healthcheck:
+      test: ["CMD", "test", "-f", "/app/$PROJECTNAME/setup_complete"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+
+  load-sheets:
+    build: .
+    container_name: load-sheets-service
+    depends_on:
+      setup:
+        condition: service_started
+    environment:
+      PROJECTNAME: "${PROJECTNAME:-newproject}"
+    command:
+      - bash
+      - "./load-sheets.sh"
+      - "--project"
+      - "$PROJECTNAME"
+      - "--types"
+      - "$TYPES"
+      - "--permissions"
+      - "$PERMISSIONS"
 
   start:
     build: .
     container_name: start-service
     depends_on:
-      - mysql
-    volumes:
-      - .:/app
+      setup:
+        condition: service_started
+      load-sheets:
+        condition: service_started
+      mysql:
+        condition: service_healthy
     ports:
       - "8080:8080"
       - "3000:3000"
+    environment:
+      PROJECTNAME: "newproject"
+      TYPES: "objects.csv"
+      PERMISSIONS: "permissions.csv"
     command:
       - bash
       - "./start.sh"
       - "--project"
-      - "newproject"
+      - "$PROJECTNAME"
       - "--types"
-      - "src/examples/democrasee-objects.csv"
+      - "$TYPES"
       - "--permissions"
-      - "src/examples/democrasee-permissions.csv"
+      - "$PERMISSIONS"
 
   fakedata:
     build: .
     container_name: fakedata-service
     depends_on:
-      - start
-    volumes:
-      - .:/app
+      start:
+        condition: service_started
+    environment:
+      PROJECTNAME: "${PROJECTNAME:-newproject}"
     command:
       - bash
       - "./fakedata.sh"
       - "--project"
-      - "newproject"
+      - "$PROJECTNAME"
 
   test-frontend:
     build: .
     container_name: testing-frontend
     depends_on:
-      - start
-    volumes:
-      - .:/app
-    command: ["bash", "./test-frontend.sh"]
-
-  test-backend:
-    build: .
-    container_name: testing-backend
-    depends_on:
-      - start
-    volumes:
-      - .:/app
-    command: ["bash", "./test-backend.sh"]
-
+      fakedata:
+        condition: service_started
+    environment:
+      PROJECTNAME: "${PROJECTNAME:-newproject}"
+    command:
+      - bash
+      - "./test-frontend.sh"
+      - "--project"
+      - "$PROJECTNAME"
 
 volumes:
   mysql-data:

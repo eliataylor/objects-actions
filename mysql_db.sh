@@ -34,8 +34,8 @@ fi
 # Run MySQL in a Docker container
 MYSQL_ROOT_PASSWORD=1234
 MYSQL_PASSWORD=1234
-MYSQL_DATABASE=oaexample_db
-MYSQL_USER=oaexample_dbuser
+MYSQL_DATABASE=_db
+MYSQL_USER=_dbuser
 
 # Check if a MySQL container with the same name exists
 if docker ps -a --format '{{.Names}}' | grep -q "^mysql-container$"; then

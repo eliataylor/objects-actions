@@ -23,4 +23,4 @@ else
 fi
 
 # Run the gunicorn server
-exec gunicorn oaexample_base.wsgi:application --bind 0.0.0.0:8080 --workers 4 --threads 8 --timeout 0
+exec gunicorn _base.wsgi:application --bind 0.0.0.0:8080 --workers 4 --threads 8 --timeout 0

@@ -2,7 +2,7 @@
 .env
 .venv
 stack/cypress/cypress/e2e/examples
-stack/django/oaexample_app/migrations
+stack/django/_app/migrations
 databuilder/public/profilepics
 databuilder/dist
 templates/reactjs/.env

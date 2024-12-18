@@ -13,14 +13,14 @@ if __name__ == "__main__":
     parser.add_argument('command', choices=['django', 'typescript'],
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
-    parser.add_argument('--matrix', required=False, help="Path to the Permissions Matrix CSV file.")
+    parser.add_argument('--permissions', required=False, help="Path to the Permissions Matrix CSV file.")
     parser.add_argument('--output_dir', required=True, help="Path to the output directory.")
 
     args = parser.parse_args()
 
     command = args.command
     types_path = args.types
-    matrix_path = args.matrix
+    matrix_path = args.permissions
     output_dir = args.output_dir
 
     if not os.path.exists(types_path):

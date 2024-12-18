@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage: ./generate_env.sh <PROJECT_ID> <SERVICE_NAME> <OUTPUT_ENV_FILE>
-# Example: ./generate_env.sh instant-jetty-426808-u5 oaexample-django-app .env
+# Example: ./generate_env.sh instant-jetty-426808-u5 -django-app .env
 
 # Check for required arguments
 if [ "$#" -ne 3 ]; then

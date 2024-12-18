@@ -1,6 +1,6 @@
 from twilio.rest import Client
 
-from oaexample_base import settings
+from _base import settings
 
 def send_sms(to, body):
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)

@@ -7,7 +7,7 @@ class Command(BaseCommand):
         send_mail(
             'Test Django Email',
             'This is a test email sent from Django.',
-            'info@oaexample.com',
+            'info@.com',
             ['eliabrahamtaylor@gmail.com'],
             fail_silently=False,
         )

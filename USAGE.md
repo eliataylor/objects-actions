@@ -2,7 +2,7 @@
 
 #### Generate your Django models, views, serializers and urls:
 
-`python -m django/generate admin --types=examples/object-fields-nod.csv --output_dir=examples/django/oaexample_app`
+`python -m django/generate admin --types=examples/object-fields-nod.csv --output_dir=examples/django/_app`
 
 #### Generate your TypeScript types, interfaces and URL patterns:
 

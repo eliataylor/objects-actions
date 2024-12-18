@@ -24,7 +24,7 @@
         {% endif %}
 
         {# Global stylesheets #}
-        <link rel="stylesheet" type="text/css" href="{% static 'css/oaexample_base.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/_base.css' %}">
 
         {% block extra_css %}
         {# Override this in templates to add extra stylesheets #}
@@ -37,7 +37,7 @@
         {% block content %}{% endblock %}
 
         {# Global javascript #}
-        <script type="text/javascript" src="{% static 'js/oaexample_base.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/_base.js' %}"></script>
 
         {% block extra_js %}
         {# Override this in templates to add extra javascript #}

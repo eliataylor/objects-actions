@@ -13,15 +13,18 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     npm install -g npm@latest
 
 # Install K6 (latest version)
-RUN curl -L -o k6.deb https://github.com/grafana/k6/releases/download/v0.50.0/k6-v0.50.0-linux-amd64.deb && \
-    apt-get install -y ./k6.deb && \
-    rm k6.deb
+# RUN curl -L -o k6.deb https://github.com/grafana/k6/releases/download/v0.55.0/k6-v0.55.0-linux-amd64.deb && \
+#     apt-get install -y ./k6.deb && \
+#    rm k6.deb
 
 # Copy the project files
 COPY . /app
 
 # Clean pre-generated directories from contributor testing
-RUN rm -rf "/app/stack/cypress/node_modules" \
+RUN rm -rf "/app/stack/src/.venv" \
+    && rm -rf ".github" \
+    && rm -rf "/app/stack/test" \
+    && rm -rf "/app/stack/cypress/node_modules" \
     && rm -rf "/app/stack/databuilder/node_modules" \
     && rm -rf "/app/stack/django/.venv" \
     && rm -rf "/app/stack/k6/results/*" \
@@ -41,7 +44,7 @@ RUN rm -rf "/app/stack/cypress/node_modules" \
 
 
 # Make all scripts executable
-RUN chmod +x /app/*.sh
+RUN chmod +x /app/stack/*.sh
 
 # Expose ports for Django and React
 EXPOSE 8080 3000

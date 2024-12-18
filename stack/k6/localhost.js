@@ -9,22 +9,22 @@ export const options = {
 };
 
 const MY_ENV = {
-    host: "https://localapi.oaexample.com:8080",
+    host: "https://localapi..com:8080",
     token: "CHANGEME"
 }
 
 const BASE_REQUEST = {
     method: "GET",
     headers: {
-        authority: "localapi.oaexample.com",
+        authority: "localapi..com",
         accept: "application/json, text/plain, */*",
         "accept-language": "es-MX,es;q=0.9,en-US;q=0.8,en;q=0.7,es-419;q=0.6",
         authorization: `Bearer ${MY_ENV.token}`,
         'Cache-Control': 'no-cache, no-store, must-revalidate',  // Prevents caching
         'Pragma': 'no-cache',  // HTTP/1.0 backward compatibility
         'Expires': '0',  // Forces an expired date to prevent caching
-        origin: "https://localapi.oaexample.com",
-        referer: "https://localapi.oaexample.com/",
+        origin: "https://localapi..com",
+        referer: "https://localapi..com/",
     }
 }
 

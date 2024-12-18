@@ -111,9 +111,9 @@ async function request (method, path, data, headers) {
   }
   // Don't pass along authentication related headers to the config endpoint.
   if (path !== URLs.CONFIG) {
-    if (localStorage.getItem("appOS") && localStorage.getItem('oaexample_token')) {
+    if (localStorage.getItem("appOS") && localStorage.getItem('_token')) {
       options.headers['X-App-Client'] = localStorage.getItem("appOS")
-      options.headers['Authorization'] = `Bearer ${localStorage.getItem('oaexample_token')}`;
+      options.headers['Authorization'] = `Bearer ${localStorage.getItem('_token')}`;
     }
     if (CLIENT === Client.BROWSER) {
       options.headers['X-CSRFToken'] = getCSRFToken()

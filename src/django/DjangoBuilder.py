@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-
 from loguru import logger
 from utils.utils import inject_generated_code, build_permissions_from_csv, create_machine_name, create_object_name, build_types_from_csv, find_search_fields, find_object_by_key_value, capitalize
 
@@ -156,8 +155,7 @@ class DjangoBuilder:
             has_slug = find_object_by_key_value(self.json[class_name], "Field Type", "slug")
             if has_slug:
                 self.append_import("urls", f"from .views import {model_name}AliasView")
-                extra_patterns.append(
-                    f"path('u/{model_name.lower()}/<slug:{has_slug["Field Name"]}>/', {model_name}AliasView.as_view(), name='{model_name.lower()}-alias-view')")
+                extra_patterns.append(f"path('u/{model_name.lower()}/<slug:{has_slug["Field Name"]}>/', {model_name}AliasView.as_view(), name='{model_name.lower()}-alias-view')")
 
         inject_generated_code(outpath, '\n'.join(self.imports["urls"]), 'URL-IMPORTS')
 

@@ -4,7 +4,7 @@
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 # Default values
-projectname="test"  # Default project name
+projectname="newproject"  # Default project name
 types=""
 permissions=""
 output=""
@@ -50,6 +50,7 @@ fi
 
 # Get the absolute path
 projectpath=$(realpath "$machinename")
+stackpath=$(realpath "$machinename/stack")
 
 resolve_absolute_path() {
     local path="$1"
@@ -66,4 +67,4 @@ permissionspath=$(resolve_absolute_path "${permissions:-examples/democrasee-perm
 
 
 # Export all variables for use in scripts
-export machinename projectpath csvpath permissionspath output
+export machinename projectpath csvpath permissionspath output SCRIPT_DIR stackpath
