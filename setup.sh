@@ -24,14 +24,14 @@ else
 fi
 
 export LC_ALL=C # avoids issues with non-UTF-8 characters
-echo "String replacing '' with $machinename"
+echo "String replacing 'oaexample' with $machinename"
 
 # Recursively replace "" with "$machinename" in all files (case-insensitive)
-find $stackpath -type f -exec sed -i '' -e "s//$machinename/Ig" {} +
+find $stackpath -type f -exec sed -i '' -e "s/oaexample/$machinename/Ig" {} +
 
 # Rename directories containing "" to "$machinename" recursively
-find "$machinename" -depth -name "**" | while read -r dir; do
-    newdir=$(echo "$dir" | LC_ALL=C sed "s//$machinename/I")
+find "$machinename" -depth -name "*oaexample*" | while read -r dir; do
+    newdir=$(echo "$dir" | LC_ALL=C sed "s/oaexample/$machinename/I")
     mv "$dir" "$newdir"
 done
 

@@ -6,10 +6,10 @@
 !manage.py
 !requirements.txt
 !entrypoint.sh
-!_base/
+!oaexample_base/
 !users/
 !utils/
-!_app/
+!oaexample_app/
 
 
 mysql-user.ini

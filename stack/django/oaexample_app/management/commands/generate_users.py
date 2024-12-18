@@ -49,7 +49,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         base_list = [
             {
-                "email": "info@.com",
+                "email": "info@oaexample.com",
                 "first_name": "Eli",
                 "last_name": "Taylor"
             }

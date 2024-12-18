@@ -9,7 +9,7 @@ const typeToHTMLType = {
     // TODO: implement other OA field types to validate against DOM
 }
 
-describe(" load and populate add forms", async () => {
+describe("oaexample load and populate add forms", async () => {
     beforeEach(() => {
         cy.loginBackground(Cypress.env("email"), Cypress.env("password")).then(e => {
             console.log(e);
@@ -17,7 +17,7 @@ describe(" load and populate add forms", async () => {
         });
     })
 
-    it(" load and populate add forms", () => {
+    it("oaexample load and populate add forms", () => {
 
         cy.viewport(Cypress.env("viewportWidth"), Cypress.env("viewportHeight"));
         cy.visit(Cypress.env("REACT_APP_APP_HOST"));

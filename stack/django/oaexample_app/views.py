@@ -215,7 +215,7 @@ class AttendeesViewSet(viewsets.ModelViewSet):
     queryset = Attendees.objects.all().order_by('id')
     serializer_class = AttendeesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+
     __PERMISSIONS__
 class TopicsViewSet(viewsets.ModelViewSet):
     queryset = Topics.objects.all().order_by('id')
@@ -352,7 +352,7 @@ class UserStatsView(APIView):
     def get(self, request, user_id, model_name):
         # Get the model class from the model name
         try:
-            model = apps.get_model('_app', model_name)
+            model = apps.get_model('oaexample_app', model_name)
         except LookupError:
             return JsonResponse({'error': 'Model not found'}, status=404)
 
@@ -380,7 +380,7 @@ class UserModelListView(generics.GenericAPIView):
     def get(self, request, user_id, model_name):
         # Check if the model exists
         try:
-            model_class = apps.get_model("_app", model_name)
+            model_class = apps.get_model("oaexample_app", model_name)
         except LookupError:
             return JsonResponse({'detail': 'Model not found.'}, status=404)
 
@@ -487,7 +487,7 @@ class SendCodeView(APIView):
             code = str(random.randint(1000, 999999))
             if phone_number == '+14159999999':
                 return JsonResponse({"detail": "Enter your Demo Account code"}, status=status.HTTP_200_OK)
-            message = f"Your .com verification code is {code}"
+            message = f"Your oaexample.com verification code is {code}"
             send_sms(phone_number, message)
             request.session['code'] = code
             return JsonResponse({"detail": "SMS sent successfully"}, status=status.HTTP_200_OK)

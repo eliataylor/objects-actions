@@ -12,16 +12,16 @@ INSTALLED_APPS += [
 ALLOWED_HOSTS = ['*']
 # CORS settings
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.\.com$",
-    r"^http://\w+\.\.com$",
+    r"^https://\w+\.oaexample\.com$",
+    r"^http://\w+\.oaexample\.com$",
 ]
 CORS_ALLOWED_ORIGINS += [
-    'http://localhost..com:3000',
-    'https://localhost..com:3000',
-    'http://localhost..com',
-    'https://.com',
-    'https://www..com',
-    'https://dev..com',
+    'http://localhost.oaexample.com:3000',
+    'https://localhost.oaexample.com:3000',
+    'http://localhost.oaexample.com',
+    'https://oaexample.com',
+    'https://www.oaexample.com',
+    'https://dev.oaexample.com',
     'http://localhost:3000',
     'https://localhost:3000',
     'http://127.0.0.1:3000',
@@ -33,10 +33,10 @@ CORS_ALLOWED_ORIGINS += [
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS += [
-    'http://localhost..com:3000',
-    'https://localhost..com:3000',
-    'http://localhost-api..com:8080',
-    'https://localhost-api..com:8080',
+    'http://localhost.oaexample.com:3000',
+    'https://localhost.oaexample.com:3000',
+    'http://localhost-api.oaexample.com:8080',
+    'https://localhost-api.oaexample.com:8080',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://localhost:3000',
@@ -104,6 +104,3 @@ ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-
-# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = None
-ACCOUNT_RATE_LIMITS = {'login_failed': None}
