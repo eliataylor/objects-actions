@@ -56,3 +56,6 @@ https://github.com/user-attachments/assets/3065f1a1-9fa6-4420-99c2-f3aa4bcce373
 ---
 Example Site
 ![readme.png](docs/images/readme.png)
+
+Offer Sign-in / Sign-up from any of these [AllAuth Providers](https://docs.allauth.org/en/dev/socialaccount/providers/index.html)
+![sign-in-page.png](docs/images/sign-in-page.png)
