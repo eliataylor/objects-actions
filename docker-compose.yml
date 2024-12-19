@@ -28,6 +28,7 @@ services:
     volumes:
       - django-generated:/app/generated
       - $HOME/.ssl:/root/.ssl
+      - ./stack/django/media:/app/django/media
     environment:
       DEBUG: "1"
       DJANGO_ENV: "development"

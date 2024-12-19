@@ -5,8 +5,6 @@ import {fakeFieldData} from "./builder-utils";
 import {faker} from '@faker-js/faker/locale/en_US';
 import fs from "fs";
 import path from "path";
-//const { FormData, Blob } = require('node:stream/web'); // Native FormData
-// const { FormData, Blob } = require('node:buffer');
 const FormData = require('form-data');
 const http = require('http');
 
@@ -115,7 +113,7 @@ export class WorldBuilder {
             return
         }
 
-        const creator = await this.loadAuthor('superuser')
+        const creator = await this.loadAuthorByRole(null)
 
         let entity: any = {author: creator.id};
         entity = await this.populateEntity(entity, hasUrl)
@@ -124,7 +122,7 @@ export class WorldBuilder {
         const apiUrl = `${process.env.REACT_APP_API_HOST}${hasUrl.api}/`
         const response = await this.apiClient.post(apiUrl, formData, headers);
         if (!response.data?.id) {
-            console.log(`Error ${item.type} --- ${response.error}`)
+            console.log(`Error creating ${item.type}. ${response.error}`)
         } else {
             console.log(`Created ${item.type} --- ${JSON.stringify(response.data)}`)
             this.saveFixture(`object-add-${hasUrl.type}-${response.data.id}.json`, response.data);
@@ -138,8 +136,8 @@ export class WorldBuilder {
             if (field.field_type === 'id_auto_increment' || field.field_type === 'slug') {
                 // console.log(`let server handle ${field.field_type}`)
             } else if (field.field_type === 'user_profile' || field.field_type === 'user_account' || field.field_type == 'type_reference' || field.field_type == 'vocabulary_reference') {
-                let relType = field.relationship?.toLowerCase()
-                const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/${relType}/`);
+                let relType = NAVITEMS.find(nav => nav.type === field.relationship) as NavItem
+                const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/${relType.segment}/`);
                 // @ts-ignore
                 if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
                     // @ts-ignore
@@ -147,11 +145,12 @@ export class WorldBuilder {
                     // @ts-ignore
                     entity[field.machine] = relResponse.data.results[randomIndex].id || relResponse.data.results[randomIndex].slug
 
-                    if (field.cardinality as number > 1) {
+                    // TODO: handle appending to existing entries
+                    /* if (entity[field.machine] && field.cardinality as number > 1) {
                         entity[field.machine] = [entity[field.machine]]
-                    }
+                    } */
                 } else {
-                    console.warn(`relationship ${relType} has no data yet`)
+                    console.warn(`relationship ${relType.segment} has no data yet`)
                 }
 
             } else if (field.field_type === 'image') {
@@ -187,7 +186,11 @@ export class WorldBuilder {
         return loginResponse.data.data.user as Users;
     }
 
-    public async loadAuthor(role: string) {
+    public async loadAuthor(role: string|null) {
+        if (!role) {
+            return this.loadAuthorByRole(null);
+        }
+
         // @ts-ignore
         let author = this.allCreators.find(user => user.groups?.indexOf(role) > -1);
         if (author && author.cookie) return author
@@ -202,10 +205,10 @@ export class WorldBuilder {
         return author;
     }
 
-    public async loadAuthorByRole(role: string) {
-        const contributors = await this.getContentCreators();
+    public async loadAuthorByRole(role: string | null) {
+        const contributors = this.allCreators.length > 0 ? this.allCreators : await this.getContentCreators();
         // @ts-ignore
-        let authors = contributors.filter(user => user.groups?.indexOf(role) > -1);
+        let authors = !role ? contributors : contributors.filter(user => user.groups?.indexOf(role) > -1);
 
         if (!authors.length) {
             console.warn(`FALLING BACK ON SUPERUSER instead of ${role}.`); // TODO: paginate of meta
@@ -214,8 +217,11 @@ export class WorldBuilder {
         }
 
         let randomIndex = Math.floor(Math.random() * authors.length);
-        const author = authors[randomIndex]
-        console.log(`REUSING CREATOR ${author.username}: `);
+        let author = authors[randomIndex] as Creators
+        console.log(`REUSING CREATOR ${author.username} with ${author.cookie}`);
+        if (!author.cookie) {
+            author = await this.loginUser(author.email || author.username) // get cookie
+        }
         return author;
     }
 

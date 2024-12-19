@@ -30,9 +30,15 @@ async function start() {
     }
 
     if (args.action === 'objects-add') {
-        // const creators = await builder.getContentCreators();
+        const creators = await builder.getContentCreators();
 
-        // WARN: for now, types should eb inserted in order by field dependency
+        /*
+        WARN: for now, types should eb inserted in order by field dependency
+        let manual = NAVITEMS.find(nav => nav.type === 'Resources');
+        await builder.buildObject({...manual, count: 5});
+        return manual;
+        */
+
         for (const nav of NAVITEMS) {
             for (let i = 0; i < args.count; i++) {
                 await builder.buildObject({...nav, count: 5});

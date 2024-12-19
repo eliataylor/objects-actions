@@ -85,35 +85,21 @@ class ApiClient {
             await this.setCookies(url, setCookieHeader);
         }
 
-        let resp = this.initResponse()
-
         url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/login`
-        try {
-            const response = await this.post(url, {
-                username: email,
-                email,
-                password,
-            });
-            if (response.status < 200 || response.status > 299) {
-                resp = this.returnErrors(response.data)
-                resp.status = response.status;
-            } else {
-                resp.data = response.data;
-                resp.success = true;
-            }
-
-        } catch (error: any) {
-            resp = this.returnErrors(error)
-            console.error('Login failed:', error.message);
+        const payload:any = {password}
+        if (email.indexOf("@") > -1) {
+            payload.email = email;
+        } else {
+            payload.username = email;
         }
+
+        const resp = await this.post(url, payload);
 
         const cookies = await this.cookieJar.getCookies(url || '');
         let cookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
         if (cookie) {
             resp.cookie = cookie
         }
-
-        resp.ended = new Date().getTime();
 
         return resp;
     }
@@ -130,31 +116,14 @@ class ApiClient {
             await this.setCookies(url, setCookieHeader);
         }
 
-        let resp = this.initResponse()
-
         url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/signup`
-        try {
-            const response = await this.post(url, baseData);
-            if (response.status < 200 || response.status > 299) {
-                resp = this.returnErrors(response.data)
-                resp.status = response.status;
-            } else {
-                resp.data = response.data;
-                resp.success = true;
-            }
-
-        } catch (error: any) {
-            resp = this.returnErrors(error)
-            console.error('Login failed:', error.message);
-        }
+        const resp = await this.post(url, baseData);
 
         const cookies = await this.cookieJar.getCookies(url || '');
         let cookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
         if (cookie) {
             resp.cookie = cookie
         }
-
-        resp.ended = new Date().getTime();
 
         return resp;
     }
@@ -181,6 +150,7 @@ class ApiClient {
                 resp.status = response.status;
             } else {
                 resp.data = response.data;
+                resp.status = response.status;
                 resp.success = true;
 
                 const setCookieHeader = response.headers['set-cookie'];
@@ -263,11 +233,18 @@ class ApiClient {
             found = error
         }
         if (found && typeof found === 'object') {
+            if (found.errors) {
+                found = error.errors
+            }
             resp.errors = found
-            found = Object.entries(found).map(([key, err]) => {
-                if (typeof err === 'string') return `${key}: ${err}`
-                return `${key}: ${Array.isArray(err) ? err.join(', ') : err}`
-            })
+            if (Array.isArray(found)) {
+                found = found.map((err: any) => typeof err === 'object' ? JSON.stringify(err) : err)
+            } else {
+                found = Object.entries(found).map(([key, err]) => {
+                    if (typeof err === 'string') return `${key}: ${err}`
+                    return `${key}: ${Array.isArray(err) ? err.join(', ') : err}`
+                })
+            }
             found = found.join("\n\r ");
         }
 
@@ -281,7 +258,7 @@ class ApiClient {
         return this.cookieJar.getSetCookieStringsSync(process.env.REACT_APP_API_HOST || "*");
     }
 
-    public async setCookie(url: string, cookie: string)  {
+    public async setCookie(url: string, cookie: string) {
         return this.cookieJar.setCookieSync(cookie, url);
     }
 
