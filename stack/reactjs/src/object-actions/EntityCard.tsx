@@ -8,6 +8,8 @@ import Avatar from '@mui/material/Avatar';
 import {Edit, ReadMore} from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import RelEntityHead from "./RelEntityHead";
+import CardMedia from '@mui/material/CardMedia';
+import {humanize} from "../utils";
 
 interface EntityCardProps {
     entity: EntityTypes;
@@ -87,7 +89,7 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
                     }
                 }
                 if (typeof val['id'] !== 'undefined' && typeof val['_type'] !== 'undefined' && typeof val['str'] !== 'undefined') {
-                    content.push(<RelEntityHead key={`prop${key}-${i}`} rel={val} label={field.singular} />)
+                    content.push(<RelEntityHead key={`prop${key}-${i}`} rel={val} label={field.singular}/>)
                     return true;
                 }
             } else if (key === 'modified_at' || field.field_type === 'date_time' || field.field_type === 'date') {
@@ -100,13 +102,18 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
             }
         } else if (typeof atts.secondary === 'object') {
             if (key === 'author') {
-                content.push(<RelEntityHead key={`prop${key}-${i}`} rel={val} label={'Author'} />)
+                content.push(<RelEntityHead key={`prop${key}-${i}`} rel={val} label={'Author'}/>)
                 return true;
             } else {
                 atts.secondary = <Typography sx={{wordBreak: 'break-word'}}
                                              variant={'body2'}>{JSON.stringify(atts.secondary, null, 2)}</Typography>
             }
         }
+
+        if (typeof atts.primary === 'string') {
+            atts.primary = humanize(atts.primary)
+        }
+
         if (field && field.field_type === 'image') {
             content.push(<ListItem key={`prop${key}-${i}`}>
                 <ListItemAvatar>
@@ -114,6 +121,25 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
                 </ListItemAvatar>
                 <ListItemText  {...atts}  />
             </ListItem>)
+        } else if (field && field.field_type === 'video') {
+            content.push(<Card key={`prop${key}-${i}`}
+                               sx={{maxWidth: 300, minHeight: 200, flexGrow: 1, position: 'relative'}}>
+                <CardMedia>
+                    <video
+                        autoPlay
+                        muted
+                        controls={true}
+                    >
+                        <source
+                            src={val}
+                            type="video/mp4"
+                        />
+                    </video>
+                </CardMedia>
+                <CardContent>
+                    <Typography>{atts.title}</Typography>
+                </CardContent>
+            </Card>)
         } else {
             content.push(<ListItemText key={`prop${key}-${i}`} {...atts} />)
         }

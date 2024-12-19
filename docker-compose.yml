@@ -13,6 +13,7 @@ services:
       MYSQL_DATABASE: localdb
       MYSQL_USER: localuser
       MYSQL_PASSWORD: localpassword
+      MYSQL_HOST: mysql8_container
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -31,7 +32,7 @@ services:
     #      - ./dockerized/django/media:/app/django/media  # Single, unified media directory
     environment:
       DEBUG: "1"
-      DJANGO_ENV: "development"
+      DJANGO_ENV: "docker"
       DJANGO_DEBUG: "True"
     env_file:
       - ./stack/django/.env

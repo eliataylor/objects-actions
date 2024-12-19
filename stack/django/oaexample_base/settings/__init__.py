@@ -16,9 +16,15 @@ elif DJANGO_ENV == 'testing':
         load_dotenv(dotenv_path=ROOT_DIR + '/.env.testing', override=True)
     from .testing import *
 
+elif DJANGO_ENV == 'docker':
+    if os.path.exists(ROOT_DIR + '/.env.docker'):
+        load_dotenv(dotenv_path=ROOT_DIR + '/.env.docker', override=True)
+    from .development import * # notice reuse
+
 else:
-    if os.path.exists(ROOT_DIR + '/.env.dev'):
-        load_dotenv(dotenv_path=ROOT_DIR + '/.env.dev', override=True)
+    if os.path.exists(ROOT_DIR + '/.env.development'):
+        load_dotenv(dotenv_path=ROOT_DIR + '/.env.development', override=True)
     from .development import *
+
 
 print(f"RUNNING ENV: {DJANGO_ENV} ")

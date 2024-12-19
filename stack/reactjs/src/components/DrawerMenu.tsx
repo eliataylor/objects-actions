@@ -2,7 +2,6 @@ import React from 'react';
 import {Box, Divider} from '@mui/material';
 import ThemeSwitcher from "../theme/ThemeSwitcher";
 import NavMenu from "./NavMenu";
-import ViewFormats from "../object-actions/forms/ViewFormats";
 
 const DrawerMenu = () => {
 
@@ -11,7 +10,7 @@ const DrawerMenu = () => {
 
             <NavMenu/>
 
-            <Divider sx={{margin: 1, backgroundColor: "primary.dark"}}/>
+            <Divider/>
 
             <ThemeSwitcher/>
 

@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import FormErrors, { hasError } from '../components/FormErrors'
 import { login } from '../lib/allauth'
 import { Link } from 'react-router-dom'
 import { useConfig } from '../auth'
 import ProviderList from '../socialaccount/ProviderList'
 import { Button, FormHelperText, Grid, TextField, Typography } from '@mui/material'
+import {Phone} from "@mui/icons-material";
 
 export default function Login () {
   const [email, setEmail] = useState('')
@@ -62,7 +63,8 @@ export default function Login () {
 
         <Grid>
           <Button
-            disabled={response.fetching} onClick={() => submit()} variant="contained"
+            disabled={email.indexOf('@') < 1 || password.length === 0 || response.fetching}
+            onClick={() => submit()} variant="contained"
             size="small"
           >Login
           </Button>
@@ -90,6 +92,15 @@ export default function Login () {
       {hasProviders && <Grid item style={{ marginTop: 50 }}>
         <ProviderList callbackURL="/account/provider/callback"/>
       </Grid>}
+
+      <Button sx={{mt:1}} component={Link} to={'/account/sms'}
+                    startIcon={<Phone/>}
+                    fullWidth
+                    variant={'outlined'}
+                    color={'inherit'}
+        >
+          SMS
+        </Button>
 
     </Grid>
   )

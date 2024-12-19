@@ -41,6 +41,12 @@ export const getFieldValue = (entity: { [key: string]: any }, field_name: string
     return ''
 }
 
+export function humanize(str: string) {
+    if (str === 'modified_at') return 'Last Modified'
+    str = str.replaceAll("_", ' ')
+    return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 export function timeAgo(timestamp: Date | string | number): string {
     let date: Date;
 

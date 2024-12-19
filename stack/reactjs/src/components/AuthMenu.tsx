@@ -50,10 +50,8 @@ export default function AuthMenu() {
 
     const anonNav = (
         <>
-            <NavBarItem to='/account/sms' icon={<Login/>} name='SMS Login'/>
-            <NavBarItem to='/account/login' icon={<Login/>} name='Email Login'/>
-            <NavBarItem to='/account/signup' icon={<AppRegistration/>} name='Email Signup'/>
-            <NavBarItem to='/account/password/reset' icon={<Password/>} name='Reset password'/>
+            <NavBarItem to='/account/login' icon={<Login/>} name='Sign In'/>
+            <NavBarItem to='/account/signup' icon={<AppRegistration/>} name='Sign Up'/>
         </>
     )
     const authNav = (

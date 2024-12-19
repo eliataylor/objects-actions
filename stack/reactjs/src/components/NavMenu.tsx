@@ -27,6 +27,8 @@ const NavMenu = () => {
                 })}
             </div>
 
+            <Divider sx={{marginBottom: 1, marginTop: 1, backgroundColor: "primary.dark"}}/>
+
             <ThemeSwitcher/>
 
         </List>
