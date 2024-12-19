@@ -1,5 +1,3 @@
-
-
 //---OBJECT-ACTIONS-API-RESP-STARTS---//
 export interface RelEntity {
     id: string | number;
@@ -30,8 +28,6 @@ export function getProp<T extends EntityTypes, K extends keyof T>(entity: Entity
 	return null;
 }
 //---OBJECT-ACTIONS-API-RESP-ENDS---//
-
-
 
 //---OBJECT-ACTIONS-NAV-ITEMS-STARTS---//
 export interface NavItem {
@@ -1932,29 +1928,6 @@ export interface Stakeholders extends SuperModel {
 	image?: string | null;
 }
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -7,45 +7,49 @@ from .views import UserStatsView
 from .views import RenderFrontendIndex
 from .views import redirect_to_frontend
 from .views import migrate, collectstatic
+from .views import UsersViewSet
+from .views import OfficialsViewSet
+from .views import CitiesViewSet
+from .views import RalliesViewSet
+from .views import PublicationsViewSet
+from .views import ActionPlansViewSet
+from .views import MeetingsViewSet
+from .views import ResourcesViewSet
+from .views import PagesViewSet
+from .views import InvitesViewSet
+from .views import SubscriptionsViewSet
+from .views import RoomsViewSet
+from .views import AttendeesViewSet
 from .views import TopicsViewSet
 from .views import ResourceTypesViewSet
 from .views import MeetingTypesViewSet
 from .views import StatesViewSet
 from .views import PartiesViewSet
 from .views import StakeholdersViewSet
-from .views import ResourcesViewSet
-from .views import UsersViewSet
-from .views import CitiesViewSet
-from .views import OfficialsViewSet
-from .views import RalliesViewSet
-from .views import ActionPlansViewSet
-from .views import MeetingsViewSet
-from .views import InvitesViewSet
-from .views import SubscriptionsViewSet
-from .views import RoomsViewSet
-from .views import AttendeesViewSet
 ####OBJECT-ACTIONS-URL-IMPORTS-ENDS####
 urlpatterns = [path('', RenderFrontendIndex.as_view(), name='index')]
 
 ####OBJECT-ACTIONS-URLS-STARTS####
 OARouter = DefaultRouter(trailing_slash=False)
+OARouter.register('users', UsersViewSet, basename='users')
+OARouter.register('officials', OfficialsViewSet, basename='officials')
+OARouter.register('cities', CitiesViewSet, basename='cities')
+OARouter.register('rallies', RalliesViewSet, basename='rallies')
+OARouter.register('publications', PublicationsViewSet, basename='publications')
+OARouter.register('action-plans', ActionPlansViewSet, basename='action-plans')
+OARouter.register('meetings', MeetingsViewSet, basename='meetings')
+OARouter.register('resources', ResourcesViewSet, basename='resources')
+OARouter.register('pages', PagesViewSet, basename='pages')
+OARouter.register('invites', InvitesViewSet, basename='invites')
+OARouter.register('subscriptions', SubscriptionsViewSet, basename='subscriptions')
+OARouter.register('rooms', RoomsViewSet, basename='rooms')
+OARouter.register('attendees', AttendeesViewSet, basename='attendees')
 OARouter.register('topics', TopicsViewSet, basename='topics')
 OARouter.register('resource-types', ResourceTypesViewSet, basename='resource-types')
 OARouter.register('meeting-types', MeetingTypesViewSet, basename='meeting-types')
 OARouter.register('states', StatesViewSet, basename='states')
 OARouter.register('parties', PartiesViewSet, basename='parties')
 OARouter.register('stakeholders', StakeholdersViewSet, basename='stakeholders')
-OARouter.register('resources', ResourcesViewSet, basename='resources')
-OARouter.register('users', UsersViewSet, basename='users')
-OARouter.register('cities', CitiesViewSet, basename='cities')
-OARouter.register('officials', OfficialsViewSet, basename='officials')
-OARouter.register('rallies', RalliesViewSet, basename='rallies')
-OARouter.register('action-plans', ActionPlansViewSet, basename='action-plans')
-OARouter.register('meetings', MeetingsViewSet, basename='meetings')
-OARouter.register('invites', InvitesViewSet, basename='invites')
-OARouter.register('subscriptions', SubscriptionsViewSet, basename='subscriptions')
-OARouter.register('rooms', RoomsViewSet, basename='rooms')
-OARouter.register('attendees', AttendeesViewSet, basename='attendees')
 
 if urlpatterns is None:
     urlpatterns = []
@@ -68,6 +72,16 @@ urlpatterns += [
     path('objectactions/auth/sms', SendCodeView.as_view(), name='send_code'),
     path('objectactions/auth/verify-sms', VerifyCodeView.as_view(), name='verify_code'),
 ]
+
+
+
+
+
+
+
+
+
+
 
 
 

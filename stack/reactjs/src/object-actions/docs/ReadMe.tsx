@@ -50,7 +50,7 @@ const ReadMe: React.FC = () => {
                             </ListItem>
                             <ListItem sx={{p: 0, pl: 3.5}}>
                                 <CheckCircleOutline style={{marginRight: 5}} fontSize="small"/>
-                                <ListItemText primary={"Cypress.io test suites"}/>
+                                <ListItemText primary={"Complete End-To-End tests for functionality and content permissions"}/>
                             </ListItem>
                             <ListItem sx={{p: 0, pl: 3.5}}>
                                 <CheckCircleOutline style={{marginRight: 5}} fontSize="small"/>

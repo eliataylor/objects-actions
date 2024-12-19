@@ -10,7 +10,7 @@ logger.add(sys.stdout, level="INFO")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate project files based on field types CSV.")
-    parser.add_argument('command', choices=['django', 'typescript'],
+    parser.add_argument('command', choices=['django', 'typescript', 'worksheets'],
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--permissions', required=False, help="Path to the Permissions Matrix CSV file.")
@@ -22,6 +22,8 @@ if __name__ == "__main__":
     types_path = args.types
     matrix_path = args.permissions
     output_dir = args.output_dir
+
+    # TODO: Check if a Google Spreadsheet URL and download programmatically
 
     if not os.path.exists(types_path):
         logger.error(f"Error: Field Types CSV '{types_path}' does not exist.")
@@ -35,6 +37,8 @@ if __name__ == "__main__":
     logger.info(f"Input file: {types_path}")
     logger.info(f"Output directory: {output_dir}")
 
+    if command == 'worksheets':
+        pass # clone and build empty worksheets with provided Object Types and basic CRUD URL patterns populated
     if command == 'django':
         builder = DjangoBuilder(types_path, matrix_path, output_dir)
         if matrix_path:

@@ -1,17 +1,30 @@
 #!/bin/bash
+
+# Example:
+# ./load-sheets.sh --project "oaexample" --types "stack/objects.csv" --permissions "stack/permissions.csv"
+
+
 source "$(dirname "$0")/common.sh"
 
 cd "$SCRIPT_DIR/src"
 
-# ./load-sheets.sh --project "oaexample" --types "/Users/trackauthoritymusic/Developer/tmt/object-actions/src/examples/democrasee-objects.csv" --permissions "/Users/trackauthoritymusic/Developer/tmt/object-actions/src/examples/democrasee-permissions.csv"
-source .venv/bin/activate
+if [ ! -d .venv ]; then
+    python -m venv .venv
+    echo "First run. Creating new virtual environment."
+    source .venv/bin/activate
+    pip install --upgrade pip setuptools wheel
+    pip install -r requirements.txt
+else
+    source .venv/bin/activate
+fi
+
 
 # Run the Python scripts to generate files
 echo "Building Django with types $csvpath and permissions $permissionspath"
-python -m generate django --types="$csvpath" --permissions="$permissionspath" --output_dir="$stackpath/django/${machinename}_app"
+python -m generate django --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/django/${machinename}_app"
 
 echo "Building TypeScript with types $csvpath and permissions $permissionspath"
-python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$stackpath/reactjs/src/object-actions/types/"
-python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$stackpath/databuilder/src/"
-python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$stackpath/cypress/cypress/support/"
-# python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$stackpath/k6/"
+python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/reactjs/src/object-actions/types/"
+python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/databuilder/src/"
+python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/cypress/cypress/support/"
+python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/k6/"

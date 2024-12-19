@@ -2,23 +2,25 @@
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ManyToManyField
+from .models import Users
+from .models import Officials
+from .models import Cities
+from .models import Rallies
+from .models import Publications
+from .models import ActionPlans
+from .models import Meetings
+from .models import Resources
+from .models import Pages
+from .models import Invites
+from .models import Subscriptions
+from .models import Rooms
+from .models import Attendees
 from .models import Topics
 from .models import ResourceTypes
 from .models import MeetingTypes
 from .models import States
 from .models import Parties
 from .models import Stakeholders
-from .models import Resources
-from .models import Users
-from .models import Cities
-from .models import Officials
-from .models import Rallies
-from .models import ActionPlans
-from .models import Meetings
-from .models import Invites
-from .models import Subscriptions
-from .models import Rooms
-from .models import Attendees
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
 
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
@@ -105,6 +107,58 @@ class CustomSerializer(serializers.ModelSerializer):
                     ]
 
         return representation
+class UsersSerializer(CustomSerializer):
+    class Meta:
+        model = Users
+        fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]
+class OfficialsSerializer(CustomSerializer):
+    class Meta:
+        model = Officials
+        fields = '__all__'
+class CitiesSerializer(CustomSerializer):
+    class Meta:
+        model = Cities
+        fields = '__all__'
+class RalliesSerializer(CustomSerializer):
+    class Meta:
+        model = Rallies
+        fields = '__all__'
+class PublicationsSerializer(CustomSerializer):
+    class Meta:
+        model = Publications
+        fields = '__all__'
+class ActionPlansSerializer(CustomSerializer):
+    class Meta:
+        model = ActionPlans
+        fields = '__all__'
+class MeetingsSerializer(CustomSerializer):
+    class Meta:
+        model = Meetings
+        fields = '__all__'
+class ResourcesSerializer(CustomSerializer):
+    class Meta:
+        model = Resources
+        fields = '__all__'
+class PagesSerializer(CustomSerializer):
+    class Meta:
+        model = Pages
+        fields = '__all__'
+class InvitesSerializer(CustomSerializer):
+    class Meta:
+        model = Invites
+        fields = '__all__'
+class SubscriptionsSerializer(CustomSerializer):
+    class Meta:
+        model = Subscriptions
+        fields = '__all__'
+class RoomsSerializer(CustomSerializer):
+    class Meta:
+        model = Rooms
+        fields = '__all__'
+class AttendeesSerializer(CustomSerializer):
+    class Meta:
+        model = Attendees
+        fields = '__all__'
 class TopicsSerializer(CustomSerializer):
     class Meta:
         model = Topics
@@ -129,50 +183,6 @@ class StakeholdersSerializer(CustomSerializer):
     class Meta:
         model = Stakeholders
         fields = '__all__'
-class ResourcesSerializer(CustomSerializer):
-    class Meta:
-        model = Resources
-        fields = '__all__'
-class UsersSerializer(CustomSerializer):
-    class Meta:
-        model = Users
-        fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]
-class CitiesSerializer(CustomSerializer):
-    class Meta:
-        model = Cities
-        fields = '__all__'
-class OfficialsSerializer(CustomSerializer):
-    class Meta:
-        model = Officials
-        fields = '__all__'
-class RalliesSerializer(CustomSerializer):
-    class Meta:
-        model = Rallies
-        fields = '__all__'
-class ActionPlansSerializer(CustomSerializer):
-    class Meta:
-        model = ActionPlans
-        fields = '__all__'
-class MeetingsSerializer(CustomSerializer):
-    class Meta:
-        model = Meetings
-        fields = '__all__'
-class InvitesSerializer(CustomSerializer):
-    class Meta:
-        model = Invites
-        fields = '__all__'
-class SubscriptionsSerializer(CustomSerializer):
-    class Meta:
-        model = Subscriptions
-        fields = '__all__'
-class RoomsSerializer(CustomSerializer):
-    class Meta:
-        model = Rooms
-        fields = '__all__'
-class AttendeesSerializer(CustomSerializer):
-    class Meta:
-        model = Attendees
-        fields = '__all__'
 ####OBJECT-ACTIONS-SERIALIZERS-ENDS####
 
 
@@ -184,6 +194,16 @@ class PhoneNumberSerializer(serializers.Serializer):
 class VerifyPhoneSerializer(serializers.Serializer):
     phone = serializers.CharField()
     code = serializers.CharField()
+
+
+
+
+
+
+
+
+
+
 
 
 
