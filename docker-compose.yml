@@ -1,4 +1,5 @@
 services:
+  # MySQL Database Service
   mysql:
     image: mysql:8.0
     container_name: mysql8_container
@@ -6,107 +7,91 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d
+#      - ./dockerized/sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: localdb
       MYSQL_USER: localuser
       MYSQL_PASSWORD: localpassword
+      MYSQL_HOST: mysql8_container
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  setup:
-    build: .
-    container_name: setup-service
+  # Django Service
+  django:
+    build:
+      context: ./stack/django
+      dockerfile: Dockerfile
+    container_name: django-service
+    volumes:
+      - $HOME/.ssl:/root/.ssl
+#      - ./dockerized/django:/app/django
+    #      - ./dockerized/django/media:/app/django/media  # Single, unified media directory
     environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./setup.sh"
-      - "--project"
-      - "$PROJECTNAME"
-    healthcheck:
-      test: ["CMD", "test", "-f", "/app/$PROJECTNAME/setup_complete"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-
-  load-sheets:
-    build: .
-    container_name: load-sheets-service
+      DEBUG: "1"
+      DJANGO_ENV: "docker"
+      DJANGO_DEBUG: "True"
+    env_file:
+      - ./stack/django/.env
     depends_on:
-      setup:
-        condition: service_started
-    environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./load-sheets.sh"
-      - "--project"
-      - "$PROJECTNAME"
-      - "--types"
-      - "$TYPES"
-      - "--permissions"
-      - "$PERMISSIONS"
-
-  start:
-    build: .
-    container_name: start-service
-    depends_on:
-      setup:
-        condition: service_started
-      load-sheets:
-        condition: service_started
       mysql:
         condition: service_healthy
     ports:
       - "8080:8080"
+    extra_hosts:
+      - "localapi.oaexample.com:127.0.0.1"
+
+  # ReactJS Frontend Service
+  reactjs:
+    build:
+      context: ./stack/reactjs
+      dockerfile: Dockerfile
+    container_name: reactjs-service
+    volumes:
+#      - ./dockerized/reactjs:/app/reactjs
+      - $HOME/.ssl:/root/.ssl
+    depends_on:
+      django:
+        condition: service_started
+    ports:
       - "3000:3000"
-    environment:
-      PROJECTNAME: "newproject"
-      TYPES: "objects.csv"
-      PERMISSIONS: "permissions.csv"
-    command:
-      - bash
-      - "./start.sh"
-      - "--project"
-      - "$PROJECTNAME"
-      - "--types"
-      - "$TYPES"
-      - "--permissions"
-      - "$PERMISSIONS"
+    extra_hosts:
+      - "localhost.oaexample.com:127.0.0.1"
 
-  fakedata:
-    build: .
-    container_name: fakedata-service
+  # Fake data generator
+  databuilder:
+    build:
+      context: ./stack/databuilder
+      dockerfile: Dockerfile
+    container_name: databuilder-service
+#    volumes:
+#      - ./dockerized/databuilder:/app/databuilder
     depends_on:
-      start:
+      django:
         condition: service_started
     environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./fakedata.sh"
-      - "--project"
-      - "$PROJECTNAME"
+      REACT_APP_API_HOST: "https://django-service:8080"  # Access Django API
 
-  test-frontend:
-    build: .
-    container_name: testing-frontend
+
+  # Front-end end-to-end testing
+  cypress:
+    build:
+      context: ./stack/cypress
+      dockerfile: Dockerfile
+    container_name: cypress-service
+    env_file:
+      - ./stack/cypress/.env
+#    volumes:
+#      - ./dockerized/cypress:/app/cypress
     depends_on:
-      fakedata:
+      reactjs:
         condition: service_started
     environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./test-frontend.sh"
-      - "--project"
-      - "$PROJECTNAME"
+      REACT_APP_APP_HOST: "https://reactjs-service:3000"  # Access ReactJS app during tests
+
 
 volumes:
   mysql-data:

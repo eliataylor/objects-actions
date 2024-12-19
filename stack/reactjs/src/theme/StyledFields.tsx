@@ -123,12 +123,11 @@ export const ButtonPill = styled((props: ButtonProps & { to?: string }) => {
     maxWidth: 600
 });
 
-export const FriendButton = styled(Button)(({theme}) => ({
-    borderRadius: 10,
+export const TightButton = styled(Button)(({theme}) => ({
+    borderRadius: 4,
     textTransform: 'none',
     color: theme.palette.text.primary,
-    margin: 'auto',
-    maxWidth: 400
+    margin: 'auto'
 }));
 
 export const GradientButton = styled(Button)(({theme}) => ({

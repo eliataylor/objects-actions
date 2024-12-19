@@ -272,7 +272,7 @@ class ModelBuilder:
             self.functions.append("""\ndef upload_file_path(instance, filename):
 \text = filename.split('.')[-1]  # e.g. "jpg"
 \t# add datetime suffix to avoid collisions
-\tnew_filename = f"{filename}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+\tnew_filename = f"{os.path.basename(filename)}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
 \t# WARN: watch for overwrites when using DataBuilder or any batch upload
 
 \t# Use strftime to create a "year-month" folder dynamically

@@ -14,7 +14,7 @@ urlpatterns = [
     # Include the API endpoints:
     path("_allauth/", include("allauth.headless.urls")),
 
-    path('', include("_app.urls")),
+    path('', include("oaexample_app.urls")),
 
     # YOUR PATTERNS
     path('api/schema', SpectacularAPIView.as_view(), name='schema'),

@@ -12,34 +12,20 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
 SUPERUSER_USERNAME = os.getenv('DJANGO_SUPERUSER_USERNAME', 'superadmin')
 SUPERUSER_PASSWORD = os.getenv('DJANGO_SUPERUSER_PASSWORD', 'admin')
-SUPERUSER_EMAIL = os.getenv('DJANGO_SUPERUSER_EMAIL', 'info@.com')
+SUPERUSER_EMAIL = os.getenv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 
 ALLOWED_HOSTS = [
-    "https://.taylormadetraffic.com",
-    "http://.taylormadetraffic.com",
-    "https://-api.taylormadetraffic.com",
-    "http://-api.taylormadetraffic.com",
-    ".com",
-    "..com",
-    "-django-app-cloudrun-zzv45b5nya-uw.a.run.app",
-    "prod_app.storage.googleapis.com",
-    "34.128.142.220",
-    "34.49.52.129"
+    "oaexample.com",
+    ".oaexample.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://.taylormadetraffic.com",
-    "http://.taylormadetraffic.com",
-    "https://-api.taylormadetraffic.com",
-    "http://-api.taylormadetraffic.com",
-    "https://-django-app-cloudrun-zzv45b5nya-uw.a.run.app",
-    "https://prod_app.storage.googleapis.com"
-    "https://.com",
-    "https://*..com",
-    'http://localhost..com:3000',
-    'https://localhost..com:3000',
-    'http://localhost-api..com:8080',
-    'https://localhost-api..com:8080'
+    "https://oaexample.com",
+    "https://*.oaexample.com",
+    'http://localhost.oaexample.com:3000',
+    'https://localhost.oaexample.com:3000',
+    'http://localhost-api.oaexample.com:8080',
+    'https://localhost-api.oaexample.com:8080'
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -48,27 +34,21 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.\.com$",
-    r"^http://\w+\.\.com$",
+    r"^https://\w+\.oaexample\.com$",
+    r"^http://\w+\.oaexample\.com$",
 ]
 CORS_ALLOWED_ORIGINS = [
-    "https://.taylormadetraffic.com",
-    "http://.taylormadetraffic.com",
-    "https://-api.taylormadetraffic.com",
-    "http://-api.taylormadetraffic.com",
-    'http://localhost..com:3000',
-    'https://localhost..com:3000',
-    'http://localhost-api..com:8080',
-    'https://localhost-api..com:8080',
-    'https://.com',
-    'https://www..com',
-    'https://dev..com',
-    "https://-django-app-cloudrun-zzv45b5nya-uw.a.run.app",
-    "https://prod_app.storage.googleapis.com"
+    'http://localhost.oaexample.com:3000',
+    'https://localhost.oaexample.com:3000',
+    'http://localhost-api.oaexample.com:8080',
+    'https://localhost-api.oaexample.com:8080',
+    'https://oaexample.com',
+    'https://www.oaexample.com',
+    'https://dev.oaexample.com'
 ]
 
-CSRF_COOKIE_DOMAIN = '..com'
-SESSION_COOKIE_DOMAIN = '..com'
+CSRF_COOKIE_DOMAIN = '.oaexample.com'
+SESSION_COOKIE_DOMAIN = '.oaexample.com'
 
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = True
@@ -81,10 +61,10 @@ SESSION_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF_TRUSTED_ORIGINS += CORS_ALLOWED_ORIGINS
-# CSRF_COOKIE_NAME = "-jwt"
+# CSRF_COOKIE_NAME = "oaexample-jwt"
 
-# JWT_AUTH_COOKIE = "-jwt"
-# JWT_AUTH_REFRESH_COOKIE = "-refresh-jwt"
+# JWT_AUTH_COOKIE = "oaexample-jwt"
+# JWT_AUTH_REFRESH_COOKIE = "oaexample-refresh-jwt"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -113,7 +93,7 @@ INSTALLED_APPS = [
     "allauth.headless",
     "allauth.usersessions",
 
-    '_app',
+    'oaexample_app',
     'drf_spectacular',
 ]
 
@@ -147,7 +127,7 @@ MFA_FORMS = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-#        '_app.authentication.AuthenticationByDeviceType',
+#        'oaexample_app.authentication.AuthenticationByDeviceType',
 #        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
     ],
@@ -161,14 +141,14 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': '',
-    'DESCRIPTION': '',
+    'TITLE': 'oaexample',
+    'DESCRIPTION': 'oaexample',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True
 }
 
-ROOT_URLCONF = '_base.urls'
+ROOT_URLCONF = 'oaexample_base.urls'
 
 TEMPLATES = [
     {
@@ -188,7 +168,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = '_base.wsgi.application'
+WSGI_APPLICATION = 'oaexample_base.wsgi.application'
 
 DATABASES = {
     "default": {
@@ -251,7 +231,7 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-AUTH_USER_MODEL = "_app.Users"
+AUTH_USER_MODEL = "oaexample_app.Users"
 
 ACCOUNT_EMAIL_VERIFICATION = "optional"  # since SMS only is allowed
 ACCOUNT_EMAIL_REQUIRED = True
@@ -267,16 +247,16 @@ ACCOUNT_USER_DISPLAY = lambda user: user.get_full_name()
 HEADLESS_ONLY = True
 
 DEFAULT_HTTP_PROTOCOL = 'https'
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "https://.com")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "https://oaexample.com")
 print(f"USING frontend {FRONTEND_URL}")
 
 LOGIN_REDIRECT_URL = f"{FRONTEND_URL}/account/provider/callback"
 SIGNUP_REDIRECT_URL = f"{FRONTEND_URL}/account/provider/callback"
 
-HEADLESS_ADAPTER = '_app.adapter.CustomHeadlessAdapter'
-SOCIALACCOUNT_ADAPTER = '_app.adapter.MySocialAccountAdapter'
-# SOCIALACCOUNT_TOKEN_STRATEGY = '_app.strategies.CustomTokenStrategy'
-# ACCOUNT_ADAPTER = '_app.adapter.UserAdapter'
+HEADLESS_ADAPTER = 'oaexample_app.adapter.CustomHeadlessAdapter'
+SOCIALACCOUNT_ADAPTER = 'oaexample_app.adapter.MySocialAccountAdapter'
+# SOCIALACCOUNT_TOKEN_STRATEGY = 'oaexample_app.strategies.CustomTokenStrategy'
+# ACCOUNT_ADAPTER = 'oaexample_app.adapter.UserAdapter'
 # ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
 
 HEADLESS_FRONTEND_URLS = {

@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import FormErrors from '../components/FormErrors'
 import { signUp } from '../lib/allauth'
 import { Link } from 'react-router-dom'
 import { useConfig } from '../auth'
 import ProviderList from '../socialaccount/ProviderList'
 import { Box, Button, Grid, TextField, Typography } from '@mui/material'
-import { Phone } from '@mui/icons-material'
+import {Login, Phone} from '@mui/icons-material'
 
 export default function Signup () {
   const [email, setEmail] = useState('')
@@ -75,7 +75,9 @@ export default function Signup () {
           <FormErrors param="password2" errors={password2Errors}/>
         </Grid>
 
-        <Button variant={'outlined'} disabled={response.fetching} onClick={() => submit()}>E-mail Sign Up</Button>
+        <Button variant={'contained'}
+                disabled={email.indexOf('@') < 1 || password1.length === 0 || password2.length === 0 || response.fetching}
+                onClick={() => submit()}>Register</Button>
 
       </Grid>
 
@@ -92,7 +94,7 @@ export default function Signup () {
                     variant={'outlined'}
                     color={'inherit'}
         >
-          SMS Login
+          SMS
         </Button>
       </Grid>
     </Box>

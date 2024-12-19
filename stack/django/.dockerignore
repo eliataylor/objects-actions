@@ -1,34 +1,8 @@
-# Ignore everything by default
-**
-
-# Only allow necessary files and directories
-!Dockerfile
-!manage.py
-!requirements.txt
-!entrypoint.sh
-!_base/
-!users/
-!utils/
-!_app/
-
-
-mysql-user.ini
-mysql.ini
-*.sql
-
-# Ignore Python cache and other temporary files
-__pycache__
+.venv
+*/.venv
 *.pyc
+__pycache__/
+*/__pycache__/
+media/uploads
 *.pyo
-*.pyd
-*.db
-*.sqlite3
 *.log
-*.swp
-*.swo
-*.bak
-*.tmp
-
-# Ignore virtual environments
-venv/
-env/

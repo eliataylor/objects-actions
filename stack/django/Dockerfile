@@ -1,36 +1,33 @@
-# Use the official Python image as a parent image
-FROM python:3.12.2 AS builder
+# Use Python 3.12 slim image as base
+FROM python:3.12-slim
 
-WORKDIR /app
+# Set working directory specific to Django
+WORKDIR /app/django
 
-# Install ca-certificates
-RUN apt-get update && apt-get install -y ca-certificates
+# Install required system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libmariadb3 \
+    libmariadb-dev \
+    python3-dev \
+    libssl-dev \
+    pkg-config && \
+    openssl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --upgrade pip
+# Copy dependency file to install dependencies
+COPY requirements.txt /app/django/
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Stage 2: Runtime stage
-FROM python:3.12.2 AS runner
+# Copy the Django project source code
+COPY . /app/django/
+COPY .env /app/django/
+COPY .env.testing /app/django/
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
+RUN chmod +x /app/django/entrypoint.sh
 
-
-# Install system dependencies
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /usr/local/bin/gunicorn /usr/local/bin/gunicorn
-RUN apt-get update && \
-    apt-get install -y gcc libmariadb3 pkg-config python3-dev libssl-dev && \
-    apt-get clean
-
-# Create and set the working directory
-WORKDIR /app
-
-# Copy the rest of the application code into the container
-COPY . .
-
+# Expose the Django development server port
 EXPOSE 8080
 
 # Run the Django application

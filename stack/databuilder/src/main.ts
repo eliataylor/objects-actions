@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 import * as dotenv from 'dotenv';
 import {WorldBuilder} from "./WorldBuilder";
-import {NAVITEMS} from "./types";
+import {NavItem, NAVITEMS} from "./types";
 
 dotenv.config();
 
@@ -30,15 +30,18 @@ async function start() {
     }
 
     if (args.action === 'objects-add') {
-        // const creators = await builder.getContentCreators();
+        const creators = await builder.getContentCreators();
 
-        // TODO: generally types must be inserted in an order!
-        let manual = NAVITEMS.find(nav => nav.type === 'States');
-        await builder.buildObject({...manual, count: 5});
+        /*
+        WARN: for now, types should eb inserted in order by field dependency
+        let manual = NAVITEMS.find(nav => nav.type === 'Attendees') as NavItem;
+        await builder.buildObject(manual);
+        return manual;
+        */
 
         for (const nav of NAVITEMS) {
             for (let i = 0; i < args.count; i++) {
-                await builder.buildObject({...nav, count: 5});
+                await builder.buildObject(nav);
             }
         }
 

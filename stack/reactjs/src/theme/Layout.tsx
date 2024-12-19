@@ -77,7 +77,7 @@ const Layout: React.FC = () => {
                   <Grid item sx={{ml: 2, mt: 3}} style={{maxWidth: 240}}>
                       {(location.pathname.length > 1) &&
                         <Box sx={{pl: 2}}>
-                          <Logo height={100}/>
+                          <Logo height={45}/>
                         </Box>
                       }
                     <NavMenu/>

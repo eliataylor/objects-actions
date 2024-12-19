@@ -1,149 +1,215 @@
 import React from 'react';
-import {Container, Grid, List, ListItem, ListItemText, Typography} from '@mui/material';
-import {CheckBoxOutlined, TrendingFlat} from "@mui/icons-material";
+import {Box, Card, CardHeader, CardMedia, Grid, List, ListItem, ListItemText, Typography} from '@mui/material';
+import {CheckBoxOutlined, CheckCircleOutline} from "@mui/icons-material";
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
-import CardHeader from "@mui/material/CardHeader";
+import {TightButton} from "../../theme/StyledFields";
 import Avatar from "@mui/material/Avatar";
+import LightDarkImg from "../../components/LightDarkImg";
 
 const ReadMe: React.FC = () => {
+
+    const mediaHeight = 250
+
     return (
         <>
-            <Container maxWidth="md">
-                <Typography variant="h6">
-                    GOALS
+            <Box>
+                <Typography variant="h6" sx={{m: 0}}>
+                    WHY
                 </Typography>
                 <List dense={true}>
                     <ListItem sx={{p: 0}}>
-                        <CheckBoxOutlined style={{marginRight: 5}}/>
-                        <ListItemText primary={"Learn Relational Database Schema Design"}/>
+                        <CheckBoxOutlined style={{marginRight: 5}} />
+                        <ListItemText primary={"Document your Idea and Database"}/>
                     </ListItem>
+
                     <ListItem sx={{p: 0}}>
-                        <CheckBoxOutlined style={{marginRight: 5}}/>
-                        <ListItemText primary={"Quickly build idea App & API prototypes"}/>
+                        <CheckBoxOutlined  style={{marginRight: 5}}  />
+                        <ListItemText primary={"Quickly scaffold scalable Apps & APIs. Including:"} />
                     </ListItem>
-                    <ListItem sx={{p: 0}}>
-                        <CheckBoxOutlined style={{marginRight: 5}}/>
-                        <ListItemText primary={"Scaffold Content Management Systems"}/>
+                    <ListItem sx={{p:0, pl: 3.5}}>
+                        <CheckCircleOutline style={{marginRight: 5}} fontSize="small"/>
+                        <ListItemText primary={"Authentication with Email, SMS, and nearly every social network"}/>
                     </ListItem>
-                    <ListItem sx={{p: 0}}>
-                        <CheckBoxOutlined style={{marginRight: 5}}/>
-                        <ListItemText primary={"Scaffold Authentication and Access Permissions"}/>
+                    <ListItem sx={{p:0, pl: 3.5}}>
+                        <CheckCircleOutline style={{marginRight: 5}} fontSize="small"/>
+                        <ListItemText primary={"Access Controls for User Groups and content ownership context"}/>
                     </ListItem>
-                    <ListItem sx={{p: 0}}>
-                        <CheckBoxOutlined style={{marginRight: 5}}/>
-                        <ListItemText primary={"Scaffold Web App interface and API connectivity"}/>
+                    <ListItem sx={{p:0, pl: 3.5}}>
+                        <CheckCircleOutline style={{marginRight: 5}} fontSize="small"/>
+                        <ListItemText primary={"Content Management Systems"}/>
                     </ListItem>
-                    <ListItem sx={{p: 0}}>
-                        <CheckBoxOutlined style={{marginRight: 5}}/>
-                        <ListItemText primary={"Scaffold Cypress.io test suites"}/>
+                    <ListItem sx={{p:0, pl: 3.5}}>
+                        <CheckCircleOutline style={{marginRight: 5}} fontSize="small"/>
+                        <ListItemText primary={"Web App interface with API connectivity"}/>
                     </ListItem>
-                    <ListItem sx={{p: 0}}>
-                        <CheckBoxOutlined style={{marginRight: 5}}/>
-                        <ListItemText primary={"Generate unlimited fake data to test and prototype"}/>
+                    <ListItem sx={{p:0, pl: 3.5}}>
+                        <CheckCircleOutline style={{marginRight: 5}} fontSize="small"/>
+                        <ListItemText primary={"Cypress.io test suites"}/>
+                    </ListItem>
+                    <ListItem sx={{p:0, pl: 3.5}}>
+                        <CheckCircleOutline style={{marginRight: 5}} fontSize="small"/>
+                        <ListItemText primary={"Data generator to create unlimited content data to test and prototype"}/>
                     </ListItem>
                 </List>
 
-            </Container>
+            </Box>
 
-            <Container maxWidth="md">
-                <Typography variant="h6">
-                    HOW TO WORKS
+            <Box>
+                <Typography variant="h6" sx={{m: 0}}>
+                    HOW
                 </Typography>
-                <List dense={true}>
-                    {/* <ListItem sx={{p: 0}}>
-                        <TrendingFlat style={{marginRight:5}}/>
-                        <ListItemText primary={"Defined your project's content as Objects, and the Actions that effect them"}/>
-                    </ListItem> */}
-                    <ListItem sx={{p: 0}}>
-                        <TrendingFlat style={{marginRight: 5}}/>
-                        <ListItemText primary={"Define the fields for each Object type"}/>
-                    </ListItem>
-                    <ListItem sx={{p: 0}}>
-                        <TrendingFlat style={{marginRight: 5}}/>
-                        <ListItemText primary={"Define the roles and permissions for each Action per Object"}/>
-                    </ListItem>
-                </List>
+                <ListItem sx={{p: 0, m:0}}>
+                    <Avatar style={{marginRight: 8}}><img src={'/Google_Sheets_2020_Logo.svg'}
+                                                          height={25}/></Avatar>
+                    <ListItemText primary={"Fill out your Objects/Actions worksheets"}
+                                  secondary={'This becomes your database schema and clear documentation for your team and contracts.'}/>
+                </ListItem>
 
                 <Grid container spacing={1} wrap={'nowrap'}>
-                    {/* <Grid item>
-                        <img style={{width:'100%'}} src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/object-actions-nod.png"} />
-                    </Grid>
-                    */}
-                    <Grid item>
-                        <img style={{width: '100%'}}
-                             src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/objects-nod.png"}/>
-                    </Grid>
-                    <Grid item>
-                        <img style={{width: '100%'}}
-                             src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/permissions-matrix-nod.png"}/>
-                    </Grid>
-                </Grid>
 
-                <Grid container justifyContent={'center'}>
-                    <ArrowCircleDownIcon/>
-                </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <Card variant="outlined">
+                            <CardHeader sx={{mb: 0, p: 1}}
+                                        title={'Define your Fields'}
+                                        subheader={'for each Object type'}
 
-                <Grid container justifyContent={'center'}>
-                    <p>Run the the <a href={"#install"}>install</a> commands to generate this whole stack:</p>
-                </Grid>
+                            />
+                            <CardMedia height={320} component={'img'} alt={'Object Field Types'}
+                                       src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/objects-nod.png"}/>
+                            <Box sx={{p: 1}}>
+                                <a href={'/sheets.com'} target={'_blank'}>
+                                    <TightButton size={'small'}
+                                                 startIcon={<img src={'/Google_Sheets_2020_Logo.svg'}
+                                                                 height={20}/>}>Clone</TightButton>
+                                </a>
+                            </Box>
+                        </Card>
+                    </Grid>
 
-                <Grid container spacing={1} justifyContent={'space-between'} alignContent={'flex-start'} alignItems={'flex-start'}>
                     <Grid item xs={12} sm={6}>
-                        <CardHeader sx={{mb: 1, p: 0}}
-                                    avatar={<Avatar src={'/logo-cypress.jpg'}/>}
-                                    subheader={'Front-End Test Suite'}
-                                    title={'Cypress.io'}
-                        />
-                        <video style={{width: '100%'}}
-                               src={"/cypress-demo.mp4"} autoPlay={true} muted={true} playsInline={true}/>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <CardHeader sx={{mb: 1, p: 0}}
-                                    avatar={<Avatar src={'/logo-drf.jpg'}/>}
-                                    subheader={'Backend-End CMS'}
-                                    title={'Django Admin'}
-                        />
-                        <img style={{width: '100%'}}
-                             src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/nod-backend_admin.png"}/>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <CardHeader sx={{mb: 1, p: 0}}
-                                    avatar={<Avatar src={'/logo-drf.jpg'}/>}
-                                    subheader={'Backend-End API'}
-                                    title={'Django DRF with Swagger and Redoc Documentation'}
-                        />
-                        <img style={{width: '100%'}}
-                             src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/nod-backend_swagger.png"}/>
-                        <img style={{width: '100%'}}
-                             src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/nod-backend_redoc.png"}/>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
+                        <Card>
+                            <CardHeader sx={{mb: 0, p: 1}}
+                                        title={'Define your roles and permissions'}
+                                        subheader={'for each Action on any Object'}
 
+                            />
+                            <CardMedia height={320} component={'img'} alt={'Permission Matrix'}
+                                       src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/permissions-matrix-nod.png"}/>
+                            <Box sx={{p: 1}}>
+                                <a href={'/sheets.com'} target={'_blank'}>
+                                    <TightButton size={'small'}
+                                                 startIcon={<img src={'/Google_Sheets_2020_Logo.svg'}
+                                                                 height={20}/>}>Clone</TightButton>
+                                </a>
+                            </Box>
+                        </Card>
                     </Grid>
 
                 </Grid>
+            </Box>
+
+            <Box p={0} mt={2} mb={2} sx={{textAlign: 'center'}}>
+                <ArrowCircleDownIcon/>
+                <Typography variant={'body2'}><code>docker-compose up --build</code></Typography>
+                <Typography variant={'h6'}>Generates this whole stack:</Typography>
+                <ArrowCircleDownIcon/>
+            </Box>
+
+            <Box>
+                <Grid container spacing={1} justifyContent={'space-between'} alignContent={'flex-start'}
+                      alignItems={'flex-start'}>
+                    <Grid item xs={12} sm={6}>
+                        <Card sx={{position: 'relative'}} variant="outlined">
+                            <CardHeader sx={{mb: 0, p: 1}}
+                                        avatar={<LightDarkImg light={'/Cypress_Logomark_Dark-Color.svg'} dark={'/Cypress_Logomark_White-Color.svg'} styles={{height:30}}/>}
+                                        subheader={'Cypress.io'}
+                                        title={'Front-End Test Suite'}
+                            />
+                            <CardMedia sx={{height: mediaHeight, position: 'relative'}}>
+                                <video
+                                    autoPlay
+                                    muted
+                                    loop={true}
+                                    style={{width: '100%'}}
+                                    controls={true}
+                                >
+                                    <source
+                                        src={"/cypress-demo.mp4"}
+                                        type="video/mp4"
+                                    />
+                                </video>
+                            </CardMedia>
+                            <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
+                                <a href={'/github.com'} target={'_blank'}>
+                                    <TightButton size={'small'} variant={'outlined'}
+                                                 startIcon={<LightDarkImg light={'/github-mark.svg'} dark={'/github-mark-white.svg'} styles={{height:20}}/>}>View
+                                        Source</TightButton>
+                                </a>
+                            </Box>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                        <Card variant="outlined">
+                            <CardHeader sx={{mb: 0, p: 1}}
+                                        avatar={<img src={'/logo-django.svg'} height={30}/>}
+                                        title={'Backend-End Content Manager'}
+                                        subheader={'Django Admin'}
+                            />
+                            <CardMedia height={mediaHeight} sx={{position:'relative'}} component={'img'} alt={'Backend-End API'}
+                                       src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/nod-backend_admin.png"}/>
+                            <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
+                                <a href={'/github.com'} target={'_blank'}>
+                                    <TightButton size={'small'} variant={'outlined'}
+                                                 startIcon={<LightDarkImg light={'/github-mark.svg'} dark={'/github-mark-white.svg'} styles={{height:20}}/>}>View
+                                        Source</TightButton>
+                                </a>
+                            </Box>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                        <Card variant="outlined">
+                            <CardHeader sx={{mb: 0, p: 1}}
+                                        avatar={<img src={'/logo-react.svg'} height={30}/>}
+                                        title={'Front-End WebApp'}
+                                        subheader={'React.JS'}
+                            />
+                            <CardMedia height={mediaHeight} component={'img'} alt={'Front-End WebApp'}
+                                       src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/nod-oa-interface.png"}/>
+                            <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
+                                <a href={'/github.com'} target={'_blank'}>
+                                    <TightButton size={'small'} variant={'outlined'}
+                                                 startIcon={<LightDarkImg light={'/github-mark.svg'} dark={'/github-mark-white.svg'} styles={{height:20}}/>}>View
+                                        Source</TightButton>
+                                </a>
+                            </Box>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                        <Card variant="outlined">
+                            <CardHeader sx={{mb: 0, p: 1}}
+                                        avatar={<img src={'/logo-drf.png'} height={30}/>}
+                                        title={'Backend-End API'}
+                                        subheader={'Django DRF'}
+                            />
+                            <CardMedia height={mediaHeight} component={'img'} alt={'Backend-End API'}
+                                       src={"https://github.com/eliataylor/object-actions/raw/main/docs/images/nod-backend_swagger.png"}/>
+                            <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
+                                <a href={'/github.com'} target={'_blank'}>
+                                    <TightButton size={'small'} variant={'outlined'}
+                                                 startIcon={<LightDarkImg light={'/github-mark.svg'} dark={'/github-mark-white.svg'} styles={{height:20}}/>}>View
+                                        Source</TightButton>
+                                </a>
+                            </Box>
+                        </Card>
+                    </Grid>
 
 
-                <Container maxWidth="md">
-                    <Typography variant="h6" gutterBottom={true}>
-                        TO RUN
-                    </Typography>
-                    <section>
-                        <code>docker-compose up --build</code>
-                        <Typography variant="body2">
-                            This will install everything inside a Docker container with an example set of OA
-                            Spreadsheets
-                        </Typography>
-                    </section>
-                    <section>
-                        <code>docker-compose run setup</code>
-                        <Typography variant="body2">
-                            This will update your entire stack with any changes you make your your OA Spreadsheets
-                        </Typography>
-                    </section>
-                </Container>
+                </Grid>
 
-            </Container>
+            </Box>
         </>
     );
 };

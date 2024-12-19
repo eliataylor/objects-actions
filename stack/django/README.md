@@ -12,7 +12,7 @@
 
 4. **Apply migrations:**
     ```sh
-    python manage.py makemigrations _app
+    python manage.py makemigrations oaexample_app
     python manage.py migrate
     python manage.py migrate --run-syncdb
     python manage.py makemigrations
@@ -27,15 +27,11 @@
 6. **Run the development server:**
 
     ```sh
-    python manage.py runserver 8000
-    python manage.py runserver_plus localapi..com:8080 --cert-file ~/.ssh/.crt
+    python manage.py runserver 8080
+    python manage.py runserver_plus localapi.oaexample.com:8080 --cert-file ~/.ssh/certificate.crt
     ```
-
 
 ------
 
 # To Connect to remote SQL:
-- `./cloud-sql-proxy instant-jetty-426808-u5:us-west1:mysql-v8 --credentials-file ./keys/-django.json`
-
-https://loremflickr.com/cache/resized/2899_14217668178_6e80f204fa_b_640_480_nofilter.jpg
-https://loremflickr.com/cache/resized/5485_9128959279_54a521df49_c_640_480_nofilter.jpg
+- `./cloud-sql-proxy oaexample:us-west1:mysql-v8 --credentials-file ./keys/oaexample-django.json`

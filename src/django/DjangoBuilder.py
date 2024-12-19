@@ -210,6 +210,7 @@ urlpatterns += [
         for class_name in self.json:
             model_name = create_object_name(class_name)
             code = tpl.replace('__CLASSNAME__', model_name)
+            code = code.replace('__PERMISSIONS__', "") # TODO!!!
 
             search_fields = find_search_fields(self.json, class_name)
             searchFieldMap[model_name] = search_fields
