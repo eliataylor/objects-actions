@@ -13,5 +13,4 @@ fi
 exec "$@"
 
 echo "Starting ReactJS"
-npm install
 npm run start-ssl-in-docker

@@ -1,5 +1,4 @@
 services:
-
   # MySQL Database Service
   mysql:
     image: mysql:8.0
@@ -8,7 +7,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./dockerized/sql:/docker-entrypoint-initdb.d
+#      - ./dockerized/sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: localdb
@@ -28,8 +27,8 @@ services:
     container_name: django-service
     volumes:
       - $HOME/.ssl:/root/.ssl
-      - ./dockerized/django:/app/django
-      - ./stack/django/media:/app/django/media
+#      - ./dockerized/django:/app/django
+    #      - ./dockerized/django/media:/app/django/media  # Single, unified media directory
     environment:
       DEBUG: "1"
       DJANGO_ENV: "development"
@@ -51,7 +50,7 @@ services:
       dockerfile: Dockerfile
     container_name: reactjs-service
     volumes:
-      - ./dockerized/reactjs:/app/reactjs
+#      - ./dockerized/reactjs:/app/reactjs
       - $HOME/.ssl:/root/.ssl
     depends_on:
       django:
@@ -67,12 +66,14 @@ services:
       context: ./stack/databuilder
       dockerfile: Dockerfile
     container_name: databuilder-service
-    volumes:
-      - ./dockerized/databuilder:/app/databuilder
-      - ./dockerized/cypress:/app/cypress
+#    volumes:
+#      - ./dockerized/databuilder:/app/databuilder
     depends_on:
       django:
         condition: service_started
+    environment:
+      REACT_APP_API_HOST: "https://django-service:8080"  # Access Django API
+
 
   # Front-end end-to-end testing
   cypress:
@@ -82,11 +83,14 @@ services:
     container_name: cypress-service
     env_file:
       - ./stack/cypress/.env
-    volumes:
-      - ./dockerized/cypress:/app/cypress
+#    volumes:
+#      - ./dockerized/cypress:/app/cypress
     depends_on:
       reactjs:
         condition: service_started
+    environment:
+      REACT_APP_APP_HOST: "https://reactjs-service:3000"  # Access ReactJS app during tests
+
 
 volumes:
   mysql-data:

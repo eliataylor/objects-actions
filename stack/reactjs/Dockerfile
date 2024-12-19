@@ -17,6 +17,8 @@ RUN npm install
 COPY . /app/reactjs/
 COPY .env /app/reactjs/
 
+RUN chmod +x /app/reactjs/entrypoint.sh
+
 # Expose the ReactJS development server port
 EXPOSE 3000
 

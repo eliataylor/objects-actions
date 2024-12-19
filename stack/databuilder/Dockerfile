@@ -14,4 +14,6 @@ RUN npm install
 COPY . /app/databuilder/
 COPY .env /app/databuilder/
 
+RUN chmod +x /app/databuilder/entrypoint.sh
+
 CMD ["sh", "entrypoint.sh"]

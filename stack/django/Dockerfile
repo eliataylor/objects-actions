@@ -25,6 +25,8 @@ COPY . /app/django/
 COPY .env /app/django/
 COPY .env.testing /app/django/
 
+RUN chmod +x /app/django/entrypoint.sh
+
 # Expose the Django development server port
 EXPOSE 8080
 
