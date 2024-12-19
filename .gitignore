@@ -1,17 +1,19 @@
 .idea
 .env
 .venv
+
 stack/cypress/cypress/e2e/examples
-stack/django/oaexample_app_app/migrations
-databuilder/public/profilepics
-databuilder/dist
-templates/reactjs/.env
+
+stack/databuilder/dist
+
+stack/reactjs/dist
+stack/reactjs/build
+
 .DS_Store
 __pycache__
 runnerlogs.log
-node_modules
 
-stack/reactjs/package-lock.json
-stack/databuilder/package-lock.json
+node_modules
+dockerized
 
 *Zone.Identifier

@@ -1,4 +1,5 @@
 services:
+
   # MySQL Database Service
   mysql:
     image: mysql:8.0
@@ -60,7 +61,7 @@ services:
     extra_hosts:
       - "localhost.oaexample.com:127.0.0.1"
 
-  # fake data generator
+  # Fake data generator
   databuilder:
     build:
       context: ./stack/databuilder
@@ -73,7 +74,7 @@ services:
       django:
         condition: service_started
 
-  # front-end end-to-end testing
+  # Front-end end-to-end testing
   cypress:
     build:
       context: ./stack/cypress
