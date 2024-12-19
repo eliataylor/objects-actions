@@ -1,14 +1,5 @@
-.git
-.github
-docs
-.venv
-*/.venv
 node_modules
 */node_modules
-*.pyc
-__pycache__/
-*/__pycache__/
-
 build/
 dist/
 .DS_Store

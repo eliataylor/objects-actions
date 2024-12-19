@@ -7,14 +7,14 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d
+      - ./dockerized/sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: localdb
       MYSQL_USER: localuser
       MYSQL_PASSWORD: localpassword
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,8 +26,8 @@ services:
       dockerfile: Dockerfile
     container_name: django-service
     volumes:
-      - django-generated:/app/generated
       - $HOME/.ssl:/root/.ssl
+      - ./dockerized/django:/app/django
       - ./stack/django/media:/app/django/media
     environment:
       DEBUG: "1"
@@ -50,7 +50,7 @@ services:
       dockerfile: Dockerfile
     container_name: reactjs-service
     volumes:
-      - reactjs-generated:/app/generated
+      - ./dockerized/reactjs:/app/reactjs
       - $HOME/.ssl:/root/.ssl
     depends_on:
       django:
@@ -60,23 +60,32 @@ services:
     extra_hosts:
       - "localhost.oaexample.com:127.0.0.1"
 
-  fakedata:
+  # fake data generator
+  databuilder:
     build:
       context: ./stack/databuilder
       dockerfile: Dockerfile
-    container_name: fakedata-service
+    container_name: databuilder-service
+    volumes:
+      - ./dockerized/databuilder:/app/databuilder
+      - ./dockerized/cypress:/app/cypress
     depends_on:
       django:
         condition: service_started
-    environment:
-      PROJECTNAME: "${PROJECTNAME:-newproject}"
-    command:
-      - bash
-      - "./fakedata.sh"
-      - "--project"
-      - "$PROJECTNAME"
+
+  # front-end end-to-end testing
+  cypress:
+    build:
+      context: ./stack/cypress
+      dockerfile: Dockerfile
+    container_name: cypress-service
+    env_file:
+      - ./stack/cypress/.env
+    volumes:
+      - ./dockerized/cypress:/app/cypress
+    depends_on:
+      reactjs:
+        condition: service_started
 
 volumes:
-  django-generated:
-  reactjs-generated:
   mysql-data:
