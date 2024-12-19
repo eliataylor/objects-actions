@@ -24,12 +24,13 @@
 | ↓ Generates this whole stack ↓ |
 
 
+https://github.com/user-attachments/assets/3065f1a1-9fa6-4420-99c2-f3aa4bcce373
 
-|                                                               End-To-End Tests                                                               |                                                         Content Admin                                                          |                                                           API Documentation                                                           |                                                                Front-End WebApp                                                                |
-|:--------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------:|
-| https://github.com/user-attachments/assets/3065f1a1-9fa6-4420-99c2-f3aa4bcce373 | <a href="docs/images/nod-backend_admin.png" target="_blank"><img src="docs/images/nod-backend_admin.png" alt="CMS Admin" height="200" /></a> | <a href="docs/images/nod-backend_swagger.png" target="_blank"><img src="docs/images/nod-backend_swagger.png" alt="Swagger Docs" height="200" /></a> | <a href="docs/images/nod-oa-interface.png" target="_blank"><img src="docs/images/nod-oa-interface.png" alt="WebApp" height="200" /></a> |
+|                                                         Content Admin                                                          |                                                                      API Docs                                                                       |                                                                Front-End WebApp                                                                |
+|:------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------:|
+| <a href="docs/images/nod-backend_admin.png" target="_blank"><img src="docs/images/nod-backend_admin.png" alt="CMS Admin" height="200" /></a> | <a href="docs/images/nod-backend_swagger.png" target="_blank"><img src="docs/images/nod-backend_swagger.png" alt="Swagger Docs" height="200" /></a> | <a href="docs/images/nod-oa-interface.png" target="_blank"><img src="docs/images/nod-oa-interface.png" alt="WebApp" height="200" /></a> |
 
-#### Build a scalable, secure API and CMS in Django, a fully integrated and authenticating ReactJS web app, end-to-end tests with Cypress.io and API load tests with K6:
+#### Build a scalable, secure API and CMS in Django, a fully integrated and authenticating ReactJS web app, end-to-end tests with Cypress.io and API load tests with K6. Includes OAuth logins from Google, Facebook, Spotify, SMS, and pretty much social network that provides OAuth.
 
 
 # TO RUN:
