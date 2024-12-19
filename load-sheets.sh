@@ -3,8 +3,8 @@
 # Example:
 # ./load-sheets.sh --project "oaexample" --types "stack/objects.csv" --permissions "stack/permissions.csv"
 
+source "$(pwd)/docs/common.sh"
 
-source "$(dirname "$0")/common.sh"
 
 cd "$SCRIPT_DIR/src"
 

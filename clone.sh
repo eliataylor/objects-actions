@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/common.sh"
+source "$(dirname "$0")/docs/common.sh"
 
 echo "Setting up $machinename at stackpath"
 

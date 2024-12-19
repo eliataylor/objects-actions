@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Resolve relative paths to absolute based on the location of setup.sh
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) # /app in docker
+# Resolve relative paths to absolute based on the location of this file
+SCRIPT_DIR=$(cd . && pwd) # /app in docker
+# SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) # /app in docker
+echo "running common in $SCRIPT_DIR"
 
 # Default values
 projectname="newproject"  # Default project name

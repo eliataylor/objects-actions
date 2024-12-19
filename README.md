@@ -44,12 +44,12 @@ https://github.com/user-attachments/assets/3065f1a1-9fa6-4420-99c2-f3aa4bcce373
 4. Run `./load-sheets.sh --project "oaexample" --types "stack/objects.csv" --permissions "stack/permissions.csv"`
 5. If you want to clone and rename the whole stack run `./clone.sh --project "newproject"` or any name you want
 
-- If you want to build from source follow [FROMSOURCE.md](FROMSOURCE.md)
-- If you already have a codebase and only want to generate TypeScript or Django code visit [COMMANDS.md](COMMANDS.md) to generate individual files 
+- If you want to build from source follow [FROMSOURCE.md](docs/FROMSOURCE.md)
+- If you already have a codebase and only want to generate TypeScript or Django code visit [COMMANDS.md](docs/COMMANDS.md) to generate individual files 
 
 --------------------------------------------------------------------------------
 
-### TO CONTRIBUTE: [CONTRIBUTING.md](CONTRIBUTING.md)
+### TO CONTRIBUTE: [CONTRIBUTING.md](docs/CONTRIBUTING.md)
 
 ### TO SPONSOR: [github.com/sponsors/eliataylor](https://github.com/sponsors/eliataylor)
 
