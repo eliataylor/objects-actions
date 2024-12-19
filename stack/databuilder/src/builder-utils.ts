@@ -1,5 +1,5 @@
 // import {faker} from '@faker-js/faker';
-import { faker } from '@faker-js/faker/locale/en_US';
+import {faker} from '@faker-js/faker/locale/en_US';
 import {join, resolve} from 'path';
 
 const fs = require('fs');
@@ -23,7 +23,7 @@ function getRandomFile(directoryPath: string): string {
     return join(directoryPath, randomFile);
 }
 
-export function fakeFieldData(field_type: string, field_name: string, options:any, model_type:string): any {
+export function fakeFieldData(field_type: string, field_name: string, options: any, model_type: string): any {
     switch (field_type) {
         case 'user_account':
             return 1; // TODO
@@ -73,7 +73,7 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
             if (field_name === 'artist') {
                 return faker.person.fullName()
             }
-            return faker.lorem.sentence({min:1, max:6});
+            return faker.lorem.sentence({min: 1, max: 6});
         case 'textarea':
             if (field_name === 'bio') {
                 return faker.person.bio()
@@ -87,9 +87,9 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
             return faker.number.float({min: 0, max: 2147483647, precision: 0.01});
         case 'date':
         case 'date_time':
-            const start_date = faker.date.recent({days:5});
-            const max_date = faker.date.soon({days:20, refDate: start_date})
-            const end_date = faker.date.between({from:start_date, to: max_date});
+            const start_date = faker.date.recent({days: 5});
+            const max_date = faker.date.soon({days: 20, refDate: start_date})
+            const end_date = faker.date.between({from: start_date, to: max_date});
             if (field_type == 'date') {
                 return end_date.toISOString().split('T')[0];
             }
@@ -100,9 +100,9 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
             return faker.internet.email();
         case 'phone':
             // @ts-ignore
-            return faker.phone.number({ style: 'international' })
+            return faker.phone.number({style: 'international'})
         case 'address':
-            const state = faker.location.state({abbreviated:true})
+            const state = faker.location.state({abbreviated: true})
             return `${faker.location.streetAddress()} ${faker.location.city()} ${state} ${faker.location.zipCode({state})}`;
         case 'url':
             return faker.internet.url();
@@ -115,22 +115,27 @@ export function fakeFieldData(field_type: string, field_name: string, options:an
         case 'boolean':
             return faker.datatype.boolean();
         case 'image':
-            const filePath = getRandomFile('./public/profilepics')
-            const fileStream = fs.createReadStream(resolve(filePath));
-            return fileStream;
+            // const filePath = getRandomFile('./public/profilepics')
+            // const fileStream = fs.createReadStream(resolve(filePath));
+            // return fileStream;
+            return faker.image.urlLoremFlickr({category: model_type})
         case 'video':
-            return faker.internet.url(); // Placeholder, could be a specific video URL generator
+            const videoOpts = [
+                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4"
+            ]
+            const randomIndex = Math.floor(Math.random() * videoOpts.length);
+            return videoOpts[randomIndex];
         case 'media':
-            return faker.internet.url(); // Placeholder, could be more specific
+            return faker.image.urlLoremFlickr({category: model_type})
         case 'flat_list':
             return Array.from({length: 5}, () => faker.lorem.word()); // Example of a flat list
         case 'bounding_box':
             return `{"lat":${faker.location.latitude()}, "lng":${faker.location.longitude()}, "lat2":${faker.location.latitude()}, "lng2":${faker.location.longitude()}}`;
-            // return `[${faker.location.latitude()},${faker.location.longitude()},${faker.location.latitude()},${faker.location.longitude()}]`;
+        // return `[${faker.location.latitude()},${faker.location.longitude()},${faker.location.latitude()},${faker.location.longitude()}]`;
         case 'json':
             return faker.helpers.fake('{{name.firstName}} {{name.lastName}}, {{address.city}}');
         case 'enum':
-            const opt:any = faker.helpers.arrayElement(options);
+            const opt: any = faker.helpers.arrayElement(options);
             return opt.id
         case 'vocabulary_reference':
         case 'type_reference':

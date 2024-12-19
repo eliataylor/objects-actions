@@ -53,10 +53,10 @@ export class WorldBuilder {
                         formData.append(`${key}[${index}]`, value);
                     });
                 } else if (entity[key] instanceof Blob || entity[key] instanceof http.IncomingMessage) {
-                    console.log(`appending file ${key} blob`)
+                    console.log(`appending ${key} as file stream `)
                     formData.append(key, entity[key]);
                 } else if (typeof entity[key] === 'object' && entity[key] !== null) {
-                    // Handle nested objects
+                    console.log(`handle ${entity[key].length} entries for ${key}`)
                     for (let nestedKey in entity[key]) {
                         formData.append(`${key}.${nestedKey}`, entity[key][nestedKey]);
                     }
@@ -97,7 +97,7 @@ export class WorldBuilder {
         return profile.data;
     }
 
-    public async buildObject(item: any) {
+    public async buildObject(item: NavItem) {
 
         if (typeof TypeFieldSchema[item.type] === 'undefined') {
             console.error('Invalid Type', item)
@@ -142,32 +142,31 @@ export class WorldBuilder {
                 if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
                     // @ts-ignore
                     const randomIndex = Math.floor(Math.random() * relResponse.data.results.length);
-                    // @ts-ignore
-                    entity[field.machine] = relResponse.data.results[randomIndex].id || relResponse.data.results[randomIndex].slug
-
-                    // TODO: handle appending to existing entries
-                    /* if (entity[field.machine] && field.cardinality as number > 1) {
-                        entity[field.machine] = [entity[field.machine]]
-                    } */
+                    const id = relResponse.data.results[randomIndex].id || relResponse.data.results[randomIndex].slug;
+                    if (field.cardinality as number > 1 && Array.isArray(entity[field.machine]) && entity[field.machine].length > 0) {
+                        entity[field.machine].push(id)
+                    } else if (field.cardinality as number > 1 && relType.type === "Users") {
+                        entity[field.machine] = [id]
+                    } else {
+                        entity[field.machine] = id
+                    }
                 } else {
                     console.warn(`relationship ${relType.segment} has no data yet`)
                 }
 
-            } else if (field.field_type === 'image') {
-                const imageUrl = faker.image.urlLoremFlickr({category: hasUrl.plural.toLowerCase()})
-                const imageResponse = await axios.get(imageUrl, {responseType: 'stream'});
-                if (imageResponse.status !== 200) {
-                    throw new Error(`Failed to fetch image from ${imageUrl}`);
+            } else if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
+                entity.hasImage = true;
+                const mediaUrl = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
+                const mediaResponse = await axios.get(mediaUrl, {responseType: 'stream'});
+                if (mediaResponse.status !== 200) {
+                    throw new Error(`Failed to fetch ${field.field_type} from ${mediaUrl}`);
                 } else {
-                    console.log(`Going to load ${imageUrl}`)
+                    console.log(`Going to load ${mediaUrl}`)
                     entity.hasImage = true;
-                    entity[field.machine] = imageResponse.data;
+                    entity[field.machine] = mediaResponse.data;
                 }
             } else {
                 entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
-                if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
-                    entity.hasImage = true;
-                }
             }
         }
         return entity;
