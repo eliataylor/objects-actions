@@ -23,33 +23,28 @@ async function start() {
     const builder = new WorldBuilder();
 
     if (args.action === 'users-add') {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < args.count; i++) {
             const baseData = {} // TODO: allow passing configs from CLI
             await builder.registerUser(baseData);
         }
     }
 
     if (args.action === 'objects-add') {
-        const creators = await builder.getContentCreators();
-
-        /*
-        WARN: for now, types should eb inserted in order by field dependency
-        let manual = NAVITEMS.find(nav => nav.type === 'Attendees') as NavItem;
-        await builder.buildObject(manual);
-        return manual;
-        */
+        await builder.getContentCreators();
 
         for (const nav of NAVITEMS) {
             for (let i = 0; i < args.count; i++) {
                 await builder.buildObject(nav);
             }
         }
-
     }
-
 }
 
 start()
 
-
-
+        /*
+        WARN: for now, types should be inserted in order by field dependency
+        let manual = NAVITEMS.find(nav => nav.type === 'Attendees') as NavItem;
+        await builder.buildObject(manual);
+        return manual;
+        */

@@ -5,6 +5,7 @@ import {fakeFieldData} from "./builder-utils";
 import {faker} from '@faker-js/faker/locale/en_US';
 import fs from "fs";
 import path from "path";
+
 const FormData = require('form-data');
 const http = require('http');
 
@@ -13,10 +14,15 @@ interface Creators extends Users {
     token?: string[];
 }
 
-export interface WorldCount extends NavItem {
-    type: string;
-    count: number;
-    base?: any;
+export interface FixtureContext {
+    owner: Users;
+    time: string;
+    cookie?: string;
+}
+
+export interface FixtureData {
+    entity: EndingType;
+    context: FixtureContext;
 }
 
 type WorldData = { [key: string]: HttpResponse<any>[] }
@@ -42,16 +48,21 @@ export class WorldBuilder {
 
     }
 
-    saveFixture(name: string, data: any) {
+    saveFixture(name: string, entity: any, owner: Users) {
         if (this.fixturePath.length > 0) {
+            const data: FixtureData = {
+                entity, context: {owner, time: new Date().toISOString()},
+            }
+
             fs.writeFileSync(`${this.fixturePath}/${name}.json`, JSON.stringify(data, null, 2));
         }
+        console.log(`User ${owner.username} created a ${entity._type} with these roles ${JSON.stringify(owner.groups)}`)
     }
 
     serializePayload(entity: any) {
         const headers: any = {}
 
-        let formData:any = null;
+        let formData: any = null;
         if (typeof entity.hasImage === 'undefined') {
             headers["Content-Type"] = "application/json"
             formData = entity;
@@ -61,7 +72,7 @@ export class WorldBuilder {
             for (let key in entity) {
                 if (Array.isArray(entity[key])) {
                     console.log(`appending array ${key} to FormData`)
-                    entity[key].forEach((value:any, index:number) => {
+                    entity[key].forEach((value: any, index: number) => {
                         formData.append(`${key}[${index}]`, value);
                     });
                 } else if (entity[key] instanceof Blob || entity[key] instanceof http.IncomingMessage) {
@@ -94,8 +105,8 @@ export class WorldBuilder {
         });
         if (!baseData.username) baseData.username = faker.person.firstName();
         const registered = await this.apiClient.register(baseData);
-        this.saveFixture(`user-add-${registered.data.id}`, registered)
-        const profile = await this.updateUserProfile({id:registered.data.data.user.id});
+        this.saveFixture(`user-add-${registered.data.id}`, registered, registered.data.data.user)
+        const profile = await this.updateUserProfile({id: registered.data.data.user.id});
         return profile;
     }
 
@@ -105,7 +116,7 @@ export class WorldBuilder {
         const {formData, headers} = this.serializePayload(entity);
         const apiUrl = `${process.env.REACT_APP_API_HOST}/api/users/${user.id}`
         const profile = await this.apiClient.post(apiUrl, formData, headers);
-        this.saveFixture(`user-edit-${profile.data.id}`, profile)
+        this.saveFixture(`user-edit-${profile.data.id}`, profile, profile.data)
         return profile.data;
     }
 
@@ -136,8 +147,7 @@ export class WorldBuilder {
         if (!response.data?.id) {
             console.log(`Error creating ${item.type}. ${response.error}`)
         } else {
-            console.log(`Created ${item.type} --- ${JSON.stringify(response.data)}`)
-            this.saveFixture(`object-add-${hasUrl.type}-${response.data.id}.json`, response.data);
+            this.saveFixture(`object-add-${hasUrl.type}-${response.data.id}.json`, response.data, creator);
         }
         return response;
     }
@@ -197,7 +207,7 @@ export class WorldBuilder {
         return loginResponse.data.data.user as Users;
     }
 
-    public async loadAuthor(role: string|null) {
+    public async loadAuthor(role: string | null) {
         if (!role) {
             return this.loadAuthorByRole(null);
         }
@@ -229,7 +239,7 @@ export class WorldBuilder {
 
         let randomIndex = Math.floor(Math.random() * authors.length);
         let author = authors[randomIndex] as Creators
-        console.log(`REUSING CREATOR ${author.username} with ${author.cookie}`);
+        console.log(`REUSING CREATOR ${author.username}`);
         if (!author.cookie) {
             author = await this.loginUser(author.email || author.username) // get cookie
         }

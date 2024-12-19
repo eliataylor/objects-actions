@@ -1,6 +1,5 @@
 # Object-Actions Worksheet
 
-
 ## PURPOSE
 
 - [x] Learn Relational Database Schema Design
@@ -8,8 +7,8 @@
 - [x] Scaffold Content Management Systems
 - [x] Scaffold Authentication and Access Permissions
 - [x] Scaffold Web App interface and API connectivity
-- [x] Scaffold Cypress.io test suites
-- [x] Generate unlimited fake data to test and prototype
+- [x] Complete End-To-End tests for functionality and content permissions
+- [x] Generate unlimited fake data to test and prototype, and the base data for your Cypress tests 
 
 
 ## HOW

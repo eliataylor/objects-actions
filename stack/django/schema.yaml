@@ -1,0 +1,5809 @@
+openapi: 3.0.3
+info:
+  title: oaexample
+  version: 1.0.0
+  description: oaexample
+paths:
+  /:
+    get:
+      operationId: root_retrieve
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/action-plans:
+    get:
+      operationId: api_action_plans_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedActionPlansList'
+          description: ''
+    post:
+      operationId: api_action_plans_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionPlansRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActionPlansRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActionPlansRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionPlans'
+          description: ''
+  /api/action-plans/{id}:
+    get:
+      operationId: api_action_plans_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Action Plan.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionPlans'
+          description: ''
+    put:
+      operationId: api_action_plans_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Action Plan.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionPlansRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActionPlansRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActionPlansRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionPlans'
+          description: ''
+    patch:
+      operationId: api_action_plans_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Action Plan.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedActionPlansRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedActionPlansRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedActionPlansRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionPlans'
+          description: ''
+    delete:
+      operationId: api_action_plans_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Action Plan.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/attendees:
+    get:
+      operationId: api_attendees_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAttendeesList'
+          description: ''
+    post:
+      operationId: api_attendees_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendeesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttendeesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttendeesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendees'
+          description: ''
+  /api/attendees/{id}:
+    get:
+      operationId: api_attendees_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Attendee.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendees'
+          description: ''
+    put:
+      operationId: api_attendees_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Attendee.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendeesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttendeesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttendeesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendees'
+          description: ''
+    patch:
+      operationId: api_attendees_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Attendee.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendeesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendeesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendeesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendees'
+          description: ''
+    delete:
+      operationId: api_attendees_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Attendee.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/cities:
+    get:
+      operationId: api_cities_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCitiesList'
+          description: ''
+    post:
+      operationId: api_cities_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CitiesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CitiesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CitiesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cities'
+          description: ''
+  /api/cities/{id}:
+    get:
+      operationId: api_cities_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this City.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cities'
+          description: ''
+    put:
+      operationId: api_cities_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this City.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CitiesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CitiesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CitiesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cities'
+          description: ''
+    patch:
+      operationId: api_cities_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this City.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCitiesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCitiesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCitiesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cities'
+          description: ''
+    delete:
+      operationId: api_cities_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this City.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/invites:
+    get:
+      operationId: api_invites_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInvitesList'
+          description: ''
+    post:
+      operationId: api_invites_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvitesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvitesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invites'
+          description: ''
+  /api/invites/{id}:
+    get:
+      operationId: api_invites_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Invite.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invites'
+          description: ''
+    put:
+      operationId: api_invites_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Invite.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvitesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvitesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invites'
+          description: ''
+    patch:
+      operationId: api_invites_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Invite.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInvitesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInvitesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInvitesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invites'
+          description: ''
+    delete:
+      operationId: api_invites_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Invite.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/meeting-types:
+    get:
+      operationId: api_meeting_types_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMeetingTypesList'
+          description: ''
+    post:
+      operationId: api_meeting_types_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingTypesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MeetingTypesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MeetingTypesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingTypes'
+          description: ''
+  /api/meeting-types/{id}:
+    get:
+      operationId: api_meeting_types_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Meeting Type.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingTypes'
+          description: ''
+    put:
+      operationId: api_meeting_types_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Meeting Type.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingTypesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MeetingTypesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MeetingTypesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingTypes'
+          description: ''
+    patch:
+      operationId: api_meeting_types_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Meeting Type.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMeetingTypesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMeetingTypesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMeetingTypesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingTypes'
+          description: ''
+    delete:
+      operationId: api_meeting_types_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Meeting Type.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/meetings:
+    get:
+      operationId: api_meetings_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMeetingsList'
+          description: ''
+    post:
+      operationId: api_meetings_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MeetingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MeetingsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meetings'
+          description: ''
+  /api/meetings/{id}:
+    get:
+      operationId: api_meetings_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Meeting.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meetings'
+          description: ''
+    put:
+      operationId: api_meetings_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Meeting.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MeetingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MeetingsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meetings'
+          description: ''
+    patch:
+      operationId: api_meetings_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Meeting.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMeetingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMeetingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMeetingsRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meetings'
+          description: ''
+    delete:
+      operationId: api_meetings_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Meeting.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/officials:
+    get:
+      operationId: api_officials_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOfficialsList'
+          description: ''
+    post:
+      operationId: api_officials_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfficialsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfficialsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfficialsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Officials'
+          description: ''
+  /api/officials/{id}:
+    get:
+      operationId: api_officials_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Official.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Officials'
+          description: ''
+    put:
+      operationId: api_officials_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Official.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfficialsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfficialsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfficialsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Officials'
+          description: ''
+    patch:
+      operationId: api_officials_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Official.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficialsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficialsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficialsRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Officials'
+          description: ''
+    delete:
+      operationId: api_officials_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Official.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pages:
+    get:
+      operationId: api_pages_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPagesList'
+          description: ''
+    post:
+      operationId: api_pages_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PagesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PagesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PagesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pages'
+          description: ''
+  /api/pages/{id}:
+    get:
+      operationId: api_pages_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Page.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pages'
+          description: ''
+    put:
+      operationId: api_pages_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Page.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PagesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PagesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PagesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pages'
+          description: ''
+    patch:
+      operationId: api_pages_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Page.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPagesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPagesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPagesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pages'
+          description: ''
+    delete:
+      operationId: api_pages_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Page.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/parties:
+    get:
+      operationId: api_parties_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPartiesList'
+          description: ''
+    post:
+      operationId: api_parties_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartiesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PartiesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PartiesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parties'
+          description: ''
+  /api/parties/{id}:
+    get:
+      operationId: api_parties_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Party.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parties'
+          description: ''
+    put:
+      operationId: api_parties_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Party.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartiesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PartiesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PartiesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parties'
+          description: ''
+    patch:
+      operationId: api_parties_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Party.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPartiesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPartiesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPartiesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parties'
+          description: ''
+    delete:
+      operationId: api_parties_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Party.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/publications:
+    get:
+      operationId: api_publications_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPublicationsList'
+          description: ''
+    post:
+      operationId: api_publications_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicationsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicationsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicationsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publications'
+          description: ''
+  /api/publications/{id}:
+    get:
+      operationId: api_publications_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Publication.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publications'
+          description: ''
+    put:
+      operationId: api_publications_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Publication.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicationsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicationsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicationsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publications'
+          description: ''
+    patch:
+      operationId: api_publications_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Publication.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicationsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicationsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicationsRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publications'
+          description: ''
+    delete:
+      operationId: api_publications_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Publication.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/rallies:
+    get:
+      operationId: api_rallies_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRalliesList'
+          description: ''
+    post:
+      operationId: api_rallies_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RalliesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RalliesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RalliesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rallies'
+          description: ''
+  /api/rallies/{id}:
+    get:
+      operationId: api_rallies_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Rally.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rallies'
+          description: ''
+    put:
+      operationId: api_rallies_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Rally.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RalliesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RalliesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RalliesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rallies'
+          description: ''
+    patch:
+      operationId: api_rallies_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Rally.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRalliesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRalliesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRalliesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rallies'
+          description: ''
+    delete:
+      operationId: api_rallies_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Rally.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/resource-types:
+    get:
+      operationId: api_resource_types_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResourceTypesList'
+          description: ''
+    post:
+      operationId: api_resource_types_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceTypesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResourceTypesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResourceTypesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceTypes'
+          description: ''
+  /api/resource-types/{id}:
+    get:
+      operationId: api_resource_types_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Resource Type.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceTypes'
+          description: ''
+    put:
+      operationId: api_resource_types_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Resource Type.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceTypesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResourceTypesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResourceTypesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceTypes'
+          description: ''
+    patch:
+      operationId: api_resource_types_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Resource Type.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedResourceTypesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedResourceTypesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedResourceTypesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceTypes'
+          description: ''
+    delete:
+      operationId: api_resource_types_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Resource Type.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/resources:
+    get:
+      operationId: api_resources_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResourcesList'
+          description: ''
+    post:
+      operationId: api_resources_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourcesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResourcesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResourcesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resources'
+          description: ''
+  /api/resources/{id}:
+    get:
+      operationId: api_resources_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Resource.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resources'
+          description: ''
+    put:
+      operationId: api_resources_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Resource.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourcesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResourcesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResourcesRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resources'
+          description: ''
+    patch:
+      operationId: api_resources_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Resource.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedResourcesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedResourcesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedResourcesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resources'
+          description: ''
+    delete:
+      operationId: api_resources_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Resource.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/rooms:
+    get:
+      operationId: api_rooms_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoomsList'
+          description: ''
+    post:
+      operationId: api_rooms_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoomsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoomsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+          description: ''
+  /api/rooms/{id}:
+    get:
+      operationId: api_rooms_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Room.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+          description: ''
+    put:
+      operationId: api_rooms_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Room.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoomsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoomsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+          description: ''
+    patch:
+      operationId: api_rooms_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Room.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoomsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRoomsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRoomsRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+          description: ''
+    delete:
+      operationId: api_rooms_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Room.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/stakeholders:
+    get:
+      operationId: api_stakeholders_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStakeholdersList'
+          description: ''
+    post:
+      operationId: api_stakeholders_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StakeholdersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StakeholdersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StakeholdersRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stakeholders'
+          description: ''
+  /api/stakeholders/{id}:
+    get:
+      operationId: api_stakeholders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Stakeholder.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stakeholders'
+          description: ''
+    put:
+      operationId: api_stakeholders_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Stakeholder.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StakeholdersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StakeholdersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StakeholdersRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stakeholders'
+          description: ''
+    patch:
+      operationId: api_stakeholders_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Stakeholder.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStakeholdersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStakeholdersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStakeholdersRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stakeholders'
+          description: ''
+    delete:
+      operationId: api_stakeholders_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Stakeholder.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/states:
+    get:
+      operationId: api_states_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStatesList'
+          description: ''
+    post:
+      operationId: api_states_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StatesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StatesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/States'
+          description: ''
+  /api/states/{id}:
+    get:
+      operationId: api_states_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this State.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/States'
+          description: ''
+    put:
+      operationId: api_states_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this State.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StatesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StatesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/States'
+          description: ''
+    patch:
+      operationId: api_states_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this State.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStatesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStatesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStatesRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/States'
+          description: ''
+    delete:
+      operationId: api_states_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this State.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/subscriptions:
+    get:
+      operationId: api_subscriptions_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubscriptionsList'
+          description: ''
+    post:
+      operationId: api_subscriptions_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscriptions'
+          description: ''
+  /api/subscriptions/{id}:
+    get:
+      operationId: api_subscriptions_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Subscription.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscriptions'
+          description: ''
+    put:
+      operationId: api_subscriptions_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Subscription.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscriptions'
+          description: ''
+    patch:
+      operationId: api_subscriptions_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Subscription.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionsRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscriptions'
+          description: ''
+    delete:
+      operationId: api_subscriptions_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Subscription.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/topics:
+    get:
+      operationId: api_topics_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTopicsList'
+          description: ''
+    post:
+      operationId: api_topics_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopicsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TopicsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TopicsRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topics'
+          description: ''
+  /api/topics/{id}:
+    get:
+      operationId: api_topics_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Topic.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topics'
+          description: ''
+    put:
+      operationId: api_topics_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Topic.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopicsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TopicsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TopicsRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topics'
+          description: ''
+    patch:
+      operationId: api_topics_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Topic.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTopicsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTopicsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTopicsRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topics'
+          description: ''
+    delete:
+      operationId: api_topics_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Topic.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/users:
+    get:
+      operationId: api_users_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsersList'
+          description: ''
+    post:
+      operationId: api_users_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsersRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+          description: ''
+  /api/users/{id}:
+    get:
+      operationId: api_users_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this User.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+          description: ''
+    put:
+      operationId: api_users_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this User.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsersRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+          description: ''
+    patch:
+      operationId: api_users_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this User.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUsersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUsersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUsersRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+          description: ''
+    delete:
+      operationId: api_users_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this User.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/users/{user_id}/{model_name}/list:
+    get:
+      operationId: api_users_list_retrieve
+      parameters:
+      - in: path
+        name: model_name
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search term
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
+  /api/users/{user_id}/{model_name}/stats:
+    get:
+      operationId: api_users_stats_retrieve
+      parameters:
+      - in: path
+        name: model_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /objectactions/auth/sms:
+    post:
+      operationId: objectactions_auth_sms_create
+      tags:
+      - objectactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneNumberRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PhoneNumberRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PhoneNumberRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: SMS sent successfully
+        '400':
+          description: Bad request
+  /objectactions/auth/verify-sms:
+    post:
+      operationId: objectactions_auth_verify_sms_create
+      tags:
+      - objectactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyPhoneRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VerifyPhoneRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifyPhoneRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: SMS sent successfully
+        '400':
+          description: Bad request
+components:
+  schemas:
+    ActionPlans:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          nullable: true
+          maxLength: 255
+        recommendation:
+          type: string
+          nullable: true
+        exe_summary:
+          type: string
+          nullable: true
+          title: Executive Summary
+        analysis:
+          type: string
+          nullable: true
+          title: Analysis and Policy Alternatives / Proposal
+        background:
+          type: string
+          nullable: true
+          title: Background / Legislative History / Problem Statement
+        pro_argument:
+          type: string
+          nullable: true
+        con_argument:
+          type: string
+          nullable: true
+        prerequisites:
+          type: string
+        timeline:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        coauthors:
+          type: array
+          items:
+            type: integer
+            title: CoAuthors
+      required:
+      - created_at
+      - id
+      - modified_at
+      - prerequisites
+    ActionPlansRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+          maxLength: 255
+        recommendation:
+          type: string
+          nullable: true
+        exe_summary:
+          type: string
+          nullable: true
+          title: Executive Summary
+        analysis:
+          type: string
+          nullable: true
+          title: Analysis and Policy Alternatives / Proposal
+        background:
+          type: string
+          nullable: true
+          title: Background / Legislative History / Problem Statement
+        pro_argument:
+          type: string
+          nullable: true
+        con_argument:
+          type: string
+          nullable: true
+        prerequisites:
+          type: string
+          minLength: 1
+        timeline:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        coauthors:
+          type: array
+          items:
+            type: integer
+            title: CoAuthors
+      required:
+      - prerequisites
+    Attendees:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        display_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        display_bg:
+          type: string
+          format: uri
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        stream:
+          type: string
+          nullable: true
+          maxLength: 255
+        is_muted:
+          type: boolean
+          nullable: true
+        sharing_video:
+          type: boolean
+          nullable: true
+        sharing_audio:
+          type: boolean
+          nullable: true
+        sharing_screen:
+          type: boolean
+          nullable: true
+        hand_raised:
+          type: boolean
+          nullable: true
+        is_typing:
+          type: boolean
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        room_id:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+      - role
+    AttendeesRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        display_bg:
+          type: string
+          format: binary
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        stream:
+          type: string
+          nullable: true
+          maxLength: 255
+        is_muted:
+          type: boolean
+          nullable: true
+        sharing_video:
+          type: boolean
+          nullable: true
+        sharing_audio:
+          type: boolean
+          nullable: true
+        sharing_screen:
+          type: boolean
+          nullable: true
+        hand_raised:
+          type: boolean
+          nullable: true
+        is_typing:
+          type: boolean
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        room_id:
+          type: integer
+          nullable: true
+      required:
+      - role
+    BlankEnum:
+      enum:
+      - ''
+    Cities:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        postal_address:
+          type: string
+          maxLength: 255
+        picture:
+          type: string
+          format: uri
+          nullable: true
+        cover_photo:
+          type: string
+          format: uri
+          nullable: true
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        population:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        altitude:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        county:
+          type: string
+          nullable: true
+          maxLength: 255
+        land_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        water_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        total_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        density:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+        state_id:
+          type: integer
+          nullable: true
+          title: State
+        sponsors:
+          type: array
+          items:
+            type: integer
+        officials:
+          type: array
+          items:
+            type: integer
+      required:
+      - created_at
+      - id
+      - modified_at
+      - name
+      - postal_address
+    CitiesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        postal_address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        cover_photo:
+          type: string
+          format: binary
+          nullable: true
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        population:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        altitude:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        county:
+          type: string
+          nullable: true
+          maxLength: 255
+        land_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        water_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        total_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        density:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+        state_id:
+          type: integer
+          nullable: true
+          title: State
+        sponsors:
+          type: array
+          items:
+            type: integer
+        officials:
+          type: array
+          items:
+            type: integer
+      required:
+      - name
+      - postal_address
+    Invites:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/InvitesStatusEnum'
+        author:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+        user:
+          type: integer
+          nullable: true
+        invited_by:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+      - status
+    InvitesRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/InvitesStatusEnum'
+        author:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+        user:
+          type: integer
+          nullable: true
+        invited_by:
+          type: integer
+          nullable: true
+      required:
+      - status
+    InvitesStatusEnum:
+      enum:
+      - invited
+      - rsvpd
+      - attending
+      - attended
+      type: string
+      description: |-
+        * `invited` - Invited
+        * `rsvpd` -  rsvpd
+        * `attending` -  attending
+        * `attended` -  attended
+    MeetingTypes:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+    MeetingTypesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+    Meetings:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          nullable: true
+          maxLength: 255
+        address:
+          type: string
+          maxLength: 255
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        agenda_json:
+          nullable: true
+        duration:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        privacy:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        meeting_type:
+          type: integer
+          nullable: true
+        rooms:
+          type: integer
+          nullable: true
+        speakers:
+          type: array
+          items:
+            type: integer
+        moderators:
+          type: array
+          items:
+            type: integer
+        sponsors:
+          type: array
+          items:
+            type: integer
+      required:
+      - address
+      - created_at
+      - end
+      - id
+      - moderators
+      - modified_at
+      - speakers
+      - start
+    MeetingsRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+          maxLength: 255
+        address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        agenda_json:
+          nullable: true
+        duration:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        privacy:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        meeting_type:
+          type: integer
+          nullable: true
+        rooms:
+          type: integer
+          nullable: true
+        speakers:
+          type: array
+          items:
+            type: integer
+        moderators:
+          type: array
+          items:
+            type: integer
+        sponsors:
+          type: array
+          items:
+            type: integer
+      required:
+      - address
+      - end
+      - moderators
+      - speakers
+      - start
+    NullEnum:
+      enum:
+      - null
+    Officials:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          title: Job Title
+          maxLength: 255
+        office_phone:
+          type: string
+          nullable: true
+          maxLength: 16
+        office_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        social_links:
+          type: string
+          format: uri
+          nullable: true
+          title: Social Media links
+          maxLength: 200
+        author:
+          type: integer
+          nullable: true
+        party_affiliation:
+          type: integer
+          nullable: true
+          title: Party
+        city:
+          type: array
+          items:
+            type: integer
+      required:
+      - city
+      - created_at
+      - id
+      - modified_at
+      - title
+    OfficialsRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: Job Title
+          maxLength: 255
+        office_phone:
+          type: string
+          nullable: true
+          maxLength: 16
+        office_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        social_links:
+          type: string
+          format: uri
+          nullable: true
+          title: Social Media links
+          maxLength: 200
+        author:
+          type: integer
+          nullable: true
+        party_affiliation:
+          type: integer
+          nullable: true
+          title: Party
+        city:
+          type: array
+          items:
+            type: integer
+      required:
+      - city
+      - title
+    Pages:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description_html:
+          type: string
+        author:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - description_html
+      - id
+      - modified_at
+      - title
+    PagesRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description_html:
+          type: string
+          minLength: 1
+        author:
+          type: integer
+          nullable: true
+      required:
+      - description_html
+      - title
+    PaginatedActionPlansList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionPlans'
+    PaginatedAttendeesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attendees'
+    PaginatedCitiesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cities'
+    PaginatedInvitesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invites'
+    PaginatedMeetingTypesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingTypes'
+    PaginatedMeetingsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Meetings'
+    PaginatedOfficialsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Officials'
+    PaginatedPagesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pages'
+    PaginatedPartiesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Parties'
+    PaginatedPublicationsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Publications'
+    PaginatedRalliesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rallies'
+    PaginatedResourceTypesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceTypes'
+    PaginatedResourcesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Resources'
+    PaginatedRoomsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rooms'
+    PaginatedStakeholdersList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stakeholders'
+    PaginatedStatesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/States'
+    PaginatedSubscriptionsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscriptions'
+    PaginatedTopicsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Topics'
+    PaginatedUsersList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Users'
+    Parties:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        author:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+    PartiesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        logo:
+          type: string
+          format: binary
+          nullable: true
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        author:
+          type: integer
+          nullable: true
+    PatchedActionPlansRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+          maxLength: 255
+        recommendation:
+          type: string
+          nullable: true
+        exe_summary:
+          type: string
+          nullable: true
+          title: Executive Summary
+        analysis:
+          type: string
+          nullable: true
+          title: Analysis and Policy Alternatives / Proposal
+        background:
+          type: string
+          nullable: true
+          title: Background / Legislative History / Problem Statement
+        pro_argument:
+          type: string
+          nullable: true
+        con_argument:
+          type: string
+          nullable: true
+        prerequisites:
+          type: string
+          minLength: 1
+        timeline:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        coauthors:
+          type: array
+          items:
+            type: integer
+            title: CoAuthors
+    PatchedAttendeesRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        display_bg:
+          type: string
+          format: binary
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        stream:
+          type: string
+          nullable: true
+          maxLength: 255
+        is_muted:
+          type: boolean
+          nullable: true
+        sharing_video:
+          type: boolean
+          nullable: true
+        sharing_audio:
+          type: boolean
+          nullable: true
+        sharing_screen:
+          type: boolean
+          nullable: true
+        hand_raised:
+          type: boolean
+          nullable: true
+        is_typing:
+          type: boolean
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        room_id:
+          type: integer
+          nullable: true
+    PatchedCitiesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        postal_address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        cover_photo:
+          type: string
+          format: binary
+          nullable: true
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        population:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        altitude:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        county:
+          type: string
+          nullable: true
+          maxLength: 255
+        land_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        water_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        total_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        density:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+        state_id:
+          type: integer
+          nullable: true
+          title: State
+        sponsors:
+          type: array
+          items:
+            type: integer
+        officials:
+          type: array
+          items:
+            type: integer
+    PatchedInvitesRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/InvitesStatusEnum'
+        author:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+        user:
+          type: integer
+          nullable: true
+        invited_by:
+          type: integer
+          nullable: true
+    PatchedMeetingTypesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+    PatchedMeetingsRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+          maxLength: 255
+        address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        agenda_json:
+          nullable: true
+        duration:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        privacy:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        meeting_type:
+          type: integer
+          nullable: true
+        rooms:
+          type: integer
+          nullable: true
+        speakers:
+          type: array
+          items:
+            type: integer
+        moderators:
+          type: array
+          items:
+            type: integer
+        sponsors:
+          type: array
+          items:
+            type: integer
+    PatchedOfficialsRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: Job Title
+          maxLength: 255
+        office_phone:
+          type: string
+          nullable: true
+          maxLength: 16
+        office_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        social_links:
+          type: string
+          format: uri
+          nullable: true
+          title: Social Media links
+          maxLength: 200
+        author:
+          type: integer
+          nullable: true
+        party_affiliation:
+          type: integer
+          nullable: true
+          title: Party
+        city:
+          type: array
+          items:
+            type: integer
+    PatchedPagesRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description_html:
+          type: string
+          minLength: 1
+        author:
+          type: integer
+          nullable: true
+    PatchedPartiesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        logo:
+          type: string
+          format: binary
+          nullable: true
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        author:
+          type: integer
+          nullable: true
+    PatchedPublicationsRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          minLength: 1
+        media:
+          type: string
+          format: binary
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        relationships:
+          type: integer
+          nullable: true
+    PatchedRalliesRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          minLength: 1
+        media:
+          type: string
+          format: binary
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        topics:
+          type: array
+          items:
+            type: integer
+    PatchedResourceTypesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+    PatchedResourcesRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description_html:
+          type: string
+          minLength: 1
+        image:
+          type: string
+          format: binary
+        postal_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        price_ccoin:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: Price (citizencoin)
+        author:
+          type: integer
+          nullable: true
+        resource_type:
+          type: array
+          items:
+            type: integer
+            title: Resource Type
+    PatchedRoomsRequest:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        privacy:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PrivacyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        status:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoomsStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        chat_thread:
+          type: string
+          nullable: true
+          maxLength: 255
+        recording:
+          type: string
+          format: binary
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+          title: Owner
+        rally:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+    PatchedStakeholdersRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        image:
+          type: string
+          format: binary
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+    PatchedStatesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        icon:
+          type: string
+          format: binary
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+    PatchedSubscriptionsRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/SubscriptionsStatusEnum'
+        author:
+          type: integer
+          nullable: true
+        subscriber:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+    PatchedTopicsRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        icon:
+          type: string
+          format: binary
+          nullable: true
+        photo:
+          type: string
+          format: binary
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+    PatchedUsersRequest:
+      type: object
+      properties:
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        date_joined:
+          type: string
+          format: date-time
+        phone:
+          type: string
+          nullable: true
+          maxLength: 16
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        bio:
+          type: string
+          nullable: true
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        cover_photo:
+          type: string
+          format: binary
+          nullable: true
+    PhoneNumberRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          minLength: 1
+      required:
+      - phone
+    PrivacyEnum:
+      enum:
+      - public
+      - inviteonly
+      - requests
+      type: string
+      description: |-
+        * `public` - Public
+        * `inviteonly` -  invite-only
+        * `requests` -  requests
+    Publications:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        media:
+          type: string
+          format: uri
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        relationships:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - description
+      - id
+      - modified_at
+      - title
+    PublicationsRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          minLength: 1
+        media:
+          type: string
+          format: binary
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        relationships:
+          type: integer
+          nullable: true
+      required:
+      - description
+      - title
+    Rallies:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        media:
+          type: string
+          format: uri
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        topics:
+          type: array
+          items:
+            type: integer
+      required:
+      - created_at
+      - description
+      - id
+      - modified_at
+      - title
+      - topics
+    RalliesRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          minLength: 1
+        media:
+          type: string
+          format: binary
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+        topics:
+          type: array
+          items:
+            type: integer
+      required:
+      - description
+      - title
+      - topics
+    ResourceTypes:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+    ResourceTypesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: integer
+          nullable: true
+    Resources:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description_html:
+          type: string
+        image:
+          type: string
+          format: uri
+        postal_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        price_ccoin:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: Price (citizencoin)
+        author:
+          type: integer
+          nullable: true
+        resource_type:
+          type: array
+          items:
+            type: integer
+            title: Resource Type
+      required:
+      - created_at
+      - description_html
+      - id
+      - image
+      - modified_at
+      - price_ccoin
+      - resource_type
+      - title
+    ResourcesRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description_html:
+          type: string
+          minLength: 1
+        image:
+          type: string
+          format: binary
+        postal_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        price_ccoin:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: Price (citizencoin)
+        author:
+          type: integer
+          nullable: true
+        resource_type:
+          type: array
+          items:
+            type: integer
+            title: Resource Type
+      required:
+      - description_html
+      - image
+      - price_ccoin
+      - resource_type
+      - title
+    RoleEnum:
+      enum:
+      - viewer
+      - presenter
+      - admin
+      - chat_moderator
+      type: string
+      description: |-
+        * `viewer` - Viewer
+        * `presenter` -  presenter
+        * `admin` -  admin
+        * `chat_moderator` -  chat moderator
+    Rooms:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        privacy:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PrivacyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        status:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoomsStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        chat_thread:
+          type: string
+          nullable: true
+          maxLength: 255
+        recording:
+          type: string
+          format: uri
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+          title: Owner
+        rally:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - end
+      - id
+      - modified_at
+      - start
+    RoomsRequest:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        privacy:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PrivacyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        status:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoomsStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        chat_thread:
+          type: string
+          nullable: true
+          maxLength: 255
+        recording:
+          type: string
+          format: binary
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+          title: Owner
+        rally:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+      required:
+      - end
+      - start
+    RoomsStatusEnum:
+      enum:
+      - live
+      - scheduled
+      - ended
+      type: string
+      description: |-
+        * `live` - Live
+        * `scheduled` -  scheduled
+        * `ended` -  ended
+    Stakeholders:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        image:
+          type: string
+          format: uri
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+    StakeholdersRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        image:
+          type: string
+          format: binary
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+    States:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        icon:
+          type: string
+          format: uri
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+    StatesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        icon:
+          type: string
+          format: binary
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+    Subscriptions:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/SubscriptionsStatusEnum'
+        author:
+          type: integer
+          nullable: true
+        subscriber:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+      - status
+    SubscriptionsRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/SubscriptionsStatusEnum'
+        author:
+          type: integer
+          nullable: true
+        subscriber:
+          type: integer
+          nullable: true
+        rally:
+          type: integer
+          nullable: true
+        meeting:
+          type: integer
+          nullable: true
+      required:
+      - status
+    SubscriptionsStatusEnum:
+      enum:
+      - approved
+      - denied
+      - active
+      - seen
+      type: string
+      description: |-
+        * `approved` - Approved
+        * `denied` -  denied
+        * `active` -  active
+        * `seen` -  seen
+    Topics:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        icon:
+          type: string
+          format: uri
+          nullable: true
+        photo:
+          type: string
+          format: uri
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - modified_at
+    TopicsRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        icon:
+          type: string
+          format: binary
+          nullable: true
+        photo:
+          type: string
+          format: binary
+          nullable: true
+        author:
+          type: integer
+          nullable: true
+    Users:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        date_joined:
+          type: string
+          format: date-time
+        phone:
+          type: string
+          nullable: true
+          maxLength: 16
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        bio:
+          type: string
+          nullable: true
+        picture:
+          type: string
+          format: uri
+          nullable: true
+        cover_photo:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - id
+      - username
+    UsersRequest:
+      type: object
+      properties:
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        date_joined:
+          type: string
+          format: date-time
+        phone:
+          type: string
+          nullable: true
+          maxLength: 16
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        bio:
+          type: string
+          nullable: true
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        cover_photo:
+          type: string
+          format: binary
+          nullable: true
+      required:
+      - username
+    VerifyPhoneRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          minLength: 1
+        code:
+          type: string
+          minLength: 1
+      required:
+      - code
+      - phone
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
