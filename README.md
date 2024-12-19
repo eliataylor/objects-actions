@@ -18,10 +18,10 @@
 | <a href="docs/images/objects-nod.png" target="_blank"><img src="docs/images/objects-nod.png" alt="Objects to Actions" height="300"/></a> | <a href="docs/images/permissions-matrix-nod.png" target="_blank"><img src="docs/images/permissions-matrix-nod.png" alt="Permission Matrix" height="300"/></a> |
 
 
-|                                |
-|:------------------------------:|
-|  `docker-compose up --build`   |
-| ↓ Generates this whole stack ↓ |
+|                                                                                                                                                            |
+|:----------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|                                                                `docker-compose up --build`                                                                 |
+|                                                               ↓ Generates this whole stack ↓                                                               |
 
 
 https://github.com/user-attachments/assets/3065f1a1-9fa6-4420-99c2-f3aa4bcce373
