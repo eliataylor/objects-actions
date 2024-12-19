@@ -29,11 +29,15 @@ export class WorldBuilder {
     constructor() {
         this.apiClient = new ApiClient();
         this.allCreators = []
-        this.fixturePath = path.join(__dirname, '..', '..', 'cypress/cypress/fixtures');
+        this.fixturePath = path.join(__dirname, '..', '..', 'cypress/cypress/fixtures'); // won't work inside docker
     }
 
     saveFixture(name: string, data: any) {
-        fs.writeFileSync(`${this.fixturePath}/${name}.json`, JSON.stringify(data));
+        if (fs.existsSync(this.fixturePath)) {
+            fs.writeFileSync(`${this.fixturePath}/${name}.json`, JSON.stringify(data, null, 2));
+        } else {
+            console.log(`no such fixture path ${this.fixturePath}`)
+        }
     }
 
     serializePayload(entity: any) {
