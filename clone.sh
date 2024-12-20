@@ -9,8 +9,7 @@ if [ ! -d "$STACK_PATH" ]; then
     cp -R "$SCRIPT_DIR/stack" "$STACK_PATH"
     echo "Copied stack to new project directory: $STACK_PATH"
 else
-    echo "Stack directory $STACK_PATH already exists. Delete it first or change your STACK_PATH to an empty directory"
-    exit 1
+    echo "Resetting existing directory $STACK_PATH "
 fi
 
 rm -rf "$STACK_PATH/src/.venv" \
