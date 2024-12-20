@@ -1,50 +1,50 @@
 #!/bin/bash
 source "$(dirname "$0")/docs/common.sh"
 
-echo "Setting up $machinename at stackpath"
+echo "Setting up $MACHINE_NAME at stackpath"
 
 # Copy the stack directory to the machine name if it doesn't exist
-rm -rf "$stackpath"
 
-if [ ! -d "$stackpath" ]; then
-    mv "$SCRIPT_DIR/stack" "$stackpath"
-    echo "Copied stack to new project directory: $stackpath"
+if [ ! -d "$STACK_PATH" ]; then
+    cp -R "$SCRIPT_DIR/stack" "$STACK_PATH"
+    echo "Copied stack to new project directory: $STACK_PATH"
 else
-    echo "Project directory $stackpath already exists. Skipping copy."
+    echo "Stack directory $STACK_PATH already exists. Delete it first or change your STACK_PATH to an empty directory"
+    exit 1
 fi
 
-rm -rf "$stackpath/src/.venv" \
+rm -rf "$STACK_PATH/src/.venv" \
     && rm -rf ".github" \
-    && rm -rf "$stackpath/test" \
-    && rm -rf "$stackpath/cypress/node_modules" \
-    && rm -rf "$stackpath/databuilder/node_modules" \
-    && rm -rf "$stackpath/django/.venv" \
-    && rm -rf "$stackpath/k6/results/*" \
-    && rm -rf "$stackpath/reactjs/node_modules" \
-    && rm -rf "$stackpath/cypress/node_modules" \
-    && rm -rf "$stackpath/cypress/cypress/fixtures/*" \
-    && rm -rf "$stackpath/cypress/cypress/downloads/*" \
-    && rm -rf "$stackpath/cypress/cypress/screenshots/*" \
-    && rm -rf "$stackpath/cypress/cypress/videos/*" \
-    && rm -rf "$stackpath/cypress/cypress/e2e/examples" \
-    && rm -rf "$stackpath/databuilder/node_modules" \
-    && rm -rf "$stackpath/django/.venv" \
-    && rm -rf "$stackpath/django/media/uploads" \
-    && rm -rf "$stackpath/django/newproject_app/migrations/*" \
-    && rm -rf "$stackpath/k6/results/*" \
-    && rm -rf "$stackpath/reactjs/node_modules" \
+    && rm -rf "$STACK_PATH/test" \
+    && rm -rf "$STACK_PATH/cypress/node_modules" \
+    && rm -rf "$STACK_PATH/databuilder/node_modules" \
+    && rm -rf "$STACK_PATH/django/.venv" \
+    && rm -rf "$STACK_PATH/k6/results/*" \
+    && rm -rf "$STACK_PATH/reactjs/node_modules" \
+    && rm -rf "$STACK_PATH/cypress/node_modules" \
+    && rm -rf "$STACK_PATH/cypress/cypress/fixtures/*" \
+    && rm -rf "$STACK_PATH/cypress/cypress/downloads/*" \
+    && rm -rf "$STACK_PATH/cypress/cypress/screenshots/*" \
+    && rm -rf "$STACK_PATH/cypress/cypress/videos/*" \
+    && rm -rf "$STACK_PATH/cypress/cypress/e2e/examples" \
+    && rm -rf "$STACK_PATH/databuilder/node_modules" \
+    && rm -rf "$STACK_PATH/django/.venv" \
+    && rm -rf "$STACK_PATH/django/media/uploads" \
+    && rm -rf "$STACK_PATH/django/newproject_app/migrations/*" \
+    && rm -rf "$STACK_PATH/k6/results/*" \
+    && rm -rf "$STACK_PATH/reactjs/node_modules" \
 
-if [ -d "$stackpath/django/oaexample_app" ]; then
+if [ -d "$STACK_PATH/django/oaexample_app" ]; then
 
     export LC_ALL=C # avoids issues with non-UTF-8 characters
-    echo "String replacing 'oaexample' with $machinename"
+    echo "String replacing 'oaexample' with $MACHINE_NAME"
 
-    # Recursively replace "" with "$machinename" in all files (case-insensitive)
-    find $stackpath -type f -exec sed -i '' -e "s/oaexample/$machinename/Ig" {} +
+    # Recursively replace "" with "$MACHINE_NAME" in all files (case-insensitive)
+    find $STACK_PATH -type f -exec sed -i '' -e "s/oaexample/$MACHINE_NAME/Ig" {} +
 
-    # Rename directories containing "" to "$machinename" recursively
-    find "$machinename" -depth -name "*oaexample*" | while read -r dir; do
-        newdir=$(echo "$dir" | LC_ALL=C sed "s/oaexample/$machinename/I")
+    # Rename directories containing "" to "$MACHINE_NAME" recursively
+    find "$MACHINE_NAME" -depth -name "*oaexample*" | while read -r dir; do
+        newdir=$(echo "$dir" | LC_ALL=C sed "s/oaexample/$MACHINE_NAME/I")
         mv "$dir" "$newdir"
     done
 
@@ -56,7 +56,7 @@ fi
 echo "SCRIPT_DIR:"
 ls -lsat $SCRIPT_DIR
 echo "STACK_PATH:"
-ls -lsat $stackpath
+ls -lsat $STACK_PATH
 
 # Ensure the SSL certificate exists or create one
 ssl_cert_path="$HOME/.ssl/certificate.crt"
@@ -70,8 +70,8 @@ if [ ! -f "$ssl_cert_path" ]; then
 fi
 
 
-echo "Pip installing Django dependencies in $stackpath/django"
-cd "$stackpath/django"
+echo "Pip installing Django dependencies in $STACK_PATH/django"
+cd "$STACK_PATH/django"
 ls -lsat
 if [ ! -d .venv ]; then
     python -m venv .venv
@@ -85,8 +85,8 @@ source .venv/bin/activate
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 
-echo "Pip installing Generator dependencies in $SCRIPT_DIR/src"
-cd "$stackpath/src"
+echo "Pip installing Generator dependencies in $STACK_PATH/src"
+cd "$STACK_PATH/src"
 ls -lsat
 
 if [ ! -d .venv ]; then
@@ -102,5 +102,4 @@ pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 
 
-echo "Touching $stackpath/setup_complete"
-touch $stackpath/setup_complete
+echo "Your new stack is available at $STACK_PATH"

@@ -5,7 +5,6 @@
 
 source "$(pwd)/docs/common.sh"
 
-
 cd "$SCRIPT_DIR/src"
 
 if [ ! -d .venv ]; then
@@ -18,13 +17,24 @@ else
     source .venv/bin/activate
 fi
 
+# Ensure csvpath is a valid file path
+if [[ ! -f "$TYPES_PATH" ]]; then
+    echo "Error: $TYPES_PATH is not a valid file path." >&2
+    exit 1
+fi
+
+# Check if permissionspath is a valid file path
+permissions_arg=""
+if [[ -f "$PERMISSIONS_PATH" ]]; then
+    permissions_arg="--permissions=\"$PERMISSIONS_PATH\""
+fi
 
 # Run the Python scripts to generate files
-echo "Building Django with types $csvpath and permissions $permissionspath"
-python -m generate django --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/django/${machinename}_app"
+echo "Building Django with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
+python -m generate django --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/django/${MACHINE_NAME}_app"
 
-echo "Building TypeScript with types $csvpath and permissions $permissionspath"
-python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/reactjs/src/object-actions/types/"
-python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/databuilder/src/"
-python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/cypress/cypress/support/"
-python -m generate typescript --types="$csvpath" --permissions="$permissionspath" --output_dir="$SCRIPT_DIR/stack/k6/"
+echo "Building TypeScript with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
+python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/reactjs/src/object-actions/types/"
+python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/databuilder/src/"
+python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/cypress/cypress/support/"
+python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/k6/"
