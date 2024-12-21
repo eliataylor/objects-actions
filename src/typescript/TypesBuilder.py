@@ -203,6 +203,37 @@ export function getProp<T extends EntityTypes, K extends keyof T>(entity: Entity
     if (key in entity) return entity[key]
 	return null;
 }}
+
+
+
+export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema, entity: any): any {{
+    const schema = TypeFieldSchema[modelName];
+    const result: any = {{id: entity.id || 0}};
+
+    Object.entries(schema).forEach(([key, field]) => {{
+        const value = entity[key];
+
+        if (field.data_type === 'RelEntity') {{
+            if (!value) {{
+                // don't add at all
+            }} else if (Array.isArray(value)) {{
+                // Transform an array of RelEntities
+                result[key] = value.map((item) => (item.entity ? restructureAsAllEntities(item._type, item.entity) : item));
+            }} else if (value.entity) {{
+                // Transform a single RelEntity
+                result[key] = value?.entity ? restructureAsAllEntities(value._type, value.entity) : value;
+            }} else {{
+                result[key] = {id: value.id};
+            }}
+        }} else if (value) {{
+            result[key] = value;
+        }}
+    }});
+
+    return result;
+}}
+
+
 """
 
         inject_generated_code(self.types_filepath, type_defintions.strip(), 'API-RESP')

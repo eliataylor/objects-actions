@@ -8,6 +8,7 @@ import {FormHelperText, MenuItem, TextField} from '@mui/material';
 import ImageUpload from './ImageUpload';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
+import {isDayJs} from "../../utils";
 
 dayjs.extend(utc);
 
@@ -20,9 +21,11 @@ interface FormProviderProps<T extends EntityTypes> {
 
 interface FormContextValue<T extends EntityTypes> {
     entity: T;
+    syncing: boolean;
+    errors: {[key: string]: string[]};
     handleFieldChange: (name: string, value: any) => void;
     renderField: (field: FieldTypeDefinition, topass?: any) => ReactElement | null;
-    handleSubmit: () => Promise<void>;
+    handleSubmit: (tosend:any, apiUrl:string|null) => Promise<void>;
     handleDelete: () => Promise<void>;
 }
 
@@ -35,59 +38,83 @@ export const FormProvider = <T extends EntityTypes>({ children, fields, original
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     const [syncing, setSyncing] = useState(false);
 
-    const handleChange = (name: string, value: any) => {
+    const handleFieldChange = (name: string, value: any) => {
         setEntity((prev) => ({...prev, [name]: value}));
     };
 
+    /*
     const handleFieldChange = (name: string, value: any) => {
         handleChange(name, value);
     };
+     */
 
-    const handleSubmit = async () => {
-        const tosend: Record<string, any> = {id: eid};
+    const structureToPost = async () => {
+
+        const tosend: any = {id: eid};
         let hasImage = false;
+        for (let key in entity) {
+            let val: any = entity[key as keyof EntityTypes];
+            let was: any = original[key as keyof EntityTypes];
+            if (JSON.stringify(was) === JSON.stringify(val)) {
+                continue;
+            }
+            if (val instanceof Blob) {
+                hasImage = true;
+            }
 
-        for (const key in entity) {
-            const val: any = entity[key as keyof EntityTypes];
-            const was = original[key as keyof EntityTypes];
-            if (JSON.stringify(was) === JSON.stringify(val)) continue;
-
-            if (val instanceof Blob) hasImage = true;
-
-            if (dayjs.isDayjs(val)) {
-                const field = fields.find((f) => f.machine === key);
-                tosend[key] = field?.field_type === 'date' ? val.format('YYYY-MM-DD') : val.format();
+            if (isDayJs(val)) {
+                const field = fields.find(f => f.machine === key)
+                if (field && field.field_type === 'date') {
+                    val = val.format("YYYY-MM-DD")
+                } else {
+                    val = val.format()
+                }
             } else if (Array.isArray(val)) {
-                tosend[key] = val.map((v) => v.id);
-            } else if (val?.id) {
-                tosend[key] = val.id;
-            } else {
-                tosend[key] = val;
+                val = val.map(v => v.id)
+            } else if (val && typeof val === 'object' && val.id) {
+                val = val.id
             }
+            tosend[key as keyof EntityTypes] = val
         }
-
         if (Object.keys(tosend).length === 1) {
-            alert("You haven't changed anything");
-            return;
+            return alert("You haven't changed anything")
         }
 
-        const headers: Record<string, string> = {accept: 'application/json'};
+        const formData: EntityTypes | FormData = tosend;
+        const headers: any = {
+            'accept': 'application/json'
+        }
         if (hasImage) {
-            const formData = new FormData();
-            for (const key in tosend) {
-                formData.append(key, tosend[key]);
+            const formData = new FormData()
+            for (let key in tosend) {
+                // @ts-ignore
+                formData.append(key, tosend[key])
             }
+            headers["Content-Type"] = `multipart/form-data`
+        } else {
+            headers["Content-Type"] = "application/json"
+        }
+        return {headers, formData}
+    }
+
+    const handleSubmit = async (toPost:any=null, apiUrl:string|null=null) => {
+        const tosend: Record<string, any> = toPost ? toPost : structureToPost();
+        const headers: Record<string, string> = {accept: 'application/json'};
+        if (tosend instanceof FormData) {
             headers['Content-Type'] = 'multipart/form-data';
         } else {
             headers['Content-Type'] = 'application/json';
         }
-
         setSyncing(true);
-        const response = eid > 0
-            ? await ApiClient.patch(`${navItem.api}/${eid}`, tosend, headers)
-            : await ApiClient.post(navItem.api, tosend, headers);
+        let response = null;
+        if (apiUrl) {
+            response = await ApiClient.post(apiUrl, tosend, headers);
+        } else if (eid > 0) {
+            response = await ApiClient.patch(`${navItem.api}/${eid}`, tosend, headers)
+        } else {
+            response = await ApiClient.post(navItem.api, tosend, headers);
+        }
         setSyncing(false);
-
         const id = getProp(response.data as EntityTypes, 'id')
         if (response.success && id) {
             navigate(`${navItem.screen}/${id}`);
@@ -195,7 +222,7 @@ export const FormProvider = <T extends EntityTypes>({ children, fields, original
     };
 
     return (
-        <FormContext.Provider value={{entity, handleFieldChange, renderField, handleSubmit, handleDelete}}>
+        <FormContext.Provider value={{entity, syncing, errors, handleFieldChange, renderField, handleSubmit, handleDelete}}>
             {children}
         </FormContext.Provider>
     );

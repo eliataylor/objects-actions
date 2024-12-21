@@ -1759,7 +1759,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
 export interface SuperModel {
-    readonly id: number | string; 
+    readonly id: number | string;
     author: RelEntity;
     created_at: string;
     modified_at: string;
@@ -1930,6 +1930,34 @@ export interface Stakeholders extends SuperModel {
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
 
 
+
+
+export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema, entity: any): any {
+    const schema = TypeFieldSchema[modelName];
+    const result: any = {id: entity.id || 0};
+
+    Object.entries(schema).forEach(([key, field]) => {
+        const value = entity[key];
+
+        if (field.data_type === 'RelEntity') {
+            if (!value) {
+                // don't add at all
+            } else if (Array.isArray(value)) {
+                // Transform an array of RelEntities
+                result[key] = value.map((item) => (item.entity ? restructureAsAllEntities(item._type, item.entity) : item));
+            } else if (value.entity) {
+                // Transform a single RelEntity
+                result[key] = value?.entity ? restructureAsAllEntities(value._type, value.entity) : value;
+            } else {
+                result[key] = {id: value.id};
+            }
+        } else if (value) {
+            result[key] = value;
+        }
+    });
+
+    return result;
+}
 
 
 
