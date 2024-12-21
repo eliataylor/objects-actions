@@ -14,8 +14,7 @@ const ThemeProvider = ({children}) => {
         () => {
 
             const plt = {
-//                mode: darkMode ? 'dark' : 'light',
-//                mode : 'light',
+                mode: darkMode ? 'dark' : 'light',
                 background: {
                     default: darkMode ? '#000000' : '#ffffff',
                     paper: darkMode ? '#202020' : '#F5F5F5',

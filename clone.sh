@@ -93,6 +93,13 @@ else
     echo "No ENV FILE: $ENV_FILE"
 fi
 
+if [ -f "$ENV_FILE" ]; then
+    cp $ENV_FILE "$STACK_PATH/.gitignore"
+    echo "Copied gitignore to $STACK_PATH/.gitignore"
+else
+    echo "No gitignore: $ENV_FILE"
+fi
+
 export LC_ALL=C # Avoid issues with non-UTF-8 characters
 
 for replacement in "${REPLACEMENTS[@]}"; do
