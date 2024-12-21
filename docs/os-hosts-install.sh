@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Define the entries to be added
+
+# parse from .env
+
 desired_entries=(
   "127.0.0.1  localhost.oaexample.com"
   "127.0.0.1  localapi.oaexample.com"

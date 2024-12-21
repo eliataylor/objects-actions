@@ -145,3 +145,5 @@ pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 
 echo "Your new stack is available at $STACK_PATH"
+
+# TODO: #run load-sheets!
