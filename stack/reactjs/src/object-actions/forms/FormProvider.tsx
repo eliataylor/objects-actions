@@ -11,24 +11,24 @@ import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 
 dayjs.extend(utc);
 
-interface FormProviderProps {
+interface FormProviderProps<T extends EntityTypes> {
     children: ReactNode;
     fields: FieldTypeDefinition[];
     original: EntityTypes;
     navItem: NavItem;
 }
 
-interface FormContextValue {
-    entity: EntityTypes;
+interface FormContextValue<T extends EntityTypes> {
+    entity: T;
     handleFieldChange: (name: string, value: any) => void;
     renderField: (field: FieldTypeDefinition, topass?: any) => ReactElement | null;
     handleSubmit: () => Promise<void>;
     handleDelete: () => Promise<void>;
 }
 
-const FormContext = createContext<FormContextValue | undefined>(undefined);
+const FormContext = createContext<FormContextValue<EntityTypes> | undefined>(undefined);
 
-export const FormProvider: React.FC<FormProviderProps> = ({children, fields, original, navItem}) => {
+export const FormProvider = <T extends EntityTypes>({ children, fields, original, navItem }: FormProviderProps<T>) => {
     const navigate = useNavigate();
     const eid = original.id || 0;
     const [entity, setEntity] = useState<EntityTypes>(original);
@@ -201,10 +201,10 @@ export const FormProvider: React.FC<FormProviderProps> = ({children, fields, ori
     );
 };
 
-export const useForm = (): FormContextValue => {
+export const useForm = <T extends EntityTypes>(): FormContextValue<T> => {
     const context = useContext(FormContext);
     if (!context) {
         throw new Error('useForm must be used within a FormProvider');
     }
-    return context;
+    return context as FormContextValue<T>;
 };
