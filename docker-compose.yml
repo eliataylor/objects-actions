@@ -73,7 +73,7 @@ services:
       django:
         condition: service_started
     environment:
-      REACT_APP_API_HOST: "https://django-service:8080"  # Access Django API
+      REACT_APP_API_HOST: "https://localapi.oaexample.com:8080"  # Access Django API
 
 
   # Front-end end-to-end testing
@@ -90,7 +90,7 @@ services:
       reactjs:
         condition: service_started
     environment:
-      REACT_APP_APP_HOST: "https://reactjs-service:3000"  # Access ReactJS app during tests
+      REACT_APP_APP_HOST: "https://localhost.oaexample.com:3000"  # Access ReactJS app during tests
 
 
 volumes:

@@ -1,16 +1,36 @@
 #!/bin/bash
 source "$(dirname "$0")/docs/common.sh"
 
+API_HOST_PROTOCOL=$(echo "$REACT_APP_API_HOST" | sed -E 's|^(https?)://.*|\1|')
+API_HOST_DOMAIN=$(echo "$REACT_APP_API_HOST" | sed -E 's|^[^/]*//([^:/]*).*|\1|')
+API_HOST_PORT=$(echo "$REACT_APP_API_HOST" | sed -E 's|.*:([0-9]+)$|\1|')
+
+APP_HOST_PROTOCOL=$(echo "$REACT_APP_APP_HOST" | sed -E 's|^(https?)://.*|\1|')
+APP_HOST_DOMAIN=$(echo "$REACT_APP_APP_HOST" | sed -E 's|^[^/]*//([^:/]*).*|\1|')
+APP_HOST_PORT=$(echo "$REACT_APP_APP_HOST" | sed -E 's|.*:([0-9]+)$|\1|')
+
+# String replacements
+REPLACEMENTS=(
+  "https://localapi.oaexample.com:8080|$REACT_APP_API_HOST"
+  "https://localhost.oaexample.com:3000|$REACT_APP_APP_HOST"
+  "localhost.oaexample.com|$APP_HOST_DOMAIN"
+  "3000|$APP_HOST_PORT"
+  "8080|$API_HOST_PORT"
+  "info@oaexample.com|$REACT_APP_LOGIN_EMAIL"
+  "APasswordYouShouldChange|$REACT_APP_LOGIN_PASS"
+  "oaexample|$MACHINE_NAME"
+)
+
 echo "Setting up $MACHINE_NAME at stackpath"
 
 # Directories to loop through
 STACK_DIRS=("cypress" "databuilder" "django" "k6" "reactjs")
+
 mkdir -p "$STACK_PATH/stack"
 
 # Copy directories into stack folder and clean generated files
 for dir in "${STACK_DIRS[@]}"; do
     if [ -d "$SCRIPT_DIR/stack/$dir" ]; then
-
         cp -R "$SCRIPT_DIR/stack/$dir" "$STACK_PATH/stack/$dir"
         echo "Copied $dir to $STACK_PATH/stack/$dir"
 
@@ -47,7 +67,7 @@ done
 # Rename directories in stack/django/ if they include 'oaexample'
 for dir in "$STACK_PATH/stack/django"/*; do
     if [[ "$dir" == *"oaexample"* ]]; then
-        new_dir=$(echo "$dir" | sed "s/oaexample/$PROJECT_NAME/g")
+        new_dir=$(echo "$dir" | sed "s/oaexample/$MACHINE_NAME/g")
         mv "$dir" "$new_dir"
         echo "Renamed $dir to $new_dir"
     fi
@@ -62,27 +82,21 @@ else
 fi
 
 if [ -f "$ENV_FILE" ]; then
-    cp "$ENV_FILE" "$STACK_PATH/.env"
-    echo "Copied $ENV_FILE to $STACK_PATH/.env"
+    cp $ENV_FILE "$STACK_PATH/.env"
+    echo "Copied Env to $STACK_PATH/.env"
 else
-    echo "Error: ENV $ENV_FILE not found"
+    echo "No ENV FILE: $ENV_FILE"
 fi
-
-# String replacements
-REPLACEMENTS=(
-  "https://localapi.oaexample.com:8080:$REACT_APP_API_HOST"
-  "https://localhost.oaexample.com:3000:$REACT_APP_APP_HOST"
-  "info@oaexample.com:$REACT_APP_LOGIN_EMAIL"
-  "APasswordYouShouldChange:$REACT_APP_LOGIN_PASS"
-  "oaexample:$PROJECT_NAME"
-)
 
 export LC_ALL=C # Avoid issues with non-UTF-8 characters
 
 for replacement in "${REPLACEMENTS[@]}"; do
-    IFS=":" read -r find replace <<< "$replacement"
+    IFS="|" read -r find replace <<< "$replacement"
     echo "Replacing $find with $replace in $STACK_PATH"
-    find "$STACK_PATH" -type f -exec sed -i '' -e "s|$find|$replace|g" {} +
+    find "$STACK_PATH" -type f | while read -r file; do
+        awk -v find="$find" -v replace="$replace" '{gsub(find, replace)} 1' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+    done
+
 done
 
 # Display results
