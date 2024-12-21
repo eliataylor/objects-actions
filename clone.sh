@@ -37,26 +37,31 @@ for dir in "${STACK_DIRS[@]}"; do
         # Remove generated files
         case "$dir" in
             "cypress")
-                rm -rf "$STACK_PATH/stack/cypress/node_modules" \
-                       "$STACK_PATH/stack/cypress/cypress/fixtures/*" \
-                       "$STACK_PATH/stack/cypress/cypress/downloads/*" \
-                       "$STACK_PATH/stack/cypress/cypress/screenshots/*" \
-                       "$STACK_PATH/stack/cypress/cypress/videos/*" \
-                       "$STACK_PATH/stack/cypress/cypress/e2e/examples"
+                rm -rf "$STACK_PATH"/stack/cypress/node_modules
+                rm -rf "$STACK_PATH"/stack/cypress/cypress/fixtures/*
+                rm -rf "$STACK_PATH"/stack/cypress/cypress/downloads/*
+                rm -rf "$STACK_PATH"/stack/cypress/cypress/screenshots/*
+                rm -rf "$STACK_PATH"/stack/cypress/cypress/videos/*
+                rm -rf "$STACK_PATH"/stack/cypress/cypress/e2e/examples
+                echo "Deleted Generated Files in $dir"
                 ;;
             "databuilder")
-                rm -rf "$STACK_PATH/stack/databuilder/node_modules"
+                rm -rf "$STACK_PATH"/stack/databuilder/node_modules
+                echo "Deleted Generated Files in $dir"
                 ;;
             "django")
-                rm -rf "$STACK_PATH/stack/django/.venv" \
-                       "$STACK_PATH/stack/django/media/uploads" \
-                       "$STACK_PATH/stack/django/oaexample_app/migrations/*"
+                rm -rf "$STACK_PATH"/stack/django/.venv
+                rm -rf "$STACK_PATH"/stack/django/media/uploads
+                rm -rf "$STACK_PATH"/stack/django/oaexample_app/migrations/*
+                echo "Deleted Generated Files in $dir"
                 ;;
             "k6")
-                rm -rf "$STACK_PATH/stack/k6/results/*"
+                rm -rf "$STACK_PATH"/stack/k6/results/*
+                echo "Deleted Generated Files in $dir"
                 ;;
             "reactjs")
-                rm -rf "$STACK_PATH/stack/reactjs/node_modules"
+                rm -rf "$STACK_PATH"/stack/reactjs/node_modules
+                echo "Deleted Generated Files in $dir"
                 ;;
         esac
     else
@@ -91,19 +96,12 @@ fi
 export LC_ALL=C # Avoid issues with non-UTF-8 characters
 
 for replacement in "${REPLACEMENTS[@]}"; do
-    IFS="|" read -r find replace <<< "$replacement"
     echo "Replacing $find with $replace in $STACK_PATH"
+    IFS="|" read -r find replace <<< "$replacement"
     find "$STACK_PATH" -type f | while read -r file; do
         awk -v find="$find" -v replace="$replace" '{gsub(find, replace)} 1' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
     done
-
 done
-
-# Display results
-echo "SCRIPT_DIR:"
-ls -lsat $SCRIPT_DIR
-echo "STACK_PATH:"
-ls -lsat $STACK_PATH
 
 # SSL certificate creation
 ssl_cert_path="$HOME/.ssl/certificate.crt"
@@ -115,34 +113,6 @@ if [ ! -f "$ssl_cert_path" ]; then
         -out "$ssl_cert_path" \
         -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=localhost"
 fi
-
-# Django dependencies
-cd "$STACK_PATH/stack/django"
-if [ ! -d .venv ]; then
-    python -m venv .venv
-    echo "Created new virtual environment."
-else
-    rm -rf .venv
-    python -m venv .venv
-    echo "Recreated virtual environment."
-fi
-source .venv/bin/activate
-pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
-
-# Generator dependencies
-cd "$STACK_PATH/src"
-if [ ! -d .venv ]; then
-    python -m venv .venv
-    echo "Created new virtual environment."
-else
-    rm -rf .venv
-    python -m venv .venv
-    echo "Recreated virtual environment."
-fi
-source .venv/bin/activate
-pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
 
 echo "Your new stack is available at $STACK_PATH"
 
