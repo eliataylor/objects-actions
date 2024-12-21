@@ -24,8 +24,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.oaexample.com",
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
-    'http://localhost-api.oaexample.com:8080',
-    'https://localhost-api.oaexample.com:8080'
+    'http://localapi.oaexample.com:8080',
+    'https://localapi.oaexample.com:8080'
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -40,8 +40,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
-    'http://localhost-api.oaexample.com:8080',
-    'https://localhost-api.oaexample.com:8080',
+    'http://localapi.oaexample.com:8080',
+    'https://localapi.oaexample.com:8080',
     'https://oaexample.com',
     'https://www.oaexample.com',
     'https://dev.oaexample.com'

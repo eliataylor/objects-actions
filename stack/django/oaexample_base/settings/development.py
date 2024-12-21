@@ -35,8 +35,8 @@ CORS_ALLOWED_ORIGINS += [
 CSRF_TRUSTED_ORIGINS += [
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
-    'http://localhost-api.oaexample.com:8080',
-    'https://localhost-api.oaexample.com:8080',
+    'http://localapi.oaexample.com:8080',
+    'https://localapi.oaexample.com:8080',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://localhost:3000',
@@ -102,6 +102,6 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # i only allow username for databuilder
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # allow both for the sake of databuilder
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_RATE_LIMITS = False

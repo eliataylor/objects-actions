@@ -14,6 +14,7 @@ REPLACEMENTS=(
   "https://localapi.oaexample.com:8080|$REACT_APP_API_HOST"
   "https://localhost.oaexample.com:3000|$REACT_APP_APP_HOST"
   "localhost.oaexample.com|$APP_HOST_DOMAIN"
+  "localapi.oaexample.com|$API_HOST_DOMAIN" # TODO: add TLD and other variations of it might get replaced by MACHINE_NAME instead
   "3000|$APP_HOST_PORT"
   "8080|$API_HOST_PORT"
   "info@oaexample.com|$REACT_APP_LOGIN_EMAIL"

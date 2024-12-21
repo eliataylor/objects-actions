@@ -53,8 +53,8 @@ CORS_ALLOWED_ORIGINS += [
 CSRF_TRUSTED_ORIGINS += [
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
-    'http://localhost-api.oaexample.com:8080',
-    'https://localhost-api.oaexample.com:8080',
+    'http://localapi.oaexample.com:8080',
+    'https://localapi.oaexample.com:8080',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://localhost:3000',
