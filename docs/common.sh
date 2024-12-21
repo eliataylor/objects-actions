@@ -17,26 +17,15 @@ find_script_dir() {
 SCRIPT_DIR=$(find_script_dir)
 echo "Running common.sh in $SCRIPT_DIR"
 
-# Load .env file from SCRIPT_DIR and export variables
-if [[ -f "$SCRIPT_DIR/.env" ]]; then
-    echo "Loading environment variables from $SCRIPT_DIR/.env"
-    while IFS='=' read -r key value; do
-        if [[ ! "$key" =~ ^# && -n "$key" ]]; then
-            export "$key"="$value"
-            echo "Exported: $key=$value"
-        fi
-    done < "$SCRIPT_DIR/.env"
-else
-    echo "No .env file found in $SCRIPT_DIR"
-fi
-
-# Debug: Print all currently set variables
-echo "Debug: Current environment variables after loading .env:"
-printenv | grep -E 'PROJECT_NAME|STACK_PATH|TYPES_PATH|PERMISSIONS_PATH|OUTPUT_DIR|REACT_APP_'
-
-# CLI argument parsing
+# CLI argument parsing for .env file path
+CUSTOM_ENV_PATH=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --env)
+            CUSTOM_ENV_PATH="$2"
+            echo "CLI: Custom .env file path set to $CUSTOM_ENV_PATH"
+            shift 2
+            ;;
         --project)
             PROJECT_NAME="$2"
             echo "CLI: PROJECT_NAME set to $PROJECT_NAME"
@@ -63,6 +52,23 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+ENV_FILE="${CUSTOM_ENV_PATH:-$SCRIPT_DIR/.env}"
+if [[ -f "$ENV_FILE" ]]; then
+    echo "Loading environment variables from: $ENV_FILE"
+    while IFS='=' read -r key value; do
+        if [[ ! "$key" =~ ^# && -n "$key" ]]; then
+            export "$key"="$value"
+        fi
+    done < "$ENV_FILE"
+else
+    echo "No .env file found at $ENV_FILE" >&2
+    exit 1
+fi
+
+# Debug: Print all currently set variables
+# echo "Debug: Current environment variables after loading .env:"
+# printenv | grep -E 'PROJECT_NAME|STACK_PATH|TYPES_PATH|PERMISSIONS_PATH|OUTPUT_DIR|REACT_APP_'
 
 # Ensure PROJECT_NAME is set
 if [[ -z "$PROJECT_NAME" ]]; then
@@ -93,12 +99,8 @@ get_machinename() {
 
 # Derive machinename
 MACHINE_NAME=$(get_machinename "$PROJECT_NAME")
-echo "Derived MACHINE_NAME: $MACHINE_NAME"
 
 # Ensure stack directory exists
-if [[ ! -d "$STACK_PATH" ]]; then
-    STACK_PATH="$SCRIPT_DIR/$MACHINE_NAME"
-fi
 STACK_PATH=$(resolve_absolute_path "$SCRIPT_DIR" "$STACK_PATH")
 
 if [[ ! -d "$STACK_PATH" ]]; then
@@ -108,9 +110,7 @@ fi
 
 # Make absolute if relative
 TYPES_PATH=$(resolve_absolute_path "$SCRIPT_DIR" "$TYPES_PATH")
-echo "Resolved TYPES_PATH: $TYPES_PATH"
 OUTPUT_DIR=$(resolve_absolute_path "$SCRIPT_DIR" "$OUTPUT_DIR")
-echo "Resolved OUTPUT_DIR: $OUTPUT_DIR"
 
 if [[ -n "$PERMISSIONS_PATH" ]]; then
   PERMISSIONS_PATH=$(resolve_absolute_path "$SCRIPT_DIR" "$PERMISSIONS_PATH")
@@ -133,14 +133,8 @@ if [[ -n "$PERMISSIONS_PATH" && ! -f "$PERMISSIONS_PATH" ]]; then
     exit 1
 fi
 
-# Debug: Print final variable values
-echo "Final Variables:"
-echo "PROJECT_NAME=$PROJECT_NAME"
-echo "TYPES_PATH=$TYPES_PATH"
-echo "PERMISSIONS_PATH=$PERMISSIONS_PATH"
-echo "OUTPUT_DIR=$OUTPUT_DIR"
-echo "STACK_PATH=$STACK_PATH"
-echo "MACHINE_NAME=$MACHINE_NAME"
+echo "****USING: "
+printenv | grep -E 'PROJECT_NAME|STACK_PATH|TYPES_PATH|PERMISSIONS_PATH|OUTPUT_DIR|REACT_APP_'
 
 # Export all variables for use in other scripts
 export STACK_PATH PROJECT_NAME TYPES_PATH PERMISSIONS_PATH OUTPUT_DIR REACT_APP_API_HOST REACT_APP_APP_HOST REACT_APP_LOGIN_EMAIL REACT_APP_LOGIN_PASS

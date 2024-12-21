@@ -273,7 +273,9 @@ def inject_generated_code(output_file_path, code, prefix):
     start_delim = f"{comments}OBJECT-ACTIONS-{prefix}-STARTS{commentend}"
     end_delim = f"{comments}OBJECT-ACTIONS-{prefix}-ENDS{commentend}"
 
-    if output_file_path == "" or os.path.exists(output_file_path) is False:
+    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+
+    if output_file_path == "" or os.path.isfile(output_file_path) is False:
         html = start_delim + "\n" + code + "\n" + end_delim
     else:
 
@@ -299,10 +301,9 @@ def inject_generated_code(output_file_path, code, prefix):
         html = f"{start_html}\n{code}\n{end_html}\n"
 
     with open(output_file_path, 'w') as file:
-        file.write(html)
+        file.write(html.strip())
 
     logger.info(f"{prefix} built. ")
-    return html
 
 
 def addArgs(target, new_args):

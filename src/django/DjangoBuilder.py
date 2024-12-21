@@ -76,7 +76,7 @@ class DjangoBuilder:
             logger.warning(f'Cannot find Object Types {types_path}')
             sys.exit(0)
 
-        if matrix_path or not os.path.exists(matrix_path):
+        if matrix_path and os.path.exists(matrix_path):
             self.matrix_path = matrix_path
             self.build_permissions()
         else:

@@ -32,6 +32,10 @@ class ModelBuilder:
 
         # TODO: use Field Name column from
         singular = self.pluralizer.singular_noun(self.class_name)
+        if not singular:
+            singular = self.class_name
+            logger.info(f"Singularizing failed on {self.class_name}")
+
         code_source = code_source.replace('__SINGULAR__', f'"{singular}"')
         plural = self.class_name if self.class_name.endswith('ies') else self.pluralizer.plural_noun(singular)
         code_source = code_source.replace('__PLURAL__', f'"{plural}"')

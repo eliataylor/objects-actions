@@ -30,8 +30,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if not os.path.exists(output_dir):
-        logger.error(f"Error: Directory '{output_dir}' does not exist.")
-        sys.exit(1)
+        os.makedirs(os.path.dirname(output_dir), exist_ok=True)
+        logger.info(f"Creating output directory: '{output_dir}'")
 
     logger.info(f"Running command: {command}")
     logger.info(f"Input file: {types_path}")
