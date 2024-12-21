@@ -40,7 +40,7 @@ https://github.com/user-attachments/assets/3065f1a1-9fa6-4420-99c2-f3aa4bcce373
 1. Copy and customize your own worksheets from this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing) or this populated [Example version](https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?usp=sharing):
 2. Download your Object Fields to  [stack/objects.csv](stack/objects.csv) 
 3. Download your Permissions Matrix to [stack/permissions.csv](stack/permissions.csv)
-4. Run `./load-sheets.sh --project "oaexample" --types "stack/objects.csv" --permissions "stack/permissions.csv"`
+4. Run `./load-sheets.sh --env .env` (or reference your own .env.myproject)
 
 - If you want to build from source follow [FROMSOURCE.md](docs/FROMSOURCE.md)
 - If you already have a codebase and only want to generate TypeScript or Django code visit [COMMANDS.md](docs/COMMANDS.md) to generate individual files 

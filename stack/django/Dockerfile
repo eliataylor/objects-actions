@@ -24,6 +24,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/django/
 COPY .env /app/django/
 COPY .env.testing /app/django/
+COPY .env.docker /app/django/
 
 RUN chmod +x /app/django/entrypoint.sh
 

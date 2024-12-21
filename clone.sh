@@ -50,7 +50,7 @@ for dir in "${STACK_DIRS[@]}"; do
             "django")
                 rm -rf "$STACK_PATH/stack/django/.venv" \
                        "$STACK_PATH/stack/django/media/uploads" \
-                       "$STACK_PATH/stack/django/newproject_app/migrations/*"
+                       "$STACK_PATH/stack/django/oaexample_app/migrations/*"
                 ;;
             "k6")
                 rm -rf "$STACK_PATH/stack/k6/results/*"

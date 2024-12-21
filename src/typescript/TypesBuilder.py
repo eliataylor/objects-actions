@@ -50,6 +50,8 @@ class TypesBuilder:
             if machine_name != 'users':
                 code = [f"export interface {type_name} extends SuperModel {{"]
             else:
+                #TODO: check if all these are predefined!
+
                 code = [f"export interface {type_name} {{"]
                 code.append(f"\treadonly id: number | string")
                 code.append(f"\t_type: string")
@@ -59,7 +61,8 @@ class TypesBuilder:
                 code.append(f"\tdate_joined?: string")
                 if find_object_by_key_value(self.json[class_name], "Field Name", "email") is None:
                     code.append(f"\temail?: string")
-                code.append(f"\tusername?: string")
+                if find_object_by_key_value(self.json[class_name], "Field Name", "username") is None:
+                    code.append(f"\tusername?: string")
                 code.append(f"\tfirst_name?: string")
                 code.append(f"\tlast_name?: string")
                 if find_object_by_key_value(self.json[class_name], "Field Name", "groups") is None:
