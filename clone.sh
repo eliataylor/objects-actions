@@ -3,61 +3,78 @@ source "$(dirname "$0")/docs/common.sh"
 
 echo "Setting up $MACHINE_NAME at stackpath"
 
-# Copy the stack directory to the machine name if it doesn't exist
+# Directories to loop through
+STACK_DIRS=("cypress" "databuilder" "django" "k6" "reactjs")
 
-if [ ! -d "$STACK_PATH" ]; then
-    cp -R "$SCRIPT_DIR/stack" "$STACK_PATH"
-    echo "Copied stack to new project directory: $STACK_PATH"
-else
-    echo "Resetting existing directory $STACK_PATH "
-fi
+# Copy directories and clean generated files
+for dir in "${STACK_DIRS[@]}"; do
+    if [ -d "$SCRIPT_DIR/stack/$dir" ]; then
+        cp -R "$SCRIPT_DIR/stack/$dir" "$STACK_PATH/$dir"
+        echo "Copied $dir to $STACK_PATH/$dir"
 
-rm -rf "$STACK_PATH/src/.venv" \
-    && rm -rf ".github" \
-    && rm -rf "$STACK_PATH/test" \
-    && rm -rf "$STACK_PATH/cypress/node_modules" \
-    && rm -rf "$STACK_PATH/databuilder/node_modules" \
-    && rm -rf "$STACK_PATH/django/.venv" \
-    && rm -rf "$STACK_PATH/k6/results/*" \
-    && rm -rf "$STACK_PATH/reactjs/node_modules" \
-    && rm -rf "$STACK_PATH/cypress/node_modules" \
-    && rm -rf "$STACK_PATH/cypress/cypress/fixtures/*" \
-    && rm -rf "$STACK_PATH/cypress/cypress/downloads/*" \
-    && rm -rf "$STACK_PATH/cypress/cypress/screenshots/*" \
-    && rm -rf "$STACK_PATH/cypress/cypress/videos/*" \
-    && rm -rf "$STACK_PATH/cypress/cypress/e2e/examples" \
-    && rm -rf "$STACK_PATH/databuilder/node_modules" \
-    && rm -rf "$STACK_PATH/django/.venv" \
-    && rm -rf "$STACK_PATH/django/media/uploads" \
-    && rm -rf "$STACK_PATH/django/newproject_app/migrations/*" \
-    && rm -rf "$STACK_PATH/k6/results/*" \
-    && rm -rf "$STACK_PATH/reactjs/node_modules" \
+        # Remove generated files
+        case "$dir" in
+            "cypress")
+                rm -rf "$STACK_PATH/cypress/node_modules" \
+                       "$STACK_PATH/cypress/cypress/fixtures/*" \
+                       "$STACK_PATH/cypress/cypress/downloads/*" \
+                       "$STACK_PATH/cypress/cypress/screenshots/*" \
+                       "$STACK_PATH/cypress/cypress/videos/*" \
+                       "$STACK_PATH/cypress/cypress/e2e/examples"
+                ;;
+            "databuilder")
+                rm -rf "$STACK_PATH/databuilder/node_modules"
+                ;;
+            "django")
+                rm -rf "$STACK_PATH/django/.venv" \
+                       "$STACK_PATH/django/media/uploads" \
+                       "$STACK_PATH/django/newproject_app/migrations/*"
+                ;;
+            "k6")
+                rm -rf "$STACK_PATH/k6/results/*"
+                ;;
+            "reactjs")
+                rm -rf "$STACK_PATH/reactjs/node_modules"
+                ;;
+        esac
+    else
+        echo "Warning: Directory $SCRIPT_DIR/stack/$dir does not exist. Skipping."
+    fi
+done
 
-if [ -d "$STACK_PATH/django/oaexample_app" ]; then
+# String replacements
+REPLACEMENTS=(
+  "https://localapi.oaexample.com:8080:$REACT_APP_API_HOST"
+  "https://localhost.oaexample.com:3000:$REACT_APP_APP_HOST"
+  "info@oaexample.com:$REACT_APP_LOGIN_EMAIL"
+  "APasswordYouShouldChange:$REACT_APP_LOGIN_PASS"
+  "oaexample:$PROJECT_NAME"
+)
 
-    export LC_ALL=C # avoids issues with non-UTF-8 characters
-    echo "String replacing 'oaexample' with $MACHINE_NAME"
+# Rename directories in stack/django/ if they include 'oaexample'
+for dir in "$STACK_PATH/django"/*; do
+    if [[ "$dir" == *"oaexample"* ]]; then
+        new_dir=$(echo "$dir" | sed "s/oaexample/$PROJECT_NAME/g")
+        mv "$dir" "$new_dir"
+        echo "Renamed $dir to $new_dir"
+    fi
+done
 
-    # Recursively replace "" with "$MACHINE_NAME" in all files (case-insensitive)
-    find $STACK_PATH -type f -exec sed -i '' -e "s/oaexample/$MACHINE_NAME/Ig" {} +
+export LC_ALL=C # Avoid issues with non-UTF-8 characters
 
-    # Rename directories containing "" to "$MACHINE_NAME" recursively
-    find "$MACHINE_NAME" -depth -name "*oaexample*" | while read -r dir; do
-        newdir=$(echo "$dir" | LC_ALL=C sed "s/oaexample/$MACHINE_NAME/I")
-        mv "$dir" "$newdir"
-    done
+for replacement in "${REPLACEMENTS[@]}"; do
+    IFS=":" read -r find replace <<< "$replacement"
+    echo "Replacing $find with $replace in $STACK_PATH"
+    find "$STACK_PATH" -type f -exec sed -i '' -e "s|$find|$replace|g" {} +
+done
 
-
-else
-    echo "No oaexample directory found so skipping sed"
-fi
-
+# Display results
 echo "SCRIPT_DIR:"
 ls -lsat $SCRIPT_DIR
 echo "STACK_PATH:"
 ls -lsat $STACK_PATH
 
-# Ensure the SSL certificate exists or create one
+# SSL certificate creation
 ssl_cert_path="$HOME/.ssl/certificate.crt"
 if [ ! -f "$ssl_cert_path" ]; then
     echo "SSL certificate not found. Creating one at: $ssl_cert_path"
@@ -68,37 +85,32 @@ if [ ! -f "$ssl_cert_path" ]; then
         -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=localhost"
 fi
 
-
-echo "Pip installing Django dependencies in $STACK_PATH/django"
+# Django dependencies
 cd "$STACK_PATH/django"
-ls -lsat
 if [ ! -d .venv ]; then
     python -m venv .venv
     echo "Created new virtual environment."
 else
     rm -rf .venv
     python -m venv .venv
-    echo "Virtual environment already exists."
+    echo "Recreated virtual environment."
 fi
 source .venv/bin/activate
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 
-echo "Pip installing Generator dependencies in $STACK_PATH/src"
+# Generator dependencies
 cd "$STACK_PATH/src"
-ls -lsat
-
 if [ ! -d .venv ]; then
     python -m venv .venv
     echo "Created new virtual environment."
 else
     rm -rf .venv
     python -m venv .venv
-    echo "Virtual environment already exists."
+    echo "Recreated virtual environment."
 fi
 source .venv/bin/activate
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
-
 
 echo "Your new stack is available at $STACK_PATH"
