@@ -13,9 +13,10 @@ interface ImageUploadProps {
     index: number;
     selected: string;
     onSelect: (image: Upload, field_name: string, index: number) => void;
+    buttonProps?: any;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({onSelect, selected, index, field_name}) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({onSelect, selected, index, field_name, buttonProps}) => {
     const [image, setImage] = useState<Upload | null>(selected ? {url: selected} : null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -48,9 +49,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({onSelect, selected, index, fie
                 <label htmlFor="icon-button-file">
                     <Button color="primary" startIcon={<PhotoCamera/>}
                             variant={'outlined'}
+                            size={'small'}
                             onClick={handleIconClick}
-                            aria-label="upload picture">
-                        Browse
+                            aria-label="upload picture"
+                            {...buttonProps}>
+                        {buttonProps.label ?? "Browse"}
                     </Button>
                 </label>
             </Grid>

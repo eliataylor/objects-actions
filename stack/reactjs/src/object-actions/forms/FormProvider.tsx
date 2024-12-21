@@ -1,16 +1,13 @@
-import React, { createContext, useContext, useState, ReactElement, ReactNode } from 'react';
+import React, {createContext, ReactElement, ReactNode, useContext, useState} from 'react';
 import {EntityTypes, FieldTypeDefinition, getProp, NavItem} from '../types/types';
 import ApiClient from '../../config/ApiClient';
-import { useNavigate } from 'react-router-dom';
-import dayjs, { Dayjs } from 'dayjs';
+import {useNavigate} from 'react-router-dom';
+import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { TextField, MenuItem, FormHelperText, Button, CircularProgress, Typography } from '@mui/material';
-import AutocompleteField from './AutocompleteField';
-import AutocompleteMultipleField from './AutocompleteMultipleField';
-import ImageUpload, { Upload } from './ImageUpload';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import ProviderButton from '../../allauth/socialaccount/ProviderButton';
+import {FormHelperText, MenuItem, TextField} from '@mui/material';
+import ImageUpload from './ImageUpload';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 
 dayjs.extend(utc);
 
@@ -22,14 +19,16 @@ interface FormProviderProps {
 }
 
 interface FormContextValue {
-    renderField: (field: FieldTypeDefinition, error?: string[]) => ReactElement | null;
+    entity: EntityTypes;
+    handleFieldChange: (name: string, value: any) => void;
+    renderField: (field: FieldTypeDefinition, topass?: any) => ReactElement | null;
     handleSubmit: () => Promise<void>;
     handleDelete: () => Promise<void>;
 }
 
 const FormContext = createContext<FormContextValue | undefined>(undefined);
 
-export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, original, navItem }) => {
+export const FormProvider: React.FC<FormProviderProps> = ({children, fields, original, navItem}) => {
     const navigate = useNavigate();
     const eid = original.id || 0;
     const [entity, setEntity] = useState<EntityTypes>(original);
@@ -37,7 +36,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
     const [syncing, setSyncing] = useState(false);
 
     const handleChange = (name: string, value: any) => {
-        setEntity((prev) => ({ ...prev, [name]: value }));
+        setEntity((prev) => ({...prev, [name]: value}));
     };
 
     const handleFieldChange = (name: string, value: any) => {
@@ -45,11 +44,11 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
     };
 
     const handleSubmit = async () => {
-        const tosend: Record<string, any> = { id: eid };
+        const tosend: Record<string, any> = {id: eid};
         let hasImage = false;
 
         for (const key in entity) {
-            const val:any = entity[key as keyof EntityTypes];
+            const val: any = entity[key as keyof EntityTypes];
             const was = original[key as keyof EntityTypes];
             if (JSON.stringify(was) === JSON.stringify(val)) continue;
 
@@ -72,7 +71,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
             return;
         }
 
-        const headers: Record<string, string> = { accept: 'application/json' };
+        const headers: Record<string, string> = {accept: 'application/json'};
         if (hasImage) {
             const formData = new FormData();
             for (const key in tosend) {
@@ -94,7 +93,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
             navigate(`${navItem.screen}/${id}`);
             setErrors({});
         } else {
-            setErrors(response.errors || { general: [response.error] });
+            setErrors(response.errors || {general: [response.error]});
         }
     };
 
@@ -108,14 +107,15 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
                 alert('Deleted');
                 navigate(navItem.screen);
             } else {
-                setErrors(response.errors || { general: [response.error] });
+                setErrors(response.errors || {general: [response.error]});
             }
         }
     };
 
-    const renderField = (field: FieldTypeDefinition, error?: string[]) => {
-        const value:any = entity[field.machine as keyof EntityTypes];
+    const renderField = (field: FieldTypeDefinition, topass: any = {}) => {
+        const value: any = entity[field.machine as keyof EntityTypes];
         let input: ReactElement | null = null;
+        const error = errors[field.machine as keyof EntityTypes];
 
         switch (field.field_type) {
             case 'enum':
@@ -127,6 +127,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
                         value={value || ''}
                         onChange={(e) => handleFieldChange(field.machine, e.target.value)}
                         error={!!error}
+                        {...topass}
                     >
                         {field.options?.map((opt) => (
                             <MenuItem key={opt.id} value={opt.id}>
@@ -142,6 +143,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
                         label={field.singular}
                         value={value || null}
                         onChange={(newValue) => handleFieldChange(field.machine, newValue)}
+                        {...topass}
                     />
                 );
                 break;
@@ -151,6 +153,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
                         label={field.singular}
                         value={value || null}
                         onChange={(newValue) => handleFieldChange(field.machine, newValue)}
+                        {...topass}
                     />
                 );
                 break;
@@ -162,10 +165,15 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
                         field_name={field.machine}
                         selected={value}
                         onSelect={(selected) => handleFieldChange(field.machine, selected.file)}
+                        buttonProps={topass}
                     />
                 );
                 break;
             default:
+                if (field.field_type === 'textarea') {
+                    topass.multiline = true
+                    topass.rows = 3
+                }
                 input = (
                     <TextField
                         name={field.machine}
@@ -173,6 +181,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
                         value={value || ''}
                         onChange={(e) => handleFieldChange(field.machine, e.target.value)}
                         error={!!error}
+                        {...topass}
                     />
                 );
         }
@@ -186,7 +195,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children, fields, or
     };
 
     return (
-        <FormContext.Provider value={{ renderField, handleSubmit, handleDelete }}>
+        <FormContext.Provider value={{entity, handleFieldChange, renderField, handleSubmit, handleDelete}}>
             {children}
         </FormContext.Provider>
     );
