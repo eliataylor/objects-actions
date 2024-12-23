@@ -72,7 +72,12 @@ class TypesBuilder:
 
             types.append(type_name)
 
-            navItem = {"singular":self.pluralizer.singular_noun(class_name)}
+            singular = self.pluralizer.singular_noun(class_name)
+            if not singular:
+                singular = class_name
+                logger.info(f"Singularizing failed on {class_name}")
+
+            navItem = {"singular":singular}
             navItem['plural'] = class_name if class_name.endswith('ies') else self.pluralizer.plural_noun(navItem['singular'])
             navItem = {**navItem,
                        "type":type_name,

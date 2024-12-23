@@ -33,8 +33,8 @@ fi
 echo "Building Django with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
 python -m generate django --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/django/${MACHINE_NAME}_app"
 
-echo "Building TypeScript with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
-python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/types/"
-python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/databuilder/src/"
-python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/cypress/cypress/support/"
+# echo "Building TypeScript with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
+# python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/types/"
+# python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/databuilder/src/"
+# python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/cypress/cypress/support/"
 python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/k6/"

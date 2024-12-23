@@ -1,6 +1,6 @@
 // ThemeContext.js
 import React, {createContext, useMemo, useState} from 'react';
-import {createTheme, ThemeProvider as MuiThemeProvider} from '@mui/material/styles';
+import {createTheme, responsiveFontSizes, ThemeProvider as MuiThemeProvider} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import {green, orange} from '@mui/material/colors';
 
@@ -49,12 +49,32 @@ const ThemeProvider = ({children}) => {
                 }
             }
 
-            return createTheme({
+            return responsiveFontSizes(createTheme({
                 typography: {
-                    fontFamily: 'Jost, Arial, sans-serif',
+                    fontSize: 12,
+                },
+                components: {
+                    // Name of the component
+                    MuiButton: {
+                        styleOverrides: {
+                            // Name of the slot
+                            root: {
+                                // Some CSS
+                                textTransform: 'none',
+                                variants: [
+                                    {
+                                        props: {variant: 'outlined'},
+                                        style: {
+                                            borderWidth: '.5px',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    },
                 },
                 palette: plt
-            })
+            }))
         },
         [darkMode]
     );

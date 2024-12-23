@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import FormErrors, { hasError } from '../components/FormErrors'
-import { login } from '../lib/allauth'
-import { Link } from 'react-router-dom'
-import { useConfig } from '../auth'
+import React, {useState} from 'react'
+import FormErrors, {hasError} from '../components/FormErrors'
+import {login} from '../lib/allauth'
+import {Link} from 'react-router-dom'
+import {useConfig} from '../auth'
 import ProviderList from '../socialaccount/ProviderList'
-import { Button, FormHelperText, Grid, TextField, Typography } from '@mui/material'
+import {Button, FormHelperText, Grid, TextField, Typography} from '@mui/material'
 import {Phone} from "@mui/icons-material";
 
 export default function Login () {
@@ -16,7 +16,13 @@ export default function Login () {
 
   function submit () {
     setResponse({ ...response, fetching: true })
-    login({ email, username: email, password }).then((content) => {
+    const payload = { password }
+    if (email.indexOf("@") > -1) {
+       payload.email = email
+    } else {
+      payload.username = email
+    }
+    login(payload).then((content) => {
       setResponse((r) => {
         return { ...r, content }
       })
