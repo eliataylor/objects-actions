@@ -44,6 +44,8 @@ CSRF_TRUSTED_ORIGINS += [
     'https://localhost:8080',
     'https://127.0.0.1:8080',
     "http://*", "https://*",
+    'http://[::1]',
+    'https://[::1]',
     "http://*:3000", "https://*:3000",
     "http://*:8080", "https://*:8080",
 ]
@@ -52,6 +54,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
+
+CSRF_COOKIE_DOMAIN = None
+SESSION_COOKIE_DOMAIN = None
 
 # Allow CSRF over invalid certificates (not recommended for production)
 HOST_SCHEME="http://"
