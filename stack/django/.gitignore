@@ -17,7 +17,7 @@ staticfiles
 .idea
 .venv
 .env
-.env.dev
+.env.gcp
 cloud-sql-proxy
 
 secrets.txt
@@ -142,7 +142,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/

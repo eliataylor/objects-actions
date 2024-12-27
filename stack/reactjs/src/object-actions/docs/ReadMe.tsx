@@ -73,7 +73,7 @@ const ReadMe: React.FC = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <ListItem sx={{p: 0, m: 0}}>
-                            <Avatar style={{marginRight: 8}}><img src={'/Google_Sheets_2020_Logo.svg'}
+                            <Avatar style={{marginRight: 8}}><img src={'/oa-assets/Google_Sheets_2020_Logo.svg'}
                                                                   height={25}/></Avatar>
                             <ListItemText primary={"Fill out your Objects/Actions worksheets"}
                                           secondary={'This becomes your database schema and clear documentation for your team and contracts.'}/>
@@ -96,7 +96,7 @@ const ReadMe: React.FC = () => {
                             <Box sx={{p: 1}}>
                                 <a href={'https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing'} target={'_blank'}>
                                     <TightButton size={'small'}
-                                                 startIcon={<img src={'/Google_Sheets_2020_Logo.svg'}
+                                                 startIcon={<img src={'/oa-assets/Google_Sheets_2020_Logo.svg'}
                                                                  height={20}/>}>Clone</TightButton>
                                 </a>
                             </Box>
@@ -115,7 +115,7 @@ const ReadMe: React.FC = () => {
                             <Box sx={{p: 1}}>
                                 <a href={'https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing'} target={'_blank'}>
                                     <TightButton size={'small'}
-                                                 startIcon={<img src={'/Google_Sheets_2020_Logo.svg'}
+                                                 startIcon={<img src={'/oa-assets/Google_Sheets_2020_Logo.svg'}
                                                                  height={20}/>}>Clone</TightButton>
                                 </a>
                             </Box>
@@ -138,8 +138,8 @@ const ReadMe: React.FC = () => {
                     <Grid item xs={12} sm={6}>
                         <Card sx={{position: 'relative'}} variant="outlined">
                             <CardHeader sx={{mb: 0, p: 1}}
-                                        avatar={<LightDarkImg light={'/Cypress_Logomark_Dark-Color.svg'}
-                                                              dark={'/Cypress_Logomark_White-Color.svg'}
+                                        avatar={<LightDarkImg light={'/oa-assets/Cypress_Logomark_Dark-Color.svg'}
+                                                              dark={'/oa-assets/Cypress_Logomark_White-Color.svg'}
                                                               styles={{height: 30}}/>}
                                         subheader={'Cypress.io'}
                                         title={'Front-End Test Suite'}
@@ -153,7 +153,7 @@ const ReadMe: React.FC = () => {
                                     controls={true}
                                 >
                                     <source
-                                        src={"/cypress-demo.mp4"}
+                                        src={"/oa-assets/cypress-demo.mp4"}
                                         type="video/mp4"
                                     />
                                 </video>
@@ -161,8 +161,8 @@ const ReadMe: React.FC = () => {
                             <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
                                 <a href={'https://github.com/eliataylor/object-actions/blob/main/stack/cypress/cypress/e2e/read-only/load-form.cy.ts#L20'} target={'_blank'}>
                                     <TightButton size={'small'} variant={'outlined'}
-                                                 startIcon={<LightDarkImg light={'/github-mark.svg'}
-                                                                          dark={'/github-mark-white.svg'}
+                                                 startIcon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
+                                                                          dark={'/oa-assets/github-mark-white.svg'}
                                                                           styles={{height: 20}}/>}>View
                                         Source</TightButton>
                                 </a>
@@ -173,7 +173,7 @@ const ReadMe: React.FC = () => {
                     <Grid item xs={12} sm={6}>
                         <Card variant="outlined">
                             <CardHeader sx={{mb: 0, p: 1}}
-                                        avatar={<img src={'/logo-django.svg'} height={30}/>}
+                                        avatar={<img src={'/oa-assets/logo-django.svg'} height={30}/>}
                                         title={'Backend-End Content Manager'}
                                         subheader={'Django Admin'}
                             />
@@ -183,8 +183,8 @@ const ReadMe: React.FC = () => {
                             <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
                                 <a href={'https://github.com/eliataylor/object-actions/blob/main/stack/django/oaexample_app/admin.py'} target={'_blank'}>
                                     <TightButton size={'small'} variant={'outlined'}
-                                                 startIcon={<LightDarkImg light={'/github-mark.svg'}
-                                                                          dark={'/github-mark-white.svg'}
+                                                 startIcon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
+                                                                          dark={'/oa-assets/github-mark-white.svg'}
                                                                           styles={{height: 20}}/>}>View
                                         Source</TightButton>
                                 </a>
@@ -195,7 +195,7 @@ const ReadMe: React.FC = () => {
                     <Grid item xs={12} sm={6}>
                         <Card variant="outlined">
                             <CardHeader sx={{mb: 0, p: 1}}
-                                        avatar={<img src={'/logo-react.svg'} height={30}/>}
+                                        avatar={<img src={'/oa-assets/logo-react.svg'} height={30}/>}
                                         title={'Front-End WebApp'}
                                         subheader={'React.JS'}
                             />
@@ -204,8 +204,8 @@ const ReadMe: React.FC = () => {
                             <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
                                 <a href={'https://github.com/eliataylor/object-actions/blob/main/stack/reactjs/src/theme/ThemeContext.js'} target={'_blank'}>
                                     <TightButton size={'small'} variant={'outlined'}
-                                                 startIcon={<LightDarkImg light={'/github-mark.svg'}
-                                                                          dark={'/github-mark-white.svg'}
+                                                 startIcon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
+                                                                          dark={'/oa-assets/github-mark-white.svg'}
                                                                           styles={{height: 20}}/>}>View
                                         Source</TightButton>
                                 </a>
@@ -216,7 +216,7 @@ const ReadMe: React.FC = () => {
                     <Grid item xs={12} sm={6}>
                         <Card variant="outlined">
                             <CardHeader sx={{mb: 0, p: 1}}
-                                        avatar={<img src={'/logo-drf.png'} height={30}/>}
+                                        avatar={<img src={'/oa-assets/logo-drf.png'} height={30}/>}
                                         title={'Backend-End API'}
                                         subheader={'Django DRF'}
                             />
@@ -225,8 +225,8 @@ const ReadMe: React.FC = () => {
                             <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
                                 <a href={'https://github.com/eliataylor/object-actions/blob/main/stack/django/oaexample_app/urls.py'} target={'_blank'}>
                                     <TightButton size={'small'} variant={'outlined'}
-                                                 startIcon={<LightDarkImg light={'/github-mark.svg'}
-                                                                          dark={'/github-mark-white.svg'}
+                                                 startIcon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
+                                                                          dark={'/oa-assets/github-mark-white.svg'}
                                                                           styles={{height: 20}}/>}>View
                                         Source</TightButton>
                                 </a>
@@ -237,7 +237,7 @@ const ReadMe: React.FC = () => {
                     <Grid item xs={12} sm={6}>
                         <Card variant="outlined">
                             <CardHeader sx={{mb: 0, p: 1}}
-                                        avatar={<img src={'/logo-typescript.svg'} height={30}/>}
+                                        avatar={<img src={'/oa-assets/logo-typescript.svg'} height={30}/>}
                                         title={'Fake Data Generator'}
                                         subheader={'NodeJS'}
                             />
@@ -246,8 +246,8 @@ const ReadMe: React.FC = () => {
                             <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
                                 <a href={'https://github.com/eliataylor/object-actions/blob/main/stack/databuilder/src/main.ts'} target={'_blank'}>
                                     <TightButton size={'small'} variant={'outlined'}
-                                                 startIcon={<LightDarkImg light={'/github-mark.svg'}
-                                                                          dark={'/github-mark-white.svg'}
+                                                 startIcon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
+                                                                          dark={'/oa-assets/github-mark-white.svg'}
                                                                           styles={{height: 20}}/>}>View
                                         Source</TightButton>
                                 </a>

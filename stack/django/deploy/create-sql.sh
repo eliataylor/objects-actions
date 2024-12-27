@@ -6,9 +6,10 @@
 
 REQUIRED_VARS=("GCP_PROJECT_ID" "MYSQL_PASSWORD" "MYSQL_DATABASE" "MYSQL_USER" "MYSQL_HOST" "GCP_MYSQL_INSTANCE" "GCP_MYSQL_ZONE")
 
-show_section_header "CREATE CLOUD SQL"
+SCRIPT_DIR=$(dirname "$0")
+source "${SCRIPT_DIR}/common.sh"
 
-source "./common.sh"
+show_section_header "CREATE CLOUD SQL"
 
 login_owner "roles/owner"
 
@@ -21,7 +22,7 @@ if gcloud sql instances describe $GCP_MYSQL_INSTANCE --project=$GCP_MYSQL_PROJEC
     gcloud sql instances create $GCP_MYSQL_INSTANCE \
         --database-version=MYSQL_8_0 \
         --tier=db-f1-micro \
-        --region=$MYSQL_REGION \
+        --region=$GCP_MYSQL_ZONE \
         --availability-type=ZONAL
 
     print_warning "UPDATE YOUR ENV: GCP_MYSQL_PROJECT_ID=$GCP_PROJECT_ID"

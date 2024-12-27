@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useConfig } from '../auth'
 import { authenticateByToken, URLs } from '../lib/allauth'
-import {ReactComponent as Google} from '../../assets/google.svg';
+import {ReactComponent as Google} from '../logos/google.svg';
 import { Button} from '@mui/material'
 
 function installGoogleOneTap (cb) {

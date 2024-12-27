@@ -34,4 +34,7 @@
 ------
 
 # To Connect to remote SQL:
-- `./cloud-sql-proxy oaexample:us-west1:mysql-v8 --credentials-file ./keys/oaexample-django.json`
+- `sudo /etc/init.d/mysql stop` or `sudo mysql.server stop`
+- `./cloud-sql-proxy $GCP_MYSQL_PROJECT_ID:$GCP_MYSQL_ZONE:$GCP_MYSQL_INSTANCE --credentials-file $GCP_SA_KEY_PATH`
+- `mysqldump -h 127.0.0.1 -u <DB_USER> -p<DB_PASSWORD> <DB_NAME> > db_dump.sql`
+- `mysql -u username -p -h hostname database_name`

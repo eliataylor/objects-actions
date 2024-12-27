@@ -2,7 +2,7 @@
 print_error() {
     local item="$1"    # Item name, e.g., API name
     local status="$2"  # Status message, e.g., "Enable fail."
-    
+
     # Print formatted error message
     printf "\033[31m%-5s\033[0m %-60s %-20s\n" "[Error]" "$item" "$status"
 }
@@ -11,7 +11,7 @@ print_error() {
 print_success() {
     local item="$1"    # Item name, e.g., API name
     local status="$2"  # Status message, e.g., "Enable success"
-    
+
     # Print formatted success message
     printf "\033[32m%-5s\033[0m %-60s %-20s\n" "[Success]" "$item" "$status"
 }
@@ -20,7 +20,7 @@ print_success() {
 print_warning() {
     local item="$1"    # Item name, e.g., API name
     local status="$2"  # Status message, e.g., "Skipped"
-    
+
     # Print formatted success message
     printf "\033[33m%-5s\033[0m %-60s %-20s\n" "[Warning]" "$item" "$status"
 }
@@ -28,7 +28,7 @@ print_warning() {
 # Function to show section header
 show_section_header() {
     local section_name="$1"  # Section name
-    
+
     # Print section header
     printf "\n\033[1m%s\033[0m\n" "$section_name"
     echo "--------------------------------------------"
@@ -37,7 +37,7 @@ show_section_header() {
 # Function to show loading indicator
 show_loading() {
     local task="$1"    # Task description
-    
+
     # Print formatted loading message
     echo -n "➤ $task... "
     printf "\033[34m[Loading]\033[0m"
@@ -47,7 +47,7 @@ show_loading() {
 # Function to import secret to Secret Manager
 import_secret_env() {
   local file_path="$1"
-  
+
   if [[ ! -f "$file_path" ]]; then
     echo "File not found: $file_path"
     return 1
@@ -77,7 +77,7 @@ import_secret_env() {
 create_secret() {
     local key="$1"
     local value="$2"
-    
+
     show_loading "Creating secrets for $key..."
     if ! gcloud secrets describe $key > /dev/null 2>&1; then
         echo -n "$value" | gcloud secrets create "$key" \
@@ -141,9 +141,8 @@ login_service_account() {
 
   # gcloud auth login --cred-file="$PARENT_DIR/keys/djremoter.json"
 
-  gcloud auth activate-service-account $GCP_SERVICE_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com \
-      --key-file=$GCP_SA_KEY_PATH \
-      --project=$GCP_PROJECT_ID
+  gcloud auth activate-service-account --key-file=$GCP_SA_KEY_PATH
+  # gcloud auth activate-service-account $GCP_SERVICE_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com --key-file=$GCP_SA_KEY_PATH --project=$GCP_PROJECT_ID
 
   if [ $? -ne 0 ]; then
       print_error "Configure gcloud CLI with Service Account" "Failed"
@@ -151,6 +150,7 @@ login_service_account() {
   fi
   print_success "Configure gcloud CLI with Service Account" "Success"
 }
+
 
 
 # Function to sanitize bucket name

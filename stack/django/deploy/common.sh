@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR=$(realpath ".")
 
 source "$SCRIPT_DIR/functions.sh"
 

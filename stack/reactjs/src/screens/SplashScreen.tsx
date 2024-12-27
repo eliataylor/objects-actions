@@ -17,7 +17,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({loading = undefined}) => {
     };
 
     return (
-        <Grid container direction={'column'} gap={4} justifyContent={'space-around'}
+        <Grid id={"SplashScreen"}  container direction={'column'} gap={4} justifyContent={'space-around'}
               sx={{textAlign: 'center', height: '100vh', maxWidth: 400, margin: '0 auto'}}>
             <Grid item>
                 {loading}

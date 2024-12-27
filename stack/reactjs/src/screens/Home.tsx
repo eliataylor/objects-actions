@@ -9,7 +9,7 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({loading = false}) => {
 
     return (
-        <Grid container direction={'column'} gap={4} sx={{textAlign: 'center', maxWidth: 400, margin: '70px auto'}}>
+        <Grid id={"HomeScreen"} container direction={'column'} gap={4} sx={{textAlign: 'center', maxWidth: 400, margin: '70px auto'}}>
             <Grid item>
                 <Logo height={120}/>
             </Grid>

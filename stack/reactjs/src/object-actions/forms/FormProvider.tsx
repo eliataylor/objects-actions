@@ -4,11 +4,12 @@ import ApiClient from '../../config/ApiClient';
 import {useNavigate} from 'react-router-dom';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import {FormHelperText, MenuItem, TextField} from '@mui/material';
+import {FormControlLabel, FormHelperText, MenuItem, TextField} from '@mui/material';
 import ImageUpload from './ImageUpload';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import {isDayJs} from "../../utils";
+import Switch from "@mui/material/Switch";
 
 dayjs.extend(utc);
 
@@ -22,31 +23,61 @@ interface FormProviderProps<T extends EntityTypes> {
 interface FormContextValue<T extends EntityTypes> {
     entity: T;
     syncing: boolean;
-    errors: {[key: string]: string[]};
+    hasChanges: () => boolean;
+    errors: { [key: string]: string[] };
     handleFieldChange: (name: string, value: any) => void;
-    renderField: (field: FieldTypeDefinition, topass?: any) => ReactElement | null;
-    handleSubmit: (tosend:any, apiUrl:string|null) => Promise<void>;
-    handleDelete: () => Promise<void>;
+    handleFieldIndexChange: (name: string, value: any, number: number) => void;
+    renderField: (field: FieldTypeDefinition, index?:number, topass?: any) => ReactElement | null;
+    handleSubmit: (tosend: any, apiUrl?: string | null) => Promise<EntityTypes | Record<string, any>>;
+    handleDelete: () => Promise<Record<string, any>>;
 }
 
 const FormContext = createContext<FormContextValue<EntityTypes> | undefined>(undefined);
 
-export const FormProvider = <T extends EntityTypes>({ children, fields, original, navItem }: FormProviderProps<T>) => {
+export const FormProvider = <T extends EntityTypes>({
+                                                        children,
+                                                        fields,
+                                                        original,
+                                                        navItem
+                                                    }: FormProviderProps<T>) => {
     const navigate = useNavigate();
     const eid = original.id || 0;
     const [entity, setEntity] = useState<EntityTypes>(original);
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     const [syncing, setSyncing] = useState(false);
 
+    function hasChanges(): boolean {
+        return JSON.stringify(original) !== JSON.stringify(entity);
+    }
+
+    const handleChange = (field:FieldTypeDefinition, value:any, index=0) => {
+        if (field.cardinality && field.cardinality > 1) {
+            handleFieldIndexChange(field.machine, index, value)
+        } else {
+            handleFieldChange(field.machine, value)
+        }
+    }
+
     const handleFieldChange = (name: string, value: any) => {
-        setEntity((prev) => ({...prev, [name]: value}));
+        setEntity((prev) => {
+            const newState: any = {...prev};
+            newState[name] = value
+            return newState
+        });
     };
 
-    /*
-    const handleFieldChange = (name: string, value: any) => {
-        handleChange(name, value);
+    const handleFieldIndexChange = (name: string, value: any, index: number) => {
+        setEntity((prev) => {
+            const newState: any = {...prev};
+            if (value === null && newState[name][index]) {
+                newState[name].splice(index, 1);
+            } else {
+                if (!newState[name]) newState[name] = []
+                newState[name][index] = value
+            }
+            return newState
+        });
     };
-     */
 
     const structureToPost = async () => {
 
@@ -97,49 +128,58 @@ export const FormProvider = <T extends EntityTypes>({ children, fields, original
         return {headers, formData}
     }
 
-    const handleSubmit = async (toPost:any=null, apiUrl:string|null=null) => {
-        const tosend: Record<string, any> = toPost ? toPost : structureToPost();
-        const headers: Record<string, string> = {accept: 'application/json'};
-        if (tosend instanceof FormData) {
-            headers['Content-Type'] = 'multipart/form-data';
-        } else {
-            headers['Content-Type'] = 'application/json';
-        }
-        setSyncing(true);
-        let response = null;
-        if (apiUrl) {
-            response = await ApiClient.post(apiUrl, tosend, headers);
-        } else if (eid > 0) {
-            response = await ApiClient.patch(`${navItem.api}/${eid}`, tosend, headers)
-        } else {
-            response = await ApiClient.post(navItem.api, tosend, headers);
-        }
-        setSyncing(false);
-        const id = getProp(response.data as EntityTypes, 'id')
-        if (response.success && id) {
-            navigate(`${navItem.screen}/${id}`);
-            setErrors({});
-        } else {
-            setErrors(response.errors || {general: [response.error]});
-        }
-    };
-
-    const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this?')) {
+    const handleSubmit = async (toPost: any = null, apiUrl: string | null = null): Promise<EntityTypes | Record<string, any>> => {
+        return new Promise<EntityTypes | Record<string, any>>(async (resolve, reject) => {
+            const tosend: Record<string, any> = toPost ? toPost : structureToPost();
+            const headers: Record<string, string> = {accept: 'application/json'};
+            if (tosend instanceof FormData) {
+                headers['Content-Type'] = 'multipart/form-data';
+            } else {
+                headers['Content-Type'] = 'application/json';
+            }
             setSyncing(true);
-            const response = await ApiClient.delete(`${navItem.api}/${eid}`);
+            let response = null;
+            if (apiUrl) {
+                response = await ApiClient.post(apiUrl, tosend, headers);
+            } else if (eid > 0) {
+                response = await ApiClient.patch(`${navItem.api}/${eid}`, tosend, headers)
+            } else {
+                response = await ApiClient.post(navItem.api, tosend, headers);
+            }
             setSyncing(false);
-
-            if (response.success) {
-                alert('Deleted');
-                navigate(navItem.screen);
+            const id = response.data ? getProp(response.data as EntityTypes, 'id') : null
+            if (response.success && id) {
+                const newEntity = response.data as EntityTypes
+                setErrors({});
+                resolve(newEntity)
             } else {
                 setErrors(response.errors || {general: [response.error]});
+                reject(response.errors || {general: [response.error]})
             }
-        }
+        });
     };
 
-    const renderField = (field: FieldTypeDefinition, topass: any = {}) => {
+    const handleDelete = async (): Promise<Record<string, any>> => {
+        return new Promise<Record<string, any>>(async (resolve, reject) => {
+            if (window.confirm('Are you sure you want to delete this?')) {
+                setSyncing(true);
+                const response = await ApiClient.delete(`${navItem.api}/${eid}`);
+                setSyncing(false);
+
+                if (response.success) {
+                    resolve(response)
+                    navigate(navItem.screen);
+                } else {
+                    setErrors(response.errors || {general: [response.error]});
+                    reject(response)
+                }
+            } else {
+                reject({error: 'Not deleted'})
+            }
+        });
+    };
+
+    const renderField = (field: FieldTypeDefinition, index:number=0, topass: any = {}) => {
         const value: any = entity[field.machine as keyof EntityTypes];
         let input: ReactElement | null = null;
         const error = errors[field.machine as keyof EntityTypes];
@@ -152,7 +192,7 @@ export const FormProvider = <T extends EntityTypes>({ children, fields, original
                         name={field.machine}
                         label={field.singular}
                         value={value || ''}
-                        onChange={(e) => handleFieldChange(field.machine, e.target.value)}
+                        onChange={(e) => handleChange(field, e.target.value, index)}
                         error={!!error}
                         {...topass}
                     >
@@ -169,7 +209,7 @@ export const FormProvider = <T extends EntityTypes>({ children, fields, original
                     <DatePicker
                         label={field.singular}
                         value={value || null}
-                        onChange={(newValue) => handleFieldChange(field.machine, newValue)}
+                        onChange={(newValue) => handleChange(field, newValue, index)}
                         {...topass}
                     />
                 );
@@ -179,21 +219,35 @@ export const FormProvider = <T extends EntityTypes>({ children, fields, original
                     <DateTimePicker
                         label={field.singular}
                         value={value || null}
-                        onChange={(newValue) => handleFieldChange(field.machine, newValue)}
+                        onChange={(newValue) => handleChange(field, newValue, index)}
                         {...topass}
                     />
                 );
                 break;
             case 'image':
-                // TODO: get correct index
                 input = (
                     <ImageUpload
-                        index={0}
+                        index={index}
                         field_name={field.machine}
                         selected={value}
-                        onSelect={(selected) => handleFieldChange(field.machine, selected.file)}
+                        onSelect={(selected) => handleChange(field, selected.file, index)}
                         buttonProps={topass}
                     />
+                );
+                break;
+            case 'boolean':
+                input = (
+                    <FormControlLabel
+                        value="bottom"
+                        control={<Switch
+                            checked={value}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(field, event.target.checked, index)}
+                        />}
+                        label={field.singular}
+                        labelPlacement="top"
+                        {...topass}
+                    />
+
                 );
                 break;
             default:
@@ -206,7 +260,7 @@ export const FormProvider = <T extends EntityTypes>({ children, fields, original
                         name={field.machine}
                         label={field.singular}
                         value={value || ''}
-                        onChange={(e) => handleFieldChange(field.machine, e.target.value)}
+                        onChange={(e) => handleChange(field, e.target.value, index)}
                         error={!!error}
                         {...topass}
                     />
@@ -214,15 +268,25 @@ export const FormProvider = <T extends EntityTypes>({ children, fields, original
         }
 
         return (
-            <div>
+            <React.Fragment>
                 {input}
                 {error && <FormHelperText error>{error.join(', ')}</FormHelperText>}
-            </div>
+            </React.Fragment>
         );
     };
 
     return (
-        <FormContext.Provider value={{entity, syncing, errors, handleFieldChange, renderField, handleSubmit, handleDelete}}>
+        <FormContext.Provider value={{
+            entity,
+            syncing,
+            errors,
+            hasChanges,
+            handleFieldIndexChange,
+            handleFieldChange,
+            renderField,
+            handleSubmit,
+            handleDelete
+        }}>
             {children}
         </FormContext.Provider>
     );

@@ -1,10 +1,10 @@
 import {redirectToProvider} from '../lib/allauth'
 import {SvgIcon, Button} from '@mui/material'
 import React from "react";
-import {ReactComponent as Spotify} from '../../assets/spotify.svg';
-import {ReactComponent as AppleMusic} from '../../assets/applemusic.svg';
-import {ReactComponent as Apple} from '../../assets/apple.svg';
-import {ReactComponent as Google} from '../../assets/google.svg';
+import {ReactComponent as Spotify} from '../logos/spotify.svg';
+import {ReactComponent as AppleMusic} from '../logos/applemusic.svg';
+import {ReactComponent as Apple} from '../logos/apple.svg';
+import {ReactComponent as Google} from '../logos/google.svg';
 import {WifiPassword} from "@mui/icons-material";
 import GoogleInAppButton from "../GoogleInAppButton";
 import {AuthProcess} from "../lib/allauth";

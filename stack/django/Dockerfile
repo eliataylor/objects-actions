@@ -18,13 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy dependency file to install dependencies
 COPY requirements.txt /app/django/
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Copy the Django project source code
 COPY . /app/django/
-COPY .env /app/django/
-COPY .env.testing /app/django/
-COPY .env.docker /app/django/
 
 RUN chmod +x /app/django/entrypoint.sh
 

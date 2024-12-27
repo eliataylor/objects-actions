@@ -3,6 +3,41 @@ import {getAuth, getConfig} from '../lib/allauth';
 import Snackbar from '@mui/material/Snackbar';
 import SplashScreen from "../../screens/SplashScreen";
 
+// these are only to allow navigating the site when the backend is down
+const DEFAULT_SESSION = {
+    "status": 401,
+    "data": {
+        "flows": [{"id": "login"}, {"id": "login_by_code"}, {"id": "signup"}, {
+            "id": "provider_redirect",
+            "providers": ["spotify"]
+        }, {"id": "mfa_login_webauthn"}]
+    },
+    "meta": {"is_authenticated": false}
+}
+
+// these are only to allow navigating the site when the backend is down
+const DEFAULT_CONFIG = {
+    "status": 200,
+    "data": {
+        "account": {
+            "authentication_method": "email",
+            "is_open_for_signup": true,
+            "email_verification_by_code_enabled": false,
+            "login_by_code_enabled": true
+        },
+        "socialaccount": {
+            "providers": [{
+                "id": "spotify",
+                "name": "Spotify",
+                "flows": ["provider_redirect"],
+                "client_id": "fd7477ed66ee4cada182cea06a7c8fa0"
+            }]
+        },
+        "mfa": {"supported_types": ["totp", "recovery_codes", "webauthn"], "passkey_login_enabled": true},
+        "usersessions": {"track_activity": false}
+    }
+}
+
 interface AuthContextType {
     auth: any;
     config: any;
@@ -14,18 +49,19 @@ interface Props {
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-function Loading() {
-    return <SplashScreen loading={''}/>;
+function Loading({msg = ''}) {
+    return <SplashScreen loading={msg}/>;
 }
 
-function LoadingError() {
-    return <SplashScreen loading={'Error loading'}/>;
+function LoadingError({msg = ''}) {
+    return <SplashScreen loading={msg}/>;
 }
 
 export function AuthContextProvider({children}: Props) {
     const [auth, setAuth] = useState<any | undefined>(undefined);
     const [config, setConfig] = useState<any | undefined>(undefined);
     const [snack, showSnackBar] = useState<string>("");
+    const [error, setError] = useState<string>("");
 
     const closeSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -67,17 +103,25 @@ export function AuthContextProvider({children}: Props) {
         document.addEventListener('allauth.auth.change', onAuthChanged);
 
         getAuth()
-            .then(data => setAuth(data))
+            .then(data => {
+                setError('');
+                setAuth(data)
+            })
             .catch((e) => {
                 console.error(e);
-                setAuth(false);
+                setError(e.message);
+                setAuth(DEFAULT_SESSION);
             });
 
         getConfig()
-            .then(data => setConfig(data))
+            .then(data => {
+                setError('');
+                setConfig(data)
+            })
             .catch((e) => {
                 console.error(e);
-                setConfig(false);
+                setError(e.message);
+                setConfig(DEFAULT_CONFIG);
             });
 
         return () => {
@@ -96,7 +140,7 @@ export function AuthContextProvider({children}: Props) {
                 onClose={closeSnackbar}
                 message={snack}
             />
-            {loading ? <Loading/> : (auth === false ? <LoadingError/> : children)}
+            {loading ? <Loading msg={error}/> : (auth === false ? <LoadingError msg={error}/> : children)}
         </AuthContext.Provider>
     );
 }

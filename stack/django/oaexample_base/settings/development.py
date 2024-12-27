@@ -10,22 +10,13 @@ INSTALLED_APPS += [
 
 
 ALLOWED_HOSTS = ['*']
+
 # CORS settings
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.oaexample\.com$",
-    r"^http://\w+\.oaexample\.com$",
+    r"^https://\w+\.oaeaxample\.com$",
+    r"^http://\w+\.oaeaxample\.com$",
 ]
 CORS_ALLOWED_ORIGINS += [
-    'http://localhost.oaexample.com:3000',
-    'https://localhost.oaexample.com:3000',
-    'http://localhost.oaexample.com',
-    'https://oaexample.com',
-    'https://www.oaexample.com',
-    'https://dev.oaexample.com',
-    'http://localhost:3000',
-    'https://localhost:3000',
-    'http://127.0.0.1:3000',
-    'https://127.0.0.1:3000',
     "http://*", "https://*",
     "http://*:3000", "https://*:3000",
     "http://*:8080", "https://*:8080",
@@ -33,16 +24,6 @@ CORS_ALLOWED_ORIGINS += [
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS += [
-    'http://localhost.oaexample.com:3000',
-    'https://localhost.oaexample.com:3000',
-    'http://localapi.oaexample.com:8080',
-    'https://localapi.oaexample.com:8080',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'https://localhost:3000',
-    'https://127.0.0.1:3000',
-    'https://localhost:8080',
-    'https://127.0.0.1:8080',
     "http://*", "https://*",
     'http://[::1]',
     'https://[::1]',
@@ -55,17 +36,18 @@ CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
-CSRF_COOKIE_DOMAIN = None
-SESSION_COOKIE_DOMAIN = None
-
 # Allow CSRF over invalid certificates (not recommended for production)
 HOST_SCHEME="http://"
 SECURE_PROXY_SSL_HEADER = None
 SECURE_HSTS_SECONDS = None
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_FRAME_DENY = False
 # Use HTTP for development purposes
 SECURE_SSL_REDIRECT = False
+
+CSRF_COOKIE_DOMAIN = None
+SESSION_COOKIE_DOMAIN = None
+
 
 # Allow cookies to be sent with cross-origin requests
 SESSION_COOKIE_SAMESITE = 'Lax'

@@ -17,15 +17,19 @@ SUPERUSER_EMAIL = os.getenv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 ALLOWED_HOSTS = [
     "oaexample.com",
     ".oaexample.com",
+    "oaexample-cloudrun-121404103584.us-west1.run.app"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://oaexample.com",
     "https://*.oaexample.com",
+    "http://localhost:3000",
+    "https://localhost:3000",
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
     'http://localapi.oaexample.com:8080',
-    'https://localapi.oaexample.com:8080'
+    'https://localapi.oaexample.com:8080',
+    'https://oaexample-cloudrun-121404103584.us-west1.run.app'
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -33,22 +37,31 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'X-App-Client',  # used by mobile to toggle to Token auth
 ]
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.oaexample\.com$",
-    r"^http://\w+\.oaexample\.com$",
-]
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#   r"^https://\w+\.oaexample\.com$",
+#    r"^http://\w+\.oaexample\.com$",
+#]
+
 CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'https://localhost:3000',
+    'http://localhost:8080',
+    'https://localhost:8080',
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
     'http://localapi.oaexample.com:8080',
     'https://localapi.oaexample.com:8080',
     'https://oaexample.com',
     'https://www.oaexample.com',
-    'https://dev.oaexample.com'
+    'https://dev.oaexample.com',
+    'https://oaexample-cloudrun-121404103584.us-west1.run.app'
 ]
 
-CSRF_COOKIE_DOMAIN = '.oaexample.com'
-SESSION_COOKIE_DOMAIN = '.oaexample.com'
+# CSRF_COOKIE_DOMAIN = '.oaexample.com'
+# SESSION_COOKIE_DOMAIN = '.oaexample.com'
+
+CSRF_COOKIE_DOMAIN = None
+SESSION_COOKIE_DOMAIN = None
 
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = True

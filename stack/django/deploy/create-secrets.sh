@@ -79,6 +79,8 @@ secret_names=("MYSQL_PASSWORD" \
  "SPOTIFY_SECRET"
  )
 
+GCP_BUCKET_API_NAME
+
 for var_name in "${secret_names[@]}"; do
     var_value="${!var_name}"
 

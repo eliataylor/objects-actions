@@ -1,9 +1,10 @@
 # Define required environment variables for this script
 REQUIRED_VARS=("GCP_PROJECT_ID" "GCP_SERVICE_NAME")
 
-show_section_header "CREATING SERVICE ACCOUNT"
+SCRIPT_DIR=$(dirname "$0")
+source "${SCRIPT_DIR}/common.sh"
 
-source "./common.sh"
+show_section_header "CREATING SERVICE ACCOUNT"
 
 login_owner "roles/owner"
 
@@ -15,7 +16,6 @@ if [ $? -ne 0 ]; then
 else
     print_success "Enabling IAM API" "Success"
 fi
-
 
 show_loading "Creating service account..."
 if ! gcloud iam service-accounts describe $GCP_SERVICE_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com > /dev/null 2>&1; then
@@ -45,10 +45,11 @@ roles=(
     "roles/secretmanager.admin"
     "roles/iam.serviceAccountUser"
     "roles/serviceusage.serviceUsageAdmin"
+    "roles/resourcemanager.projects.get"
     "roles/storage.admin"
 )
 for role in "${roles[@]}"; do
-    if [[ $(gcloud projects get-iam-policy $GCP_PROJECT_ID --flatten="bindings[].members" --format='table(bindings.role)' --filter="bindings.members:$GCP_SERVICE_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com AND bindings.role:$role") == ROLE* ]] then
+    if [ "$(gcloud projects get-iam-policy $GCP_PROJECT_ID --flatten="bindings[].members" --format='table(bindings.role)' --filter="bindings.members:$GCP_SERVICE_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com AND bindings.role:$role")" == ROLE* ]; then
         print_warning "$role role already exists" "Skipped"
     else
         gcloud projects add-iam-policy-binding $GCP_PROJECT_ID \
