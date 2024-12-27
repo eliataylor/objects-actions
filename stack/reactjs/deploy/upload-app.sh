@@ -7,7 +7,7 @@ REQUIRED_VARS=("GCP_PROJECT_ID" "GCP_BUCKET_APP_NAME" "GCP_SA_KEY_PATH")
 SCRIPT_DIR=$(dirname "$0")
 source "${SCRIPT_DIR}/common.sh"
 
-login_service_account $GCP_SA_KEY_PATH $GCP_PROJECT_ID $GCP_SERVICE_NAME
+login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID"
 # login_owner "roles/owner" $GCP_PROJECT_ID
 set_project $GCP_PROJECT_ID
 

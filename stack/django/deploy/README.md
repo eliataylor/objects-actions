@@ -21,11 +21,12 @@ Go to https://console.cloud.google.com/apis/credentials > your service account >
 bash deploy/create-sql.sh .env.gcp 
 # then update your .env.gcp with your MySQL host and 
 
+# create bucket for API uploads
+bash deploy/create-bucket.sh .env.gcp
+
+
 # setup DNS, routing, ssl, load balancer, (front + backend)
 bash deploy/setup-dns-https.sh .env.gcp
-
-# create bucket for API uploads
-bash deploy/create-bucket.sh .env.gcp 
 
 # push private credentials to Secrets Manager
 bash deploy/create-secrets.sh .env.gcp 

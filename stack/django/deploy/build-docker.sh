@@ -6,7 +6,7 @@ REQUIRED_VARS=("GCP_PROJECT_ID" "GCP_DOCKER_REPO_ZONE" "GCP_DOCKER_REPO_NAME" "G
 SCRIPT_DIR="$(dirname "$0")"
 source "${SCRIPT_DIR}/common.sh"
 
-login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID" "$GCP_SERVICE_NAME"
+login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID"
 
 show_section_header "Building & submitting containers..."
 

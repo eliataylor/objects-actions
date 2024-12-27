@@ -9,7 +9,7 @@ SCRIPT_DIR=$(dirname "$0")
 source "${SCRIPT_DIR}/common.sh"
 
 show_section_header "ADD SECRETS TO GCP: WARNING THIS DOES NOT WORK FOR variable values with spaces in them. even if quoted"
-login_service_account $GCP_SA_KEY_PATH $GCP_PROJECT_ID
+login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID"
 set_project $GCP_PROJECT_ID
 
 json_string=$(jq -r ${GCP_SA_KEY_PATH})

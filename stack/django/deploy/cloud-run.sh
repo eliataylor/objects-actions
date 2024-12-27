@@ -29,7 +29,7 @@ source "${SCRIPT_DIR}/common.sh"
 
 show_section_header "DEPLOY CLOUD RUN FROM SOURCE"
 
-login_service_account $GCP_SA_KEY_PATH $GCP_PROJECT_ID $GCP_SERVICE_NAME
+login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID"
 
 show_loading "Deploying container to Cloud Run..."
 #    --image $GCP_DOCKER_REPO_ZONE-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_DOCKER_REPO_NAME/$GCP_SERVICE_NAME:latest \
