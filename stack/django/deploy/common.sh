@@ -26,6 +26,17 @@ else
   exit 1
 fi
 
+# Sanitize and export GCP_BUCKET_APP_NAME and GCP_BUCKET_API_NAME if they exist
+if [ -n "$GCP_BUCKET_APP_NAME" ]; then
+  SANITIZED_GCP_BUCKET_APP_NAME=$(sanitize_bucket_name "$GCP_BUCKET_APP_NAME")
+  export GCP_BUCKET_APP_NAME="$SANITIZED_GCP_BUCKET_APP_NAME"
+fi
+
+if [ -n "$GCP_BUCKET_API_NAME" ]; then
+  SANITIZED_GCP_BUCKET_API_NAME=$(sanitize_bucket_name "$GCP_BUCKET_API_NAME")
+  export GCP_BUCKET_API_NAME="$SANITIZED_GCP_BUCKET_API_NAME"
+fi
+
 # Check if necessary variables are set
 missing_vars=()
 for var in "${REQUIRED_VARS[@]}"; do

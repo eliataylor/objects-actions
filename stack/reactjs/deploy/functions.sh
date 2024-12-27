@@ -155,7 +155,8 @@ login_service_account() {
 # Function to sanitize bucket name
 sanitize_bucket_name() {
   local name="$1"
-  echo "Input name: $name"  # Debugging line
+   # Trim whitespace
+  name=$(echo "$name" | xargs)
   # Convert to lowercase
   name=$(echo "$name" | tr '[:upper:]' '[:lower:]')
   # Replace underscores with dashes

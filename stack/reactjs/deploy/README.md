@@ -17,9 +17,6 @@ bash ../django/deploy/create-service-account.sh .env.gcp
 # setup DNS, routing, ssl, load balancer, (front + backend)
 sh deploy/create-bucket-lb-webapp.sh ../django/.env.gcp 
 
-# enable all necessary APIs
-bash deploy/create-bucket.sh ../django/.env.gcp
-
 # deploy to cloud ru
 bash deploy/upload-app.sh ../django/.env.gcp 
 

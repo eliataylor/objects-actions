@@ -52,27 +52,27 @@ if ! gcloud dns managed-zones describe "$GCP_DNS_ZONE_NAME" > /dev/null 2>&1; th
         exit 1
     else
         print_success "$GCP_DNS_ZONE_NAME DNS Zone" "Created"
-
-        # Add a DNS record set for your domain
-        show_loading "Creating DNS record..."
-        if ! gcloud dns record-sets describe "$DOMAIN_NAME." --type=A --zone="$GCP_DNS_ZONE_NAME" > /dev/null 2>&1; then
-            gcloud dns record-sets create "$DOMAIN_NAME." \
-                --zone="$GCP_DNS_ZONE_NAME" \
-                --type="A" \
-                --ttl="300" \
-                --rrdatas="$STATIC_IP"
-            if [ $? -ne 0 ]; then
-                print_error "$DOMAIN_NAME DNS record creation" "Failed"
-                exit 1
-            else
-                print_success "$DOMAIN_NAME DNS record" "Created"
-            fi
-        else
-            print_warning "$DOMAIN_NAME DNS record already exists" "Skipped"
-        fi
     fi
 else
     print_warning "$GCP_DNS_ZONE_NAME DNS Zone already exists" "Skipped"
+fi
+
+# Add a DNS record set for your domain
+show_loading "Creating DNS record..."
+if ! gcloud dns record-sets describe "$DOMAIN_NAME." --type=A --zone="$GCP_DNS_ZONE_NAME" > /dev/null 2>&1; then
+    gcloud dns record-sets create "$DOMAIN_NAME." \
+        --zone="$GCP_DNS_ZONE_NAME" \
+        --type="A" \
+        --ttl="300" \
+        --rrdatas="$STATIC_IP"
+    if [ $? -ne 0 ]; then
+        print_error "$DOMAIN_NAME DNS record creation" "Failed"
+        exit 1
+    else
+        print_success "$DOMAIN_NAME DNS record" "Created"
+    fi
+else
+    print_warning "$DOMAIN_NAME DNS record already exists" "Skipped"
 fi
 
 # Create SSL Certificate for Loadbalancer
@@ -121,21 +121,22 @@ if ! gcloud compute backend-services describe "$GCP_SERVICE_NAME-api-bs" --globa
         exit 1
     else
         print_success "$GCP_SERVICE_NAME-api-bs backend service" "Created"
-        # Add serverless NEG to the backend service
-        show_loading "Adding serverless NEG to the backend service..."
-        gcloud compute backend-services add-backend "$GCP_SERVICE_NAME-api-bs" \
-            --global \
-            --network-endpoint-group="$GCP_SERVICE_NAME-api-neg" \
-            --network-endpoint-group-region="$GCP_REGION"
-        if [ $? -ne 0 ]; then
-            print_error "Adding $GCP_SERVICE_NAME-api-neg to backend service" "Failed"
-            exit 1
-        else
-            print_success "Adding $GCP_SERVICE_NAME-api-neg to backend service" "Success"
-        fi
     fi
 else
     print_warning "$GCP_SERVICE_NAME-api-bs backend service already exists" "Skipped"
+fi
+
+# Add serverless NEG to the backend service
+show_loading "Adding serverless NEG to the backend service..."
+gcloud compute backend-services add-backend "$GCP_SERVICE_NAME-api-bs" \
+    --global \
+    --network-endpoint-group="$GCP_SERVICE_NAME-api-neg" \
+    --network-endpoint-group-region="$GCP_REGION"
+if [ $? -ne 0 ]; then
+    print_error "Adding $GCP_SERVICE_NAME-api-neg to backend service" "Failed"
+    exit 1
+else
+    print_success "Adding $GCP_SERVICE_NAME-api-neg to backend service" "Success"
 fi
 
 
@@ -143,7 +144,7 @@ fi
 # Create a URL map to route incoming requests to the backend service
 echo "Creating URL map..."
 if ! gcloud compute url-maps describe "$GCP_SERVICE_NAME-api-url-map" > /dev/null 2>&1; then
-gcloud compute url-maps create "$GCP_SERVICE_NAME-api-url-map" \
+  gcloud compute url-maps create "$GCP_SERVICE_NAME-api-url-map" \
     --default-service "$GCP_SERVICE_NAME-api-bs" \
     --global
 else

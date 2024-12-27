@@ -10,23 +10,21 @@ REQUIRED_VARS=("GCP_PROJECT_ID" "GCP_BUCKET_API_ZONE" "GCP_BUCKET_API_NAME")
 SCRIPT_DIR=$(dirname "$0")
 source "${SCRIPT_DIR}/common.sh"
 
-SANITIZED_BUCKET_NAME=$(sanitize_bucket_name "$GCP_BUCKET_API_NAME")
-
 login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID"
 
 show_section_header "Creating Cloud Storage buckets..."
 show_loading "Creating Backend API bucket"
-if ! gcloud storage buckets describe gs://$SANITIZED_BUCKET_NAME --format="json(name)" > /dev/null 2>&1; then
-    gcloud storage buckets create gs://$SANITIZED_BUCKET_NAME \
-        --project=$GCP_PROJECT_ID \
+if ! gcloud storage buckets describe "gs://${SANITIZED_GCP_BUCKET_API_NAME}" --format="json(name)" > /dev/null 2>&1; then
+    gcloud storage buckets create "gs://${SANITIZED_GCP_BUCKET_API_NAME}" \
+        --project="$GCP_PROJECT_ID" \
         --default-storage-class=standard \
-        --location=$GCP_BUCKET_API_ZONE
+        --location="$GCP_BUCKET_API_ZONE"
 
     if [ $? -ne 0 ]; then
-        print_error "gs://$SANITIZED_BUCKET_NAME creation" "Failed"
+        print_error "gs://${SANITIZED_GCP_BUCKET_API_NAME} creation" "Failed"
     else
-        print_success "gs://$SANITIZED_BUCKET_NAME bucket" "Created"
+        print_success "gs://${SANITIZED_GCP_BUCKET_API_NAME} bucket" "Created"
     fi
 else
-    print_warning "gs://$SANITIZED_BUCKET_NAME bucket already exists" "Skipped"
+    print_warning "gs://${SANITIZED_GCP_BUCKET_API_NAME} bucket already exists" "Skipped"
 fi
