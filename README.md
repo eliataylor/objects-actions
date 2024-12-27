@@ -58,7 +58,7 @@ https://github.com/user-attachments/assets/3065f1a1-9fa6-4420-99c2-f3aa4bcce373
 ### TO SPONSOR: [github.com/sponsors/eliataylor](https://github.com/sponsors/eliataylor)
 
 ---
-Example Site
+Example Site: [https://oaexample.com/readme](https://oaexample.com/readme)
 ![readme.png](docs/images/readme.png)
 
 Offer Sign-in / Sign-up from any of these [AllAuth Providers](https://docs.allauth.org/en/dev/socialaccount/providers/index.html)

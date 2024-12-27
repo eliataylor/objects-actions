@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REQUIRED_VARS=("GCP_PROJECT_ID" "GCP_REGION" "GCP_DNS_ZONE_NAME" "GCP_SERVICE_NAME" "DOMAIN_NAME")
+REQUIRED_VARS=("GCP_PROJECT_ID" "GCP_BUCKET_API_ZONE" "GCP_DNS_ZONE_NAME" "GCP_SERVICE_NAME" "DOMAIN_NAME")
 
 SCRIPT_DIR=$(dirname "$0")
 source "${SCRIPT_DIR}/common.sh"
@@ -95,9 +95,9 @@ fi
 # Create a serverless NEG
 show_section_header "Setup Backend services..."
 show_loading "Creating serverless NEG..."
-if ! gcloud compute network-endpoint-groups describe "$GCP_SERVICE_NAME-api-neg" --region="$GCP_REGION" > /dev/null 2>&1; then
+if ! gcloud compute network-endpoint-groups describe "$GCP_SERVICE_NAME-api-neg" --region="$GCP_BUCKET_API_ZONE" > /dev/null 2>&1; then
     gcloud compute network-endpoint-groups create "$GCP_SERVICE_NAME-api-neg" \
-        --region="$GCP_REGION" \
+        --region="$GCP_BUCKET_API_ZONE" \
         --network-endpoint-type=serverless \
         --cloud-run-service="$GCP_SERVICE_NAME-cloudrun"
     if [ $? -ne 0 ]; then
@@ -131,7 +131,7 @@ show_loading "Adding serverless NEG to the backend service..."
 gcloud compute backend-services add-backend "$GCP_SERVICE_NAME-api-bs" \
     --global \
     --network-endpoint-group="$GCP_SERVICE_NAME-api-neg" \
-    --network-endpoint-group-region="$GCP_REGION"
+    --network-endpoint-group-region="$GCP_BUCKET_API_ZONE"
 if [ $? -ne 0 ]; then
     print_error "Adding $GCP_SERVICE_NAME-api-neg to backend service" "Failed"
     exit 1

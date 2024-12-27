@@ -12,7 +12,7 @@ fi
 PROJECT_ID=$1
 GCP_SERVICE_NAME=$2
 OUTPUT_ENV_FILE=$3
-GCP_REGION=us-west1
+GCP_BUCKET_API_ZONE=us-west1
 
 # Clear or create the output file
 > $OUTPUT_ENV_FILE
@@ -21,7 +21,7 @@ GCP_REGION=us-west1
 echo "Fetching environment variables from Cloud Run..."
 ENV_VARS=$(gcloud run services describe "$GCP_SERVICE_NAME-cloudrun" \
   --platform managed \
-  --region $GCP_REGION \
+  --region $GCP_BUCKET_API_ZONE \
   --format "json" \
   --project "$PROJECT_ID" | jq -r '.spec.template.spec.containers[0].env[] | "\(.name)=\(.value)"')
 

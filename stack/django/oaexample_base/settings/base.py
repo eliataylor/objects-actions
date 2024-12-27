@@ -64,8 +64,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localapi.oaexample.com:8080',
     'https://localapi.oaexample.com:8080',
     'https://oaexample.com',
-    'https://www.oaexample.com',
-    'https://dev.oaexample.com'
+    'https://www.oaexample.com'
 ]
 
 CSRF_COOKIE_DOMAIN = '.oaexample.com'
@@ -324,14 +323,12 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     'github': {
         'SCOPE': [
-            'user',
-            'repo',
-            'read:org',
+            'user'
         ],
+        "VERIFIED_EMAIL": True,
         'APP': {
             "name": "github",
             "provider_id": "github",
-            "callback_url": "https://oaexample.com/account/provider/callback",
             'client_id': os.environ.get('GITHUB_CLIENT_ID', ""),
             'secret': os.environ.get('GITHUB_SECRET', "")
         },
@@ -350,23 +347,19 @@ SOCIALACCOUNT_PROVIDERS = {
         ]
     },
     "spotify": {
-        'SCOPE': ['user-read-email', 'user-top-read', 'user-read-recently-played', 'playlist-read-collaborative'],
+        'SCOPE': ['user-read-email'],
         'AUTH_PARAMS': {'access_type': 'offline'},
         'METHOD': 'oauth2',
         'FETCH_USERINFO': True,
         'VERIFIED_EMAIL': False,
         'VERSION': 'v1',
         "APP": {
-
             "name": "spotify",
             "provider_id": "spotify",
-
             "client_id": os.environ.get("SPOTIFY_CLIENT_ID"),
-            "secret": os.environ.get("SPOTIFY_SECRET"),
-            "callback_url": "https://oaexample.com/account/provider/callback",
+            "secret": os.environ.get("SPOTIFY_SECRET")
         }
     },
-
 }
 
 # SMTP server configuration
@@ -375,7 +368,7 @@ EMAIL_HOST = os.environ.get("SMTP_EMAIL_HOST", 'smtp.gmail.com')
 EMAIL_PORT = os.environ.get("SMTP_EMAIL_PORT", 587)
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-# EMAIL_HOST_USER = os.environ.get("SMTP_EMAIL_ADDRESS", "")
+EMAIL_HOST_USER = os.environ.get("SMTP_EMAIL_ADDRESS", "")
 EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
 
 if EMAIL_PASSWORD is None:
@@ -384,19 +377,14 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # SendGrid
-EMAIL_HOST_USER = 'apikey'  # This is the string 'apikey', not the actual API key
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "")
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "")
 EMAIL_USE_LOCALTIME = True
-
-# EMAIL_FILE_PATH = '/home/app-messages'  # change this to a proper location
 
 TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
 TWILIO_VERIFY_SERVICE_SID = os.environ.get("TWILIO_VERIFY_SERVICE_SID", "")
 TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
-
-APPLE_DEVELOPER_TOKEN = os.environ.get("APPLE_DEVELOPER_TOKEN", "")
 
 """
 import logging

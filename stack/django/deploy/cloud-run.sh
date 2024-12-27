@@ -2,7 +2,7 @@
 
 # Define required environment variables for this script
 REQUIRED_VARS=("GCP_PROJECT_ID" \
-              "GCP_REGION" \
+              "GCP_BUCKET_API_ZONE" \
               "DJANGO_ENV" \
               "GCP_SERVICE_NAME" \
               "GCP_BUCKET_API_NAME" \
@@ -13,15 +13,20 @@ REQUIRED_VARS=("GCP_PROJECT_ID" \
               "GCP_MYSQL_INSTANCE" \
               "GCP_MYSQL_HOST" \
               "MYSQL_DATABASE" \
-              "DJANGO_ALLOWED_HOSTS" \
-              "DJANGO_CSRF_TRUSTED_ORIGINS" \
               "SMTP_EMAIL_ADDRESS" \
               "ADMIN_EMAIL" \
               "SMTP_EMAIL_HOST" \
               "DEFAULT_FROM_EMAIL" \
               "FRONTEND_URL" \
               "FRONTEND_INDEX_HTML" \
-              "SPOTIFY_CLIENT_ID"  )
+              "SPOTIFY_CLIENT_ID" \
+              "SPOTIFY_SECRET" \
+              "LINKEDIN_SECRET" \
+              "GITHUB_SECRET" \
+              "GITHUB_CLIENT_ID" \
+              "GOOGLE_OAUTH_CLIENT_ID" \
+              "GOOGLE_OAUTH_SECRET" \
+              "GOOGLE_OAUTH_KEY" )
 
 SCRIPT_DIR=$(dirname "$0")
 source "${SCRIPT_DIR}/common.sh"
@@ -31,11 +36,9 @@ show_section_header "DEPLOY CLOUD RUN FROM SOURCE"
 login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID"
 
 show_loading "Deploying container to Cloud Run..."
-#    --image $GCP_DOCKER_REPO_ZONE-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_DOCKER_REPO_NAME/$GCP_SERVICE_NAME:latest \
-#    --image gcr.io/$GCP_PROJECT_ID/$GCP_PROJECT_ID-cloudrun \
 
 gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
-    --region $GCP_REGION \
+    --region $GCP_BUCKET_API_ZONE \
     --source . \
     --cpu 1 \
     --platform managed \
@@ -46,14 +49,13 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-env-vars DJANGO_DEBUG=True \
     --set-env-vars GCP_PROJECT_ID=$GCP_PROJECT_ID \
     --set-env-vars GCP_BUCKET_API_NAME=$GCP_BUCKET_API_NAME \
-    --set-env-vars ^@^DJANGO_ALLOWED_HOSTS=$DJANGO_ALLOWED_HOSTS@DJANGO_CSRF_TRUSTED_ORIGINS=$DJANGO_CSRF_TRUSTED_ORIGINS \
     --set-env-vars DJANGO_SUPERUSER_USERNAME=$DJANGO_SUPERUSER_USERNAME \
     --set-env-vars DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL \
     --set-env-vars GCP_MYSQL_HOST=$GCP_MYSQL_HOST \
     --set-env-vars MYSQL_DATABASE=$MYSQL_DATABASE \
     --set-env-vars MYSQL_USER=$MYSQL_USER \
     --set-env-vars SMTP_EMAIL_ADDRESS=$SMTP_EMAIL_ADDRESS \
-    --set-env-vars EMAIL_HOST_USER=apikey \
+    --set-env-vars EMAIL_HOST_USER=$SMTP_EMAIL_ADDRESS \
     --set-env-vars SMTP_EMAIL_PORT=$SMTP_EMAIL_PORT \
     --set-env-vars SMTP_EMAIL_HOST=$SMTP_EMAIL_HOST \
     --set-env-vars ADMIN_EMAIL=$ADMIN_EMAIL \
@@ -61,6 +63,13 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-env-vars FRONTEND_URL=$FRONTEND_URL \
     --set-env-vars FRONTEND_INDEX_HTML=$FRONTEND_INDEX_HTML \
     --set-env-vars SPOTIFY_CLIENT_ID=$SPOTIFY_CLIENT_ID \
+    --set-env-vars GOOGLE_OAUTH_CLIENT_ID=$GOOGLE_OAUTH_CLIENT_ID \
+    --set-env-vars ^@^GOOGLE_OAUTH_KEY=$GOOGLE_OAUTH_KEY \
+    --set-env-vars GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID \
+    --set-env-vars LINKEDIN_CLIENT_ID=$LINKEDIN_CLIENT_ID \
+    --set-secrets GOOGLE_OAUTH_SECRET=GOOGLE_OAUTH_SECRET:latest \
+    --set-secrets GITHUB_SECRET=GITHUB_SECRET:latest \
+    --set-secrets LINKEDIN_SECRET=LINKEDIN_SECRET:latest \
     --set-secrets SMTP_PASSWORD=SMTP_PASSWORD:latest \
     --set-secrets SPOTIFY_SECRET=SPOTIFY_SECRET:latest \
     --set-secrets DJANGO_SECRET_KEY=DJANGO_SECRET_KEY:latest \

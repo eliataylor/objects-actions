@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REQUIRED_VARS=("GCP_SA_KEY_PATH" "GCP_REGION")
+REQUIRED_VARS=("GCP_SA_KEY_PATH" "GCP_BUCKET_API_ZONE")
 
 SCRIPT_DIR=$(dirname "$0")
 source "${SCRIPT_DIR}/common.sh"

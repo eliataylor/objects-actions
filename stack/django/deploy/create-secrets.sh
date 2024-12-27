@@ -3,7 +3,7 @@
 # Define required environment variables for this script
 
 
-REQUIRED_VARS=("GCP_PROJECT_ID" "GCP_REGION" "GCP_SERVICE_NAME")
+REQUIRED_VARS=("GCP_PROJECT_ID" "GCP_BUCKET_API_ZONE" "GCP_SERVICE_NAME")
 
 SCRIPT_DIR=$(dirname "$0")
 source "${SCRIPT_DIR}/common.sh"
@@ -24,7 +24,6 @@ else
 fi
 
 variable_names=("GCP_PROJECT_ID" \
- "GCP_REGION" \
 \
  "GCP_DOCKER_REPO_ZONE" \
  "GCP_DOCKER_REPO_NAME" \
@@ -57,12 +56,14 @@ variable_names=("GCP_PROJECT_ID" \
  "SMTP_EMAIL_ADDRESS" \
 
  "GOOGLE_OAUTH_CLIENT_ID" \
+ "GOOGLE_OAUTH_KEY" \
  "FRONTEND_URL" \
  "DEFAULT_FROM_EMAIL" \
  "TWILIO_ACCOUNT_SID" \
  "TWILIO_AUTH_TOKEN" \
  "GITHUB_CLIENT_ID" \
- "LINKEDIN_CLIENT_ID" )
+ "LINKEDIN_CLIENT_ID" \
+ "SPOTIFY_CLIENT_ID")
 
 secret_names=("MYSQL_PASSWORD" \
  "DJANGO_SECRET_KEY" \

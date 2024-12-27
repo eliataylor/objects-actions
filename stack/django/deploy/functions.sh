@@ -78,8 +78,9 @@ create_secret() {
     local key="$1"
     local value="$2"
 
-    show_loading "Creating secrets for $key..."
-    if ! gcloud secrets describe $key > /dev/null 2>&1; then
+    show_loading "Processing secret for $key..."
+    if ! gcloud secrets describe "$key" > /dev/null 2>&1; then
+        # Create the secret if it does not exist
         echo -n "$value" | gcloud secrets create "$key" \
             --replication-policy="automatic" \
             --data-file=-
@@ -89,7 +90,36 @@ create_secret() {
             print_success "$key secret" "Created"
         fi
     else
-        print_warning "$key secret already exists" "Skipped"
+        # Update the secret by adding a new version
+        echo -n "$value" | gcloud secrets versions add "$key" --data-file=-
+        if [ $? -ne 0 ]; then
+            print_error "$key secret update" "Failed"
+        else
+            print_success "$key secret" "Updated"
+
+            # Get the latest version (last added)
+            local current_version
+            current_version=$(gcloud secrets versions list "$key" --sort-by="~createTime" --limit=1 --format="value(name)")
+
+            if [[ -n "$current_version" ]]; then
+                # Disable all versions first
+                gcloud secrets versions list "$key" --format="value(name)" | while read -r version; do
+                    if [[ "$version" != "$current_version" ]]; then
+                        gcloud secrets versions disable "$key" --version="$version" > /dev/null 2>&1
+                    fi
+                done
+
+                # Enable only the current version
+                gcloud secrets versions enable "$key" --version="$current_version" > /dev/null 2>&1
+                if [ $? -eq 0 ]; then
+                    print_success "$key secret" "New version activated and others disabled"
+                else
+                    print_error "$key secret activation" "Failed to enable the new version"
+                fi
+            else
+                print_error "$key secret version retrieval" "Failed to retrieve the latest version"
+            fi
+        fi
     fi
 }
 
