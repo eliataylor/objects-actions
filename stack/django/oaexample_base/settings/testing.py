@@ -17,7 +17,7 @@ SECURE_HSTS_PRELOAD = False  # Allow the site to be included in browsers HSTS pr
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 GS_PROJECT_ID = os.getenv('GCP_PROJECT_ID')
-GS_BUCKET_NAME = os.getenv('GCP_BUCKET_API_NAME')
+GS_BUCKET_NAME = sanitize_bucket_name(os.getenv('GCP_BUCKET_API_NAME', 'oaexample-media'))
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_DEFAULT_ACL = "publicRead"

@@ -59,8 +59,8 @@ fi
 
 # Add a DNS record set for your domain
 show_loading "Creating DNS record..."
-if ! gcloud dns record-sets describe "$DOMAIN_NAME." --type=A --zone="$GCP_DNS_ZONE_NAME" > /dev/null 2>&1; then
-    gcloud dns record-sets create "$DOMAIN_NAME." \
+if ! gcloud dns record-sets describe "api.${DOMAIN_NAME}." --type=A --zone="$GCP_DNS_ZONE_NAME" > /dev/null 2>&1; then
+    gcloud dns record-sets create "api.${DOMAIN_NAME}." \
         --zone="$GCP_DNS_ZONE_NAME" \
         --type="A" \
         --ttl="300" \
@@ -80,7 +80,7 @@ show_loading "Creating SSL certificate..."
 if ! gcloud compute ssl-certificates describe "$GCP_SERVICE_NAME-api-ssl" --global > /dev/null 2>&1; then
     gcloud compute ssl-certificates create "$GCP_SERVICE_NAME-api-ssl" \
         --description="SSL Certificate for Loadbalancer" \
-        --domains="$DOMAIN_NAME" \
+        --domains="api.${DOMAIN_NAME}" \
         --global
     if [ $? -ne 0 ]; then
         print_error "$GCP_SERVICE_NAME-api-ssl certificate creation" "Failed"

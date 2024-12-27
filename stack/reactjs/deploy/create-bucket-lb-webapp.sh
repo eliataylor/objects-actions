@@ -62,6 +62,24 @@ gcloud dns record-sets transaction start --zone="$GCP_DNS_ZONE_NAME"
 gcloud dns record-sets transaction add --zone="$GCP_DNS_ZONE_NAME" --name="$DOMAIN_NAME" --ttl=300 --type=A "$STATIC_IP"
 gcloud dns record-sets transaction execute --zone="$GCP_DNS_ZONE_NAME"
 
+show_loading "Creating DNS record..."
+if ! gcloud dns record-sets describe "${DOMAIN_NAME}." --type=A --zone="$GCP_DNS_ZONE_NAME" > /dev/null 2>&1; then
+    gcloud dns record-sets create "${DOMAIN_NAME}." \
+        --zone="$GCP_DNS_ZONE_NAME" \
+        --type="A" \
+        --ttl="300" \
+        --rrdatas="$STATIC_IP"
+    if [ $? -ne 0 ]; then
+        print_error "$DOMAIN_NAME DNS record creation" "Failed"
+        exit 1
+    else
+        print_success "$DOMAIN_NAME DNS record" "Created"
+    fi
+else
+    print_warning "$DOMAIN_NAME DNS record already exists" "Skipped"
+fi
+
+
 # Create SSL Certificate for Load Balancer
 progress "Creating SSL certificate..."
 if ! gcloud compute ssl-certificates describe "$SSL_CERT_NAME" --global > /dev/null 2>&1; then

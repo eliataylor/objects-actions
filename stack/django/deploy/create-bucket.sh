@@ -28,3 +28,9 @@ if ! gcloud storage buckets describe "gs://${SANITIZED_GCP_BUCKET_API_NAME}" --f
 else
     print_warning "gs://${SANITIZED_GCP_BUCKET_API_NAME} bucket already exists" "Skipped"
 fi
+
+
+# Make GCS Bucket publicly readable
+gcloud storage buckets add-iam-policy-binding "gs://${SANITIZED_GCP_BUCKET_API_NAME}" \
+  --member=allUsers \
+  --role=roles/storage.objectViewer

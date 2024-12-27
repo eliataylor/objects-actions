@@ -30,13 +30,11 @@ fi
 if [ -n "$GCP_BUCKET_APP_NAME" ]; then
   SANITIZED_GCP_BUCKET_APP_NAME=$(sanitize_bucket_name "$GCP_BUCKET_APP_NAME")
   export GCP_BUCKET_APP_NAME="$SANITIZED_GCP_BUCKET_APP_NAME"
-  echo "Sanitized and exported GCP_BUCKET_APP_NAME: $GCP_BUCKET_APP_NAME"
 fi
 
 if [ -n "$GCP_BUCKET_API_NAME" ]; then
   SANITIZED_GCP_BUCKET_API_NAME=$(sanitize_bucket_name "$GCP_BUCKET_API_NAME")
   export GCP_BUCKET_API_NAME="$SANITIZED_GCP_BUCKET_API_NAME"
-  echo "Sanitized and exported GCP_BUCKET_API_NAME: $GCP_BUCKET_API_NAME"
 fi
 
 # Check if necessary variables are set

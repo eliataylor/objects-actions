@@ -1,7 +1,18 @@
 from .base import *
-
 import certifi
+import re
 
+
+def sanitize_bucket_name(name: str) -> str:
+    # Convert to lowercase
+    name = name.lower()
+    # Replace underscores with dashes
+    name = name.replace('_', '-')
+    # Remove characters not allowed
+    name = re.sub(r'[^a-z0-9-]', '', name)
+    # Trim to 63 characters max (to comply with bucket name length limit)
+    name = name[:63]
+    return name
 
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
@@ -17,7 +28,9 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 GS_PROJECT_ID = os.getenv('GCP_PROJECT_ID')
-GS_BUCKET_NAME = os.getenv('GCP_BUCKET_API_NAME')
+
+GS_BUCKET_NAME = sanitize_bucket_name(os.getenv('GCP_BUCKET_API_NAME', 'oaexample-media'))
+
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_DEFAULT_ACL = "publicRead"
