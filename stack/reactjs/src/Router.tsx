@@ -40,6 +40,7 @@ import Sessions from './allauth/usersessions/Sessions'
 import SmsSigninOrUp from "./allauth/SmsSigninOrUp";
 import UserView from "./screens/UserView";
 import ReadMe from "./object-actions/docs/ReadMe";
+import Privacy from "./screens/Privacy";
 
 function createRouter() {
     const allRoutes = [
@@ -191,6 +192,7 @@ function createRouter() {
     })
 
     allRoutes[0].children.push({path: `/readme`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/privacy`, element: <Privacy />})
 
     return createBrowserRouter(allRoutes)
 }

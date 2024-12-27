@@ -1,6 +1,20 @@
 import os
+import re
 
 from corsheaders.defaults import default_headers
+
+
+def sanitize_bucket_name(name: str) -> str:
+    # Convert to lowercase
+    name = name.lower()
+    # Replace underscores with dashes
+    name = name.replace('_', '-')
+    # Remove characters not allowed
+    name = re.sub(r'[^a-z0-9-]', '', name)
+    # Trim to 63 characters max (to comply with bucket name length limit)
+    name = name[:63]
+    return name
+
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
@@ -16,8 +30,7 @@ SUPERUSER_EMAIL = os.getenv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 
 ALLOWED_HOSTS = [
     "oaexample.com",
-    ".oaexample.com",
-    "oaexample-cloudrun-121404103584.us-west1.run.app"
+    ".oaexample.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -28,8 +41,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost.oaexample.com:3000',
     'https://localhost.oaexample.com:3000',
     'http://localapi.oaexample.com:8080',
-    'https://localapi.oaexample.com:8080',
-    'https://oaexample-cloudrun-121404103584.us-west1.run.app'
+    'https://localapi.oaexample.com:8080'
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -37,10 +49,10 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'X-App-Client',  # used by mobile to toggle to Token auth
 ]
 
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#   r"^https://\w+\.oaexample\.com$",
-#    r"^http://\w+\.oaexample\.com$",
-#]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.oaexample\.com$",
+    r"^http://\w+\.oaexample\.com$",
+]
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
@@ -53,8 +65,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://localapi.oaexample.com:8080',
     'https://oaexample.com',
     'https://www.oaexample.com',
-    'https://dev.oaexample.com',
-    'https://oaexample-cloudrun-121404103584.us-west1.run.app'
+    'https://dev.oaexample.com'
 ]
 
 # CSRF_COOKIE_DOMAIN = '.oaexample.com'
@@ -102,6 +113,9 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     'allauth.socialaccount.providers.spotify',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.openid_connect',
+#    'allauth.socialaccount.providers.linkedin_oauth2',
     "allauth.mfa",
     "allauth.headless",
     "allauth.usersessions",
@@ -140,8 +154,8 @@ MFA_FORMS = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-#        'oaexample_app.authentication.AuthenticationByDeviceType',
-#        'rest_framework.authentication.TokenAuthentication',
+        #        'oaexample_app.authentication.AuthenticationByDeviceType',
+        #        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -311,6 +325,33 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'online',
         }
     },
+    'github': {
+        'SCOPE': [
+            'user',
+            'repo',
+            'read:org',
+        ],
+        'APP': {
+            "name": "github",
+            "provider_id": "github",
+            "callback_url": "https://oaexample.com/account/provider/callback",
+            'client_id': os.environ.get('GITHUB_CLIENT_ID', ""),
+            'secret': os.environ.get('GITHUB_SECRET', "")
+        },
+    },
+    "openid_connect": {
+        "APPS": [
+            {
+                "provider_id": "linkedin",
+                "name": "LinkedIn",
+                "client_id": os.environ.get('LINKEDIN_CLIENT_ID', ""),
+                "secret": os.environ.get('LINKEDIN_SECRET', ""),
+                "settings": {
+                    "server_url": "https://www.linkedin.com/oauth",
+                },
+            }
+        ]
+    },
     "spotify": {
         'SCOPE': ['user-read-email', 'user-top-read', 'user-read-recently-played', 'playlist-read-collaborative'],
         'AUTH_PARAMS': {'access_type': 'offline'},
@@ -325,12 +366,11 @@ SOCIALACCOUNT_PROVIDERS = {
 
             "client_id": os.environ.get("SPOTIFY_CLIENT_ID"),
             "secret": os.environ.get("SPOTIFY_SECRET"),
-            "callback_url": os.environ.get("SPOTIFY_REDIRECT_URI"),
+            "callback_url": "https://oaexample.com/account/provider/callback",
         }
     },
 
 }
-
 
 # SMTP server configuration
 EMAIL_PASSWORD = os.environ.get("SMTP_PASSWORD")
@@ -345,7 +385,6 @@ if EMAIL_PASSWORD is None:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 
 # SendGrid
 EMAIL_HOST_USER = 'apikey'  # This is the string 'apikey', not the actual API key

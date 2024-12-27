@@ -3,6 +3,8 @@ import {useConfig} from '../auth'
 import {redirectToProvider} from '../lib/allauth'
 import {Grid, SvgIcon, Button} from '@mui/material'
 import {ReactComponent as Spotify} from '../logos/spotify.svg';
+import {ReactComponent as Github} from '../logos/github-mark-white.svg';
+import {ReactComponent as Linkedin} from '../logos/linkedin.svg';
 import {ReactComponent as Apple} from '../logos/apple.svg';
 import {ReactComponent as Google} from '../logos/google.svg';
 import {WifiPassword} from "@mui/icons-material";
@@ -27,6 +29,10 @@ const ProviderList: React.FC<ProviderListProps> = ({callbackURL, process, accoun
             return <Google/>
         } else if (provider === 'spotify') {
             return <SvgIcon viewBox="0 0 496 512" component={Spotify} inheritViewBox/>
+        } else if (provider === 'github') {
+            return <SvgIcon viewBox="0 0 98 96" component={Github} inheritViewBox/>
+        }else if (provider === 'linkedin') {
+            return <SvgIcon viewBox="0 0 72 72" component={Linkedin} inheritViewBox/>
         }
         return null;
     }

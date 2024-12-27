@@ -30,7 +30,7 @@ const UserView: React.FC = () => {
 
     useEffect(() => {
         const fetchUserProfile = async () => {
-            const response = await ApiClient.get(`${process.env.REACT_APP_API_HOST}/api/users/${uid}/${location.search}`);
+            const response = await ApiClient.get(`/api/users/${uid}/${location.search}`);
             if (response.error) {
                 return showSnackBar(response.error)
             }
@@ -45,7 +45,7 @@ const UserView: React.FC = () => {
     useEffect(() => {
         const newstats = {...stats}
         const fetchStats = async (model: string) => {
-            const response = await ApiClient.get(`${process.env.REACT_APP_API_HOST}/api/users/${uid}/${model.toLowerCase()}/stats${location.search}`);
+            const response = await ApiClient.get(`/api/users/${uid}/${model.toLowerCase()}/stats${location.search}`);
             if (response.error) {
                 return showSnackBar(response.error)
             }

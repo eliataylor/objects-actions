@@ -33,7 +33,7 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
             return;
         }
 
-        let apiUrl = `${process.env.REACT_APP_API_HOST}`;
+        let apiUrl = ``;
         if (author) {
             apiUrl += `/api/users/${author}/${hasUrl.type.toLowerCase()}`
         } else {

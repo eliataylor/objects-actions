@@ -9,19 +9,14 @@ INSTALLED_APPS += [
 ]
 
 
+# CORS settings
+del CORS_ALLOWED_ORIGIN_REGEXES
+del CORS_ALLOWED_ORIGINS
+del CSRF_TRUSTED_ORIGINS
+
 ALLOWED_HOSTS = ['*']
 
-# CORS settings
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.oaeaxample\.com$",
-    r"^http://\w+\.oaeaxample\.com$",
-]
-CORS_ALLOWED_ORIGINS += [
-    "http://*", "https://*",
-    "http://*:3000", "https://*:3000",
-    "http://*:8080", "https://*:8080",
-]
-
+"""
 # CSRF settings
 CSRF_TRUSTED_ORIGINS += [
     "http://*", "https://*",
@@ -30,28 +25,30 @@ CSRF_TRUSTED_ORIGINS += [
     "http://*:3000", "https://*:3000",
     "http://*:8080", "https://*:8080",
 ]
+"""
 CORS_ALLOW_ALL_ORIGINS = True
+CSRF_COOKIE_DOMAIN = None
+SESSION_COOKIE_DOMAIN = None
 
 CSRF_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
 # Allow CSRF over invalid certificates (not recommended for production)
 HOST_SCHEME="http://"
-SECURE_PROXY_SSL_HEADER = None
+# SECURE_PROXY_SSL_HEADER = None
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_HSTS_SECONDS = None
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_FRAME_DENY = False
 # Use HTTP for development purposes
 SECURE_SSL_REDIRECT = False
 
-CSRF_COOKIE_DOMAIN = None
-SESSION_COOKIE_DOMAIN = None
-
+CORS_ALLOW_CREDENTIALS = True
 
 # Allow cookies to be sent with cross-origin requests
-SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
 # CSP

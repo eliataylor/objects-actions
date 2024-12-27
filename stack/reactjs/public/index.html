@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
     <script>
         // Define dataLayer and the gtag function.
         window.dataLayer = window.dataLayer || [];
@@ -9,26 +10,14 @@
             dataLayer.push(arguments);
         }
 
-        // Set default consent to 'denied' as a placeholder
-        // Determine actual values based on your own requirements
+        gtag('js', new Date());
+        gtag('config', '%REACT_APP_GA_ID%');
         gtag('consent', 'default', {
             'ad_storage': 'denied',
             'ad_user_data': 'denied',
             'ad_personalization': 'denied',
-            'analytics_storage': 'denied'
+            'analytics_storage': 'granted'
         });
-    </script>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-        gtag('config', '%REACT_APP_GA_ID%');
     </script>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>

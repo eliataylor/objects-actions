@@ -7,7 +7,8 @@ const Client = Object.freeze({
 
 const CLIENT = Client.BROWSER
 
-const BASE_URL = `${process.env.REACT_APP_API_HOST}/_allauth/${CLIENT}/v1`
+const BASE_HOST = process.env.REACT_APP_DOCKER_API_HOST ? process.env.REACT_APP_DOCKER_API_HOST : process.env.REACT_APP_API_HOST
+const BASE_URL = `${BASE_HOST}/_allauth/${CLIENT}/v1`
 const ACCEPT_JSON = {
   accept: 'application/json'
 }
@@ -45,8 +46,8 @@ export const URLs = Object.freeze({
 
   // Auth: Basics
   LOGIN: BASE_URL + '/auth/login',
-  SMS_LOGIN: `${process.env.REACT_APP_API_HOST}/objectactions/auth/sms`,
-  SMS_VERIFY: `${process.env.REACT_APP_API_HOST}/objectactions/auth/verify-sms`,
+  SMS_LOGIN: `${BASE_HOST}/objectactions/auth/sms`,
+  SMS_VERIFY: `${BASE_HOST}/objectactions/auth/verify-sms`,
 
   REQUEST_LOGIN_CODE: BASE_URL + '/auth/code/request',
   CONFIRM_LOGIN_CODE: BASE_URL + '/auth/code/confirm',

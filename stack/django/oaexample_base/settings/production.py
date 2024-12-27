@@ -1,31 +1,16 @@
 from .base import *
 import certifi
-import re
-
-
-def sanitize_bucket_name(name: str) -> str:
-    # Convert to lowercase
-    name = name.lower()
-    # Replace underscores with dashes
-    name = name.replace('_', '-')
-    # Remove characters not allowed
-    name = re.sub(r'[^a-z0-9-]', '', name)
-    # Trim to 63 characters max (to comply with bucket name length limit)
-    name = name[:63]
-    return name
 
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
-
 # Set HSTS headers
 SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Apply HSTS to all subdomains
 SECURE_HSTS_PRELOAD = True  # Allow the site to be included in browsers' HSTS preload list
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
 
 GS_PROJECT_ID = os.getenv('GCP_PROJECT_ID')
 

@@ -23,6 +23,7 @@ if [ "$DJANGO_SUPERUSER_USERNAME" ] && [ "$DJANGO_SUPERUSER_PASSWORD" ] && [ "$D
     python manage.py migrate --run-syncdb
     python manage.py makemigrations
     python manage.py createsuperuser --noinput || true
+    python manage.py collectstatic --noinput || true
     echo "Superuser created."
 else
     echo "ENV for Django Username, Password and Email is not SET"

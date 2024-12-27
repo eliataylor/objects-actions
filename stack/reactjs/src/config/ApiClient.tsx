@@ -13,7 +13,7 @@ class ApiClient {
 
     constructor() {
         this.client = axios.create({
-            baseURL: process.env.REACT_APP_API_HOST,
+            baseURL: process.env.REACT_APP_DOCKER_API_HOST ? process.env.REACT_APP_DOCKER_API_HOST : process.env.REACT_APP_API_HOST,
             withCredentials: true, // Ensures cookies are sent with requests
         });
 

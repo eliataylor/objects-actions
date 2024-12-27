@@ -16,7 +16,7 @@ const EntityView: React.FC = () => {
         const hasUrl = NAVITEMS.find(nav => location.pathname.indexOf(nav.screen) === 0);
         if (hasUrl) {
             const fetchData = async () => {
-                let apiUrl = `${process.env.REACT_APP_API_HOST}/api`
+                let apiUrl = `/api`
                 if (id && parseInt(id) > 0) {
                     apiUrl += `${location.pathname}${location.search}`
                 } else {

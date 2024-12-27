@@ -23,7 +23,7 @@ const EntityForm = () => {
         const fetchData = async () => {
             setLoading(true)
             if (target) {
-                const result = await ApiClient.get(`${process.env.REACT_APP_API_HOST}/api/${target.object}/${target.id}${location.search}`)
+                const result = await ApiClient.get(`/api/${target.object}/${target.id}${location.search}`)
                 if (result.success && result.data) {
                     setEntity(result.data as EntityTypes)
                     setLoading(false)

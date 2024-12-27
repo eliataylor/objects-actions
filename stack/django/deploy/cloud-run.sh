@@ -21,8 +21,7 @@ REQUIRED_VARS=("GCP_PROJECT_ID" \
               "DEFAULT_FROM_EMAIL" \
               "FRONTEND_URL" \
               "FRONTEND_INDEX_HTML" \
-              "SPOTIFY_CLIENT_ID" \
-              "SPOTIFY_REDIRECT_URI" )
+              "SPOTIFY_CLIENT_ID"  )
 
 SCRIPT_DIR=$(dirname "$0")
 source "${SCRIPT_DIR}/common.sh"
@@ -62,7 +61,6 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-env-vars FRONTEND_URL=$FRONTEND_URL \
     --set-env-vars FRONTEND_INDEX_HTML=$FRONTEND_INDEX_HTML \
     --set-env-vars SPOTIFY_CLIENT_ID=$SPOTIFY_CLIENT_ID \
-    --set-env-vars SPOTIFY_REDIRECT_URI=$SPOTIFY_REDIRECT_URI \
     --set-secrets SMTP_PASSWORD=SMTP_PASSWORD:latest \
     --set-secrets SPOTIFY_SECRET=SPOTIFY_SECRET:latest \
     --set-secrets DJANGO_SECRET_KEY=DJANGO_SECRET_KEY:latest \
