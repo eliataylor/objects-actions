@@ -68,11 +68,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://dev.oaexample.com'
 ]
 
-# CSRF_COOKIE_DOMAIN = '.oaexample.com'
-# SESSION_COOKIE_DOMAIN = '.oaexample.com'
-
-CSRF_COOKIE_DOMAIN = None
-SESSION_COOKIE_DOMAIN = None
+CSRF_COOKIE_DOMAIN = '.oaexample.com'
+SESSION_COOKIE_DOMAIN = '.oaexample.com'
 
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = True
