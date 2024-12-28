@@ -111,7 +111,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.openid_connect',
-#    'allauth.socialaccount.providers.linkedin_oauth2',
     "allauth.mfa",
     "allauth.headless",
     "allauth.usersessions",
@@ -293,7 +292,7 @@ HEADLESS_FRONTEND_URLS = {
     "socialaccount_login_error": f"{FRONTEND_URL}/account/provider/callback",
     "socialaccount_login": f"{FRONTEND_URL}/account/provider/callback",
 }
-
+HEADLESS_SERVE_SPECIFICATION = True
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True
 
@@ -319,6 +318,7 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
+            'redirect_uri': "https://api.oaexample.com/accounts/google/login/callback"
         }
     },
     'github': {
@@ -340,15 +340,19 @@ SOCIALACCOUNT_PROVIDERS = {
                 "name": "LinkedIn",
                 "client_id": os.environ.get('LINKEDIN_CLIENT_ID', ""),
                 "secret": os.environ.get('LINKEDIN_SECRET', ""),
+                'redirect_uri': "https://api.oaexample.com/accounts/oidc/linkedin/login/callback",
                 "settings": {
                     "server_url": "https://www.linkedin.com/oauth",
                 },
+                'AUTH_PARAMS': {
+                    'access_type': 'offline',
+                    'redirect_uri': "https://api.oaexample.com/accounts/oidc/linkedin/login/callback"
+                }
             }
         ]
     },
     "spotify": {
         'SCOPE': ['user-read-email'],
-        'AUTH_PARAMS': {'access_type': 'offline'},
         'METHOD': 'oauth2',
         'FETCH_USERINFO': True,
         'VERIFIED_EMAIL': False,
@@ -358,8 +362,12 @@ SOCIALACCOUNT_PROVIDERS = {
             "provider_id": "spotify",
             "client_id": os.environ.get("SPOTIFY_CLIENT_ID"),
             "secret": os.environ.get("SPOTIFY_SECRET")
+        },
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+            'redirect_uri': "https://api.oaexample.com/accounts/spotify/login/callback"
         }
-    },
+    }
 }
 
 # SMTP server configuration

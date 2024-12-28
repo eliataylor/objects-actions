@@ -92,7 +92,6 @@ export default function Signup() {
                     <ProviderList callbackURL="/account/provider/callback"/>
                 </Box>}
 
-            {process.env.NODE_ENV !== 'production' &&
                 <Grid mt={2}>
                     <Button component={Link} to={'/account/sms'}
                             startIcon={<Phone/>}
@@ -103,7 +102,6 @@ export default function Signup() {
                         SMS
                     </Button>
                 </Grid>
-            }
         </Box>
     )
 }

@@ -19,6 +19,8 @@ elif DJANGO_ENV == 'testing':
     from .testing import *
 
 elif DJANGO_ENV == 'docker':
+    if os.path.exists(ROOT_DIR + '/.env.gcp'):
+        load_dotenv(dotenv_path=ROOT_DIR + '/.env.gcp', override=True)
     if os.path.exists(ROOT_DIR + '/.env.docker'):
         load_dotenv(dotenv_path=ROOT_DIR + '/.env.docker', override=True)
     from .development import * # notice reuse
@@ -29,5 +31,4 @@ else:
     from .development import *
 
 
-print(f"RUNNING ENV: {DJANGO_ENV} ")
 print(f"RUNNING ENV: {DJANGO_ENV} ")

@@ -9,8 +9,8 @@ const DEFAULT_SESSION = {
     "data": {
         "flows": [{"id": "login"}, {"id": "login_by_code"}, {"id": "signup"}, {
             "id": "provider_redirect",
-            "providers": ["spotify"]
-        }, {"id": "mfa_login_webauthn"}]
+            "providers": ["spotify", "google", "github", "openid_connect"]
+        }, {"id": "provider_token", "providers": ["google"]}, {"id": "mfa_login_webauthn"}]
     },
     "meta": {"is_authenticated": false}
 }
@@ -27,10 +27,25 @@ const DEFAULT_CONFIG = {
         },
         "socialaccount": {
             "providers": [{
+                "id": "github",
+                "name": "GitHub",
+                "flows": ["provider_redirect"],
+                "client_id": "Ov23liMt9OSwBWUx3K2B"
+            }, {
+                "id": "google",
+                "name": "Google",
+                "flows": ["provider_redirect", "provider_token"],
+                "client_id": "121404103584-ffcklo3m08j9q8i1bgofietqufckeoq3.apps.googleusercontent.com"
+            }, {
+                "id": "linkedin",
+                "name": "LinkedIn",
+                "flows": ["provider_redirect"],
+                "client_id": "86dmw4dtb2ru2c"
+            }, {
                 "id": "spotify",
                 "name": "Spotify",
                 "flows": ["provider_redirect"],
-                "client_id": "fd7477ed66ee4cada182cea06a7c8fa0"
+                "client_id": "5be53fb5c7d843d18d1eac8176cea7ff"
             }]
         },
         "mfa": {"supported_types": ["totp", "recovery_codes", "webauthn"], "passkey_login_enabled": true},

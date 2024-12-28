@@ -99,7 +99,6 @@ export default function Login() {
                 <ProviderList callbackURL="/account/provider/callback"/>
             </Grid>}
 
-            {process.env.NODE_ENV !== 'production' &&
                 <Button sx={{mt: 1}} component={Link} to={'/account/sms'}
                         startIcon={<Phone/>}
                         fullWidth
@@ -108,7 +107,6 @@ export default function Login() {
                 >
                     SMS
                 </Button>
-            }
 
         </Grid>
     )

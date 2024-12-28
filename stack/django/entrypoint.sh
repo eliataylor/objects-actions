@@ -30,7 +30,7 @@ else
 fi
 
 
-if [ "$DJANGO_ENV" = "development" ] || { [ "$DJANGO_ENV" = "docker" ] && [ "$DJANGO_DEBUG" = "True" ]; }; then
+if [ "$DJANGO_ENV" = "testing" ] || [ "$DJANGO_ENV" = "development" ] || { [ "$DJANGO_ENV" = "docker" ] && [ "$DJANGO_DEBUG" = "True" ]; }; then
     echo "Running in development mode with runserver_plus..."
     python manage.py runserver_plus 0.0.0.0:8080 --cert-file "$ssl_cert_path"
 else
