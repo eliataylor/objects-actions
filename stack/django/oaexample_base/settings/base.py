@@ -1,8 +1,10 @@
 import os
 import re
+from dotenv import dotenv_values
 
-from corsheaders.defaults import default_headers
+from oaexample_base.settings import DJANGO_ENV
 
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
 def sanitize_bucket_name(name: str) -> str:
     # Convert to lowercase
@@ -15,76 +17,30 @@ def sanitize_bucket_name(name: str) -> str:
     name = name[:63]
     return name
 
+def get_tld(hostname):
+    if hostname:
+        parts = hostname.split(".")
+        if hostname == "localhost" or hostname.replace(".", "").isdigit():
+            # Handle localhost or IP
+            result = hostname
+        else:
+            # Get the last two parts for domain names
+            result = ".".join(parts[-2:])
+        return result
+    else:
+        return hostname
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.dirname(PROJECT_DIR)
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'm(##s4x5rs))6f09xu_xq@1a3-*5sm@n8bh^9dm(p46-%t@et%')
+# Only use this when you still want the private version in debug mode / locally like for social keys
+def myEnv(key, default=None):
+    if os.path.exists(ROOT_DIR + '/.env.private'):
+        config = dotenv_values(".env.private")
+        if key in config:
+            return config[key]
+    return os.getenv(key, default)
 
 # APPEND_SLASH = False
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
-
-SUPERUSER_USERNAME = os.getenv('DJANGO_SUPERUSER_USERNAME', 'superadmin')
-SUPERUSER_PASSWORD = os.getenv('DJANGO_SUPERUSER_PASSWORD', 'admin')
-SUPERUSER_EMAIL = os.getenv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
-
-ALLOWED_HOSTS = [
-    "oaexample.com",
-    ".oaexample.com"
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://oaexample.com",
-    "https://*.oaexample.com",
-    "http://localhost:3000",
-    "https://localhost:3000",
-    'http://localhost.oaexample.com:3000',
-    'https://localhost.oaexample.com:3000',
-    'http://localapi.oaexample.com:8080',
-    'https://localapi.oaexample.com:8080'
-]
-
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'x-email-verification-key',  # used by allauth
-    'X-App-Client',  # used by mobile to toggle to Token auth
-]
-
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.oaexample\.com$",
-    r"^http://\w+\.oaexample\.com$",
-]
-
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'https://localhost:3000',
-    'http://localhost:8080',
-    'https://localhost:8080',
-    'http://localhost.oaexample.com:3000',
-    'https://localhost.oaexample.com:3000',
-    'http://localapi.oaexample.com:8080',
-    'https://localapi.oaexample.com:8080',
-    'https://oaexample.com',
-    'https://www.oaexample.com'
-]
-
-CSRF_COOKIE_DOMAIN = '.oaexample.com'
-SESSION_COOKIE_DOMAIN = '.oaexample.com'
-
-CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
-
-SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
-
-CORS_ALLOW_CREDENTIALS = True
-
-# CSRF_TRUSTED_ORIGINS += CORS_ALLOWED_ORIGINS
-# CSRF_COOKIE_NAME = "oaexample-jwt"
-
-# JWT_AUTH_COOKIE = "oaexample-jwt"
-# JWT_AUTH_REFRESH_COOKIE = "oaexample-refresh-jwt"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -94,7 +50,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.contrib.humanize',
-    #    'django.contrib.sites',
     'storages',
     'rest_framework',
     'rest_framework.authtoken',
@@ -119,6 +74,27 @@ INSTALLED_APPS = [
     'drf_spectacular',
 ]
 
+if DEBUG == True or DJANGO_ENV != 'production':
+    INSTALLED_APPS += ['django_extensions']
+    import logging
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+            },
+        },
+    }
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -139,13 +115,6 @@ MIDDLEWARE = [
 ]
 
 SITE_ID = 1
-
-MFA_FORMS = {
-    'authenticate': 'allauth.mfa.forms.AuthenticateForm',
-    'reauthenticate': 'allauth.mfa.forms.AuthenticateForm',
-    'activate_totp': 'allauth.mfa.forms.ActivateTOTPForm',
-    'deactivate_totp': 'allauth.mfa.forms.DeactivateTOTPForm',
-}
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -170,6 +139,12 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True
 }
 
+if DEBUG:
+    SPECTACULAR_SETTINGS = {
+        "SERVE_PUBLIC": True,
+        "SERVE_INCLUDE_SCHEMA": True
+    }
+
 ROOT_URLCONF = 'oaexample_base.urls'
 
 TEMPLATES = [
@@ -192,224 +167,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'oaexample_base.wsgi.application'
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQL_DATABASE"),
-        "USER": os.getenv("MYSQL_USER"),
-        "PASSWORD": os.getenv("MYSQL_PASSWORD"),
-        "HOST": os.getenv("MYSQL_HOST"),
-        "PORT": 3306,
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'use_unicode': True,
-        }
-    }
-}
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-GS_FILE_OVERWRITE = True  # WARN: change after initial launch!
-
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
-
-STATICFILES_DIRS = [
-    os.path.join(PROJECT_DIR, 'static'),
-]
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-AUTH_USER_MODEL = "oaexample_app.Users"
-
-ACCOUNT_EMAIL_VERIFICATION = "optional"  # since SMS only is allowed
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
-ACCOUNT_LOGIN_BY_CODE_ENABLED = True
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-ACCOUNT_SESSION_REMEMBER = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USER_DISPLAY = lambda user: user.get_full_name()
-
-HEADLESS_ONLY = True
-
-DEFAULT_HTTP_PROTOCOL = 'https'
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "https://oaexample.com")
-print(f"USING frontend {FRONTEND_URL}")
-
-LOGIN_REDIRECT_URL = f"{FRONTEND_URL}/account/provider/callback"
-SIGNUP_REDIRECT_URL = f"{FRONTEND_URL}/account/provider/callback"
-
-HEADLESS_ADAPTER = 'oaexample_app.adapter.CustomHeadlessAdapter'
-SOCIALACCOUNT_ADAPTER = 'oaexample_app.adapter.MySocialAccountAdapter'
-# SOCIALACCOUNT_TOKEN_STRATEGY = 'oaexample_app.strategies.CustomTokenStrategy'
-# ACCOUNT_ADAPTER = 'oaexample_app.adapter.UserAdapter'
-# ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
-
-HEADLESS_FRONTEND_URLS = {
-    "account_confirm_email": f"{FRONTEND_URL}/account/verify-email/{{key}}",
-    # Key placeholders are automatically populated. You are free to adjust this to your own needs, e.g.
-    "account_reset_password": f"{FRONTEND_URL}/account/password/reset",
-    "account_reset_password_from_key": f"{FRONTEND_URL}/account/password/reset/key/{{key}}",
-    "account_signup": f"{FRONTEND_URL}/account/signup",
-    # Fallback in case the state containing the `next` URL is lost and the handshake
-    # with the third-party provider fails.
-    "socialaccount_login_error": f"{FRONTEND_URL}/account/provider/callback",
-    "socialaccount_login": f"{FRONTEND_URL}/account/provider/callback",
-}
-HEADLESS_SERVE_SPECIFICATION = True
-MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
-MFA_PASSKEY_LOGIN_ENABLED = True
-
-SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
-SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
-SOCIALACCOUNT_EMAIL_REQUIRED = False
-SOCIALACCOUNT_EMAIL_VERIFICATION = False
-SOCIALACCOUNT_STORE_TOKENS = True
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            "name": "google",
-            "provider_id": "google",
-            'client_id': os.environ.get('GOOGLE_OAUTH_CLIENT_ID', ""),
-            'secret': os.environ.get('GOOGLE_OAUTH_SECRET', ""),
-            'key': os.environ.get('GOOGLE_OAUTH_KEY', ""),
-        },
-        'EMAIL_AUTHENTICATION': True,
-        'FETCH_USERINFO': True,
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-            'redirect_uri': "https://api.oaexample.com/accounts/google/login/callback"
-        }
-    },
-    'github': {
-        'SCOPE': [
-            'user'
-        ],
-        "VERIFIED_EMAIL": True,
-        'APP': {
-            "name": "github",
-            "provider_id": "github",
-            'client_id': os.environ.get('GITHUB_CLIENT_ID', ""),
-            'secret': os.environ.get('GITHUB_SECRET', "")
-        },
-    },
-    "openid_connect": {
-        "APPS": [
-            {
-                "provider_id": "linkedin",
-                "name": "LinkedIn",
-                "client_id": os.environ.get('LINKEDIN_CLIENT_ID', ""),
-                "secret": os.environ.get('LINKEDIN_SECRET', ""),
-                'redirect_uri': "https://api.oaexample.com/accounts/oidc/linkedin/login/callback",
-                "settings": {
-                    "server_url": "https://www.linkedin.com/oauth",
-                },
-                'AUTH_PARAMS': {
-                    'access_type': 'offline',
-                    'redirect_uri': "https://api.oaexample.com/accounts/oidc/linkedin/login/callback"
-                }
-            }
-        ]
-    },
-    "spotify": {
-        'SCOPE': ['user-read-email'],
-        'METHOD': 'oauth2',
-        'FETCH_USERINFO': True,
-        'VERIFIED_EMAIL': False,
-        'VERSION': 'v1',
-        "APP": {
-            "name": "spotify",
-            "provider_id": "spotify",
-            "client_id": os.environ.get("SPOTIFY_CLIENT_ID"),
-            "secret": os.environ.get("SPOTIFY_SECRET")
-        },
-        'AUTH_PARAMS': {
-            'access_type': 'offline',
-            'redirect_uri': "https://api.oaexample.com/accounts/spotify/login/callback"
-        }
-    }
-}
-
-# SMTP server configuration
-EMAIL_PASSWORD = os.environ.get("SMTP_PASSWORD")
-EMAIL_HOST = os.environ.get("SMTP_EMAIL_HOST", 'smtp.gmail.com')
-EMAIL_PORT = os.environ.get("SMTP_EMAIL_PORT", 587)
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.environ.get("SMTP_EMAIL_ADDRESS", "")
-EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
-
-if EMAIL_PASSWORD is None:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-# SendGrid
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "")
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "")
-EMAIL_USE_LOCALTIME = True
-
-TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
-TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
-TWILIO_VERIFY_SERVICE_SID = os.environ.get("TWILIO_VERIFY_SERVICE_SID", "")
-TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
-
-"""
-import logging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-    },
-}
-"""

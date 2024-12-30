@@ -24,7 +24,7 @@ const ThemeProvider = ({children}) => {
                     primary: darkMode ? '#ffffff' : '#202020',
                     secondary: darkMode ? '#dadada' : '#333333',
                 },
-                grey : {
+                grey: {
                     500: '#9e9e9e'
                 },
                 /*
@@ -51,7 +51,45 @@ const ThemeProvider = ({children}) => {
 
             return responsiveFontSizes(createTheme({
                 typography: {
-                    fontSize: 12,
+                    h1: {
+                        fontSize: 30
+                    },
+                    h2: {
+                        fontSize: 20
+                    },
+                    h3: {
+                        fontSize: 19
+                    },
+                    h4: {
+                        fontSize: 18
+                    },
+                    h5: {
+                        fontSize: 17
+                    },
+                    h6: {
+                        fontSize: 16
+                    },
+                    subtitle1: {
+                        fontSize: 15
+                    },
+                    subtitle2: {
+                        fontSize: 15
+                    },
+                    body1: {
+                        fontSize: 14
+                    },
+                    body2: {
+                        fontSize: 13
+                    },
+                    button: {
+                        fontSize: 13
+                    },
+                    caption: {
+                        fontSize: 20
+                    },
+                    overline: {
+                        fontSize: 20
+                    }
                 },
                 components: {
                     // Name of the component

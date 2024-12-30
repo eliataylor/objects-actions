@@ -32,9 +32,13 @@ services:
       - ./stack/django/__pycache__:/app/django/__pycache__:cached  # Speed up reloads
       #    - ./dockerized/django/media:/app/django/media  # Single, unified media directory
     environment:
-      DEBUG: "1"
-      DJANGO_ENV: "docker"
       DJANGO_DEBUG: "True"
+      DJANGO_ENV: "development"
+      REACT_APP_API_HOST: "https://localapi.oaexample.com:8080"
+      REACT_APP_APP_HOST: "https://localhost.oaexample.com:3000"
+      OA_ENV_DB: "docker"
+      OA_ENV_EMAIL: "gmail"
+      OA_ENV_STORAGE: "local"
     env_file:
       - ./stack/django/.env
     depends_on:

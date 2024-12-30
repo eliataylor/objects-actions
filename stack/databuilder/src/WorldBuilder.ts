@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
+import {EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
 import ApiClient, {HttpResponse} from "./ApiClient";
 import {fakeFieldData} from "./builder-utils";
 import {faker} from '@faker-js/faker/locale/en_US';
@@ -21,7 +21,7 @@ export interface FixtureContext {
 }
 
 export interface FixtureData {
-    entity: EndingType;
+    entity: EntityTypes;
     context: FixtureContext;
 }
 
@@ -45,7 +45,6 @@ export class WorldBuilder {
                 this.fixturePath = ''; // ignore
             }
         }
-
     }
 
     saveFixture(name: string, entity: any, owner: Users) {
@@ -53,7 +52,6 @@ export class WorldBuilder {
             const data: FixtureData = {
                 entity, context: {owner, time: new Date().toISOString()},
             }
-
             fs.writeFileSync(`${this.fixturePath}/${name}.json`, JSON.stringify(data, null, 2));
         }
         console.log(`User ${owner.username} created a ${entity._type} with these roles ${JSON.stringify(owner.groups)}`)
@@ -105,9 +103,12 @@ export class WorldBuilder {
         });
         if (!baseData.username) baseData.username = faker.person.firstName();
         const registered = await this.apiClient.register(baseData);
-        this.saveFixture(`user-add-${registered.data.id}`, registered, registered.data.data.user)
-        const profile = await this.updateUserProfile({id: registered.data.data.user.id});
-        return profile;
+        if (registered && registered.data) {
+            this.saveFixture(`user-add-${registered.data.id}`, registered, registered.data.data.user)
+            const profile = await this.updateUserProfile({id: registered.data.data.user.id});
+            return profile;
+        }
+        console.error(registered)
     }
 
     public async updateUserProfile(user: any) {

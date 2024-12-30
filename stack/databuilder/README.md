@@ -8,18 +8,16 @@ npm start
 ```
 
 
+----
+Alternative way to create users based on your own custom seed data:
+`cd stack/django`
+`source .venv/bin/activate`
+`python manage.py generate_users` (if you're running mysql inside a container, you may need to change the host in your .env)
+
+
 
 ---
 #### To purge test data:
-python manage.py shell
-
-Song.objects.all().delete()
-Playlist.objects.all().delete()
-PlaylistSongs.objects.all().delete()
-EventPlaylists.objects.all().delete()
-Friendship.objects.all().delete()
-Invites.objects.all().delete()
-ActivityLog.objects.all().delete()
-EventCheckins.objects.all().delete()
-SongRequests.objects.all().delete()
-Likes.objects.all().delete()
+`python manage.py shell`
+Then with your Object types:
+`Songs.objects.all().delete()`

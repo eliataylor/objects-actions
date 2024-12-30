@@ -52,6 +52,11 @@ class Command(BaseCommand):
                 "email": "info@oaexample.com",
                 "first_name": "Eli",
                 "last_name": "Taylor"
+            },
+            {
+                "email": "hackabletester@gmail.com",
+                "first_name": "Hank",
+                "last_name": "Slayer"
             }
         ]
         buildUsers(base_list)
