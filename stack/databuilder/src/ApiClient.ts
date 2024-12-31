@@ -210,22 +210,6 @@ class ApiClient {
         return resp;
     }
 
-    private async getCookieHeaders(url: string): Promise<Record<string, string>> {
-        return new Promise((resolve, reject) => {
-            this.cookieJar.getCookies(url, (err, cookies) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const headers: Record<string, string> = {};
-                    cookies.forEach(cookie => {
-                        headers[cookie.key] = cookie.value; // Add each cookie as a key-value pair
-                    });
-                    resolve(headers);
-                }
-            });
-        });
-    }
-
     public returnErrors(error: any): HttpResponse<any> {
         let resp = this.initResponse()
 

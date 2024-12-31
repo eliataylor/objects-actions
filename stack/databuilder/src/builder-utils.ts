@@ -1,6 +1,9 @@
-// import {faker} from '@faker-js/faker';
-import {faker} from '@faker-js/faker/locale/en_US';
-import {join, resolve} from 'path';
+import {join} from 'path';
+import {Faker, en, en_US, en_AU} from '@faker-js/faker';
+
+const faker = new Faker({
+  locale: [en, en_US, en_AU],
+});
 
 const fs = require('fs');
 
@@ -23,7 +26,49 @@ function getRandomFile(directoryPath: string): string {
     return join(directoryPath, randomFile);
 }
 
-export function fakeFieldData(field_type: string, field_name: string, options: any, model_type: string): any {
+interface ImageMetaData {
+  file: string;
+  license: string;
+  owner: string;
+  width: number;
+  height: number;
+  filter: string;
+  tags: string;
+  tagMode: string;
+  rawFileUrl: string;
+}
+
+// Fetch image metadata function
+async function fetchImageMetaData(category: string): Promise<ImageMetaData> {
+
+  try {
+    // Fetch metadata from loremflickr
+    const response = await fetch(`https://loremflickr.com/json/g/320/240/${category.toLowerCase()}/all`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch metadata: ${response.statusText}`);
+    }
+    const data = (await response.json()) as ImageMetaData;
+    return data;
+  } catch (error) {
+    const fallbackUrl = faker.image.urlLoremFlickr({ category });
+    console.warn(`Metadata fetch failed. Falling back to faker URL: ${fallbackUrl}`);
+    // Return fallback metadata
+    return {
+      file: fallbackUrl,
+      license: "unknown",
+      owner: "unknown",
+      width: 320,
+      height: 240,
+      filter: "none",
+      tags: category,
+      tagMode: "all",
+      rawFileUrl: fallbackUrl,
+    };
+  }
+}
+
+
+export async function fakeFieldData(field_type: string, field_name: string, options: any, model_type: string): Promise<any> {
     switch (field_type) {
         case 'user_account':
             return 1; // TODO
@@ -32,7 +77,6 @@ export function fakeFieldData(field_type: string, field_name: string, options: a
         case 'text':
             if (field_name === 'name') {
                 // democrasee
-
                 if (model_type == 'Cities') {
                     return faker.location.city()
                 }
@@ -84,7 +128,7 @@ export function fakeFieldData(field_type: string, field_name: string, options: a
         case 'price':
             return faker.commerce.price();
         case 'decimal':
-            return faker.number.float({min: 0, max: 2147483647, precision: 0.01});
+            return faker.number.float({min: 0, max: 2147483647});
         case 'date':
         case 'date_time':
             const start_date = faker.date.recent({days: 5});
@@ -107,7 +151,7 @@ export function fakeFieldData(field_type: string, field_name: string, options: a
         case 'url':
             return faker.internet.url();
         case 'uuid':
-            return faker.datatype.uuid();
+            return faker.string.uuid();
         case 'slug':
             return faker.lorem.slug();
         case 'id_auto_increment':
@@ -118,8 +162,8 @@ export function fakeFieldData(field_type: string, field_name: string, options: a
             // const filePath = getRandomFile('./public/profilepics')
             // const fileStream = fs.createReadStream(resolve(filePath));
             // return fileStream;
-            return faker.image.urlPicsumPhotos()
-            // return faker.image.urlLoremFlickr({category: model_type})
+            const imageMeta = await fetchImageMetaData(model_type);
+            return imageMeta.rawFileUrl;
         case 'video':
             const videoOpts = [
                 "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4"
@@ -127,8 +171,8 @@ export function fakeFieldData(field_type: string, field_name: string, options: a
             const randomIndex = Math.floor(Math.random() * videoOpts.length);
             return videoOpts[randomIndex];
         case 'media':
-            return faker.image.urlPicsumPhotos()
-            // return faker.image.urlLoremFlickr({category: model_type}) // flickr now rate limiting!!! :/
+            // return faker.image.urlPicsumPhotos()
+            return faker.image.urlLoremFlickr({category: model_type}) // flickr now rate limiting!!! :/
         case 'flat_list':
             return Array.from({length: 5}, () => faker.lorem.word()); // Example of a flat list
         case 'bounding_box':
@@ -137,6 +181,7 @@ export function fakeFieldData(field_type: string, field_name: string, options: a
         case 'json':
             return faker.helpers.fake('{{name.firstName}} {{name.lastName}}, {{address.city}}');
         case 'enum':
+            // @ts-ignore
             const opt: any = faker.helpers.arrayElement(options);
             return opt.id
         case 'vocabulary_reference':

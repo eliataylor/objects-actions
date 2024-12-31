@@ -30,6 +30,7 @@ async function start() {
     }
 
     if (args.action === 'objects-add') {
+        await builder.loginUser(process.env.REACT_APP_LOGIN_EMAIL!);  // needs auth to getContentCreators
         await builder.getContentCreators();
 
         for (const nav of NAVITEMS) {

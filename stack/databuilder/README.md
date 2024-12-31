@@ -58,8 +58,9 @@ update_all_passwords("APasswordYouShouldChange")
 
 ---
 #### To purge test data:
-```
-python manage.py shell
-```
+`python manage.py shell` or `docker-compose exec django python manage.py shell` if in docker
 Then with your Object types:
-`Songs.objects.all().delete()`
+```
+from oaexample_app.models import Topics
+Topics.objects.all().delete()
+```

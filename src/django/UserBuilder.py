@@ -1,4 +1,4 @@
-from utils.utils import create_machine_name, create_object_name, addArgs, capitalize
+from utils.utils import create_machine_name, find_object_by_key_value, create_object_name, addArgs, capitalize
 from loguru import logger
 import os
 from .ModelBuilder import ModelBuilder
@@ -26,7 +26,9 @@ class UserBuilder(ModelBuilder):
             'date_joined': 'DateTimeField'
         }
 
-    def admin_string(self):
+    def admin_string(self, model_json):
+        has_image = find_object_by_key_value(model_json, "Field Type", "image")
+
         admin_code = f"""\nclass {self.model_name}Admin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
         (_('Additional Info'), {{'fields': ({(', ').join(self.admin_field_list)})}}),
@@ -37,7 +39,25 @@ class UserBuilder(ModelBuilder):
             'fields': ({(', ').join(self.admin_field_list)}),
         }}),
     )                
+    def display_groups(self, obj):
+        return ", ".join([group.name for group in obj.groups.all()])
 """
+        if not has_image:
+            admin_code += f"""\n
+    list_display = ('id', 'username', 'email', 'get_full_name', 'display_groups')        
+"""
+        else:
+            admin_code += f"""\n
+    def image_tag(self, obj):
+        if obj.{has_image['Field Name']}:
+            return format_html(
+                '<div style="width: 100px; height: 100px; background-image: url({{}}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                obj.{has_image['Field Name']}.url)
+        return "No Image"
+
+    list_display = ('id', 'username', 'email', 'get_full_name', 'display_groups', 'image_tag')            
+"""
+
 
         admin_code += f"\n\nadmin.site.register({self.model_name}, {self.model_name}Admin)\n"
         return admin_code.strip()

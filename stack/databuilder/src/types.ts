@@ -1,5 +1,3 @@
-
-
 //---OBJECT-ACTIONS-API-RESP-STARTS---//
 export interface RelEntity {
     id: string | number;
@@ -13,7 +11,7 @@ export interface NewEntity {
     id: number | string
 }
 
-export type EntityTypes = Users | Officials | Cities | Rallies | Publications | ActionPlans | Meetings | Resources | Pages | Invites | Subscriptions | Rooms | Attendees | Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders;
+export type EntityTypes = Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders | Resources | Users | Cities | Officials | Rallies | ActionPlans | Meetings | Invites | Subscriptions | Rooms | Attendees;
 
 export interface ApiListResponse<T = EntityTypes> {
     count: number;
@@ -29,9 +27,34 @@ export function getProp<T extends EntityTypes, K extends keyof T>(entity: Entity
     if (key in entity) return entity[key]
 	return null;
 }
+
+export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema, entity: any): any {
+    const schema = TypeFieldSchema[modelName];
+    const result: any = {id: entity.id || 0};
+
+    Object.entries(schema).forEach(([key, field]) => {
+        const value = entity[key];
+
+        if (field.data_type === 'RelEntity') {
+            if (!value) {
+                // don't add at all
+            } else if (Array.isArray(value)) {
+                // Transform an array of RelEntities
+                result[key] = value.map((item) => (item.entity ? restructureAsAllEntities(item._type, item.entity) : item));
+            } else if (value.entity) {
+                // Transform a single RelEntity
+                result[key] = value?.entity ? restructureAsAllEntities(value._type, value.entity) : value;
+            } else {
+                result[key] = {"id": value.id};
+            }
+        } else if (value) {
+            result[key] = value;
+        }
+    });
+
+    return result;
+}
 //---OBJECT-ACTIONS-API-RESP-ENDS---//
-
-
 
 //---OBJECT-ACTIONS-NAV-ITEMS-STARTS---//
 export interface NavItem {
@@ -47,150 +70,6 @@ export interface NavItem {
 
 }
 export const NAVITEMS: NavItem[] = [
-  {
-    "singular": "User",
-    "plural": "Users",
-    "type": "Users",
-    "segment": "users",
-    "api": "/api/users",
-    "screen": "/users",
-    "search_fields": [
-      "first_name",
-      "last_name"
-    ]
-  },
-  {
-    "singular": "Official",
-    "plural": "Officials",
-    "type": "Officials",
-    "segment": "officials",
-    "api": "/api/officials",
-    "screen": "/officials",
-    "search_fields": [
-      "title"
-    ]
-  },
-  {
-    "singular": "City",
-    "plural": "Cities",
-    "type": "Cities",
-    "segment": "cities",
-    "api": "/api/cities",
-    "screen": "/cities",
-    "search_fields": [
-      "name"
-    ]
-  },
-  {
-    "singular": "Rally",
-    "plural": "Rallies",
-    "type": "Rallies",
-    "segment": "rallies",
-    "api": "/api/rallies",
-    "screen": "/rallies",
-    "search_fields": [
-      "title"
-    ]
-  },
-  {
-    "singular": "Publication",
-    "plural": "Publications",
-    "type": "Publications",
-    "segment": "publications",
-    "api": "/api/publications",
-    "screen": "/publications",
-    "search_fields": [
-      "title"
-    ]
-  },
-  {
-    "singular": "Action Plan",
-    "plural": "Action Plans",
-    "type": "ActionPlans",
-    "segment": "action-plans",
-    "api": "/api/action-plans",
-    "screen": "/action-plans",
-    "search_fields": [
-      "title"
-    ]
-  },
-  {
-    "singular": "Meeting",
-    "plural": "Meetings",
-    "type": "Meetings",
-    "segment": "meetings",
-    "api": "/api/meetings",
-    "screen": "/meetings",
-    "search_fields": [
-      "title"
-    ]
-  },
-  {
-    "singular": "Resource",
-    "plural": "Resources",
-    "type": "Resources",
-    "segment": "resources",
-    "api": "/api/resources",
-    "screen": "/resources",
-    "search_fields": [
-      "title"
-    ]
-  },
-  {
-    "singular": "Page",
-    "plural": "Pages",
-    "type": "Pages",
-    "segment": "pages",
-    "api": "/api/pages",
-    "screen": "/pages",
-    "search_fields": [
-      "title"
-    ]
-  },
-  {
-    "singular": "Invite",
-    "plural": "Invites",
-    "type": "Invites",
-    "segment": "invites",
-    "api": "/api/invites",
-    "screen": "/invites",
-    "search_fields": [
-      "meeting__title"
-    ]
-  },
-  {
-    "singular": "Subscription",
-    "plural": "Subscriptions",
-    "type": "Subscriptions",
-    "segment": "subscriptions",
-    "api": "/api/subscriptions",
-    "screen": "/subscriptions",
-    "search_fields": [
-      "rally__title",
-      "meeting__title"
-    ]
-  },
-  {
-    "singular": "Room",
-    "plural": "Rooms",
-    "type": "Rooms",
-    "segment": "rooms",
-    "api": "/api/rooms",
-    "screen": "/rooms",
-    "search_fields": [
-      "rally__title",
-      "meeting__title"
-    ]
-  },
-  {
-    "singular": "Attendee",
-    "plural": "Attendees",
-    "type": "Attendees",
-    "segment": "attendees",
-    "api": "/api/attendees",
-    "screen": "/attendees",
-    "search_fields": []
-  },
   {
     "singular": "Topic",
     "plural": "Topics",
@@ -256,11 +135,131 @@ export const NAVITEMS: NavItem[] = [
     "search_fields": [
       "name"
     ]
+  },
+  {
+    "singular": "Resource",
+    "plural": "Resources",
+    "type": "Resources",
+    "segment": "resources",
+    "api": "/api/resources",
+    "screen": "/resources",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "singular": "User",
+    "plural": "Users",
+    "type": "Users",
+    "segment": "users",
+    "api": "/api/users",
+    "screen": "/users",
+    "search_fields": [
+      "first_name",
+      "last_name"
+    ]
+  },
+  {
+    "singular": "City",
+    "plural": "Cities",
+    "type": "Cities",
+    "segment": "cities",
+    "api": "/api/cities",
+    "screen": "/cities",
+    "search_fields": [
+      "name"
+    ]
+  },
+  {
+    "singular": "Official",
+    "plural": "Officials",
+    "type": "Officials",
+    "segment": "officials",
+    "api": "/api/officials",
+    "screen": "/officials",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "singular": "Rally",
+    "plural": "Rallies",
+    "type": "Rallies",
+    "segment": "rallies",
+    "api": "/api/rallies",
+    "screen": "/rallies",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "singular": "Action Plan",
+    "plural": "Action Plans",
+    "type": "ActionPlans",
+    "segment": "action-plans",
+    "api": "/api/action-plans",
+    "screen": "/action-plans",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "singular": "Meeting",
+    "plural": "Meetings",
+    "type": "Meetings",
+    "segment": "meetings",
+    "api": "/api/meetings",
+    "screen": "/meetings",
+    "search_fields": [
+      "title"
+    ]
+  },
+  {
+    "singular": "Invite",
+    "plural": "Invites",
+    "type": "Invites",
+    "segment": "invites",
+    "api": "/api/invites",
+    "screen": "/invites",
+    "search_fields": [
+      "meeting__title"
+    ]
+  },
+  {
+    "singular": "Subscription",
+    "plural": "Subscriptions",
+    "type": "Subscriptions",
+    "segment": "subscriptions",
+    "api": "/api/subscriptions",
+    "screen": "/subscriptions",
+    "search_fields": [
+      "rally__title",
+      "meeting__title"
+    ]
+  },
+  {
+    "singular": "Room",
+    "plural": "Rooms",
+    "type": "Rooms",
+    "segment": "rooms",
+    "api": "/api/rooms",
+    "screen": "/rooms",
+    "search_fields": [
+      "rally__title",
+      "meeting__title"
+    ]
+  },
+  {
+    "singular": "Attendee",
+    "plural": "Attendees",
+    "type": "Attendees",
+    "segment": "attendees",
+    "api": "/api/attendees",
+    "screen": "/attendees",
+    "search_fields": []
   }
 ]
 //---OBJECT-ACTIONS-NAV-ITEMS-ENDS---//
-
-
 
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-STARTS---//
 export interface FieldTypeDefinition {
@@ -280,6 +279,248 @@ interface ObjectOfObjects {
     [key: string]: { [key: string]: FieldTypeDefinition };
 }
 export const TypeFieldSchema: ObjectOfObjects = {
+  "Topics": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "icon": {
+      "machine": "icon",
+      "singular": "Icon",
+      "plural": "Icons",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "photo": {
+      "machine": "photo",
+      "singular": "Photo",
+      "plural": "Photos",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "ResourceTypes": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "MeetingTypes": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "States": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "website": {
+      "machine": "website",
+      "singular": "Website",
+      "plural": "Websites",
+      "field_type": "url",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "icon": {
+      "machine": "icon",
+      "singular": "Icon",
+      "plural": "Icons",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Parties": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "logo": {
+      "machine": "logo",
+      "singular": "Logo",
+      "plural": "Logos",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "website": {
+      "machine": "website",
+      "singular": "Website",
+      "plural": "Websites",
+      "field_type": "url",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Stakeholders": {
+    "name": {
+      "machine": "name",
+      "singular": "Name",
+      "plural": "Names",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "image": {
+      "machine": "image",
+      "singular": "Image",
+      "plural": "Images",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    }
+  },
+  "Resources": {
+    "title": {
+      "machine": "title",
+      "singular": "Title",
+      "plural": "Titles",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "description_html": {
+      "machine": "description_html",
+      "singular": "Description HTML",
+      "plural": "Description HTMLS",
+      "field_type": "textarea",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "image": {
+      "machine": "image",
+      "singular": "Image",
+      "plural": "Images",
+      "field_type": "image",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "postal_address": {
+      "machine": "postal_address",
+      "singular": "Postal Address",
+      "plural": "Postal Addresses",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "price_ccoin": {
+      "machine": "price_ccoin",
+      "singular": "Price (citizencoin)",
+      "plural": "Price (citizencoin)s",
+      "field_type": "integer",
+      "data_type": "number",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "resource_type": {
+      "machine": "resource_type",
+      "singular": "Resource Type",
+      "plural": "Resource Types",
+      "field_type": "vocabulary_reference",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "ResourceTypes",
+      "default": "",
+      "required": true,
+      "example": ""
+    }
+  },
   "Users": {
     "email": {
       "machine": "email",
@@ -363,80 +604,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "relationship": "Resources",
       "default": "",
       "required": false,
-      "example": ""
-    }
-  },
-  "Officials": {
-    "title": {
-      "machine": "title",
-      "singular": "Job Title",
-      "plural": "Job Titles",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "office_phone": {
-      "machine": "office_phone",
-      "singular": "Office Phone",
-      "plural": "Office Phones",
-      "field_type": "phone",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "office_email": {
-      "machine": "office_email",
-      "singular": "Office Email",
-      "plural": "Office Emails",
-      "field_type": "email",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "social_links": {
-      "machine": "social_links",
-      "singular": "Social Media links",
-      "plural": "Social Media linkss",
-      "field_type": "url",
-      "data_type": "string",
-      "cardinality": Infinity,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "party_affiliation": {
-      "machine": "party_affiliation",
-      "singular": "Party",
-      "plural": "Partys",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Parties",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "city": {
-      "machine": "city",
-      "singular": "City",
-      "plural": "Citys",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": Infinity,
-      "relationship": "Cities",
-      "default": "",
-      "required": true,
       "example": ""
     }
   },
@@ -646,6 +813,80 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "example": ""
     }
   },
+  "Officials": {
+    "title": {
+      "machine": "title",
+      "singular": "Job Title",
+      "plural": "Job Titles",
+      "field_type": "text",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": true,
+      "example": ""
+    },
+    "office_phone": {
+      "machine": "office_phone",
+      "singular": "Office Phone",
+      "plural": "Office Phones",
+      "field_type": "phone",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "office_email": {
+      "machine": "office_email",
+      "singular": "Office Email",
+      "plural": "Office Emails",
+      "field_type": "email",
+      "data_type": "string",
+      "cardinality": 1,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "social_links": {
+      "machine": "social_links",
+      "singular": "Social Media links",
+      "plural": "Social Media linkss",
+      "field_type": "url",
+      "data_type": "string",
+      "cardinality": Infinity,
+      "relationship": "",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "party_affiliation": {
+      "machine": "party_affiliation",
+      "singular": "Party",
+      "plural": "Partys",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": 1,
+      "relationship": "Parties",
+      "default": "",
+      "required": false,
+      "example": ""
+    },
+    "city": {
+      "machine": "city",
+      "singular": "City",
+      "plural": "Citys",
+      "field_type": "type_reference",
+      "data_type": "RelEntity",
+      "cardinality": Infinity,
+      "relationship": "Cities",
+      "default": "",
+      "required": true,
+      "example": ""
+    }
+  },
   "Rallies": {
     "title": {
       "machine": "title",
@@ -693,68 +934,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "relationship": "Topics",
       "default": "",
       "required": true,
-      "example": ""
-    },
-    "comments": {
-      "machine": "comments",
-      "singular": "Comments",
-      "plural": "Commentss",
-      "field_type": "textarea",
-      "data_type": "string",
-      "cardinality": Infinity,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "Publications": {
-    "title": {
-      "machine": "title",
-      "singular": "Title",
-      "plural": "Titles",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "description": {
-      "machine": "description",
-      "singular": "Description",
-      "plural": "Descriptions",
-      "field_type": "textarea",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "relationships": {
-      "machine": "relationships",
-      "singular": "Relationships",
-      "plural": "Relationshipss",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Officials",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "media": {
-      "machine": "media",
-      "singular": "Media",
-      "plural": "Medias",
-      "field_type": "media",
-      "data_type": "string",
-      "cardinality": 3,
-      "relationship": "",
-      "default": "",
-      "required": false,
       "example": ""
     },
     "comments": {
@@ -989,18 +1168,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     },
-    "rooms": {
-      "machine": "rooms",
-      "singular": "Rooms",
-      "plural": "Roomss",
-      "field_type": "type_reference",
-      "data_type": "RelEntity",
-      "cardinality": 1,
-      "relationship": "Rooms",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
     "start": {
       "machine": "start",
       "singular": "Start",
@@ -1059,106 +1226,6 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "relationship": "",
       "default": "",
       "required": false,
-      "example": ""
-    }
-  },
-  "Resources": {
-    "title": {
-      "machine": "title",
-      "singular": "Title",
-      "plural": "Titles",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "description_html": {
-      "machine": "description_html",
-      "singular": "Description HTML",
-      "plural": "Description HTMLS",
-      "field_type": "textarea",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "image": {
-      "machine": "image",
-      "singular": "Image",
-      "plural": "Images",
-      "field_type": "image",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "postal_address": {
-      "machine": "postal_address",
-      "singular": "Postal Address",
-      "plural": "Postal Addresses",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "price_ccoin": {
-      "machine": "price_ccoin",
-      "singular": "Price (citizencoin)",
-      "plural": "Price (citizencoin)s",
-      "field_type": "integer",
-      "data_type": "number",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "resource_type": {
-      "machine": "resource_type",
-      "singular": "Resource Type",
-      "plural": "Resource Types",
-      "field_type": "vocabulary_reference",
-      "data_type": "RelEntity",
-      "cardinality": Infinity,
-      "relationship": "ResourceTypes",
-      "default": "",
-      "required": true,
-      "example": ""
-    }
-  },
-  "Pages": {
-    "title": {
-      "machine": "title",
-      "singular": "Title",
-      "plural": "Titles",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
-      "example": ""
-    },
-    "description_html": {
-      "machine": "description_html",
-      "singular": "Description HTML",
-      "plural": "Description HTMLS",
-      "field_type": "textarea",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": true,
       "example": ""
     }
   },
@@ -1587,179 +1654,9 @@ export const TypeFieldSchema: ObjectOfObjects = {
       "required": false,
       "example": ""
     }
-  },
-  "Topics": {
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "icon": {
-      "machine": "icon",
-      "singular": "Icon",
-      "plural": "Icons",
-      "field_type": "image",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "photo": {
-      "machine": "photo",
-      "singular": "Photo",
-      "plural": "Photos",
-      "field_type": "image",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "ResourceTypes": {
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "MeetingTypes": {
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "States": {
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "website": {
-      "machine": "website",
-      "singular": "Website",
-      "plural": "Websites",
-      "field_type": "url",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "icon": {
-      "machine": "icon",
-      "singular": "Icon",
-      "plural": "Icons",
-      "field_type": "image",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "Parties": {
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "logo": {
-      "machine": "logo",
-      "singular": "Logo",
-      "plural": "Logos",
-      "field_type": "image",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "website": {
-      "machine": "website",
-      "singular": "Website",
-      "plural": "Websites",
-      "field_type": "url",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
-  },
-  "Stakeholders": {
-    "name": {
-      "machine": "name",
-      "singular": "Name",
-      "plural": "Names",
-      "field_type": "text",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    },
-    "image": {
-      "machine": "image",
-      "singular": "Image",
-      "plural": "Images",
-      "field_type": "image",
-      "data_type": "string",
-      "cardinality": 1,
-      "relationship": "",
-      "default": "",
-      "required": false,
-      "example": ""
-    }
   }
 }
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
-
-
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
 export interface SuperModel {
@@ -1770,6 +1667,39 @@ export interface SuperModel {
     _type: string;
 }
 
+export interface Topics extends SuperModel {
+	name?: string | null;
+	icon?: string | null;
+	photo?: string | null;
+}
+export interface ResourceTypes extends SuperModel {
+	name?: string | null;
+}
+export interface MeetingTypes extends SuperModel {
+	name?: string | null;
+}
+export interface States extends SuperModel {
+	name?: string | null;
+	website?: string | null;
+	icon?: string | null;
+}
+export interface Parties extends SuperModel {
+	name?: string | null;
+	logo?: string | null;
+	website?: string | null;
+}
+export interface Stakeholders extends SuperModel {
+	name?: string | null;
+	image?: string | null;
+}
+export interface Resources extends SuperModel {
+	title: string;
+	description_html: string;
+	image: string;
+	postal_address?: string | null;
+	price_ccoin: number;
+	resource_type: RelEntity;
+}
 export interface Users {
 	readonly id: number | string
 	_type: string
@@ -1788,14 +1718,6 @@ export interface Users {
 	picture?: string | null;
 	cover_photo?: string | null;
 	resources?: RelEntity | null;
-}
-export interface Officials extends SuperModel {
-	title: string;
-	office_phone?: string | null;
-	office_email?: string | null;
-	social_links?: string | null;
-	party_affiliation?: RelEntity | null;
-	city: RelEntity;
 }
 export interface Cities extends SuperModel {
 	name: string;
@@ -1816,18 +1738,19 @@ export interface Cities extends SuperModel {
 	density?: number | null;
 	timezone?: string | null;
 }
+export interface Officials extends SuperModel {
+	title: string;
+	office_phone?: string | null;
+	office_email?: string | null;
+	social_links?: string | null;
+	party_affiliation?: RelEntity | null;
+	city: RelEntity;
+}
 export interface Rallies extends SuperModel {
 	title: string;
 	description: string;
 	media?: string | null;
 	topics: RelEntity[];
-	comments?: string | null;
-}
-export interface Publications extends SuperModel {
-	title: string;
-	description: string;
-	relationships?: RelEntity | null;
-	media?: string[] | null;
 	comments?: string | null;
 }
 export interface ActionPlans extends SuperModel {
@@ -1851,24 +1774,11 @@ export interface Meetings extends SuperModel {
 	moderators: RelEntity[];
 	sponsors?: RelEntity | null;
 	address?: string | null;
-	rooms: RelEntity;
 	start: string;
 	end: string;
 	agenda_json?: object | null;
 	duration?: number | null;
 	privacy?: number | null;
-}
-export interface Resources extends SuperModel {
-	title: string;
-	description_html: string;
-	image: string;
-	postal_address?: string | null;
-	price_ccoin: number;
-	resource_type: RelEntity;
-}
-export interface Pages extends SuperModel {
-	title: string;
-	description_html: string;
 }
 export interface Invites extends SuperModel {
 	meeting: RelEntity;
@@ -1906,57 +1816,4 @@ export interface Attendees extends SuperModel {
 	hand_raised?: boolean | null;
 	is_typing?: boolean | null;
 }
-export interface Topics extends SuperModel {
-	name?: string | null;
-	icon?: string | null;
-	photo?: string | null;
-}
-export interface ResourceTypes extends SuperModel {
-	name?: string | null;
-}
-export interface MeetingTypes extends SuperModel {
-	name?: string | null;
-}
-export interface States extends SuperModel {
-	name?: string | null;
-	website?: string | null;
-	icon?: string | null;
-}
-export interface Parties extends SuperModel {
-	name?: string | null;
-	logo?: string | null;
-	website?: string | null;
-}
-export interface Stakeholders extends SuperModel {
-	name?: string | null;
-	image?: string | null;
-}
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

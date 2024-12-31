@@ -1,4 +1,4 @@
-from utils.utils import create_machine_name, create_object_name, addArgs, capitalize, str_to_bool
+from utils.utils import create_machine_name, find_object_by_key_value, create_object_name, addArgs, capitalize, str_to_bool
 from loguru import logger
 import os
 import ast
@@ -52,8 +52,22 @@ class ModelBuilder:
 
         return code_source.strip()
 
-    def admin_string(self):
+    def admin_string(self, model_json):
+        has_image = find_object_by_key_value(model_json, "Field Type", "image")
+
         admin_code = f"\nclass {self.model_name}Admin(admin.ModelAdmin):\n\treadonly_fields = ('{self.id_field}',)"
+
+        # TODO: add title
+
+        if has_image:
+            admin_code += f"""\n\tdef image_tag(self, obj):
+\t\tif obj.{has_image['Field Name']}:
+\t\t\treturn format_html('<div style="width: 100px; height: 100px; background-image: url({{}}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.{has_image['Field Name']}.url)
+\t\treturn "No Image"
+    
+\tlist_display = ('id', 'image_tag')            
+"""
+
         admin_code += f"\n\nadmin.site.register({self.model_name}, {self.model_name}Admin)\n"
         return admin_code.strip()
 

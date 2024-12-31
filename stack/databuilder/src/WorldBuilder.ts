@@ -2,9 +2,13 @@ import axios from 'axios';
 import {EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
 import ApiClient, {HttpResponse} from "./ApiClient";
 import {fakeFieldData} from "./builder-utils";
-import {faker} from '@faker-js/faker/locale/en_US';
 import fs from "fs";
 import path from "path";
+import {en, Faker} from '@faker-js/faker';
+
+const faker = new Faker({
+    locale: [en],
+});
 
 const FormData = require('form-data');
 const http = require('http');
@@ -24,6 +28,10 @@ export interface FixtureContext {
 export interface FixtureData {
     entity: EntityTypes;
     context: FixtureContext;
+}
+
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 type WorldData = { [key: string]: HttpResponse<any>[] }
@@ -88,6 +96,15 @@ export class WorldBuilder {
                     entity[key].forEach((value: any, index: number) => {
                         formData.append(`${key}[${index}]`, value);
                     });
+                } else if (typeof entity[key] === 'object' &&
+                    entity[key] !== null &&
+                    'stream' in entity[key] &&
+                    typeof entity[key].stream === 'object') {
+                    console.log(`Appending ${key} as a file stream with metadata`);
+                    formData.append(key, entity[key].stream, {
+                        filename: entity[key].filename || `${key}.file`, // Provide default filename
+                        contentType: entity[key].contentType || 'application/octet-stream', // Default MIME type
+                    });
                 } else if (entity[key] instanceof Blob || entity[key] instanceof http.IncomingMessage) {
                     console.log(`appending ${key} as file stream `)
                     formData.append(key, entity[key]);
@@ -115,12 +132,12 @@ export class WorldBuilder {
         if (!baseData.email) baseData.email = faker.internet.email({
             firstName: baseData.first_name,
             lastName: baseData.last_name
-         });
+        });
         if (!baseData.username) baseData.username = faker.person.firstName();
         const registered = await this.apiClient.register(baseData);
         if (registered?.data && registered.data.data.user) {
             const allAuthUser = registered.data.data.user
-            const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}/add-group`, allAuthUser);
+            const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, allAuthUser);
             if (user && user.data) {
                 user.data.groups = ['oa-tester']
                 this.saveFixture(`/api/oa-testers/${allAuthUser.id}`, user.data, allAuthUser)
@@ -206,17 +223,26 @@ export class WorldBuilder {
 
             } else if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
                 entity.hasImage = true;
-                const mediaUrl = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
-                const mediaResponse = await axios.get(mediaUrl, {responseType: 'stream'});
+                const mediaUrl = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
+                const mediaResponse = await axios.get(mediaUrl, {
+                    responseType: 'stream',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+                    },
+                });
                 if (mediaResponse.status !== 200) {
                     throw new Error(`Failed to fetch ${field.field_type} from ${mediaUrl}`);
                 } else {
                     console.log(`Going to load ${mediaUrl}`)
                     entity.hasImage = true;
-                    entity[field.machine] = mediaResponse.data;
+                    entity[field.machine] = {
+                        stream: mediaResponse.data, // The IncomingMessage stream
+                        filename: mediaUrl.substring(mediaUrl.lastIndexOf('/') + 1),
+                        contentType: mediaResponse.headers['content-type'] || 'application/octet-stream', // Infer MIME type
+                    }
                 }
             } else {
-                entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
+                entity[field.machine] = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
             }
         }
         return entity;
@@ -243,7 +269,7 @@ export class WorldBuilder {
 
         if (!authors.length) {
             console.warn(`FALLING BACK ON SUPERUSER instead of ${role}.`); // TODO: paginate of meta
-            const author = await this.loginUser('superuser')
+            const author = await this.loginUser(process.env.REACT_APP_LOGIN_EMAIL!)
             if (!author) return null
             return author;
         }
@@ -268,8 +294,7 @@ export class WorldBuilder {
     }
 
     public async getContentCreators(offset = 0) {
-        // TODO: only get users created by tester
-        const relResponse = await this.apiClient.get(`/api/users/by-group?group=oa-test?page_size=300&offset=${offset}`);
+        const relResponse = await this.apiClient.get(`/api/oa-testers?page_size=300&offset=${offset}`);
         if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
             relResponse.data.results.forEach(((user: Users) => {
                 this.allCreators.push(user)
