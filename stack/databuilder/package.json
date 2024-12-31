@@ -4,8 +4,8 @@
   "main": "src/WorldBuilder.ts",
   "scripts": {
     "start": "ts-node src/main.ts --env-file=.env --action=objects-add --count=1",
-    "objects-add": "ts-node src/main.ts --env-file=.env --action=objects-add --count=5",
-    "users-add": "ts-node src/main.ts --env-file=.env --action=users-add --count=10"
+    "objects-add": "ts-node src/main.ts --env-file=.env --action=objects-add --count=1",
+    "users-add": "ts-node src/main.ts --env-file=.env --action=users-add --count=1"
   },
   "devDependencies": {
     "@faker-js/faker": "9.1.0",
@@ -21,5 +21,8 @@
     "dotenv": "^16.4.5",
     "form-data": "^4.0.0",
     "tough-cookie": "^4.1.4"
+  },
+  "engines": {
+    "node": "16.20.2"
   }
 }

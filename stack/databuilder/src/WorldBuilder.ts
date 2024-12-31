@@ -4,10 +4,9 @@ import ApiClient, {HttpResponse} from "./ApiClient";
 import {fakeFieldData} from "./builder-utils";
 import fs from "fs";
 import path from "path";
-import {en, Faker} from '@faker-js/faker';
-
+import {Faker, en} from '@faker-js/faker';
 const faker = new Faker({
-    locale: [en],
+  locale: [en],
 });
 
 const FormData = require('form-data');
@@ -102,8 +101,8 @@ export class WorldBuilder {
                     typeof entity[key].stream === 'object') {
                     console.log(`Appending ${key} as a file stream with metadata`);
                     formData.append(key, entity[key].stream, {
-                        filename: entity[key].filename || `${key}.file`, // Provide default filename
-                        contentType: entity[key].contentType || 'application/octet-stream', // Default MIME type
+                        filename: entity[key].filename || `${key}.jpg`, // Provide default filename
+                        contentType: entity[key].contentType || 'image/jpeg', // Default MIME type
                     });
                 } else if (entity[key] instanceof Blob || entity[key] instanceof http.IncomingMessage) {
                     console.log(`appending ${key} as file stream `)
@@ -129,6 +128,8 @@ export class WorldBuilder {
     public async registerUser(config: any) {
         const baseData = config.base ?? {};
         if (!baseData.password) baseData.password = process.env.REACT_APP_LOGIN_PASS;
+        if (!baseData.first_name) faker.person.firstName();
+        if (!baseData.last_name) faker.person.lastName();
         if (!baseData.email) baseData.email = faker.internet.email({
             firstName: baseData.first_name,
             lastName: baseData.last_name
@@ -137,14 +138,22 @@ export class WorldBuilder {
         const registered = await this.apiClient.register(baseData);
         if (registered?.data && registered.data.data.user) {
             const allAuthUser = registered.data.data.user
-            const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, allAuthUser);
+
+            const entity = await this.populateEntity(allAuthUser, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
+            const tosend = {picture: entity.picture, hasImage:true};
+            console.log('tosend', tosend)
+            const {formData, headers} = this.serializePayload(tosend);
+            const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, formData, headers);
             if (user && user.data) {
+                console.log("OA-TESTER SUCCCESS", user.data, user.error)
                 user.data.groups = ['oa-tester']
-                this.saveFixture(`/api/oa-testers/${allAuthUser.id}`, user.data, allAuthUser)
-                const profile = await this.updateUserProfile({...user.data, ...baseData});
-                return profile;
+                return false;
+                // this.saveFixture(`/api/oa-testers/${allAuthUser.id}`, user.data, allAuthUser)
+                // const profile = await this.updateUserProfile({...user.data, ...baseData});
+                // return profile;
             } else {
-                console.error("OA-TESTER GROUP NOT ADDED!", user.error)
+                console.error("OA-TESTER GROUP NOT ADDED!", user.data, user.error)
+                return false;
             }
         }
         console.error(registered)
@@ -202,6 +211,13 @@ export class WorldBuilder {
         for (const field of fields) {
             if (field.field_type === 'id_auto_increment' || field.field_type === 'slug') {
                 // console.log(`let server handle ${field.field_type}`)
+            } else if (this.allCreators.length && (field.field_type === 'user_profile' || field.field_type === 'user_account')) {
+                let randomIndex = Math.floor(Math.random() * this.allCreators.length);
+                if (field.cardinality as number > 1) {
+                    entity[field.machine] = [this.allCreators[randomIndex].id]
+                } else {
+                    entity[field.machine] = this.allCreators[randomIndex].id
+                }
             } else if (field.field_type === 'user_profile' || field.field_type === 'user_account' || field.field_type == 'type_reference' || field.field_type == 'vocabulary_reference') {
                 let relType = NAVITEMS.find(nav => nav.type === field.relationship) as NavItem
                 const relResponse = await this.apiClient.get(`/api/${relType.segment}/`);

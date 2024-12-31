@@ -76,14 +76,13 @@ INSTALLED_APPS = [
 
 if DEBUG == True or DJANGO_ENV != 'production':
     INSTALLED_APPS += ['django_extensions']
-    import logging
-
+    """
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
         'handlers': {
             'console': {
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'class': 'logging.StreamHandler',
             },
         },
@@ -94,6 +93,7 @@ if DEBUG == True or DJANGO_ENV != 'production':
             },
         },
     }
+    """
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

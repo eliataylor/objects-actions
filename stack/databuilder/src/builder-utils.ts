@@ -1,8 +1,8 @@
 import {join} from 'path';
-import {Faker, en, en_US, en_AU} from '@faker-js/faker';
+import {Faker, en} from '@faker-js/faker';
 
 const faker = new Faker({
-  locale: [en, en_US, en_AU],
+  locale: [en],
 });
 
 const fs = require('fs');

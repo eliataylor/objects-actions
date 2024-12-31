@@ -7,6 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from django.db import models
+import logging
+logger = logging.getLogger(__name__)
 
 # Constants
 OA_TESTER_GROUP = 'oa-tester'
@@ -66,6 +68,19 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
         group = Group.objects.filter(name=OA_TESTER_GROUP).first()
         if not group:
             return Response({"error": f"Group '{OA_TESTER_GROUP}' does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        logger.warning("handle oa-testing update")
+
+        # Handle updating the picture
+        if 'picture' in request.FILES:
+            logger.warning("request has picture")
+            user.picture = request.FILES['picture']
+            user.save()
+
+        if 'cover_photo' in request.FILES:
+            logger.warning("request has cover")
+            user.picture = request.FILES['cover_photo']
+            user.save()
 
         user.groups.add(group)
         serializer = self.get_serializer(user)

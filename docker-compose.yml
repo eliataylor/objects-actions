@@ -27,7 +27,7 @@ services:
       dockerfile: Dockerfile
     container_name: django-service
     volumes:
-      - $HOME/.ssl:/root/.ssl
+      - $HOME/.ssl:/root/.ssl:ro
       - ./stack/django:/app/django
       - ./stack/django/__pycache__:/app/django/__pycache__:cached  # Speed up reloads
       #    - ./dockerized/django/media:/app/django/media  # Single, unified media directory
@@ -57,7 +57,7 @@ services:
     container_name: reactjs-service
     volumes:
       - ./stack/reactjs:/app/reactjs
-      - $HOME/.ssl:/root/.ssl
+      - $HOME/.ssl:/root/.ssl:ro
     depends_on:
       django:
         condition: service_started
