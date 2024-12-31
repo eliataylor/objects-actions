@@ -1,8 +1,10 @@
 import {join} from 'path';
-import {Faker, en} from '@faker-js/faker';
+import {en, Faker} from '@faker-js/faker';
+const axios = require('axios');
+
 
 const faker = new Faker({
-  locale: [en],
+    locale: [en],
 });
 
 const fs = require('fs');
@@ -27,46 +29,67 @@ function getRandomFile(directoryPath: string): string {
 }
 
 interface ImageMetaData {
-  file: string;
-  license: string;
-  owner: string;
-  width: number;
-  height: number;
-  filter: string;
-  tags: string;
-  tagMode: string;
-  rawFileUrl: string;
+    file: string;
+    license: string;
+    owner: string;
+    width: number;
+    height: number;
+    filter: string;
+    tags: string;
+    tagMode: string;
+    rawFileUrl: string;
 }
 
-// Fetch image metadata function
+// needed because flickr now rate limiting)
 async function fetchImageMetaData(category: string): Promise<ImageMetaData> {
 
-  try {
-    // Fetch metadata from loremflickr
-    const response = await fetch(`https://loremflickr.com/json/g/320/240/${category.toLowerCase()}/all`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch metadata: ${response.statusText}`);
+    const [major] = process.versions.node.split('.').map(Number);
+    const url = `https://loremflickr.com/json/g/320/240/${category.toLowerCase()}/all`
+
+    try {
+        if (major >= 18) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return await response.json();
+        } else {
+            const response = await axios.get(url);
+            return response.data;
+        }
+    } catch (error) {
+        const fallbackUrl = faker.image.urlLoremFlickr({category});
+        console.warn(`Metadata fetch failed. Falling back to faker URL: ${fallbackUrl}`, error);
+        return {
+            file: fallbackUrl,
+            license: "unknown",
+            owner: "unknown",
+            width: 320,
+            height: 240,
+            filter: "none",
+            tags: category,
+            tagMode: "all",
+            rawFileUrl: fallbackUrl,
+        };
     }
-    const data = (await response.json()) as ImageMetaData;
-    return data;
-  } catch (error) {
-    const fallbackUrl = faker.image.urlLoremFlickr({ category });
-    console.warn(`Metadata fetch failed. Falling back to faker URL: ${fallbackUrl}`);
-    // Return fallback metadata
-    return {
-      file: fallbackUrl,
-      license: "unknown",
-      owner: "unknown",
-      width: 320,
-      height: 240,
-      filter: "none",
-      tags: category,
-      tagMode: "all",
-      rawFileUrl: fallbackUrl,
-    };
-  }
 }
 
+
+export function checkInvalidFormDataValues(formData:any) {
+    const invalidKeys = [];
+
+    for (const [key, value] of formData.entries()) {
+        if (
+            !(typeof value === 'string' ||
+              Buffer.isBuffer(value) ||
+              value instanceof Uint8Array)
+        ) {
+            invalidKeys.push(key);
+        }
+    }
+
+    return invalidKeys;
+}
 
 export async function fakeFieldData(field_type: string, field_name: string, options: any, model_type: string): Promise<any> {
     switch (field_type) {
@@ -119,10 +142,17 @@ export async function fakeFieldData(field_type: string, field_name: string, opti
             }
             return faker.lorem.sentence({min: 1, max: 6});
         case 'textarea':
-            if (field_name === 'bio') {
-                return faker.person.bio()
+            let txt;
+            try { // handle "The locale data for 'internet.emoji' are missing in this locale"
+                if (field_name === 'bio') {
+                    txt = faker.person.bio()
+                } else {
+                    txt = faker.word.words(5)
+                }
+                return txt
+            } catch (error) {
+                return faker.word.words(5)
             }
-            return faker.lorem.paragraph();
         case 'integer':
             return faker.number.int({min: 1, max: 2147483647});
         case 'price':
@@ -141,7 +171,13 @@ export async function fakeFieldData(field_type: string, field_name: string, opti
         case 'coordinates':
             return `{"lat":${faker.location.latitude()}, "lng":${faker.location.longitude()}}`;
         case 'email':
-            return faker.internet.email();
+            let email;
+            try { // handle "The locale data for 'internet.emoji' are missing in this locale"
+                email = faker.internet.email();
+            } catch (error) {
+                email = `info-${new Date().getTime()}@oaexample.com`
+            }
+            return email
         case 'phone':
             // @ts-ignore
             return faker.phone.number({style: 'international'})
@@ -149,7 +185,13 @@ export async function fakeFieldData(field_type: string, field_name: string, opti
             const state = faker.location.state({abbreviated: true})
             return `${faker.location.streetAddress()} ${faker.location.city()} ${state} ${faker.location.zipCode({state})}`;
         case 'url':
-            return faker.internet.url();
+            let iurl;
+            try { // handle "The locale data for 'internet.emoji' are missing in this locale"
+                iurl = faker.internet.url();
+            } catch (error) {
+                iurl = `https://oaexample.com/test/${new Date().getTime()}`
+            }
+            return iurl
         case 'uuid':
             return faker.string.uuid();
         case 'slug':
@@ -172,7 +214,7 @@ export async function fakeFieldData(field_type: string, field_name: string, opti
             return videoOpts[randomIndex];
         case 'media':
             // return faker.image.urlPicsumPhotos()
-            return faker.image.urlLoremFlickr({category: model_type}) // flickr now rate limiting!!! :/
+            return faker.image.urlLoremFlickr({category: model_type})
         case 'flat_list':
             return Array.from({length: 5}, () => faker.lorem.word()); // Example of a flat list
         case 'bounding_box':

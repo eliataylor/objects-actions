@@ -69,8 +69,6 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
         if not group:
             return Response({"error": f"Group '{OA_TESTER_GROUP}' does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
-        logger.warning("handle oa-testing update")
-
         # Handle updating the picture
         if 'picture' in request.FILES:
             logger.warning("request has picture")
