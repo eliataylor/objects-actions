@@ -20,6 +20,7 @@ export default function VerifyEmail () {
   function submit () {
     setResponse({ ...response, fetching: true })
     verifyEmail(key).then((content) => {
+      // TODO: auto login
       setResponse((r) => { return { ...r, content } })
     }).catch((e) => {
       console.error(e)

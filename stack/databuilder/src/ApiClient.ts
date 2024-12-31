@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import tough, {Cookie, CookieJar} from 'tough-cookie';
+import tough, {Cookie, CookieJar, MemoryCookieStore} from 'tough-cookie';
 import {Users} from "./types";
 
 export interface HttpResponse<T> {
@@ -16,26 +16,43 @@ export interface HttpResponse<T> {
 class ApiClient {
     private client: AxiosInstance;
     private cookieJar: CookieJar;
+    private COOKIE_DOMAIN: string;
 
     constructor() {
+        const urlParts = new URL(process.env.REACT_APP_API_HOST!);
+
+        this.COOKIE_DOMAIN = process.env.REACT_APP_API_HOST!; //  new URL(process.env.REACT_APP_API_HOST || 'http://localhost').hostname
+        const store = new MemoryCookieStore();
+        this.cookieJar = new tough.CookieJar(store, {
+                allowSpecialUseDomain: true,
+                looseMode: true,
+                rejectPublicSuffixes: false
+            }
+        );
+
         this.client = axios.create({
             withCredentials: true, // Ensures cookies are sent with requests
             baseURL: process.env.REACT_APP_API_HOST,
             headers: {
                 'Referer': process.env.REACT_APP_APP_HOST,  // Adding Referer header to simulate request origin
                 'Origin': process.env.REACT_APP_APP_HOST,    // Adding Origin header to simulate request origin
+                'Host': urlParts.host,
                 "Content-Type": "application/json"
             },
             httpsAgent: new (require('https').Agent)({rejectUnauthorized: false}), // Handle HTTPS requests
         });
-        this.cookieJar = new tough.CookieJar();
 
         // Interceptor to set CSRF token from cookies
         this.client.interceptors.request.use(async (config) => {
-            const cookies = await this.cookieJar.getCookies(config.url || '');
+            const cookies = await this.cookieJar.getCookies(this.makeAbsoluteUrl(config.url));
             const csrfTokenCookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
             if (csrfTokenCookie) {
                 config.headers['X-CSRFToken'] = csrfTokenCookie.value;
+            }
+
+            const cookieHeader = cookies.map(cookie => `${cookie.key}=${cookie.value}`).join('; ');
+            if (cookieHeader) {
+                config.headers['Cookie'] = cookieHeader;
             }
 
             if (process.env.REACT_APP_USE_TOKEN) {
@@ -61,6 +78,26 @@ class ApiClient {
             return Promise.reject(error);
         });
 
+        this.client.interceptors.response.use(
+            async (response) => {
+                // Check if the response has the 'set-cookie' header
+                const setCookieHeader = response.headers['set-cookie'];
+                if (setCookieHeader) {
+                    this.setCookies(setCookieHeader, this.makeAbsoluteUrl(response.config.url));
+                }
+                return response; // Return the response as-is for further processing
+            },
+            (error) => {
+                // Handle errors
+                return Promise.reject(error);
+            }
+        );
+    }
+
+    makeAbsoluteUrl(url?: string): string {
+        if (!url) return this.COOKIE_DOMAIN;
+        if (url.startsWith('/')) return `${process.env.REACT_APP_API_HOST}${url}`;
+        return url;
     }
 
     public initResponse(): HttpResponse<any> {
@@ -78,15 +115,11 @@ class ApiClient {
 
         this.cookieJar.removeAllCookiesSync()
 
-        let url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/config`
-        const config = await this.client.get(url);
-        const setCookieHeader = config.headers['set-cookie'];
-        if (setCookieHeader) {
-            await this.setCookies(url, setCookieHeader);
-        }
+        let url = `/_allauth/browser/v1/config`
+        await this.client.get(url); // sets cookie
 
-        url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/login`
-        const payload:any = {password}
+        url = `/_allauth/browser/v1/auth/login`
+        const payload: any = {password}
         if (email.indexOf("@") > -1) {
             payload.email = email;
         } else {
@@ -95,7 +128,7 @@ class ApiClient {
 
         const resp = await this.post(url, payload);
 
-        const cookies = await this.cookieJar.getCookies(url || '');
+        const cookies = await this.cookieJar.getCookies(this.makeAbsoluteUrl(url));
         let cookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
         if (cookie) {
             resp.cookie = cookie
@@ -108,18 +141,13 @@ class ApiClient {
 
         this.cookieJar.removeAllCookiesSync()
 
-        let url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/config`
+        let url = `/_allauth/browser/v1/config`
+        await this.client.get(url); // sets cookie
 
-        const config = await this.client.get(url);
-        const setCookieHeader = config.headers['set-cookie'];
-        if (setCookieHeader) {
-            await this.setCookies(url, setCookieHeader);
-        }
-
-        url = `${process.env.REACT_APP_API_HOST}/_allauth/browser/v1/auth/signup`
+        url = `/_allauth/browser/v1/auth/signup`
         const resp = await this.post(url, baseData);
 
-        const cookies = await this.cookieJar.getCookies(url || '');
+        const cookies = await this.cookieJar.getCookies(this.makeAbsoluteUrl(url));
         let cookie = cookies.find(cookie => cookie.key === process.env.REACT_APP_CSRF_COOKIE_NAME);
         if (cookie) {
             resp.cookie = cookie
@@ -135,15 +163,13 @@ class ApiClient {
         let method = parseInt(eid || '') > 1 ? 'patch' : 'post';
 
         try {
-            // Merge headers with cookies
-            const mergedHeaders = await this.getMergedHeaders(url, headers);
 
             // @ts-ignore
             response = await this.client.request({
                 url,
                 method,
                 data,
-                headers: mergedHeaders
+                headers
             });
             if (response.status < 200 || response.status > 299) {
                 resp = this.returnErrors(response.data)
@@ -152,12 +178,6 @@ class ApiClient {
                 resp.data = response.data;
                 resp.status = response.status;
                 resp.success = true;
-
-                const setCookieHeader = response.headers['set-cookie'];
-                if (setCookieHeader) {
-                    // TODO: change if changes!?!
-                    await this.setCookies(url, setCookieHeader);
-                }
             }
 
         } catch (error: any) {
@@ -173,8 +193,7 @@ class ApiClient {
         let resp = this.initResponse()
 
         try {
-            const headers = await this.getCookieHeaders(url);
-            const response = await this.client.get<T>(url, {headers});
+            const response = await this.client.get<T>(url);
             if (response.status < 200 || response.status > 299) {
                 resp = this.returnErrors(response.data)
                 resp.status = response.status;
@@ -191,22 +210,17 @@ class ApiClient {
         return resp;
     }
 
-    private async getMergedHeaders(url: string, headers: any): Promise<any> {
-        const cookieHeaders = await this.getCookieHeaders(url);
-        return {
-            ...headers,
-            ...cookieHeaders,
-        };
-    }
-
-    private async getCookieHeaders(url: string): Promise<any> {
+    private async getCookieHeaders(url: string): Promise<Record<string, string>> {
         return new Promise((resolve, reject) => {
             this.cookieJar.getCookies(url, (err, cookies) => {
                 if (err) {
                     reject(err);
                 } else {
-                    const cookieHeader = cookies?.map((cookie) => `${cookie.key}=${cookie.value}`).join('; ');
-                    resolve(cookieHeader ? {Cookie: cookieHeader} : {});
+                    const headers: Record<string, string> = {};
+                    cookies.forEach(cookie => {
+                        headers[cookie.key] = cookie.value; // Add each cookie as a key-value pair
+                    });
+                    resolve(headers);
                 }
             });
         });
@@ -254,19 +268,15 @@ class ApiClient {
         return resp;
     }
 
-    getCookies() {
-        return this.cookieJar.getSetCookieStringsSync(process.env.REACT_APP_API_HOST || "*");
-    }
-
-    public async setCookie(url: string, cookie: string) {
-        return this.cookieJar.setCookieSync(cookie, url);
-    }
-
-    public setCookies(url: string, setCookieHeader: string[]) {
+    public setCookies(setCookieHeader: string[], url: string) {
         setCookieHeader.forEach((cookieStr) => {
             const cookie = Cookie.parse(cookieStr);
             if (cookie) {
-                this.cookieJar.setCookieSync(cookie, url);
+                this.cookieJar.setCookieSync(cookie, url, {
+                    http: true,
+                    secure: false,
+                    ignoreError: true
+                });
             }
         });
     }

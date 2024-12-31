@@ -29,15 +29,17 @@ from django.utils.html import format_html
 
 ####OBJECT-ACTIONS-ADMIN_MODELS-STARTS####
 class UsersAdmin(BaseUserAdmin):
-    fieldsets = BaseUserAdmin.fieldsets + (
-        (_('Additional Info'), {'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo', 'resources')}),
-    )
-    add_fieldsets = BaseUserAdmin.add_fieldsets + (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo', 'resources'),
-        }),
-    )                
+    def image_tag(self, obj):
+        if obj.cover_photo:
+            return format_html(
+                '<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                obj.cover_photo.url)
+        return "No Image"
+
+    def display_groups(self, obj):
+        return ", ".join([group.name for group in obj.groups.all()])
+
+    list_display = ('id', 'username', 'email', 'get_full_name', 'display_groups', 'image_tag')
 
 
 admin.site.register(Users, UsersAdmin)

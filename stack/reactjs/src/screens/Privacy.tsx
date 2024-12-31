@@ -14,7 +14,7 @@ const Privacy: React.FC<PrivacyProps> = ({section = 'privacy'}) => {
                 <Logo height={80}/>
             </Grid>
             <Grid item>
-                <Typography variant={'h4'}>Object / Actions</Typography>
+                <Typography variant={'h4'}>Objects / Actions</Typography>
                 <Typography variant={'body1'}>We do not sell any data, to anyone, for any reason, ever.</Typography>
                 <Typography variant={'body2'}>We use cookies to track how visitors navigate this site and to track your session if you log in.</Typography>
             </Grid>

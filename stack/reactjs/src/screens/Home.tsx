@@ -14,7 +14,7 @@ const Home: React.FC<HomeProps> = ({loading = false}) => {
                 <Logo height={120}/>
             </Grid>
             <Grid item>
-                <Typography>Object / Actions</Typography>
+                <Typography>Objects / Actions</Typography>
                 {loading && <CircularProgress sx={{height: 100}}/>}
             </Grid>
         </Grid>

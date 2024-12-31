@@ -33,3 +33,5 @@ elif OA_ENV_DB == 'gcp':
     DATABASES["default"]["HOST"] = myEnv("GCP_MYSQL_HOST")
 
 
+if DEBUG:
+    print(f"DB Connecting with {DATABASES['default']['NAME']} and {DATABASES['default']['USER']} to {DATABASES['default']['HOST']}" )

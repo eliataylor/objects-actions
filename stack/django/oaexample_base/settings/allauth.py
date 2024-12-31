@@ -49,7 +49,7 @@ SOCIALACCOUNT_ADAPTER = 'oaexample_app.adapter.MySocialAccountAdapter'
 # ACCOUNT_ADAPTER = 'oaexample_app.adapter.UserAdapter'
 # ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
 
-HEADLESS_APP_HOSTS = {
+HEADLESS_FRONTEND_URLS = {
     "account_confirm_email": f"{APP_HOST}/account/verify-email/{{key}}",
     # Key placeholders are automatically populated. You are free to adjust this to your own needs, e.g.
     "account_reset_password": f"{APP_HOST}/account/password/reset",

@@ -53,7 +53,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({onSelect, selected, index, fie
                             onClick={handleIconClick}
                             aria-label="upload picture"
                             {...buttonProps}>
-                        {buttonProps.label ?? "Browse"}
+                        {buttonProps?.label ?? "Browse"}
                     </Button>
                 </label>
             </Grid>

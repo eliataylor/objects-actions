@@ -26,6 +26,7 @@ from .views import MeetingTypesViewSet
 from .views import StatesViewSet
 from .views import PartiesViewSet
 from .views import StakeholdersViewSet
+from .oa_testing import OATesterUserViewSet
 ####OBJECT-ACTIONS-URL-IMPORTS-ENDS####
 urlpatterns = [path('', RenderFrontendIndex.as_view(), name='index')]
 
@@ -50,13 +51,15 @@ OARouter.register('meeting-types', MeetingTypesViewSet, basename='meeting-types'
 OARouter.register('states', StatesViewSet, basename='states')
 OARouter.register('parties', PartiesViewSet, basename='parties')
 OARouter.register('stakeholders', StakeholdersViewSet, basename='stakeholders')
+OARouter.register(r'oa-testers', OATesterUserViewSet, basename='oa-tester')
+
 
 if urlpatterns is None:
     urlpatterns = []
-    
+
 urlpatterns += [
     re_path(r'^account/.*$', redirect_to_frontend, name='provider_callback_no_provider'),
-        
+
     path('api/users/<int:user_id>/<str:model_name>/list', UserModelListView.as_view(), name='user-model-list'),
     path('api/users/<int:user_id>/<str:model_name>/stats', UserStatsView.as_view(), name='user-model-stats'),
 
@@ -65,7 +68,6 @@ urlpatterns += [
     path('api/', include(OARouter.urls)),
 ]
 ####OBJECT-ACTIONS-URLS-ENDS####
-
 
 from .views import SendCodeView, VerifyCodeView
 urlpatterns += [

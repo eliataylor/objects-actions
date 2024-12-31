@@ -18,6 +18,7 @@ export interface FixtureContext {
     owner: Users;
     time: string;
     cookie?: string;
+    url?: string;
 }
 
 export interface FixtureData {
@@ -47,12 +48,26 @@ export class WorldBuilder {
         }
     }
 
-    saveFixture(name: string, entity: any, owner: Users) {
+    saveFixture(url: string, entity: any, owner: Users) {
         if (this.fixturePath.length > 0) {
             const data: FixtureData = {
                 entity, context: {owner, time: new Date().toISOString()},
             }
-            fs.writeFileSync(`${this.fixturePath}/${name}.json`, JSON.stringify(data, null, 2));
+            const parts = url.split('/');
+            const name: string[] = [];
+            let hasId = false
+            parts.forEach(part => {
+                if (part.length > 0 && part !== 'api') {
+                    name.push(part);
+                    if (parseInt(part) > -1) {
+                        hasId = true;
+                    }
+                }
+            })
+            if (!hasId) {
+                name.push(entity.id)
+            }
+            fs.writeFileSync(`${this.fixturePath}/${name.join('-')}.json`, JSON.stringify(data, null, 2));
         }
         console.log(`User ${owner.username} created a ${entity._type} with these roles ${JSON.stringify(owner.groups)}`)
     }
@@ -100,24 +115,34 @@ export class WorldBuilder {
         if (!baseData.email) baseData.email = faker.internet.email({
             firstName: baseData.first_name,
             lastName: baseData.last_name
-        });
+         });
         if (!baseData.username) baseData.username = faker.person.firstName();
         const registered = await this.apiClient.register(baseData);
-        if (registered && registered.data) {
-            this.saveFixture(`user-add-${registered.data.id}`, registered, registered.data.data.user)
-            const profile = await this.updateUserProfile({id: registered.data.data.user.id});
-            return profile;
+        if (registered?.data && registered.data.data.user) {
+            const allAuthUser = registered.data.data.user
+            const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}/add-group`, allAuthUser);
+            if (user && user.data) {
+                user.data.groups = ['oa-tester']
+                this.saveFixture(`/api/oa-testers/${allAuthUser.id}`, user.data, allAuthUser)
+                const profile = await this.updateUserProfile({...user.data, ...baseData});
+                return profile;
+            } else {
+                console.error("OA-TESTER GROUP NOT ADDED!", user.error)
+            }
         }
         console.error(registered)
     }
 
     public async updateUserProfile(user: any) {
-        // @ts-ignore
-        const entity = await this.populateEntity(user, NAVITEMS.find(nav => nav.type === "Users"))
+        const entity = await this.populateEntity(user, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
         const {formData, headers} = this.serializePayload(entity);
-        const apiUrl = `${process.env.REACT_APP_API_HOST}/api/users/${user.id}`
+        const apiUrl = `/api/users/${user.id}`
         const profile = await this.apiClient.post(apiUrl, formData, headers);
-        this.saveFixture(`user-edit-${profile.data.id}`, profile, profile.data)
+        if (profile && profile.data) {
+            this.saveFixture(apiUrl, profile.data, profile.data)
+        } else {
+            console.error('profile update failed', profile)
+        }
         return profile.data;
     }
 
@@ -137,18 +162,20 @@ export class WorldBuilder {
             return
         }
 
-        const creator = await this.loadAuthorByRole(null)
+        const creator = await this.loadAuthorByRole(null);
+        if (!creator) {
+            return console.warn("Failed to get a oa-tester. run `users-add` to create some first")
+        }
 
         let entity: any = {author: creator.id};
         entity = await this.populateEntity(entity, hasUrl)
         const {formData, headers} = this.serializePayload(entity);
 
-        const apiUrl = `${process.env.REACT_APP_API_HOST}${hasUrl.api}/`
-        const response = await this.apiClient.post(apiUrl, formData, headers);
+        const response = await this.apiClient.post(hasUrl.api, formData, headers);
         if (!response.data?.id) {
             console.log(`Error creating ${item.type}. ${response.error}`)
         } else {
-            this.saveFixture(`object-add-${hasUrl.type}-${response.data.id}.json`, response.data, creator);
+            this.saveFixture(hasUrl.api, response.data, creator);
         }
         return response;
     }
@@ -160,7 +187,7 @@ export class WorldBuilder {
                 // console.log(`let server handle ${field.field_type}`)
             } else if (field.field_type === 'user_profile' || field.field_type === 'user_account' || field.field_type == 'type_reference' || field.field_type == 'vocabulary_reference') {
                 let relType = NAVITEMS.find(nav => nav.type === field.relationship) as NavItem
-                const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/${relType.segment}/`);
+                const relResponse = await this.apiClient.get(`/api/${relType.segment}/`);
                 // @ts-ignore
                 if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
                     // @ts-ignore
@@ -198,36 +225,18 @@ export class WorldBuilder {
     async loginUser(email: string = process.env.REACT_APP_LOGIN_EMAIL || '', pass: string = process.env.REACT_APP_LOGIN_PASS || '') {
         const loginResponse = await this.apiClient.login(email, pass)
         if (loginResponse.success) {
-            if (typeof loginResponse['cookie'] === 'string') {
-                this.apiClient.setCookie(process.env.REACT_APP_API_HOST || "", loginResponse['cookie']);
-            }
             console.log(`Login successful: ${loginResponse.data.data.user.username} with cookie ${loginResponse.cookie}`);
         } else {
             console.error('Login failed:', loginResponse.error);
         }
-        return loginResponse.data.data.user as Users;
+        if (loginResponse && loginResponse.data && loginResponse.data.data) {
+            return loginResponse.data.data.user as Users;
+        }
+        return false;
+
     }
 
-    public async loadAuthor(role: string | null) {
-        if (!role) {
-            return this.loadAuthorByRole(null);
-        }
-
-        // @ts-ignore
-        let author = this.allCreators.find(user => user.groups?.indexOf(role) > -1);
-        if (author && author.cookie) return author
-        if (author && author.email) {
-            author = await this.loginUser(author.email) // get cookie
-            return author
-        }
-        if (role === 'superuser') {
-            return await this.loginUser();
-        }
-        author = await this.loadAuthorByRole(role)
-        return author;
-    }
-
-    public async loadAuthorByRole(role: string | null) {
+    public async loadAuthorByRole(role: string | null): Promise<Creators | null> {
         const contributors = this.allCreators.length > 0 ? this.allCreators : await this.getContentCreators();
         // @ts-ignore
         let authors = !role ? contributors : contributors.filter(user => user.groups?.indexOf(role) > -1);
@@ -235,6 +244,7 @@ export class WorldBuilder {
         if (!authors.length) {
             console.warn(`FALLING BACK ON SUPERUSER instead of ${role}.`); // TODO: paginate of meta
             const author = await this.loginUser('superuser')
+            if (!author) return null
             return author;
         }
 
@@ -242,13 +252,24 @@ export class WorldBuilder {
         let author = authors[randomIndex] as Creators
         console.log(`REUSING CREATOR ${author.username}`);
         if (!author.cookie) {
-            author = await this.loginUser(author.email || author.username) // get cookie
+            const works = await this.loginUser(author.email || author.username) // get cookie
+            if (works) {
+                author = works;
+            } else {
+                if (`Login failed for ${author.email || author.username}. Removing from creators`)
+                    this.allCreators = this.allCreators.filter(user => user.email !== author.email)
+                if (this.allCreators.length > 0) {
+                    return this.loadAuthorByRole(role)
+                }
+                return null
+            }
         }
         return author;
     }
 
     public async getContentCreators(offset = 0) {
-        const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/users/?page_size=300&offset=${offset}`);
+        // TODO: only get users created by tester
+        const relResponse = await this.apiClient.get(`/api/users/by-group?group=oa-test?page_size=300&offset=${offset}`);
         if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
             relResponse.data.results.forEach(((user: Users) => {
                 this.allCreators.push(user)

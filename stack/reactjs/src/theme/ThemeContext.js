@@ -51,45 +51,11 @@ const ThemeProvider = ({children}) => {
 
             return responsiveFontSizes(createTheme({
                 typography: {
-                    h1: {
-                        fontSize: 30
-                    },
-                    h2: {
-                        fontSize: 20
-                    },
-                    h3: {
-                        fontSize: 19
-                    },
-                    h4: {
-                        fontSize: 18
-                    },
-                    h5: {
-                        fontSize: 17
-                    },
-                    h6: {
-                        fontSize: 16
-                    },
-                    subtitle1: {
-                        fontSize: 15
-                    },
-                    subtitle2: {
-                        fontSize: 15
-                    },
-                    body1: {
-                        fontSize: 14
-                    },
-                    body2: {
-                        fontSize: 13
-                    },
-                    button: {
-                        fontSize: 13
-                    },
-                    caption: {
-                        fontSize: 20
-                    },
-                    overline: {
-                        fontSize: 20
-                    }
+                    fontSize: 15,
+                    h1: {fontSize: '2.5rem', fontWeight: 100},
+                    body1: {fontSize: '0.9rem', lineHeight: 1.5},
+                    body2: {fontSize: '0.8rem', lineHeight: 1.4},
+                    button: {fontSize: '0.8rem', textTransform: 'none', textDecoration: "none"},
                 },
                 components: {
                     // Name of the component

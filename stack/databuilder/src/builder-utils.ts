@@ -118,7 +118,8 @@ export function fakeFieldData(field_type: string, field_name: string, options: a
             // const filePath = getRandomFile('./public/profilepics')
             // const fileStream = fs.createReadStream(resolve(filePath));
             // return fileStream;
-            return faker.image.urlLoremFlickr({category: model_type})
+            return faker.image.urlPicsumPhotos()
+            // return faker.image.urlLoremFlickr({category: model_type})
         case 'video':
             const videoOpts = [
                 "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4"
@@ -126,7 +127,8 @@ export function fakeFieldData(field_type: string, field_name: string, options: a
             const randomIndex = Math.floor(Math.random() * videoOpts.length);
             return videoOpts[randomIndex];
         case 'media':
-            return faker.image.urlLoremFlickr({category: model_type})
+            return faker.image.urlPicsumPhotos()
+            // return faker.image.urlLoremFlickr({category: model_type}) // flickr now rate limiting!!! :/
         case 'flat_list':
             return Array.from({length: 5}, () => faker.lorem.word()); // Example of a flat list
         case 'bounding_box':
