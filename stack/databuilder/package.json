@@ -21,6 +21,7 @@
     "axios-cookiejar-support": "^5.0.2",
     "dotenv": "^16.4.5",
     "form-data": "^4.0.1",
+    "request": "^2.88.2",
     "tough-cookie": "^4.1.4"
   }
 }

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
-from django.db import models
+from django.apps import apps
 import logging
 logger = logging.getLogger(__name__)
 
@@ -69,6 +69,12 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
         if not group:
             return Response({"error": f"Group '{OA_TESTER_GROUP}' does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
+        logger.warning("handle oa-testing update")
+        if request.data:
+            logger.warning("Request data keys:", list(request.data.keys()))
+        if request.FILES:
+            logger.warning("Request files keys:", list(request.FILES.keys()))
+
         # Handle updating the picture
         if 'picture' in request.FILES:
             logger.warning("request has picture")
@@ -92,12 +98,8 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
 
-        # queryset already limited by this group
-        #if not user.groups.filter(name=OA_TESTER_GROUP).exists():
-        #    return Response({"error": f"User {user.username} is not part of the '{OA_TESTER_GROUP}' group."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Delete user's content
-        for model in models.get_models():
+        my_app_models = apps.get_app_config('oaexample_app').get_models()
+        for model in my_app_models:
             if hasattr(model, 'author'):
                 model.objects.filter(author=user).delete()
 

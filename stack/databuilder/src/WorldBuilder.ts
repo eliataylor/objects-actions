@@ -1,10 +1,12 @@
-import axios from 'axios';
 import {EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
 import ApiClient, {HttpResponse} from "./ApiClient";
-import {fakeFieldData, checkInvalidFormDataValues} from "./builder-utils";
+import {fakeFieldData} from "./builder-utils";
 import fs from "fs";
 import path from "path";
 import {en, Faker} from '@faker-js/faker';
+import axios from 'axios';
+
+var request = require('request');
 
 const faker = new Faker({
     locale: [en],
@@ -64,6 +66,13 @@ export class WorldBuilder {
                 received,
                 context: {owner, time: new Date().toISOString()},
             }
+
+            for (let key in sent) {
+                if (typeof sent[key] === 'object' && sent[key] !== null && 'stream' in sent[key] && typeof sent[key].stream === 'object') {
+                    sent[key].stream = sent[key].stream.statusCode
+                }
+            }
+
             const parts = url.split('/');
             const name: string[] = [verb];
             let hasId = false
@@ -98,10 +107,15 @@ export class WorldBuilder {
         if (registered?.data && registered.data.data.user) {
             const allAuthUser = registered.data.data.user
             this.saveFixture('add', `/api/users/${allAuthUser.id}`, baseData, registered, allAuthUser)
-            const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, {});
+
+            const entity = await this.populateEntity(allAuthUser, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
+            const tosend = {picture: entity.picture, hasImage:true};
+            const {formData, headers} = await this.serializePayload(tosend);
+            const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, formData, headers);
+
             if (user && user.data) {
                 user.data.groups = ['oa-tester']
-                this.saveFixture('add', `/api/oa-testers/${allAuthUser.id}`, {}, user, allAuthUser)
+                this.saveFixture('add', `/api/oa-testers/${allAuthUser.id}`, entity, user, allAuthUser)
                 const profile = await this.updateUserProfile({...user.data, ...baseData});
                 return profile;
             } else {
@@ -114,13 +128,11 @@ export class WorldBuilder {
 
     public async updateUserProfile(user: any) {
         const entity = await this.populateEntity(user, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
-        const {formData, headers} = this.serializePayload(entity);
-        const invalidKeys = checkInvalidFormDataValues(formData);
-        console.warn("INVALID KEYS!", invalidKeys);
+        const {formData, headers} = await this.serializePayload(entity);
         const apiUrl = `/api/users/${user.id}`
         const profile = await this.apiClient.post(apiUrl, formData, headers);
         if (profile && profile.data) {
-            this.saveFixture('edit', apiUrl, formData, profile, profile.data)
+            this.saveFixture('edit', apiUrl, entity, profile, profile.data)
         } else {
             console.error('profile update failed', profile)
         }
@@ -206,7 +218,7 @@ export class WorldBuilder {
 
         let entity: any = {author: creator.id};
         entity = await this.populateEntity(entity, hasUrl)
-        const {formData, headers} = this.serializePayload(entity);
+        const {formData, headers} = await this.serializePayload(entity);
 
         const response = await this.apiClient.post(hasUrl.api, formData, headers);
         if (!response.data?.id) {
@@ -272,11 +284,13 @@ export class WorldBuilder {
 
             } else if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
                 if (entity.hasImage) {
-                    continue; // only allow 1 image right now
+                    continue; // only allow 1 for now
                 }
-                entity.hasImage = true;
                 const mediaUrl = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
-//                const mediaResponse = await http.request(mediaUrl)
+                // const mediaResponse = {stream:mediaUrl}
+                //entity.hasImage = true;
+                //entity[field.machine] = mediaResponse
+
                 const mediaResponse = await axios.get(mediaUrl, {
                     responseType: 'stream',
                     headers: {
@@ -292,6 +306,7 @@ export class WorldBuilder {
                         filename += '.jpg'
                     }
                     console.log(`Going to load ${mediaUrl} as ${filename}`)
+
                     entity.hasImage = true;
                     entity[field.machine] = {
                         stream: mediaResponse.data, // The IncomingMessage stream
@@ -299,6 +314,7 @@ export class WorldBuilder {
                         contentType: mediaResponse.headers['content-type'] || 'image/jpg', // todo: Infer MIME type
                     }
                 }
+
             } else {
                 entity[field.machine] = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
             }
@@ -306,7 +322,7 @@ export class WorldBuilder {
         return entity;
     }
 
-    serializePayload(entity: any) {
+    async serializePayload(entity: any): Promise<{ formData: any; headers: any }> {
         const headers: any = {}
 
         let formData: any = null;
@@ -322,13 +338,19 @@ export class WorldBuilder {
                     entity[key].forEach((value: any, index: number) => {
                         formData.append(`${key}[${index}]`, value);
                     });
-                } else if (typeof entity[key] === 'object' && entity[key] !== null && 'stream' in entity[key] && typeof entity[key].stream === 'object') {
-                    console.log(`Appending ${key} as stream with metadata`);
-                    /* formData.append(key, entity[key].stream, {
-                        filename: entity[key].filename || `${key}.jpg`,
-                        contentType: entity[key].contentType || 'image/jpeg',
-                    }); */
-                    formData.append(key, entity[key].stream, entity[key].filename || `${key}.jpg`);
+                } else if (typeof entity[key] === 'object' && entity[key] !== null && 'stream' in entity[key]) {
+                    if (typeof entity[key].stream === 'string') {
+                        console.log(`Requesting ${entity[key].stream} for ${key}`);
+                        formData.append(entity[key], request(entity[key].stream));
+                        console.log(`Done ${entity[key].stream} for ${key}`);
+                    } else {
+                        console.log(`Appending ${key} as stream with metadata`);
+                        /* formData.append(key, entity[key].stream, {
+                            filename: entity[key].filename || `${key}.jpg`,
+                            contentType: entity[key].contentType || 'image/jpeg',
+                        }); */
+                        formData.append(key, entity[key].stream, entity[key].filename || `${key}.jpg`);
+                    }
                 } else if (entity[key] instanceof http.IncomingMessage) { // entity[key] instanceof Blob (Blob not in Node16)
                     console.log(`appending ${key} as file stream `)
                     formData.append(key, entity[key]);
@@ -337,7 +359,9 @@ export class WorldBuilder {
                     for (let nestedKey in entity[key]) {
                         formData.append(`${key}.${nestedKey}`, entity[key][nestedKey]);
                     }
-                } else if (typeof entity[key] === 'string' || typeof entity[key] === 'number' || typeof entity[key] === 'boolean') {
+                } else if (typeof entity[key] === 'boolean') {
+                    formData.append(key, entity[key].toString());
+                } else if (typeof entity[key] === 'string' || typeof entity[key] === 'number') {
                     formData.append(key, entity[key]);
                 } else {
                     console.log("UNHANDLED DATA TYPE", entity[key]);

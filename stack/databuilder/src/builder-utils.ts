@@ -74,23 +74,6 @@ async function fetchImageMetaData(category: string): Promise<ImageMetaData> {
     }
 }
 
-
-export function checkInvalidFormDataValues(formData:any) {
-    const invalidKeys = [];
-
-    for (const [key, value] of formData.entries()) {
-        if (
-            !(typeof value === 'string' ||
-              Buffer.isBuffer(value) ||
-              value instanceof Uint8Array)
-        ) {
-            invalidKeys.push(key);
-        }
-    }
-
-    return invalidKeys;
-}
-
 export async function fakeFieldData(field_type: string, field_name: string, options: any, model_type: string): Promise<any> {
     switch (field_type) {
         case 'user_account':
