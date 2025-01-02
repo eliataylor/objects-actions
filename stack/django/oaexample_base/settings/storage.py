@@ -1,8 +1,7 @@
-from .base import *
 import logging
 from urllib.parse import urlparse
-
-from .base import *
+import os
+from .base import myEnv
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ OA_ENV_STORAGE = os.getenv("OA_ENV_STORAGE", "local")
 print(f"[DJANGO] STORAGE USING: {OA_ENV_STORAGE} ")
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
@@ -26,7 +25,7 @@ STORAGES = {
         # ManifestStaticFilesStorage is recommended in production, to prevent
         # outdated JavaScript / CSS assets being served from cache
         # (e.g. after a Wagtail upgrade).
-        # See https://docs.djangoproject.com/en/4.2/ref/contrib/staticfiles/#manifeststaticfilesstorage
+        # See https://docs.djangoproject.com/en/5.0/ref/contrib/staticfiles/#manifeststaticfilesstorage
         "staticfiles": {
             "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
         },

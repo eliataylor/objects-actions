@@ -1,8 +1,6 @@
-import os
 from urllib.parse import urlparse
-
-from . import DJANGO_ENV
-from .base import myEnv
+from .base import myEnv, DJANGO_ENV
+import os
 
 APP_HOST = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
 APP_HOST_PARTS = urlparse(APP_HOST)

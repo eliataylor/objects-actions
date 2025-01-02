@@ -1,8 +1,6 @@
-from .base import *
 from urllib.parse import urlparse
-from urllib.parse import urlparse
-
-from .base import *
+import os
+from .base import myEnv, DEBUG
 
 # how are emails sent: django | gmail | sendgrid | smtp
 OA_ENV_EMAIL = os.getenv("OA_ENV_EMAIL", "django")

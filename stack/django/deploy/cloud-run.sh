@@ -74,7 +74,6 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-env-vars DJANGO_DEBUG=$DJANGO_DEBUG \
     --set-env-vars GCP_PROJECT_ID=$GCP_PROJECT_ID \
     --set-env-vars GCP_BUCKET_API_NAME=$GCP_BUCKET_API_NAME \
-    --set-env-vars FRONTEND_INDEX_HTML=$FRONTEND_INDEX_HTML \
     --set-env-vars DJANGO_SUPERUSER_USERNAME=$DJANGO_SUPERUSER_USERNAME \
     --set-env-vars DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL \
     --set-env-vars GCP_MYSQL_HOST=$GCP_MYSQL_HOST \
