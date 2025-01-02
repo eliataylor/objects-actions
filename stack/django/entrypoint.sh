@@ -15,21 +15,17 @@ fi
 
 exec "$@"
 
-# Create a superuser if it does not exist
-if [ "$DJANGO_SUPERUSER_USERNAME" ] && [ "$DJANGO_SUPERUSER_PASSWORD" ] && [ "$DJANGO_SUPERUSER_EMAIL" ]; then
-    echo "Building Django migrations"
-    python manage.py makemigrations oaexample_app
-    python manage.py migrate
-    # python manage.py migrate --run-syncdb
-    echo "Creating superuser"
-    python manage.py createsuperuser --noinput || true
-    echo "Build static files"
-    python manage.py collectstatic --noinput || true
-    echo "Superuser created."
-else
-    echo "ENV for Django Username, Password and Email is not SET"
-fi
-
+echo "Building Django migrations"
+python manage.py makemigrations oaexample_app || { echo "Makemigrations failed"; }
+echo "Migrating"
+python manage.py migrate --noinput || { echo "Migrate failed"; }
+echo "Migrating Sync DB"
+python manage.py migrate --run-syncdb --noinput || { echo "Migrate db sync failed"; }
+echo "Creating superuser"
+python manage.py createsuperuser --noinput || true
+echo "Build static files"
+python manage.py collectstatic --noinput || true
+echo "Superuser created."
 
 if [ "$DJANGO_ENV" = "testing" ] || [ "$DJANGO_ENV" = "development" ] || { [ "$DJANGO_ENV" = "docker" ] && [ "$DJANGO_DEBUG" = "True" ]; }; then
     echo "Running in development mode with runserver_plus..."
