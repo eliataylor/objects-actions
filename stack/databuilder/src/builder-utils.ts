@@ -264,7 +264,8 @@ export async function fakeFieldData(field_type: string, field_name: string, opti
             return faker.phone.number({style: 'international'})
         case 'address':
             const state = faker.location.state({abbreviated: true})
-            return `${faker.location.streetAddress()} ${faker.location.city()} ${state} ${faker.location.zipCode({state})}`;
+            return `${faker.location.streetAddress()} ${faker.location.city()} ${state}`;
+            // ${faker.location.zipCode({state})} // throws: The locale data for 'location.postcode_by_state' are missing in this locale.
         case 'url':
             let iurl;
             try { // handle "The locale data for 'internet.emoji' are missing in this locale"

@@ -95,18 +95,12 @@ export class WorldBuilder {
             lastName: baseData.last_name
         });
         if (!baseData.username) baseData.username = faker.person.firstName();
-        console.log("Registering", baseData)
         const registered = await this.apiClient.register(baseData);
         if (registered?.data && registered.data.data.user) {
             const allAuthUser = registered.data.data.user
             this.saveFixture('add', `/api/users/${allAuthUser.id}`, baseData, registered, allAuthUser)
 
-            // const entity = await this.populateEntity(allAuthUser, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
-            // const tosend = {picture: entity.picture, first_name: entity.first_name, hasImage: true};
-            // const {formData, headers} = await this.serializePayload(tosend);
-
             const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, {});
-
             if (user && user.data) {
                 user.data.groups = ['oa-tester']
                 this.saveFixture('add', `/api/oa-testers/${allAuthUser.id}`, {}, user, allAuthUser)
@@ -198,7 +192,7 @@ export class WorldBuilder {
             return
         }
         if (item.type === "Users") {
-            console.error("Use the registerUsers function", item)
+            console.error("Use the `registerUsers` function", item)
             return
         }
 
@@ -213,7 +207,7 @@ export class WorldBuilder {
 
         const response = await this.apiClient.post(hasUrl.api, formData, headers);
         if (!response.data?.id) {
-            console.log(`Error creating ${item.type}. ${response.error}`)
+            console.error(`Error creating ${item.type}. ${response.error}`)
         } else {
             this.saveFixture('add', hasUrl.api, formData, response.data, creator);
         }
@@ -264,7 +258,7 @@ export class WorldBuilder {
                     const id = relResponse.data.results[randomIndex].id || relResponse.data.results[randomIndex].slug;
                     if (field.cardinality as number > 1 && Array.isArray(entity[field.machine]) && entity[field.machine].length > 0) {
                         entity[field.machine].push(id)
-                    } else if (field.cardinality as number > 1 && relType.type === "Users") {
+                    } else if (field.cardinality as number > 1) { //  && relType.type === "Users"
                         entity[field.machine] = [id]
                     } else {
                         entity[field.machine] = id
