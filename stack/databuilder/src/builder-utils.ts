@@ -28,33 +28,57 @@ export async function getImageStream(imageUrl: string): Promise<Blob> {
 
 }
 
+export async function streamImage(imageUrl: string): Promise<Blob> {
+    const mediaResponse = await axios.get(imageUrl, {
+        responseType: 'arraybuffer', // Use arraybuffer to get binary data
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+        },
+    });
+
+    if (mediaResponse.status !== 200) {
+        throw new Error(`Failed to fetch ${imageUrl}, status code: ${mediaResponse.status}`);
+    }
+
+    return mediaResponse.data;
+
+    // Determine content type from headers or default to generic binary type
+    const contentType = mediaResponse.headers['content-type'] || 'application/octet-stream';
+
+    // Create a Blob from the binary data
+    return new Blob([mediaResponse.data], { type: contentType });
+}
+
 export async function fetchImageAsBlob(imageUrl: string): Promise<Blob> {
     // Fetch the image using the native fetch
-    const response = await fetch(imageUrl);
+    const response = await fetch(imageUrl, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+        }
+    });
 
     if (!response.ok) {
         throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
     }
 
-    const blob = await response.blob();
-    return blob;
-
     // Get the response as an ArrayBuffer
-    // const arrayBuffer = await response.arrayBuffer();
+    const arrayBuffer = await response.arrayBuffer();
 
     // Create a Blob from the ArrayBuffer
-    // return new Blob([arrayBuffer], {type: response.headers.get('content-type') || 'image/jpeg'});
+    return new Blob([arrayBuffer], {type: response.headers.get('content-type') || 'image/jpeg'});
 }
 
 export async function getImageAsBlob(imageUrl: string): Promise<Blob> {
     return new Promise((resolve, reject) => {
-        get(imageUrl, (response) => {
+        get(imageUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+            }
+        }, (response) => {
             if (response.statusCode !== 200) {
                 reject(new Error(`Failed to fetch image: ${response.statusCode}`));
                 return;
             }
-
-            return resolve(response);
 
             // Ensure the response is a readable stream
             const readableStream = Readable.from(response);
@@ -252,6 +276,7 @@ export async function fakeFieldData(field_type: string, field_name: string, opti
             // const filePath = getRandomFile('./public/profilepics')
             // const fileStream = fs.createReadStream(resolve(filePath));
             // return fileStream;
+            // return faker.image.urlLoremFlickr({category: model_type})
             const imageMeta = await fetchImageMetaData(model_type);
             return imageMeta.rawFileUrl;
         case 'video':

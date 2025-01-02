@@ -1,11 +1,11 @@
 import {EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
 import ApiClient, {HttpResponse} from "./ApiClient";
-import {fakeFieldData, fetchImageAsBlob} from "./builder-utils";
 import fs from "fs";
-import axios from "axios";
 import path from "path";
 import {en, Faker} from '@faker-js/faker';
-import http from 'http';
+import {fakeFieldData, fetchImageAsBlob, getImageAsBlob, streamImage} from "./builder-utils.ts";
+import * as http from "node:http";
+import axios from "axios";
 import FormData from "form-data";
 
 const faker = new Faker({
@@ -102,22 +102,12 @@ export class WorldBuilder {
             this.saveFixture('add', `/api/users/${allAuthUser.id}`, baseData, registered, allAuthUser)
 
             const entity = await this.populateEntity(allAuthUser, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
-            const tosend = {picture: entity.picture, first_name:entity.first_name, hasImage: true};
+            const tosend = {picture: entity.picture, first_name: entity.first_name, hasImage: true};
             const {formData, headers} = await this.serializePayload(tosend);
-            /*
-                        fetch(`${process.env.REACT_APP_API_HOST}/api/oa-testers/${allAuthUser.id}`, {
-                            method: 'PATCH',
-                            body: formData,
-                            headers
-                        }).then(res => {
-                            res.json()
-                        }).then(json => {
-                            console.log(json);
-                        }).catch(error => {
-                            console.log(error);
-                        })*/
 
             const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, formData, headers);
+
+            return false;
 
             if (user && user.data) {
                 user.data.groups = ['oa-tester']
@@ -292,14 +282,22 @@ export class WorldBuilder {
                 if (entity.hasImage) {
                     continue; // only allow 1 for now
                 }
-                // const mediaUrl = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
-                const mediaUrl = "https://api.trackauthoritymusic.com/sites/default/files/products/therapruler-book.jpeg"
-                /*
-                const mediaResponse = {stream: mediaUrl}
+                const mediaUrl = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
+                // const mediaUrl = "https://api.trackauthoritymusic.com/sites/default/files/products/therapruler-book.jpeg"
+                // const mediaUrl = "https://live.staticflickr.com/65535/51418651934_309ddab4f2_n.jpg"
+                console.log(`streaming ${mediaUrl}`)
+
+                let filename = new URL(mediaUrl).pathname;
+                filename = filename.substring(filename.lastIndexOf('/') + 1)
+                if (filename.indexOf('.') < 0) {
+                    filename += '.jpg'
+                }
+
+                const mediaResponse = {stream: mediaUrl, filename}
                 entity.hasImage = true;
                 entity[field.machine] = mediaResponse
 
-                 */
+                /*
                 const mediaResponse = await axios.get(mediaUrl, {
                     responseType: 'stream',
                     headers: {
@@ -309,13 +307,7 @@ export class WorldBuilder {
                 if (mediaResponse.status !== 200) {
                     throw new Error(`Failed to fetch ${field.field_type} from ${mediaUrl}`);
                 } else {
-                    let filename = new URL(mediaUrl).pathname;
-                    filename = filename.substring(filename.lastIndexOf('/') + 1)
-                    if (filename.indexOf('.') < 0) {
-                        filename += '.jpg'
-                    }
                     console.log(`Going to load ${mediaUrl} as ${filename}`)
-
                     entity.hasImage = true;
                     entity[field.machine] = {
                         stream: mediaResponse.data, // The IncomingMessage stream
@@ -324,6 +316,7 @@ export class WorldBuilder {
                     }
                 }
 
+                 */
             } else {
                 entity[field.machine] = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
             }
@@ -352,16 +345,22 @@ export class WorldBuilder {
                     const stream = entity[key].stream
                     if (typeof stream === 'string') {
                         console.log(`Requesting ${stream} for ${key}`);
-                        // const imageBlob = await fetchImageAsBlob("http://localhost:3000/apple-touch-icon.png");
-                        const imageBlob = await fetchImageAsBlob(stream);
-                        formData.append(key, imageBlob, {filename});
+                        // const imageBlob = await fetchImageAsBlob(stream);
+                        // const imageBlob = await getImageAsBlob(stream);
+                        const imageBlob = await streamImage(stream);
+
+                        console.log(imageBlob);
+
+                        formData.append(key, imageBlob, {
+                            filename: filename,
+                            contentType: entity[key].contentType || 'image/jpeg',
+                        });
                     } else if (stream instanceof http.IncomingMessage || stream instanceof Blob) {
                         console.log(`appending ${key} as stream with metadata`);
                         formData.append(key, stream, {
                             filename: filename,
                             contentType: entity[key].contentType || 'image/jpeg',
                         });
-                        formData.append(key, stream, filename);
                     }
                 } else if (entity[key] instanceof http.IncomingMessage || entity[key] instanceof Blob) {
                     console.log(`appending ${key} as file stream `)
