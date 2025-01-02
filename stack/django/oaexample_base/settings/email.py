@@ -39,13 +39,12 @@ TWILIO_VERIFY_SERVICE_SID = myEnv("TWILIO_VERIFY_SERVICE_SID", "")
 TWILIO_PHONE_NUMBER = myEnv("TWILIO_PHONE_NUMBER", "")
 
 
-"""
 # in docker it's created at ~/.ssl/certificate.crt
 if DEBUG:
     import certifi
-    EMAIL_SSL_CERTFILE = certifi.where()
-    if os.path.isfile(EMAIL_SSL_CERTFILE) and os.access(EMAIL_SSL_CERTFILE, os.R_OK):
-        print(f"[DJANGO] SSL certificate file is valid and readable: {EMAIL_SSL_CERTFILE}")
+    cert = certifi.where()
+    if os.path.isfile(cert) and os.access(cert, os.R_OK):
+        EMAIL_SSL_CERTFILE = cert
+        print(f"[DJANGO] SSL certificate file is valid and readable: {cert}")
     else:
-        print(f"[DJANGO] SSL certificate file is not valid or readable: {EMAIL_SSL_CERTFILE}")
-"""
+        print(f"[DJANGO] SSL certificate file is not valid or readable: {cert}")

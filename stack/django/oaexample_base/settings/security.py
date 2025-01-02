@@ -1,8 +1,7 @@
 import os
 from urllib.parse import urlparse
-
+from corsheaders.defaults import default_headers
 from .base import myEnv
-
 
 def get_tld(hostname):
     if hostname:
@@ -27,8 +26,6 @@ SECRET_KEY = myEnv('DJANGO_SECRET_KEY', 'm(##s4x5rs))6f09xu_xq@1a3-*5sm@n8bh^9dm
 SUPERUSER_USERNAME = myEnv('DJANGO_SUPERUSER_USERNAME', 'superadmin')
 SUPERUSER_PASSWORD = myEnv('DJANGO_SUPERUSER_PASSWORD', 'admin')
 SUPERUSER_EMAIL = myEnv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
-
-from corsheaders.defaults import default_headers
 
 ALLOWED_HOSTS = [get_tld(API_HOST_PARTS.hostname), f".{get_tld(API_HOST_PARTS.hostname)}"]
 

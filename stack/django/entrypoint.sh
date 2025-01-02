@@ -12,8 +12,10 @@ fi
 
 exec "$@"
 
-echo "[DJANGO] Building migrations"
+echo "[DJANGO] Building oaexample migrations"
 python manage.py makemigrations oaexample_app --noinput || { echo "Make migrations failed"; }
+echo "[DJANGO] Building all migrations"
+python manage.py makemigrations --noinput || { echo "Make all migrations failed"; }
 echo "[DJANGO] Migrating"
 python manage.py migrate --noinput || { echo "Migrate failed"; }
 echo "[DJANGO] Sync DB"
@@ -28,10 +30,15 @@ if [ "$DJANGO_ENV" = "testing" ] || [ "$DJANGO_ENV" = "development" ] || { [ "$D
     echo "[DJANGO] Running in development mode with runserver_plus..."
     python manage.py runserver_plus 0.0.0.0:8080 --cert-file "$ssl_cert_path"
 else
-    echo "[DJANGO] Running in production mode with gunicorn..."
+    echo "[DJANGO] Running in production mode with gunicorn with extra timeout..."
     exec gunicorn oaexample_base.wsgi:application \
         --bind 0.0.0.0:8080 \
         --workers 3 \
+        --threads 2 \
+        --timeout 200 \
+        --worker-class gthread \
+        --capture-output \
+        --log-level debug \
         --access-logfile '-' \
         --error-logfile '-'
 fi
