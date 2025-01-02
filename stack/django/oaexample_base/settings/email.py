@@ -12,7 +12,7 @@ API_HOST_PARTS = urlparse(API_HOST)
 
 #Default is SMTP server configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST_USER = myEnv("SMTP_EMAIL_ADDRESS", "info@oaexample.com")
+EMAIL_HOST_USER = myEnv("EMAIL_HOST_USER", "info@oaexample.com")
 EMAIL_HOST_PASSWORD = myEnv("EMAIL_HOST_PASSWORD")
 EMAIL_HOST = myEnv("SMTP_EMAIL_HOST", 'smtp.gmail.com')
 EMAIL_PORT = myEnv("SMTP_EMAIL_PORT", 587)

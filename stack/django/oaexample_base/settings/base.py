@@ -5,6 +5,7 @@ from dotenv import dotenv_values
 from oaexample_base.settings import DJANGO_ENV
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+print(f"Using Root Dir {ROOT_DIR}")
 
 def sanitize_bucket_name(name: str) -> str:
     # Convert to lowercase
@@ -34,7 +35,7 @@ def get_tld(hostname):
 # Only use this when you still want the private version in debug mode / locally like for social keys
 def myEnv(key, default=None):
     if os.path.exists(ROOT_DIR + '/.env.private'):
-        config = dotenv_values(".env.private")
+        config = dotenv_values(ROOT_DIR + '/.env.private')
         if key in config:
             return config[key]
     return os.getenv(key, default)

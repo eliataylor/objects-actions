@@ -1,8 +1,8 @@
 import os
+from urllib.parse import urlparse
 
 from . import DJANGO_ENV
 from .base import myEnv
-from urllib.parse import urlparse
 
 APP_HOST = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
 APP_HOST_PARTS = urlparse(APP_HOST)
@@ -58,7 +58,7 @@ HEADLESS_FRONTEND_URLS = {
     # Fallback in case the state containing the `next` URL is lost and the handshake
     # with the third-party provider fails.
     "socialaccount_login_error": f"{APP_HOST}/account/provider/callback",
-    "socialaccount_login": f"{APP_HOST}/account/provider/callback",
+    "socialaccount_login_cancelled": f"{APP_HOST}/account/provider/callback"
 }
 HEADLESS_SERVE_SPECIFICATION = True
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
@@ -98,8 +98,13 @@ SOCIALACCOUNT_PROVIDERS = {
             "name": "github",
             "provider_id": "github",
             'client_id': myEnv('GITHUB_CLIENT_ID', ""),
-            'secret': myEnv('GITHUB_SECRET', "")
+            'secret': myEnv('GITHUB_SECRET', ""),
+            'redirect_uri': f"{API_HOST}/accounts/github/login/callback"
         },
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+            'redirect_uri': f"{API_HOST}/accounts/github/login/callback"
+        }
     },
     "openid_connect": {
         "APPS": [
@@ -129,7 +134,8 @@ SOCIALACCOUNT_PROVIDERS = {
             "name": "spotify",
             "provider_id": "spotify",
             "client_id": myEnv("SPOTIFY_CLIENT_ID"),
-            "secret": myEnv("SPOTIFY_SECRET")
+            "secret": myEnv("SPOTIFY_SECRET"),
+            'redirect_uri': f"{API_HOST}/accounts/spotify/login/callback"
         },
         'AUTH_PARAMS': {
             'access_type': 'offline',

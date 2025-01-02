@@ -13,7 +13,7 @@ REQUIRED_VARS=("GCP_PROJECT_ID" \
               "GCP_MYSQL_INSTANCE" \
               "GCP_MYSQL_HOST" \
               "MYSQL_DATABASE" \
-              "SMTP_EMAIL_ADDRESS" \
+              "EMAIL_HOST_USER" \
               "ADMIN_EMAIL" \
               "SMTP_EMAIL_HOST" \
               "DEFAULT_FROM_EMAIL" \
@@ -54,8 +54,8 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-env-vars GCP_MYSQL_HOST=$GCP_MYSQL_HOST \
     --set-env-vars MYSQL_DATABASE=$MYSQL_DATABASE \
     --set-env-vars MYSQL_USER=$MYSQL_USER \
-    --set-env-vars SMTP_EMAIL_ADDRESS=$SMTP_EMAIL_ADDRESS \
-    --set-env-vars EMAIL_HOST_USER=$SMTP_EMAIL_ADDRESS \
+    --set-env-vars EMAIL_HOST_USER=$EMAIL_HOST_USER \
+    --set-env-vars EMAIL_HOST_USER=$EMAIL_HOST_USER \
     --set-env-vars SMTP_EMAIL_PORT=$SMTP_EMAIL_PORT \
     --set-env-vars SMTP_EMAIL_HOST=$SMTP_EMAIL_HOST \
     --set-env-vars ADMIN_EMAIL=$ADMIN_EMAIL \

@@ -421,8 +421,8 @@ def redirect_to_frontend(request, provider=None):
     frontend_url = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
     redirect_path = request.path
     query_params = request.GET.copy()
-    if provider:
-        query_params['provider'] = provider
+    if "provider" in query_params:
+        redirect_path = redirect_path.replace("provider", query_params['provider'])
     query_string = query_params.urlencode()
     response = redirect(f'{frontend_url}{redirect_path}?{query_string}')
     return response
@@ -441,7 +441,7 @@ import os
 
 
 class SendCodeView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  # Allow any user to access this view
+    permission_classes = [permissions.AllowAny]  # Allow any user to access this view
 
     @extend_schema(
         request=PhoneNumberSerializer,
@@ -469,7 +469,7 @@ class SendCodeView(APIView):
 
 
 class VerifyCodeView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  # Allow any user to access this view
+    permission_classes = [permissions.AllowAny]  # Allow any user to access this view
 
     @extend_schema(
         request=VerifyPhoneSerializer,

@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Button, Grid, TextField, Typography} from '@mui/material';
 import {sms, smsVerify} from "./lib/allauth";
 import {Link, useNavigate} from "react-router-dom";
+import {makeRelative} from "../utils";
 
 interface SmsSigninOrUpProps {
     onVerify?: (phoneNumber: string) => void;
@@ -80,11 +81,11 @@ const SmsSigninOrUp: React.FC<SmsSigninOrUpProps> = ({onVerify}) => {
         setResponse({...response, fetching: true})
         smsVerify({phone: phoneNumber, code: code}).then((content) => {
             if (content && content.id) {
-                // if (content.redirect) {
-                //    document.location.href = makeRelative(content.redirect)
-                // } else {
-                document.location.href = '/onboarding' // force reload to init user from new cookie
-                // }
+                if (content.redirect) {
+                    document.location.href = makeRelative(content.redirect)
+                } else {
+                    document.location.href = '/'
+                }
             } else {
                 setError(`Invalid Code ${JSON.stringify(content)}`)
             }
@@ -119,7 +120,8 @@ const SmsSigninOrUp: React.FC<SmsSigninOrUpProps> = ({onVerify}) => {
                         />
                     </Grid>
                     <Grid item xs={12} style={{textAlign: 'center'}} mb={5}>
-                        <Button disabled={response.fetching || phoneNumber.length < "4159999999".length} fullWidth={true} variant="contained"
+                        <Button disabled={response.fetching || phoneNumber.length < "4159999999".length}
+                                fullWidth={true} variant="contained"
                                 color="primary"
                                 onClick={handleSendCode}>
                             Send Code
