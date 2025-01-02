@@ -9,7 +9,7 @@ APP_HOST_PARTS = urlparse(APP_HOST)
 API_HOST = os.getenv('REACT_APP_API_HOST', 'https://localapi.oaexample.com:8080')
 API_HOST_PARTS = urlparse(API_HOST)
 
-print(f"AllAuth using {APP_HOST} to {API_HOST}")
+print(f"[DJANGO] AllAuth using {APP_HOST} to {API_HOST}")
 
 MFA_FORMS = {
     'authenticate': 'allauth.mfa.forms.AuthenticateForm',

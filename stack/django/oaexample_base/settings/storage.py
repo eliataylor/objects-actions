@@ -1,7 +1,9 @@
-import os
 from .base import *
-from urllib.parse import urlparse
 import logging
+from urllib.parse import urlparse
+
+from .base import *
+
 logger = logging.getLogger(__name__)
 
 APP_HOST = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
@@ -10,7 +12,7 @@ API_HOST = os.getenv('REACT_APP_API_HOST', 'https://localapi.oaexample.com:8080'
 API_HOST_PARTS = urlparse(API_HOST)
 
 OA_ENV_STORAGE = os.getenv("OA_ENV_STORAGE", "local")
-print(f"STORAGE USING: {OA_ENV_STORAGE} ")
+print(f"[DJANGO] STORAGE USING: {OA_ENV_STORAGE} ")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -41,6 +43,17 @@ STATICFILES_DIRS = [
 
 if OA_ENV_STORAGE == 'gcp':
     from google.oauth2 import service_account
+
+    def sanitize_bucket_name(name: str) -> str:
+        # Convert to lowercase
+        name = name.lower()
+        # Replace underscores with dashes
+        name = name.replace('_', '-')
+        # Remove characters not allowed
+        name = re.sub(r'[^a-z0-9-]', '', name)
+        # Trim to 63 characters max (to comply with bucket name length limit)
+        name = name[:63]
+        return name
 
     GS_CREDENTIALS_PATH = myEnv('GCP_SA_KEY_PATH')
     if os.path.isdir(GS_CREDENTIALS_PATH):

@@ -1,9 +1,8 @@
-import os
 from .base import *
 
 # the location of mysql server. options are: docker | local | gcp
 OA_ENV_DB = os.getenv("OA_ENV_DB", "docker")
-print(f"DATABASE USING: {OA_ENV_DB} ")
+print(f"[DJANGO] DATABASE USING: {OA_ENV_DB} ")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -31,8 +30,8 @@ elif OA_ENV_DB == 'gcp':
     DATABASES["default"]["NAME"] = myEnv("MYSQL_DATABASE", "localdb")
     DATABASES["default"]["USER"] = myEnv("MYSQL_USER", "localuser")
     DATABASES["default"]["PASSWORD"] = myEnv("MYSQL_PASSWORD", "localpassword")
+    # DATABASES["default"]["HOST"] = "127.0.0.1" # when running mysql in docker and django on host
     DATABASES["default"]["HOST"] = myEnv("GCP_MYSQL_HOST")
 
 
-if DEBUG:
-    print(f"DB Connecting with {DATABASES['default']['NAME']} and {DATABASES['default']['USER']} to {DATABASES['default']['HOST']}" )
+print(f"[DJANGO] DB Connecting with {DATABASES['default']['NAME']} and {DATABASES['default']['USER']} to {DATABASES['default']['HOST']}" )

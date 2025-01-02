@@ -1,7 +1,22 @@
 import os
-import re
-from .base import myEnv, get_tld
 from urllib.parse import urlparse
+
+from .base import myEnv
+
+
+def get_tld(hostname):
+    if hostname:
+        parts = hostname.split(".")
+        if hostname == "localhost" or hostname.replace(".", "").isdigit():
+            # Handle localhost or IP
+            result = hostname
+        else:
+            # Get the last two parts for domain names
+            result = ".".join(parts[-2:])
+        return result
+    else:
+        return hostname
+
 
 APP_HOST = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
 APP_HOST_PARTS = urlparse(APP_HOST)

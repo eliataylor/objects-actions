@@ -1,34 +1,9 @@
 import os
-import re
+
 from dotenv import dotenv_values
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-print(f"Using Root Dir {ROOT_DIR}")
-
-def sanitize_bucket_name(name: str) -> str:
-    # Convert to lowercase
-    name = name.lower()
-    # Replace underscores with dashes
-    name = name.replace('_', '-')
-    # Remove characters not allowed
-    name = re.sub(r'[^a-z0-9-]', '', name)
-    # Trim to 63 characters max (to comply with bucket name length limit)
-    name = name[:63]
-    return name
-
-def get_tld(hostname):
-    if hostname:
-        parts = hostname.split(".")
-        if hostname == "localhost" or hostname.replace(".", "").isdigit():
-            # Handle localhost or IP
-            result = hostname
-        else:
-            # Get the last two parts for domain names
-            result = ".".join(parts[-2:])
-        return result
-    else:
-        return hostname
-
+print(f"[DJANGO] Using Root Dir {ROOT_DIR}")
 
 # Only use this when you still want the private version in debug mode / locally like for social keys
 def myEnv(key, default=None):
@@ -41,9 +16,8 @@ def myEnv(key, default=None):
 DJANGO_ENV = myEnv('DJANGO_ENV', 'production')
 DEBUG = myEnv('DJANGO_DEBUG', 'True') == 'True'
 
-print(f"DJANGO_ENV: {DJANGO_ENV} ")
-print(f"DEBUG: {DEBUG} ")
-
+print(f"[DJANGO] DJANGO_ENV: {DJANGO_ENV} ")
+print(f"[DJANGO] DEBUG: {DEBUG} ")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
