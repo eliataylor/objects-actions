@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 import * as dotenv from 'dotenv';
 import {WorldBuilder} from "./WorldBuilder";
 import {NavItem, NAVITEMS} from "./types";
@@ -23,7 +22,7 @@ async function start() {
     const builder = new WorldBuilder();
 
     if (args.action === 'users-add') {
-        for (let i = 0; i < args.count; i++) {
+        for (let i = 0; i < parseInt(args.count); i++) {
             const baseData = {} // TODO: allow passing configs from CLI
             await builder.registerUser(baseData);
         }

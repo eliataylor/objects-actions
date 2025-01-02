@@ -31,7 +31,7 @@ class OATesterPagination(PageNumberPagination):
 class OATesterUserViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.filter(groups__name=OA_TESTER_GROUP).order_by('id')
     serializer_class = UsersSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     pagination_class = OATesterPagination
 
     @extend_schema(description="Create a new user and automatically assign them to the 'oa-tester' group.")
@@ -69,11 +69,18 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
         if not group:
             return Response({"error": f"Group '{OA_TESTER_GROUP}' does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
+        logger.warning("Request headers:")
+        print(request.headers)
+        logger.warning("Request body (raw):")
+        print(request.body)
+
         logger.warning("handle oa-testing update")
         if request.data:
-            logger.warning("Request data keys:", list(request.data.keys()))
+            logger.warning("Request data keys:")
+            print(list(request.data.keys()))
         if request.FILES:
-            logger.warning("Request files keys:", list(request.FILES.keys()))
+            logger.warning("Request files keys:")
+            print(list(request.FILES.keys()))
 
         # Handle updating the picture
         if 'picture' in request.FILES:

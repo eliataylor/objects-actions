@@ -1,19 +1,16 @@
 import {EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
 import ApiClient, {HttpResponse} from "./ApiClient";
-import {fakeFieldData} from "./builder-utils";
+import {fakeFieldData, fetchImageAsBlob} from "./builder-utils";
 import fs from "fs";
+import axios from "axios";
 import path from "path";
 import {en, Faker} from '@faker-js/faker';
-import axios from 'axios';
-
-var request = require('request');
+import http from 'http';
+import FormData from "form-data";
 
 const faker = new Faker({
     locale: [en],
 });
-
-const FormData = require('form-data');
-const http = require('http');
 
 interface Creators extends Users {
     cookie?: string;
@@ -33,10 +30,6 @@ export interface FixtureData {
     context: FixtureContext;
 }
 
-function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 type WorldData = { [key: string]: HttpResponse<any>[] }
 
 export class WorldBuilder {
@@ -48,7 +41,7 @@ export class WorldBuilder {
         this.apiClient = new ApiClient();
         this.allCreators = []
 
-        this.fixturePath = path.join(__dirname, '..', '..', 'cypress/cypress/fixtures'); // on local host
+        this.fixturePath = path.resolve('..', 'cypress/cypress/fixtures'); // on local host
         if (!fs.existsSync(this.fixturePath)) {
             console.log(`no such fixture path ${this.fixturePath}`)
             this.fixturePath = '/app/cypress/cypress/fixtures'; // in docker
@@ -109,8 +102,21 @@ export class WorldBuilder {
             this.saveFixture('add', `/api/users/${allAuthUser.id}`, baseData, registered, allAuthUser)
 
             const entity = await this.populateEntity(allAuthUser, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
-            const tosend = {picture: entity.picture, hasImage:true};
+            const tosend = {picture: entity.picture, first_name:entity.first_name, hasImage: true};
             const {formData, headers} = await this.serializePayload(tosend);
+            /*
+                        fetch(`${process.env.REACT_APP_API_HOST}/api/oa-testers/${allAuthUser.id}`, {
+                            method: 'PATCH',
+                            body: formData,
+                            headers
+                        }).then(res => {
+                            res.json()
+                        }).then(json => {
+                            console.log(json);
+                        }).catch(error => {
+                            console.log(error);
+                        })*/
+
             const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, formData, headers);
 
             if (user && user.data) {
@@ -286,11 +292,14 @@ export class WorldBuilder {
                 if (entity.hasImage) {
                     continue; // only allow 1 for now
                 }
-                const mediaUrl = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
-                // const mediaResponse = {stream:mediaUrl}
-                //entity.hasImage = true;
-                //entity[field.machine] = mediaResponse
+                // const mediaUrl = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
+                const mediaUrl = "https://api.trackauthoritymusic.com/sites/default/files/products/therapruler-book.jpeg"
+                /*
+                const mediaResponse = {stream: mediaUrl}
+                entity.hasImage = true;
+                entity[field.machine] = mediaResponse
 
+                 */
                 const mediaResponse = await axios.get(mediaUrl, {
                     responseType: 'stream',
                     headers: {
@@ -339,19 +348,22 @@ export class WorldBuilder {
                         formData.append(`${key}[${index}]`, value);
                     });
                 } else if (typeof entity[key] === 'object' && entity[key] !== null && 'stream' in entity[key]) {
-                    if (typeof entity[key].stream === 'string') {
-                        console.log(`Requesting ${entity[key].stream} for ${key}`);
-                        formData.append(entity[key], request(entity[key].stream));
-                        console.log(`Done ${entity[key].stream} for ${key}`);
-                    } else {
-                        console.log(`Appending ${key} as stream with metadata`);
-                        /* formData.append(key, entity[key].stream, {
-                            filename: entity[key].filename || `${key}.jpg`,
+                    const filename = entity[key].filename || `${key}.jpg`
+                    const stream = entity[key].stream
+                    if (typeof stream === 'string') {
+                        console.log(`Requesting ${stream} for ${key}`);
+                        // const imageBlob = await fetchImageAsBlob("http://localhost:3000/apple-touch-icon.png");
+                        const imageBlob = await fetchImageAsBlob(stream);
+                        formData.append(key, imageBlob, {filename});
+                    } else if (stream instanceof http.IncomingMessage || stream instanceof Blob) {
+                        console.log(`appending ${key} as stream with metadata`);
+                        formData.append(key, stream, {
+                            filename: filename,
                             contentType: entity[key].contentType || 'image/jpeg',
-                        }); */
-                        formData.append(key, entity[key].stream, entity[key].filename || `${key}.jpg`);
+                        });
+                        formData.append(key, stream, filename);
                     }
-                } else if (entity[key] instanceof http.IncomingMessage) { // entity[key] instanceof Blob (Blob not in Node16)
+                } else if (entity[key] instanceof http.IncomingMessage || entity[key] instanceof Blob) {
                     console.log(`appending ${key} as file stream `)
                     formData.append(key, entity[key]);
                 } else if (typeof entity[key] === 'object' && entity[key] !== null) {
@@ -367,7 +379,20 @@ export class WorldBuilder {
                     console.log("UNHANDLED DATA TYPE", entity[key]);
                 }
             }
-            Object.assign(headers, formData.getHeaders())
+
+            let formHeaders = {};
+            if (typeof formData.getHeaders === 'function') {
+                formHeaders = formData.getHeaders();
+            } else {
+                const boundary = (formData as any)[Symbol.for('undici:formdata:boundary')];
+                if (boundary) {
+                    formHeaders = {
+                        'Content-Type': `multipart/form-data boundary=${boundary}`
+                    };
+                }
+            }
+
+            Object.assign(headers, formHeaders)
         }
 
         return {formData, headers};

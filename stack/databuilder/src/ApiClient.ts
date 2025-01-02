@@ -1,6 +1,7 @@
 import axios, {AxiosInstance} from 'axios';
 import tough, {Cookie, CookieJar, MemoryCookieStore} from 'tough-cookie';
 import {Users} from "./types";
+import https from 'https';
 
 export interface HttpResponse<T> {
     status: number;
@@ -39,7 +40,7 @@ class ApiClient {
                 'Host': urlParts.host,
                 "Content-Type": "application/json"
             },
-            httpsAgent: new (require('https').Agent)({rejectUnauthorized: false}), // Handle HTTPS requests
+            httpsAgent: new (https.Agent)({rejectUnauthorized: false}), // Handle HTTPS requests
         });
 
         // Interceptor to set CSRF token from cookies
@@ -59,6 +60,7 @@ class ApiClient {
                 config.headers['X-App-Client'] = "ios" // or android
                 config.headers['Authorization'] = `Bearer ${process.env.REACT_APP_USE_TOKEN}`;
             }
+
 
             if (config.url) {
                 if (config.url.indexOf("?") > -1) {
@@ -160,7 +162,7 @@ class ApiClient {
         let resp = this.initResponse()
         let response = null;
         const eid = url.split('/').pop()
-        let method = parseInt(eid || '') > 1 ? 'patch' : 'post';
+        let method = parseInt(eid || '') > 1 ? 'PATCH' : 'POST';
 
         try {
 

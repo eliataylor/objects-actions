@@ -1,13 +1,78 @@
 import {join} from 'path';
 import {en, Faker} from '@faker-js/faker';
-const axios = require('axios');
+import axios from 'axios';
+import fs from 'fs';
+import {get} from 'https'; // Use 'http' if needed
+import {Readable} from 'stream'; // Ensure compatibility with Node.js 18+
 
 
 const faker = new Faker({
     locale: [en],
 });
 
-const fs = require('fs');
+
+export async function getImageStream(imageUrl: string): Promise<Blob> {
+    const response = await axios.get(imageUrl, {
+        responseType: 'stream',
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+        },
+    });
+    if (response.status !== 200) {
+        throw new Error(`Failed from ${imageUrl}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+
+    // Create a Blob from the ArrayBuffer
+    return new Blob([arrayBuffer], {type: response.headers.get('content-type') || 'image/jpeg'});
+
+}
+
+export async function fetchImageAsBlob(imageUrl: string): Promise<Blob> {
+    // Fetch the image using the native fetch
+    const response = await fetch(imageUrl);
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    return blob;
+
+    // Get the response as an ArrayBuffer
+    // const arrayBuffer = await response.arrayBuffer();
+
+    // Create a Blob from the ArrayBuffer
+    // return new Blob([arrayBuffer], {type: response.headers.get('content-type') || 'image/jpeg'});
+}
+
+export async function getImageAsBlob(imageUrl: string): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+        get(imageUrl, (response) => {
+            if (response.statusCode !== 200) {
+                reject(new Error(`Failed to fetch image: ${response.statusCode}`));
+                return;
+            }
+
+            return resolve(response);
+
+            // Ensure the response is a readable stream
+            const readableStream = Readable.from(response);
+
+            // Collect image data as a buffer
+            const chunks: Buffer[] = [];
+            readableStream.on('data', (chunk) => chunks.push(chunk));
+            readableStream.on('end', () => {
+                const buffer = Buffer.concat(chunks);
+                resolve(
+                    new Blob([buffer], {type: response.headers['content-type'] || 'image/jpeg'})
+                );
+            });
+
+            readableStream.on('error', (err) => reject(err));
+        }).on('error', reject);
+    });
+}
 
 function getRandomFile(directoryPath: string): string {
     const files: [] = fs.readdirSync(directoryPath);
