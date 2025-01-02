@@ -16,8 +16,9 @@ staticfiles
 
 .idea
 .venv
-.env
+.env.private
 .env.gcp
+
 cloud-sql-proxy
 
 secrets.txt

@@ -17,12 +17,13 @@ exec "$@"
 
 # Create a superuser if it does not exist
 if [ "$DJANGO_SUPERUSER_USERNAME" ] && [ "$DJANGO_SUPERUSER_PASSWORD" ] && [ "$DJANGO_SUPERUSER_EMAIL" ]; then
-    echo "Running createsuperuser in Django"
+    echo "Building Django migrations"
     python manage.py makemigrations oaexample_app
     python manage.py migrate
-    python manage.py migrate --run-syncdb
-    python manage.py makemigrations
+    # python manage.py migrate --run-syncdb
+    echo "Creating superuser"
     python manage.py createsuperuser --noinput || true
+    echo "Build static files"
     python manage.py collectstatic --noinput || true
     echo "Superuser created."
 else

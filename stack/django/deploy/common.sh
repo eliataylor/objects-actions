@@ -5,25 +5,24 @@ PARENT_DIR=$(realpath ".")
 
 source "$SCRIPT_DIR/functions.sh"
 
-# Find root .env
+# Check for required argument
+if [ -z "$1" ]; then
+  echo "Usage: $0 <env_file> [optional_private_env_file]"
+  exit 1
+fi
+
+# Primary .env file
 ENV_FILE="$1"
 
-# Load variables from root .env
-if [ -f "$ENV_FILE" ]; then
-  # Remove entire lines that are comments
-  env_content=$(grep -vE '^\s*#' "$ENV_FILE")
+# Optional .env.private file
+PRIVATE_ENV_FILE="$2"
 
-  # Strip inline comments
-  env_content=$(echo "$env_content" | sed 's/[[:space:]]*#.*//')
+# Parse and export variables from the primary .env file
+parse_and_export_env "$ENV_FILE"
 
-  # Remove any 'export ' prefix
-  env_content=$(echo "$env_content" | sed 's/^export //')
-
-  # Export the variables
-  export $(echo "$env_content" | xargs)
-else
-  echo ".env file not found at $ENV_FILE. Please create a .env file with the necessary variables."
-  exit 1
+# Parse and export variables from the optional .env.private file, if provided
+if [ -n "$PRIVATE_ENV_FILE" ]; then
+  parse_and_export_env "$PRIVATE_ENV_FILE"
 fi
 
 # Sanitize and export GCP_BUCKET_APP_NAME and GCP_BUCKET_API_NAME if they exist

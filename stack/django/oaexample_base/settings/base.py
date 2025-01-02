@@ -2,8 +2,6 @@ import os
 import re
 from dotenv import dotenv_values
 
-from oaexample_base.settings import DJANGO_ENV
-
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 print(f"Using Root Dir {ROOT_DIR}")
 
@@ -40,8 +38,12 @@ def myEnv(key, default=None):
             return config[key]
     return os.getenv(key, default)
 
-# APPEND_SLASH = False
-DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
+DJANGO_ENV = myEnv('DJANGO_ENV', 'production')
+DEBUG = myEnv('DJANGO_DEBUG', 'True') == 'True'
+
+print(f"DJANGO_ENV: {DJANGO_ENV} ")
+print(f"DEBUG: {DEBUG} ")
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -151,7 +153,7 @@ ROOT_URLCONF = 'oaexample_base.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'DIRS': [os.path.join(PROJECT_DIR, 'templates')],
+        'DIRS': [f'{ROOT_DIR}/oaexample_base/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

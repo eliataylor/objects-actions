@@ -18,7 +18,8 @@ class Command(BaseCommand):
         User = get_user_model()
         users_updated = 0
 
-        for user in User.objects.filter(groups__name='oa-tester')
+        base_list = User.objects.filter(groups__name='oa-tester')
+        for user in base_list:
             user.set_password(new_password)
             user.save()
             users_updated += 1

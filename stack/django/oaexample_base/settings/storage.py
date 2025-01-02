@@ -1,6 +1,8 @@
 import os
 from .base import *
 from urllib.parse import urlparse
+import logging
+logger = logging.getLogger(__name__)
 
 APP_HOST = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
 APP_HOST_PARTS = urlparse(APP_HOST)
@@ -41,7 +43,10 @@ if OA_ENV_STORAGE == 'gcp':
     from google.oauth2 import service_account
 
     GS_CREDENTIALS_PATH = myEnv('GCP_SA_KEY_PATH')
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
+    if os.path.isdir(GS_CREDENTIALS_PATH):
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
+    else:
+        logger.warning('Google Service credentials should be set in Secret Manager')
 
     GS_FILE_OVERWRITE = False
     GS_BUCKET_NAME = sanitize_bucket_name(myEnv('GCP_BUCKET_API_NAME', 'oaexample-media'))
