@@ -1,9 +1,10 @@
 import os
-
 from dotenv import dotenv_values
+import logging
+logger = logging.getLogger(__name__)
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-print(f"[DJANGO] Using Root Dir {ROOT_DIR}")
+logger.debug(f"[DJANGO] Using Root Dir {ROOT_DIR}")
 
 # Only use this when you still want the private version in debug mode / locally like for social keys
 def myEnv(key, default=None):
@@ -16,8 +17,8 @@ def myEnv(key, default=None):
 DJANGO_ENV = myEnv('DJANGO_ENV', 'production')
 DEBUG = myEnv('DJANGO_DEBUG', 'True') == 'True'
 
-print(f"[DJANGO] DJANGO_ENV: {DJANGO_ENV} ")
-print(f"[DJANGO] DEBUG: {DEBUG} ")
+logger.debug(f"[DJANGO] DJANGO_ENV: {DJANGO_ENV} ")
+logger.debug(f"[DJANGO] DEBUG: {DEBUG} ")
 
 INSTALLED_APPS = [
     "django.contrib.admin",

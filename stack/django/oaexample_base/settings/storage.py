@@ -1,9 +1,7 @@
-import logging
 from urllib.parse import urlparse
 import os
-from .base import myEnv
+from .base import myEnv, logger
 
-logger = logging.getLogger(__name__)
 
 APP_HOST = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
 APP_HOST_PARTS = urlparse(APP_HOST)
@@ -11,7 +9,7 @@ API_HOST = os.getenv('REACT_APP_API_HOST', 'https://localapi.oaexample.com:8080'
 API_HOST_PARTS = urlparse(API_HOST)
 
 OA_ENV_STORAGE = os.getenv("OA_ENV_STORAGE", "local")
-print(f"[DJANGO] STORAGE USING: {OA_ENV_STORAGE} ")
+logger.debug(f"[DJANGO] STORAGE USING: {OA_ENV_STORAGE} ")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

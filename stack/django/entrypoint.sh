@@ -12,19 +12,36 @@ fi
 
 exec "$@"
 
+
 echo "[DJANGO] Building oaexample migrations"
-python manage.py makemigrations oaexample_app --noinput || { echo "Make migrations failed"; }
+output=$(python manage.py makemigrations oaexample_app --noinput 2>&1) || {
+    echo "[DJANGO] Make migrations failed: $output";
+}
+
 echo "[DJANGO] Building all migrations"
-python manage.py makemigrations --noinput || { echo "Make all migrations failed"; }
+output=$(python manage.py makemigrations --noinput 2>&1) || {
+    echo "[DJANGO] Make all migrations failed: $output";
+}
+
 echo "[DJANGO] Migrating"
-python manage.py migrate --noinput || { echo "Migrate failed"; }
+output=$(python manage.py migrate --noinput 2>&1) || {
+    echo "[DJANGO] Migrate failed: $output";
+}
+
 echo "[DJANGO] Sync DB"
-python manage.py migrate --run-syncdb --noinput || { echo "Migrate db sync failed"; }
+output=$(python manage.py migrate --run-syncdb --noinput 2>&1) || {
+    echo "[DJANGO] Migrate db sync failed: $output";
+}
+
 echo "[DJANGO] Creating superuser"
-python manage.py createsuperuser --noinput || true
+output=$(python manage.py createsuperuser --noinput 2>&1) || {
+    echo "[DJANGO] createsuperuser failed: $output";
+}
+
 echo "[DJANGO] Build static files"
-python manage.py collectstatic --noinput || true
-echo "[DJANGO] Superuser created."
+output=$(python manage.py collectstatic --noinput 2>&1) || {
+    echo "[DJANGO] static files failed: $output";
+}
 
 if [ "$DJANGO_ENV" = "testing" ] || [ "$DJANGO_ENV" = "development" ] || { [ "$DJANGO_ENV" = "docker" ] && [ "$DJANGO_DEBUG" = "True" ]; }; then
     echo "[DJANGO] Running in development mode with runserver_plus..."

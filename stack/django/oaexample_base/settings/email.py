@@ -1,10 +1,10 @@
 from urllib.parse import urlparse
 import os
-from .base import myEnv, DEBUG
+from .base import myEnv, DEBUG, logger
 
 # how are emails sent: django | gmail | sendgrid | smtp
 OA_ENV_EMAIL = os.getenv("OA_ENV_EMAIL", "django")
-print(f"[DJANGO] EMAIL USING: {OA_ENV_EMAIL} ")
+logger.debug(f"[DJANGO] EMAIL USING: {OA_ENV_EMAIL} ")
 
 API_HOST = os.getenv('REACT_APP_API_HOST', 'https://localapi.oaexample.com:8080')
 API_HOST_PARTS = urlparse(API_HOST)
@@ -17,7 +17,7 @@ EMAIL_HOST = myEnv("SMTP_EMAIL_HOST", 'smtp.gmail.com')
 EMAIL_PORT = myEnv("SMTP_EMAIL_PORT", 587)
 EMAIL_USE_TLS = True
 
-print(f"[DJANGO] Using {EMAIL_HOST_USER}")
+logger.debug(f"[DJANGO] Using {EMAIL_HOST_USER}")
 
 DEFAULT_FROM_EMAIL = myEnv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 ADMIN_EMAIL = myEnv("ADMIN_EMAIL", EMAIL_HOST_USER)
@@ -43,6 +43,6 @@ if DEBUG:
     cert = certifi.where()
     if os.path.isfile(cert) and os.access(cert, os.R_OK):
         EMAIL_SSL_CERTFILE = cert
-        print(f"[DJANGO] SSL certificate file is valid and readable: {cert}")
+        logger.debug(f"[DJANGO] SSL certificate file is valid and readable: {cert}")
     else:
-        print(f"[DJANGO] SSL certificate file is not valid or readable: {cert}")
+        logger.debug(f"[DJANGO] SSL certificate file is not valid or readable: {cert}")
