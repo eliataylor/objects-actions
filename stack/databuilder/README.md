@@ -1,4 +1,4 @@
-# Object Actions Fake User & Data generator
+# Fake User & Data generator
 
 
 ## To Install
@@ -7,60 +7,26 @@ cp .env.public .env
 npm install
 ```
 
-
-Register Users with password from .env
+## To Generate data:
+Register test Users with password from .env
 ```
-ts-node src/main.ts --env-file=.env --action=objects-add --count=5
-```
-
-Generate content from randomly selected users
-```
-ts-node src/main.ts --env-file=.env --action=users-add --count=10
+npx tsx src/main.ts --env-file=.env --action=users-add --count=1
 ```
 
-
-----
-Alternative way to create users based on your own custom seed data:
+Generate content for every Object type by users created above
 ```
-cd stack/django
-source .venv/bin/activate
-python manage.py generate_users
+npx tsx src/main.ts --env-file=.env --action=objects-add --count=1
+```
+
+Delete all test users and data
+```
+npx tsx src/main.ts --env-file=.env --action=delete-all
 ```
 
 ---
-
-***All CRUD operations are done by a authenticated user. So this currently works best if all users have the same password from your .env file***   
-
-
-Start a Django Shell
+### you can also create tester users based on your own custom seed data:
+Edit [generate_users.py](stack/django/oaexample_app/management/commands/generate_users.py) with seed data
 ```
-cd stack/django
-source .venv/bin/activate
+docker-compose exec django python manage.py generate-users
 ```
-
-`python manage.py shell` or `docker-compose exec django python manage.py shell` if in docker
-
-
-Then paste this in your Django Shell
-```
-from oaexample_app.models import Users
-
-def update_all_passwords(new_password: str):
-    for user in Users.objects.all():
-        user.set_password(new_password)
-        user.save()
-    print(f"All passwords updated successfully for {Users.objects.count()} users.")
-
-update_all_passwords("APasswordYouShouldChange")
-```
-
-
-
----
-#### To purge test data:
-`python manage.py shell` or `docker-compose exec django python manage.py shell` if in docker
-Then with your Object types:
-```
-from oaexample_app.models import Topics
-Topics.objects.all().delete()
-```
+(all these users are given the 'oa-tester' group which will be auto deleted during delete commands above)

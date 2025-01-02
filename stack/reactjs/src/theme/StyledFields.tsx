@@ -6,6 +6,7 @@ import {Button, ButtonProps, Drawer} from '@mui/material';
 import Badge from "@mui/material/Badge";
 import Paper from "@mui/material/Paper";
 import BottomNavigation from "@mui/material/BottomNavigation";
+import { alpha, darken, lighten } from '@mui/material/styles';
 
 export const TextFieldH1 = styled((props) => <TextField
     variant={'filled'}
@@ -187,14 +188,17 @@ export const StyledDrawer = styled(Drawer)(({theme}) => ({
     },
 }));
 
-export const AlternatingList = styled('div')(({theme}) => ({
-    listStyle: 'none',
-    margin: 0,
-    padding: 0,
+export const AlternatingList = styled('div')(({ theme }) => ({
     '& > *:nth-of-type(odd)': {
-        backgroundColor: theme.palette.background.default,
+        paddingLeft:'1%',
+        paddingRight:'1%',
+        backgroundColor: theme.palette.mode === 'dark'
+            ? alpha(theme.palette.background.paper, 0.080)
+            : darken(theme.palette.background.paper, 0.025),
     },
     '& > *:nth-of-type(even)': {
-        backgroundColor: theme.palette.background.paper,
+        paddingLeft:'1%',
+        paddingRight:'1%',
+        backgroundColor: 'inherit'
     }
 }));

@@ -39,6 +39,19 @@ async function start() {
         }
     }
 
+    if (args.action === 'object-add') {
+        await builder.loginUser(process.env.REACT_APP_LOGIN_EMAIL!);  // needs auth to getContentCreators
+        await builder.getContentCreators();
+
+        let manual = NAVITEMS.find(nav => nav.type === args.type);
+        if (!manual) {
+            return console.error(`no such model ${manual}`)
+        }
+        for (let i = 0; i < args.count; i++) {
+            await builder.buildObject(manual);
+        }
+    }
+
     if (args.action === 'delete-all') {
         await builder.loginUser(process.env.REACT_APP_LOGIN_EMAIL!);  // needs auth to getContentCreators
         const allCreators = await builder.getContentCreators();
@@ -49,10 +62,3 @@ async function start() {
 }
 
 start()
-
-/*
-WARN: for now, types should be inserted in order by field dependency
-let manual = NAVITEMS.find(nav => nav.type === 'Attendees') as NavItem;
-await builder.buildObject(manual);
-return manual;
-*/

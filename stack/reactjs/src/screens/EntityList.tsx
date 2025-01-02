@@ -6,7 +6,7 @@ import TablePaginator from "../components/TablePaginator";
 import ApiClient from "../config/ApiClient";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Add} from "@mui/icons-material";
-import {AlternatingList} from "../theme/StyledFields";
+import {canDo, getEndpoints} from "../object-actions/types/access";
 
 interface EntityListProps {
     model?: string;
@@ -85,30 +85,28 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
     return (
         <Box sx={{padding: 2}} id={"EntityList"}>
             {!listData ? <div>Loading...</div>
-                : typeof listData === 'string' ? <div>{listData}</div>
-                    :
-                    <React.Fragment>
-                        <AppBar position={'sticky'} sx={{marginBottom: 10}} color={'inherit'}>
-                            <Grid pl={1} container justifyContent={'space-between'} alignContent={'center'}
-                                  alignItems={'center'}>
-                                <Grid item>{hasUrl.plural}</Grid>
-                                <TablePaginator totalItems={listData.count} onPageChange={handlePagination}/>
-                            </Grid>
-                        </AppBar>
-                        <Grid container gap={2}>
-                            <AlternatingList className={'AlternatingList'}>
-                                {listData.results.map((obj, i) => <EntityCard key={`entitycard-${i}`}  entity={obj}/>)
-                                }
-                            </AlternatingList>
+            : typeof listData === 'string' ? <div>{listData}</div>
+                :
+                <React.Fragment>
+                    <AppBar position={'sticky'} sx={{marginBottom: 10}} color={'inherit'}>
+                        <Grid pl={1} container justifyContent={'space-between'} alignContent={'center'} alignItems={'center'}>
+                            <Grid item>{hasUrl.plural}</Grid>
+                            <TablePaginator totalItems={listData.count} onPageChange={handlePagination}/>
                         </Grid>
-                    </React.Fragment>
+                    </AppBar>
+                    <Grid container gap={2}>
+                        {listData.results.map((obj, i) => <Grid xs={12} item key={`entitycard-${i}`}><EntityCard
+                            entity={obj}/></Grid>)
+                        }
+                    </Grid>
+                </React.Fragment>
             }
             {showFab && <Fab color="secondary"
                              size="small"
                              sx={{position: 'fixed', right: 20, bottom: 20}}
                              data-href={`/forms${hasUrl.screen}/0/add`}
                              onClick={() => navigate(`/forms${hasUrl.screen}/0/add`)}>
-                <Add/>
+              <Add/>
             </Fab>}
         </Box>
     );
