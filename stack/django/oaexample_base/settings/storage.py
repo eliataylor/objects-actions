@@ -43,6 +43,7 @@ STATICFILES_DIRS = [
 
 if OA_ENV_STORAGE == 'gcp':
     from google.oauth2 import service_account
+    import re
 
     def sanitize_bucket_name(name: str) -> str:
         # Convert to lowercase

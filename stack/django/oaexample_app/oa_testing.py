@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from django.apps import apps
+from django.db.models import Q
 import logging
 logger = logging.getLogger(__name__)
 
