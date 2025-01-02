@@ -212,6 +212,27 @@ class ApiClient {
         return resp;
     }
 
+    public async delete<T>(url: string): Promise<HttpResponse<T>> {
+        let resp = this.initResponse()
+
+        try {
+            const response = await this.client.delete<T>(url);
+            if (response.status < 200 || response.status > 299) {
+                resp = this.returnErrors(response.data)
+                resp.status = response.status;
+            } else {
+                resp.data = response.data;
+                resp.success = true;
+            }
+        } catch (error: any) {
+            resp = this.returnErrors(error)
+            console.error('Delete failed:', error.message);
+        }
+        resp.ended = new Date().getTime();
+
+        return resp;
+    }
+
     public returnErrors(error: any): HttpResponse<any> {
         let resp = this.initResponse()
 

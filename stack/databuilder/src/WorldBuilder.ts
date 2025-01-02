@@ -213,6 +213,17 @@ export class WorldBuilder {
         return response;
     }
 
+    public async deleteTester(user: Creators) {
+
+        const response = await this.apiClient.delete(`/api/oa-testers/${user.id}`);
+        if (response && response.data) {
+            this.saveFixture('delete', `/api/oa-testers/${user.id}`, {}, user, user)
+        } else {
+            console.error("OA-TESTER Not deleted!", user)
+        }
+        return response;
+    }
+
     private async populateEntity(entity: any, hasUrl: NavItem, overwrite: boolean = false) {
         const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[hasUrl.type])
         if (hasUrl.type === "Users") {

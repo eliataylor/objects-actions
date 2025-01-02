@@ -186,3 +186,15 @@ export const StyledDrawer = styled(Drawer)(({theme}) => ({
         borderRight: '1px solid rgba(255, 255, 255, 0.12)', // Optional: add border for better visibility
     },
 }));
+
+export const AlternatingList = styled('div')(({theme}) => ({
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    '& > *:nth-of-type(odd)': {
+        backgroundColor: theme.palette.background.default,
+    },
+    '& > *:nth-of-type(even)': {
+        backgroundColor: theme.palette.background.paper,
+    }
+}));

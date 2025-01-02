@@ -76,6 +76,24 @@ const ThemeProvider = ({children}) => {
                             },
                         },
                     },
+                    MuiList: {
+                        variants: [
+                            {
+                                props: {variant: 'alternatingbg'},
+                                style: {
+                                    '& .MuiListItem-root:nth-of-type(odd)': {
+                                        backgroundColor: 'lightgray',
+                                    },
+                                    '& .MuiListItem-root:nth-of-type(even)': {
+                                        backgroundColor: 'white',
+                                    },
+                                    '& .MuiListItem-root:hover': {
+                                        backgroundColor: 'gray', // Optional hover effect
+                                    },
+                                },
+                            },
+                        ],
+                    },
                 },
                 palette: plt
             }))

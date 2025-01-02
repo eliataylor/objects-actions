@@ -31,7 +31,7 @@ class OATesterPagination(PageNumberPagination):
 class OATesterUserViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.filter(groups__name=OA_TESTER_GROUP).order_by('id')
     serializer_class = UsersSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = OATesterPagination
 
     @extend_schema(description="Create a new user and automatically assign them to the 'oa-tester' group.")
@@ -81,11 +81,22 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
 
+        content_deleted_count = {}
         my_app_models = apps.get_app_config('oaexample_app').get_models()
         for model in my_app_models:
+            content_deleted_count[model] = 0
             if hasattr(model, 'author'):
-                model.objects.filter(author=user).delete()
+                logger.info(f'deleting content for {user.id}')
+                count = model.objects.filter(author=user).delete()  # delete() returns a tuple (count, _)
+                content_deleted_count[model] = count[0]
+            else:
+                logger.debug(f'Skipping content for model {model} because it has no author field')
 
-        # Delete the user
+        logger.info(f'deleting oa-tester {user.id}')
+        user_id = user.id
         user.delete()
-        return Response({"message": f"User {user.username} and their content have been deleted."}, status=status.HTTP_200_OK)
+
+        return Response({
+            "user_id": user_id,
+            "counts": content_deleted_count
+        }, status=status.HTTP_200_OK)

@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import {WorldBuilder} from "./WorldBuilder";
-import {NavItem, NAVITEMS} from "./types";
+import {NAVITEMS, Users} from "./types";
 
 dotenv.config();
 
@@ -38,13 +38,21 @@ async function start() {
             }
         }
     }
+
+    if (args.action === 'delete-all') {
+        await builder.loginUser(process.env.REACT_APP_LOGIN_EMAIL!);  // needs auth to getContentCreators
+        const allCreators = await builder.getContentCreators();
+        allCreators.forEach((async (user: Users) => {
+            await builder.deleteTester(user);
+        }))
+    }
 }
 
 start()
 
-        /*
-        WARN: for now, types should be inserted in order by field dependency
-        let manual = NAVITEMS.find(nav => nav.type === 'Attendees') as NavItem;
-        await builder.buildObject(manual);
-        return manual;
-        */
+/*
+WARN: for now, types should be inserted in order by field dependency
+let manual = NAVITEMS.find(nav => nav.type === 'Attendees') as NavItem;
+await builder.buildObject(manual);
+return manual;
+*/
