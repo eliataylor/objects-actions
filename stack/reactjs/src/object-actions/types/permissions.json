@@ -581,7 +581,9 @@
     "verb": "edit",
     "id_index": 1,
     "ownership": "others",
-    "roles": []
+    "roles": [
+      "admin"
+    ]
   },
   {
     "context": [

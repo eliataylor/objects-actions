@@ -1,7 +1,6 @@
-#!/usr/bin/env ts-node
 import * as dotenv from 'dotenv';
 import {WorldBuilder} from "./WorldBuilder";
-import {NavItem, NAVITEMS} from "./types";
+import {NAVITEMS, Users} from "./types";
 
 dotenv.config();
 
@@ -23,13 +22,14 @@ async function start() {
     const builder = new WorldBuilder();
 
     if (args.action === 'users-add') {
-        for (let i = 0; i < args.count; i++) {
+        for (let i = 0; i < parseInt(args.count); i++) {
             const baseData = {} // TODO: allow passing configs from CLI
             await builder.registerUser(baseData);
         }
     }
 
     if (args.action === 'objects-add') {
+        await builder.loginUser(process.env.REACT_APP_LOGIN_EMAIL!);  // needs auth to getContentCreators
         await builder.getContentCreators();
 
         for (const nav of NAVITEMS) {
@@ -38,13 +38,27 @@ async function start() {
             }
         }
     }
+
+    if (args.action === 'object-add') {
+        await builder.loginUser(process.env.REACT_APP_LOGIN_EMAIL!);  // needs auth to getContentCreators
+        await builder.getContentCreators();
+
+        let manual = NAVITEMS.find(nav => nav.type === args.type);
+        if (!manual) {
+            return console.error(`no such model ${manual}`)
+        }
+        for (let i = 0; i < args.count; i++) {
+            await builder.buildObject(manual);
+        }
+    }
+
+    if (args.action === 'delete-all') {
+        await builder.loginUser(process.env.REACT_APP_LOGIN_EMAIL!);  // needs auth to getContentCreators
+        const allCreators = await builder.getContentCreators();
+        allCreators.forEach((async (user: Users) => {
+            await builder.deleteTester(user);
+        }))
+    }
 }
 
 start()
-
-        /*
-        WARN: for now, types should be inserted in order by field dependency
-        let manual = NAVITEMS.find(nav => nav.type === 'Attendees') as NavItem;
-        await builder.buildObject(manual);
-        return manual;
-        */

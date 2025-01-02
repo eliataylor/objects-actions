@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES6",                 // Target ES6 to use newer JavaScript features
-    "module": "commonjs",            // Compile to CommonJS module system
-    "outDir": "./dist",              // Output directory for compiled files
-    "rootDir": "./src",              // Root directory of the source files
-    "strict": true,                  // Enable all strict type-checking options
-    "jsx": "preserve",
-    "esModuleInterop": true,         // Enable compatibility with ES6 modules
-    "moduleResolution": "Node",
-    "forceConsistentCasingInFileNames": true, // Ensure consistent file casing
-    "skipLibCheck": true,            // Skip type checking of declaration files
-    "resolveJsonModule": true        // Include JSON modules
+    "module": "CommonJS",                  // Use ES modules
+    "moduleResolution": "node",
+    "target": "ES2022",
+    "outDir": "./dist",                 // Output directory for compiled files
+    "rootDir": "./src",                 // Root directory for source files
+    "strict": true,                     // Enable strict type checking
+    "esModuleInterop": true,            // Compatibility with ES modules
+    "resolveJsonModule": true,          // Allow importing JSON
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true  // Allow .ts file imports
   },
-  "include": ["src/**/*"],           // Include all files in the src directory
-  "exclude": ["node_modules", "dist"] // Exclude node_modules and dist directories
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

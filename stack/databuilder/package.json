@@ -3,23 +3,24 @@
   "version": "0.1.0",
   "main": "src/WorldBuilder.ts",
   "scripts": {
-    "start": "ts-node src/main.ts --env-file=.env --action=objects-add --count=1",
-    "objects-add": "ts-node src/main.ts --env-file=.env --action=objects-add --count=5",
-    "users-add": "ts-node src/main.ts --env-file=.env --action=users-add --count=10"
+    "start": "npx tsx src/main.ts --env-file=.env --action=objects-add --count=1",
+    "objects-add": "npx tsx src/main.ts --env-file=.env --action=objects-add --count=1",
+    "users-add": "npx tsx src/main.ts --env-file=.env --action=users-add --count=1",
+    "delete-all": "npx tsx src/main.ts --env-file=.env --action=delete-all"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
     "@types/axios": "^0.14.0",
+    "@types/node": "^22.10.3",
     "@types/tough-cookie": "^4.0.5",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.0.0"
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   },
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
+    "@faker-js/faker": "9.1.0",
     "axios": "^1.7.2",
-    "axios-cookiejar-support": "^5.0.2",
     "dotenv": "^16.4.5",
-    "form-data": "^4.0.0",
+    "form-data": "^4.0.1",
     "tough-cookie": "^4.1.4"
   }
 }

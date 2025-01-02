@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Example:
+# ./load-sheets.sh --env .env
+# OR
 # ./load-sheets.sh --project "oaexample" --types "stack/objects.csv" --permissions "stack/permissions.csv"
 
 source "$(pwd)/docs/common.sh"

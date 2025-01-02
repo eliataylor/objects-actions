@@ -121,7 +121,7 @@ class DjangoBuilder:
                 parts.append(mbuilder.to_string())
 
             self.append_import("admin", f"from .models import {model_name}")
-            admin_parts.append(mbuilder.admin_string())
+            admin_parts.append(mbuilder.admin_string(self.json[class_name]))
 
             self.append_global('models', mbuilder.get_functions())
             self.append_import('models', mbuilder.get_imports())
@@ -129,11 +129,11 @@ class DjangoBuilder:
         if len(self.global_function['models']) > 0:
             parts.insert(0, "\n\t".join(self.global_function['models']).strip())
 
-        inject_generated_code(model_file_path, "\n".join(self.imports['models']).strip(), 'MODELS_IMPORTS')
-        inject_generated_code(model_file_path, "\n\n".join(parts).strip(), 'MODELS')
+        inject_generated_code(model_file_path, "\n".join(self.imports['models']), 'MODELS_IMPORTS')
+        inject_generated_code(model_file_path, "\n\n".join(parts), 'MODELS')
 
-        inject_generated_code(admin_file_path, "\n".join(self.imports['admin']).strip(), 'ADMIN_IMPORTS')
-        inject_generated_code(admin_file_path, "\n\n".join(admin_parts).strip(), 'ADMIN_MODELS')
+        inject_generated_code(admin_file_path, "\n".join(self.imports['admin']), 'ADMIN_IMPORTS')
+        inject_generated_code(admin_file_path, "\n\n".join(admin_parts), 'ADMIN_MODELS')
 
         if len(self.requirements) > 0:
             cmds = "\n".join(self.requirements)
@@ -145,7 +145,8 @@ class DjangoBuilder:
         outpath = os.path.join(self.output_dir, 'urls.py')
         extra_patterns = []
 
-        code = "\nOARouter = DefaultRouter(trailing_slash=False)\n"
+        self.append_import("urls", f"from .oa_testing import OATesterUserViewSet")
+        code = ("\nOARouter = DefaultRouter(trailing_slash=False)\nOARouter.register(r'oa-testers', OATesterUserViewSet, basename='oa-tester')\n")
         for class_name in self.json:
             path_name = create_machine_name(class_name, True, '-')
             model_name = create_object_name(class_name)
@@ -173,7 +174,7 @@ urlpatterns += [
     path('api/', include(OARouter.urls)),
 ]"""
 
-        inject_generated_code(outpath, code.strip(), 'URLS')
+        inject_generated_code(outpath, code, 'URLS')
 
     def build_serializers(self):
         outpath = os.path.join(self.output_dir, 'serializers.py')
@@ -195,7 +196,7 @@ urlpatterns += [
             self.append_import("serializers", f"from .models import {model_name}")
 
         inject_generated_code(outpath, '\n'.join(self.imports["serializers"]), 'SERIALIZER-IMPORTS')
-        inject_generated_code(outpath, serializers_helpers + "\n" + "\n".join(parts).strip(), 'SERIALIZERS')
+        inject_generated_code(outpath, serializers_helpers + "\n" + "\n".join(parts), 'SERIALIZERS')
 
     def build_viewsets(self):
         outpath = os.path.join(self.output_dir, 'views.py')
@@ -235,7 +236,7 @@ urlpatterns += [
             self.append_import("views", f"from .models import {model_name}")
             self.append_import("views", f"from .serializers import {model_name}Serializer")
 
-        inject_generated_code(outpath, '\n'.join(self.imports["views"]).strip(), 'VIEWSET-IMPORTS')
+        inject_generated_code(outpath, '\n'.join(self.imports["views"]), 'VIEWSET-IMPORTS')
 
         with open(self.templates_dir + '/views.py', 'r') as fm:
             core = fm.read()
@@ -243,9 +244,9 @@ urlpatterns += [
             core = core.replace("__SEARCHFIELD_MAP__", json.dumps(searchFieldMap, indent=2).strip())
             core = core.replace("__DJANGO_APPNAME__", self.app_name)
 
-            inject_generated_code(outpath, core.strip(), 'CORE')
+            inject_generated_code(outpath, core, 'CORE')
 
-        inject_generated_code(outpath, "\n".join(parts).strip(), 'VIEWSETS')
+        inject_generated_code(outpath, "\n".join(parts), 'VIEWSETS')
 
     def build_permissions(self):
         matrix = build_permissions_from_csv(self.matrix_path, self.json)
@@ -272,4 +273,4 @@ urlpatterns += [
             self.append_import("views", f"from .models import {class_key}")
 
         inject_generated_code(outpath, '\n'.join(self.imports["permissions"]), 'PERMISSIONS-IMPORTS')
-        inject_generated_code(outpath, permissions_helpers + "\n" + "\n".join(parts).strip(), 'PERMISSIONS')
+        inject_generated_code(outpath, permissions_helpers + "\n" + "\n".join(parts), 'PERMISSIONS')

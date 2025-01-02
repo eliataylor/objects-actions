@@ -47,6 +47,18 @@ export function humanize(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+export function makeRelative(url:string) {
+  try {
+    // Use the URL constructor for parsing
+    const parsedUrl = new URL(url);
+    return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+  } catch (error) {
+    // If the URL is invalid, return as-is or handle the error
+    console.error("Invalid URL provided:", url);
+    return url;
+  }
+}
+
 export function timeAgo(timestamp: Date | string | number): string {
     let date: Date;
 

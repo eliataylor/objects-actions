@@ -1,25 +1,32 @@
-# Object Actions world builder
+# Fake User & Data generator
 
-#### Start App template
-```sh
+
+## To Install
+```
 cp .env.public .env 
 npm install
-npm start
 ```
 
+## To Generate data:
+Register test Users with password from .env
+```
+npx tsx src/main.ts --env-file=.env --action=users-add --count=1
+```
 
+Generate content for every Object type by users created above
+```
+npx tsx src/main.ts --env-file=.env --action=objects-add --count=1
+```
+
+Delete all test users and data
+```
+npx tsx src/main.ts --env-file=.env --action=delete-all
+```
 
 ---
-#### To purge test data:
-python manage.py shell
-
-Song.objects.all().delete()
-Playlist.objects.all().delete()
-PlaylistSongs.objects.all().delete()
-EventPlaylists.objects.all().delete()
-Friendship.objects.all().delete()
-Invites.objects.all().delete()
-ActivityLog.objects.all().delete()
-EventCheckins.objects.all().delete()
-SongRequests.objects.all().delete()
-Likes.objects.all().delete()
+### you can also create tester users based on your own custom seed data:
+Edit [generate_users.py](stack/django/oaexample_app/management/commands/generate_users.py) with seed data
+```
+docker-compose exec django python manage.py generate-users
+```
+(all these users are given the 'oa-tester' group which will be auto deleted during delete commands above)

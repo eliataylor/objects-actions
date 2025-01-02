@@ -24,7 +24,7 @@ const ThemeProvider = ({children}) => {
                     primary: darkMode ? '#ffffff' : '#202020',
                     secondary: darkMode ? '#dadada' : '#333333',
                 },
-                grey : {
+                grey: {
                     500: '#9e9e9e'
                 },
                 /*
@@ -51,7 +51,11 @@ const ThemeProvider = ({children}) => {
 
             return responsiveFontSizes(createTheme({
                 typography: {
-                    fontSize: 12,
+                    fontSize: 15,
+                    h1: {fontSize: '2.5rem', fontWeight: 100},
+                    body1: {fontSize: '0.9rem', lineHeight: 1.5},
+                    body2: {fontSize: '0.8rem', lineHeight: 1.4},
+                    button: {fontSize: '0.8rem', textTransform: 'none', textDecoration: "none"},
                 },
                 components: {
                     // Name of the component
@@ -71,6 +75,24 @@ const ThemeProvider = ({children}) => {
                                 ],
                             },
                         },
+                    },
+                    MuiList: {
+                        variants: [
+                            {
+                                props: {variant: 'alternatingbg'},
+                                style: {
+                                    '& .MuiListItem-root:nth-of-type(odd)': {
+                                        backgroundColor: 'lightgray',
+                                    },
+                                    '& .MuiListItem-root:nth-of-type(even)': {
+                                        backgroundColor: 'white',
+                                    },
+                                    '& .MuiListItem-root:hover': {
+                                        backgroundColor: 'gray', // Optional hover effect
+                                    },
+                                },
+                            },
+                        ],
                     },
                 },
                 palette: plt

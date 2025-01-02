@@ -1,27 +1,31 @@
-import axios from 'axios';
-import {FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
+import {EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
 import ApiClient, {HttpResponse} from "./ApiClient";
-import {fakeFieldData} from "./builder-utils";
-import {faker} from '@faker-js/faker/locale/en_US';
 import fs from "fs";
 import path from "path";
+import {en, Faker} from '@faker-js/faker';
+import {fakeFieldData, imageArrayBuffer} from "./builder-utils.ts";
+import * as http from "node:http";
+import FormData from "form-data";
 
-const FormData = require('form-data');
-const http = require('http');
+const faker = new Faker({
+    locale: [en],
+});
 
 interface Creators extends Users {
-    cookie?: string[];
-    token?: string[];
+    cookie?: string;
+    token?: string;
 }
 
 export interface FixtureContext {
-    owner: Users;
+    owner: Creators;
     time: string;
     cookie?: string;
+    url?: string;
 }
 
 export interface FixtureData {
-    entity: EndingType;
+    sent: EntityTypes;
+    received: EntityTypes;
     context: FixtureContext;
 }
 
@@ -36,7 +40,7 @@ export class WorldBuilder {
         this.apiClient = new ApiClient();
         this.allCreators = []
 
-        this.fixturePath = path.join(__dirname, '..', '..', 'cypress/cypress/fixtures'); // on local host
+        this.fixturePath = path.resolve('..', 'cypress/cypress/fixtures'); // on local host
         if (!fs.existsSync(this.fixturePath)) {
             console.log(`no such fixture path ${this.fixturePath}`)
             this.fixturePath = '/app/cypress/cypress/fixtures'; // in docker
@@ -45,79 +49,134 @@ export class WorldBuilder {
                 this.fixturePath = ''; // ignore
             }
         }
-
     }
 
-    saveFixture(name: string, entity: any, owner: Users) {
+    saveFixture(verb: string, url: string, sent: any, received: any, owner: Users) {
         if (this.fixturePath.length > 0) {
             const data: FixtureData = {
-                entity, context: {owner, time: new Date().toISOString()},
+                sent,
+                received,
+                context: {owner, time: new Date().toISOString()},
             }
 
-            fs.writeFileSync(`${this.fixturePath}/${name}.json`, JSON.stringify(data, null, 2));
-        }
-        console.log(`User ${owner.username} created a ${entity._type} with these roles ${JSON.stringify(owner.groups)}`)
-    }
-
-    serializePayload(entity: any) {
-        const headers: any = {}
-
-        let formData: any = null;
-        if (typeof entity.hasImage === 'undefined') {
-            headers["Content-Type"] = "application/json"
-            formData = entity;
-        } else {
-            delete entity.hasImage;
-            formData = new FormData();
-            for (let key in entity) {
-                if (Array.isArray(entity[key])) {
-                    console.log(`appending array ${key} to FormData`)
-                    entity[key].forEach((value: any, index: number) => {
-                        formData.append(`${key}[${index}]`, value);
-                    });
-                } else if (entity[key] instanceof Blob || entity[key] instanceof http.IncomingMessage) {
-                    console.log(`appending ${key} as file stream `)
-                    formData.append(key, entity[key]);
-                } else if (typeof entity[key] === 'object' && entity[key] !== null) {
-                    console.log(`handle ${entity[key].length} entries for ${key}`)
-                    for (let nestedKey in entity[key]) {
-                        formData.append(`${key}.${nestedKey}`, entity[key][nestedKey]);
-                    }
-                } else {
-                    // Append other types normally
-                    formData.append(key, entity[key]);
+            for (let key in sent) {
+                if (typeof sent[key] === 'object' && sent[key] !== null && 'stream' in sent[key] && typeof sent[key].stream === 'object') {
+                    sent[key].stream = sent[key].stream.statusCode
                 }
             }
-            // headers["Content-Type"] = `multipart/form-data`
-            Object.assign(headers, formData.getHeaders())
+
+            const parts = url.split('/');
+            const name: string[] = [verb];
+            let hasId = false
+            parts.forEach(part => {
+                if (part.length > 0 && part !== 'api') {
+                    name.push(part);
+                    if (parseInt(part) > -1) {
+                        hasId = true;
+                    }
+                }
+            })
+            if (!hasId) {
+                name.push(received.id ?? sent.id)
+            }
+            fs.writeFileSync(`${this.fixturePath}/${name.join('-')}.json`, JSON.stringify(data, null, 2));
         }
-
-
-        return {formData, headers};
+        // console.log(`User ${owner.username} created a ${received._type} with these roles ${JSON.stringify(owner.groups)}`)
     }
 
     public async registerUser(config: any) {
         const baseData = config.base ?? {};
         if (!baseData.password) baseData.password = process.env.REACT_APP_LOGIN_PASS;
+        if (!baseData.first_name) baseData.first_name = faker.person.firstName();
+        if (!baseData.last_name) baseData.last_name = faker.person.lastName();
         if (!baseData.email) baseData.email = faker.internet.email({
             firstName: baseData.first_name,
             lastName: baseData.last_name
         });
         if (!baseData.username) baseData.username = faker.person.firstName();
         const registered = await this.apiClient.register(baseData);
-        this.saveFixture(`user-add-${registered.data.id}`, registered, registered.data.data.user)
-        const profile = await this.updateUserProfile({id: registered.data.data.user.id});
-        return profile;
+        if (registered?.data && registered.data.data.user) {
+            const allAuthUser = registered.data.data.user
+            this.saveFixture('add', `/api/users/${allAuthUser.id}`, baseData, registered, allAuthUser)
+
+            const user = await this.apiClient.post(`/api/oa-testers/${allAuthUser.id}`, {});
+            if (user && user.data) {
+                user.data.groups = ['oa-tester']
+                this.saveFixture('add', `/api/oa-testers/${allAuthUser.id}`, {}, user, allAuthUser)
+                const profile = await this.updateUserProfile({...user.data, ...baseData});
+                return profile;
+            } else {
+                console.error("OA-TESTER GROUP NOT ADDED!", user.data, user.error)
+            }
+        }
+        console.error(registered)
     }
 
     public async updateUserProfile(user: any) {
-        // @ts-ignore
-        const entity = await this.populateEntity(user, NAVITEMS.find(nav => nav.type === "Users"))
-        const {formData, headers} = this.serializePayload(entity);
-        const apiUrl = `${process.env.REACT_APP_API_HOST}/api/users/${user.id}`
+        const entity = await this.populateEntity(user, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
+        const {formData, headers} = await this.serializePayload(entity);
+        const apiUrl = `/api/users/${user.id}`
         const profile = await this.apiClient.post(apiUrl, formData, headers);
-        this.saveFixture(`user-edit-${profile.data.id}`, profile, profile.data)
+        if (profile && profile.data) {
+            this.saveFixture('edit', apiUrl, entity, profile, profile.data)
+        } else {
+            console.error('profile update failed', profile)
+        }
         return profile.data;
+    }
+
+    async loginUser(email: string = process.env.REACT_APP_LOGIN_EMAIL || '', pass: string = process.env.REACT_APP_LOGIN_PASS || '') {
+        const loginResponse = await this.apiClient.login(email, pass)
+        if (loginResponse.success) {
+            console.log(`Login successful: ${loginResponse.data.data.user.username} with cookie ${loginResponse.cookie}`);
+        } else {
+            console.error('Login failed:', loginResponse.error);
+        }
+        if (loginResponse && loginResponse.data && loginResponse.data.data) {
+            return loginResponse.data.data.user as Users;
+        }
+        return false;
+    }
+
+    public async loadAuthorByRole(role: string | null): Promise<Creators | null> {
+        const contributors = this.allCreators.length > 0 ? this.allCreators : await this.getContentCreators();
+        // @ts-ignore
+        let authors = !role ? contributors : contributors.filter(user => user.groups?.indexOf(role) > -1);
+
+        if (!authors.length) {
+            console.warn(`FALLING BACK ON SUPERUSER instead of ${role}.`); // TODO: paginate of meta
+            const author = await this.loginUser(process.env.REACT_APP_LOGIN_EMAIL!)
+            if (!author) return null
+            return author;
+        }
+
+        let randomIndex = Math.floor(Math.random() * authors.length);
+        let author = authors[randomIndex] as Creators
+        console.log(`REUSING CREATOR ${author.username}`);
+        if (!author.cookie) {
+            const works = await this.loginUser(author.email || author.username) // get cookie
+            if (works) {
+                author = works;
+            } else {
+                if (`Login failed for ${author.email || author.username}. Removing from creators`)
+                    this.allCreators = this.allCreators.filter(user => user.email !== author.email)
+                if (this.allCreators.length > 0) {
+                    return this.loadAuthorByRole(role)
+                }
+                return null
+            }
+        }
+        return author;
+    }
+
+    public async getContentCreators(offset = 0) {
+        const relResponse = await this.apiClient.get(`/api/oa-testers?page_size=300&offset=${offset}`);
+        if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
+            relResponse.data.results.forEach(((user: Users) => {
+                this.allCreators.push(user)
+            }))
+        }
+        return relResponse.data.results as Users[]
     }
 
     public async buildObject(item: NavItem) {
@@ -132,34 +191,76 @@ export class WorldBuilder {
             return
         }
         if (item.type === "Users") {
-            console.error("Use the registerUsers function", item)
+            console.error("Use the `registerUsers` function", item)
             return
         }
 
-        const creator = await this.loadAuthorByRole(null)
+        const creator = await this.loadAuthorByRole(null);
+        if (!creator) {
+            return console.warn("Failed to get a oa-tester. run `users-add` to create some first")
+        }
 
         let entity: any = {author: creator.id};
         entity = await this.populateEntity(entity, hasUrl)
-        const {formData, headers} = this.serializePayload(entity);
+        const {formData, headers} = await this.serializePayload(entity);
 
-        const apiUrl = `${process.env.REACT_APP_API_HOST}${hasUrl.api}/`
-        const response = await this.apiClient.post(apiUrl, formData, headers);
+        const response = await this.apiClient.post(hasUrl.api, formData, headers);
         if (!response.data?.id) {
-            console.log(`Error creating ${item.type}. ${response.error}`)
+            console.error(`Error creating ${item.type}. ${response.error}`)
         } else {
-            this.saveFixture(`object-add-${hasUrl.type}-${response.data.id}.json`, response.data, creator);
+            this.saveFixture('add', hasUrl.api, formData, response.data, creator);
         }
         return response;
     }
 
-    private async populateEntity(entity: any, hasUrl: NavItem) {
+    public async deleteTester(user: Creators) {
+
+        const response = await this.apiClient.delete(`/api/oa-testers/${user.id}`);
+        if (response && response.data) {
+            this.saveFixture('delete', `/api/oa-testers/${user.id}`, {}, user, user)
+        } else {
+            console.error("OA-TESTER Not deleted!", user)
+        }
+        return response;
+    }
+
+    private async populateEntity(entity: any, hasUrl: NavItem, overwrite: boolean = false) {
         const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[hasUrl.type])
+        if (hasUrl.type === "Users") {
+            const tpl: FieldTypeDefinition = {
+                "machine": "display_name",
+                "singular": "Display Name",
+                "plural": "Display Names",
+                "field_type": "text",
+                "data_type": "string",
+                "cardinality": 1,
+                "relationship": "",
+                "default": "",
+                "required": false,
+                "example": ""
+            }
+            fields.push({...tpl, ...{machine: 'username'}})
+            fields.push({...tpl, ...{machine: 'first_name'}})
+            fields.push({...tpl, ...{machine: 'last_name'}})
+            fields.push({...tpl, ...{machine: 'email', field_type: 'email'}})
+            fields.push({...tpl, ...{machine: 'email', field_type: 'password'}})
+        }
+
         for (const field of fields) {
+            if (!overwrite && entity[field.machine]) continue;
+
             if (field.field_type === 'id_auto_increment' || field.field_type === 'slug') {
                 // console.log(`let server handle ${field.field_type}`)
+            } else if (this.allCreators.length && (field.field_type === 'user_profile' || field.field_type === 'user_account')) {
+                let randomIndex = Math.floor(Math.random() * this.allCreators.length);
+                if (field.cardinality as number > 1) {
+                    entity[field.machine] = [this.allCreators[randomIndex].id]
+                } else {
+                    entity[field.machine] = this.allCreators[randomIndex].id
+                }
             } else if (field.field_type === 'user_profile' || field.field_type === 'user_account' || field.field_type == 'type_reference' || field.field_type == 'vocabulary_reference') {
                 let relType = NAVITEMS.find(nav => nav.type === field.relationship) as NavItem
-                const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/${relType.segment}/`);
+                const relResponse = await this.apiClient.get(`/api/${relType.segment}/`);
                 // @ts-ignore
                 if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
                     // @ts-ignore
@@ -167,7 +268,7 @@ export class WorldBuilder {
                     const id = relResponse.data.results[randomIndex].id || relResponse.data.results[randomIndex].slug;
                     if (field.cardinality as number > 1 && Array.isArray(entity[field.machine]) && entity[field.machine].length > 0) {
                         entity[field.machine].push(id)
-                    } else if (field.cardinality as number > 1 && relType.type === "Users") {
+                    } else if (field.cardinality as number > 1) { //  && relType.type === "Users"
                         entity[field.machine] = [id]
                     } else {
                         entity[field.machine] = id
@@ -177,83 +278,100 @@ export class WorldBuilder {
                 }
 
             } else if (['image', 'video', 'media'].indexOf(field.field_type) > -1) {
-                entity.hasImage = true;
-                const mediaUrl = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
-                const mediaResponse = await axios.get(mediaUrl, {responseType: 'stream'});
-                if (mediaResponse.status !== 200) {
-                    throw new Error(`Failed to fetch ${field.field_type} from ${mediaUrl}`);
-                } else {
-                    console.log(`Going to load ${mediaUrl}`)
-                    entity.hasImage = true;
-                    entity[field.machine] = mediaResponse.data;
+                const mediaUrl = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
+                // const mediaUrl = "https://api.trackauthoritymusic.com/sites/default/files/products/therapruler-book.jpeg"
+                // const mediaUrl = "https://live.staticflickr.com/65535/51418651934_309ddab4f2_n.jpg"
+                // console.log(`streaming ${mediaUrl}`)
+
+                let filename = new URL(mediaUrl).pathname;
+                filename = filename.substring(filename.lastIndexOf('/') + 1)
+                if (filename.indexOf('.') < 0) {
+                    filename += '.jpg'
                 }
+
+                const mediaResponse = {stream: mediaUrl, filename}
+                entity.hasImage = true;
+                entity[field.machine] = mediaResponse
+
             } else {
-                entity[field.machine] = fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
+                entity[field.machine] = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)
             }
         }
         return entity;
     }
 
-    async loginUser(email: string = process.env.REACT_APP_LOGIN_EMAIL || '', pass: string = process.env.REACT_APP_LOGIN_PASS || '') {
-        const loginResponse = await this.apiClient.login(email, pass)
-        if (loginResponse.success) {
-            if (typeof loginResponse['cookie'] === 'string') {
-                this.apiClient.setCookie(process.env.REACT_APP_API_HOST || "", loginResponse['cookie']);
-            }
-            console.log(`Login successful: ${loginResponse.data.data.user.username} with cookie ${loginResponse.cookie}`);
+    async serializePayload(entity: any): Promise<{ formData: any; headers: any }> {
+        const headers: any = {}
+
+        let formData: any = null;
+        if (typeof entity.hasImage === 'undefined') {
+            headers["Content-Type"] = "application/json"
+            formData = entity;
         } else {
-            console.error('Login failed:', loginResponse.error);
-        }
-        return loginResponse.data.data.user as Users;
-    }
+            delete entity.hasImage;
+            formData = new FormData();
+            for (let key in entity) {
+                if (Array.isArray(entity[key])) {
+                    if (entity[key].length > 0) {
+                        console.log(`appending array ${key} to FormData`)
+                        entity[key].forEach((value: any, index: number) => {
+                            formData.append(`${key}[${index}]`, value);
+                        });
+                    }
+                } else if (typeof entity[key] === 'object' && entity[key] !== null && 'stream' in entity[key]) {
+                    const filename = entity[key].filename || `${key}.jpg`
+                    const stream = entity[key].stream
+                    if (typeof stream === 'string') {
+                        console.log(`Requesting ${stream} for ${key}`);
+                        // const imageBlob = await fetchImageAsBlob(stream);
+                        // const imageBlob = await getImageAsBlob(stream);
+                        const imageBlob = await imageArrayBuffer(stream);
+                        // const imageBlob = await streamImage(stream);
 
-    public async loadAuthor(role: string | null) {
-        if (!role) {
-            return this.loadAuthorByRole(null);
+                        formData.append(key, imageBlob, {
+                            filename: filename,
+                            contentType: entity[key].contentType || 'image/jpeg',
+                        });
+                    } else if (stream instanceof http.IncomingMessage || stream instanceof Blob) {
+                        console.log(`appending ${key} as stream with metadata`);
+                        formData.append(key, stream, {
+                            filename: filename,
+                            contentType: entity[key].contentType || 'image/jpeg',
+                        });
+                    }
+                } else if (entity[key] instanceof http.IncomingMessage || entity[key] instanceof Blob) {
+                    console.log(`appending ${key} as file stream `)
+                    formData.append(key, entity[key]);
+                } else if (typeof entity[key] === 'object' && entity[key] !== null) {
+                    console.log(`handle ${entity[key].length} object entries for ${key}`)
+                    for (let nestedKey in entity[key]) {
+                        formData.append(`${key}.${nestedKey}`, entity[key][nestedKey]);
+                    }
+                } else if (typeof entity[key] === 'boolean') {
+                    formData.append(key, entity[key].toString());
+                } else if (typeof entity[key] === 'string' || typeof entity[key] === 'number') {
+                    formData.append(key, entity[key]);
+                } else {
+                    console.log("UNHANDLED DATA TYPE", entity[key]);
+                }
+            }
+
+            let formHeaders = {};
+            if (typeof formData.getHeaders === 'function') {
+                formHeaders = formData.getHeaders();
+            } else {
+                const boundary = (formData as any)[Symbol.for('undici:formdata:boundary')];
+                if (boundary) {
+                    formHeaders = {
+                        'Content-Type': `multipart/form-data boundary=${boundary}`
+                    };
+                }
+            }
+
+            Object.assign(headers, formHeaders)
         }
 
-        // @ts-ignore
-        let author = this.allCreators.find(user => user.groups?.indexOf(role) > -1);
-        if (author && author.cookie) return author
-        if (author && author.email) {
-            author = await this.loginUser(author.email) // get cookie
-            return author
-        }
-        if (role === 'superuser') {
-            return await this.loginUser();
-        }
-        author = await this.loadAuthorByRole(role)
-        return author;
-    }
-
-    public async loadAuthorByRole(role: string | null) {
-        const contributors = this.allCreators.length > 0 ? this.allCreators : await this.getContentCreators();
-        // @ts-ignore
-        let authors = !role ? contributors : contributors.filter(user => user.groups?.indexOf(role) > -1);
-
-        if (!authors.length) {
-            console.warn(`FALLING BACK ON SUPERUSER instead of ${role}.`); // TODO: paginate of meta
-            const author = await this.loginUser('superuser')
-            return author;
-        }
-
-        let randomIndex = Math.floor(Math.random() * authors.length);
-        let author = authors[randomIndex] as Creators
-        console.log(`REUSING CREATOR ${author.username}`);
-        if (!author.cookie) {
-            author = await this.loginUser(author.email || author.username) // get cookie
-        }
-        return author;
-    }
-
-    public async getContentCreators(offset = 0) {
-        const relResponse = await this.apiClient.get(`${process.env.REACT_APP_API_HOST}/api/users/?page_size=300&offset=${offset}`);
-        if (relResponse.data && Array.isArray(relResponse.data.results) && relResponse.data.results.length > 0) {
-            relResponse.data.results.forEach(((user: Users) => {
-                this.allCreators.push(user)
-            }))
-        }
-        return relResponse.data.results as Users[]
+        return {formData, headers};
     }
 
 }

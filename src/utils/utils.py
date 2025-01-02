@@ -103,7 +103,11 @@ def findObjectClassByPathSegment(segment: str, object_types):
 
 
 def build_permissions_from_csv(csv_path, object_types):
-    df = pd.read_csv(csv_path)
+    try:
+        df = pd.read_csv(csv_path)
+    except Exception as e:
+        logger.error(e)
+        return None
 
     # Find the position of the "ROLES" column
     roles_start_idx = df.columns.get_loc('ROLES')
@@ -280,7 +284,7 @@ def inject_generated_code(output_file_path, code, prefix):
     else:
 
         with open(output_file_path, 'r') as file:
-            html = file.read()
+            html = file.read().strip()
 
         start = 0
         end = len(html)

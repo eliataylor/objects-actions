@@ -1,3 +1,23 @@
+# Parse and export given .env file
+parse_and_export_env() {
+  local FILE="$1"
+  if [ -f "$FILE" ]; then
+    # Remove entire lines that are comments
+    env_content=$(grep -vE '^\s*#' "$FILE")
+
+    # Strip inline comments
+    env_content=$(echo "$env_content" | sed 's/[[:space:]]*#.*//')
+
+    # Remove any 'export ' prefix
+    env_content=$(echo "$env_content" | sed 's/^export //')
+
+    # Export the variables
+    export $(echo "$env_content" | xargs)
+  else
+    echo "$FILE not found. Skipping."
+  fi
+}
+
 # Function to print error message
 print_error() {
     local item="$1"    # Item name, e.g., API name

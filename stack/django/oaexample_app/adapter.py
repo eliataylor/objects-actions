@@ -7,11 +7,11 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 class UserAdapter(DefaultAccountAdapter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print(f"UserAdapter initialized! {os.environ.get('FRONTEND_URL')}")
+        print(f"UserAdapter initialized! {os.environ.get('REACT_APP_APP_HOST')}")
 
     def get_redirect_url(self, request):
         print("SPECIAL DefaultAccountAdapter HANDLE ON CALLBACK! ")
-        return f"{os.environ.get('FRONTEND_URL')}/"
+        return f"{os.environ.get('REACT_APP_APP_HOST')}/"
 
     def save_user(self, request, user, form, commit=False):
         user = super().save_user(request, user, form, commit)

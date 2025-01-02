@@ -6,6 +6,7 @@ import {Button, ButtonProps, Drawer} from '@mui/material';
 import Badge from "@mui/material/Badge";
 import Paper from "@mui/material/Paper";
 import BottomNavigation from "@mui/material/BottomNavigation";
+import { alpha, darken, lighten } from '@mui/material/styles';
 
 export const TextFieldH1 = styled((props) => <TextField
     variant={'filled'}
@@ -185,4 +186,19 @@ export const StyledDrawer = styled(Drawer)(({theme}) => ({
         color: 'white', // Optional: set text color to white for better contrast
         borderRight: '1px solid rgba(255, 255, 255, 0.12)', // Optional: add border for better visibility
     },
+}));
+
+export const AlternatingList = styled('div')(({ theme }) => ({
+    '& > *:nth-of-type(odd)': {
+        paddingLeft:'1%',
+        paddingRight:'1%',
+        backgroundColor: theme.palette.mode === 'dark'
+            ? alpha(theme.palette.background.paper, 0.080)
+            : darken(theme.palette.background.paper, 0.025),
+    },
+    '& > *:nth-of-type(even)': {
+        paddingLeft:'1%',
+        paddingRight:'1%',
+        backgroundColor: 'inherit'
+    }
 }));

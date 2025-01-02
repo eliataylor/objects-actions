@@ -1,19 +1,18 @@
 services:
+
   # MySQL Database Service
-  mysql:
+  mysqlv8:
     image: mysql:8.0
-    container_name: mysql8_container
+    container_name: mysqlv8
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-#      - ./dockerized/sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: localdb
       MYSQL_USER: localuser
       MYSQL_PASSWORD: localpassword
-      MYSQL_HOST: mysql8_container
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -27,18 +26,13 @@ services:
       dockerfile: Dockerfile
     container_name: django-service
     volumes:
-      - $HOME/.ssl:/root/.ssl
+      - $HOME/.ssl:/root/.ssl:ro
       - ./stack/django:/app/django
       - ./stack/django/__pycache__:/app/django/__pycache__:cached  # Speed up reloads
-      #    - ./dockerized/django/media:/app/django/media  # Single, unified media directory
-    environment:
-      DEBUG: "1"
-      DJANGO_ENV: "docker"
-      DJANGO_DEBUG: "True"
     env_file:
       - ./stack/django/.env
     depends_on:
-      mysql:
+      mysqlv8:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -53,7 +47,7 @@ services:
     container_name: reactjs-service
     volumes:
       - ./stack/reactjs:/app/reactjs
-      - $HOME/.ssl:/root/.ssl
+      - $HOME/.ssl:/root/.ssl:ro
     depends_on:
       django:
         condition: service_started
@@ -73,9 +67,6 @@ services:
     depends_on:
       django:
         condition: service_started
-    environment:
-      REACT_APP_API_HOST: "https://localapi.oaexample.com:8080"  # Access Django API
-
 
   # Front-end end-to-end testing
   cypress:
@@ -90,8 +81,6 @@ services:
     depends_on:
       reactjs:
         condition: service_started
-    environment:
-      REACT_APP_APP_HOST: "https://localhost.oaexample.com:3000"  # Access ReactJS app during tests
 
 
 volumes:

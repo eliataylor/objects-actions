@@ -1,6 +1,7 @@
-from twilio.rest import Client
-
 from oaexample_base import settings
+from twilio.rest import Client
+from django.db import connection
+from django.db.utils import DatabaseError
 
 def send_sms(to, body):
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
@@ -10,10 +11,6 @@ def send_sms(to, body):
         to=to
     )
     return message.sid
-
-from django.db import connection
-from django.db.utils import DatabaseError
-
 
 def fetch_dict_query(query, params=None):
     """

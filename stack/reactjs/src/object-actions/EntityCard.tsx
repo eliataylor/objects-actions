@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import RelEntityHead from "./RelEntityHead";
 import CardMedia from '@mui/material/CardMedia';
 import {humanize} from "../utils";
+import {AlternatingList} from "../theme/StyledFields";
 
 interface EntityCardProps {
     entity: EntityTypes;
@@ -150,7 +151,9 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
     return <Card elevation={8} sx={{marginBottom: 4}}>
         <CardHeader {...headerProps} />
         <CardContent>
-            {content}
+            <AlternatingList className={'AlternatingList'}>
+                {content}
+            </AlternatingList>
         </CardContent>
     </Card>
 }
