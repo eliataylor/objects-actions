@@ -7,7 +7,6 @@ import {fakeFieldData, imageArrayBuffer} from "./builder-utils.ts";
 import * as http from "node:http";
 import FormData from "form-data";
 
-
 const faker = new Faker({
     locale: [en],
 });

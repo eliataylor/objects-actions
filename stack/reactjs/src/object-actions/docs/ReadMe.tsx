@@ -13,8 +13,8 @@ const ReadMe: React.FC = () => {
     return (
         <>
             <Box>
-                <Grid container spacing={0} sx={{mb: 3, pl: 4}}>
-                    <Grid item xs={12} container justifyContent={'space-between'} alignItems={'center'} sx={{mb:3}}>
+                <Grid container spacing={0} sx={{mb: 3, pl: 1, pr:1}}>
+                    <Grid item xs={12} container justifyContent={'space-between'} alignItems={'center'} sx={{mb:3}} wrap={'nowrap'}>
                         <Grid item>
                             <Typography variant={'caption'} style={{fontStyle:'italic'}}> Objects/Actions</Typography>
                             <Typography variant="h1">
@@ -100,7 +100,7 @@ const ReadMe: React.FC = () => {
                 </Grid>
 
 
-                <Grid container spacing={1} wrap={'nowrap'}>
+                <Grid container spacing={1} >
 
                     <Grid item xs={12} sm={6}>
                         <Card variant="outlined">
