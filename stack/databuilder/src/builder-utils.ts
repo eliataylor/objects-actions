@@ -12,23 +12,36 @@ const faker = new Faker({
 
 
 export async function getImageStream(imageUrl: string): Promise<Blob> {
-    const response = await axios.get(imageUrl, {
+    const mediaResponse = await axios.get(imageUrl, {
         responseType: 'stream',
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
         },
     });
-    if (response.status !== 200) {
+    if (mediaResponse.status !== 200) {
         throw new Error(`Failed from ${imageUrl}`);
     }
-    const arrayBuffer = await response.arrayBuffer();
-
-    // Create a Blob from the ArrayBuffer
-    return new Blob([arrayBuffer], {type: response.headers.get('content-type') || 'image/jpeg'});
+    return mediaResponse.data;
 
 }
 
 export async function streamImage(imageUrl: string): Promise<Blob> {
+    const mediaResponse = await axios.get(imageUrl, {
+        responseType: 'stream',
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+        },
+    });
+
+    if (mediaResponse.status !== 200) {
+        throw new Error(`Failed to fetch ${imageUrl}, status code: ${mediaResponse.status}`);
+    }
+
+    return mediaResponse.data;
+}
+
+
+export async function imageArrayBuffer(imageUrl: string): Promise<Blob> {
     const mediaResponse = await axios.get(imageUrl, {
         responseType: 'arraybuffer', // Use arraybuffer to get binary data
         headers: {
@@ -41,16 +54,11 @@ export async function streamImage(imageUrl: string): Promise<Blob> {
     }
 
     return mediaResponse.data;
-
-    // Determine content type from headers or default to generic binary type
-    const contentType = mediaResponse.headers['content-type'] || 'application/octet-stream';
-
-    // Create a Blob from the binary data
-    return new Blob([mediaResponse.data], { type: contentType });
 }
 
 export async function fetchImageAsBlob(imageUrl: string): Promise<Blob> {
-    // Fetch the image using the native fetch
+    // with node22 throws "source.on is not a function"
+
     const response = await fetch(imageUrl, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
@@ -69,6 +77,7 @@ export async function fetchImageAsBlob(imageUrl: string): Promise<Blob> {
 }
 
 export async function getImageAsBlob(imageUrl: string): Promise<Blob> {
+    // with node22 throws "source.on is not a function"
     return new Promise((resolve, reject) => {
         get(imageUrl, {
             headers: {
@@ -276,8 +285,8 @@ export async function fakeFieldData(field_type: string, field_name: string, opti
             // const filePath = getRandomFile('./public/profilepics')
             // const fileStream = fs.createReadStream(resolve(filePath));
             // return fileStream;
-            // return faker.image.urlLoremFlickr({category: model_type})
-            const imageMeta = await fetchImageMetaData(model_type);
+            // return faker.image.urlLoremFlickr({category: model_type}) // doesn't work anymore
+            const imageMeta = await fetchImageMetaData(model_type === "Users" ? "people" : model_type);
             return imageMeta.rawFileUrl;
         case 'video':
             const videoOpts = [
@@ -286,8 +295,8 @@ export async function fakeFieldData(field_type: string, field_name: string, opti
             const randomIndex = Math.floor(Math.random() * videoOpts.length);
             return videoOpts[randomIndex];
         case 'media':
-            // return faker.image.urlPicsumPhotos()
-            return faker.image.urlLoremFlickr({category: model_type})
+            const mediaMeta = await fetchImageMetaData(model_type === "Users" ? "people" : model_type);
+            return mediaMeta.rawFileUrl;
         case 'flat_list':
             return Array.from({length: 5}, () => faker.lorem.word()); // Example of a flat list
         case 'bounding_box':

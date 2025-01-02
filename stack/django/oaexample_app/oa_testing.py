@@ -69,30 +69,6 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
         if not group:
             return Response({"error": f"Group '{OA_TESTER_GROUP}' does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
-        logger.warning("Request headers:")
-        print(request.headers)
-        logger.warning("Request body (raw):")
-        print(request.body)
-
-        logger.warning("handle oa-testing update")
-        if request.data:
-            logger.warning("Request data keys:")
-            print(list(request.data.keys()))
-        if request.FILES:
-            logger.warning("Request files keys:")
-            print(list(request.FILES.keys()))
-
-        # Handle updating the picture
-        if 'picture' in request.FILES:
-            logger.warning("request has picture")
-            user.picture = request.FILES['picture']
-            user.save()
-
-        if 'cover_photo' in request.FILES:
-            logger.warning("request has cover")
-            user.picture = request.FILES['cover_photo']
-            user.save()
-
         user.groups.add(group)
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
