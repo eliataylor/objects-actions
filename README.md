@@ -37,6 +37,7 @@ https://github.com/user-attachments/assets/1263c2d0-0ed3-45af-9d3c-0037ec4db77b
 # TO RUN:
 
 - `git clone git@github.com:eliataylor/object-actions.git`
+- `cp .env.public .env`
 - `cd object-actions`
 - `docker-compose up --build`
 
