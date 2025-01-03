@@ -74,8 +74,6 @@ services:
       context: ./stack/cypress
       dockerfile: Dockerfile
     container_name: cypress-service
-    env_file:
-      - ./stack/cypress/.env
     volumes:
       - ./stack/cypress:/app/cypress
     depends_on:
