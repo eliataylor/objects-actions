@@ -22,6 +22,7 @@ describe("oaexample load and populate add forms", async () => {
         cy.viewport(Cypress.env("viewportWidth"), Cypress.env("viewportHeight"));
         cy.visit(Cypress.env("REACT_APP_APP_HOST"));
         cy.assertMenuReady();
+        cy.grab('.MuiSwitch-root').showClick(); // do it in light mode for the video
 
         NAVITEMS.forEach(navItem => {
 
@@ -39,6 +40,7 @@ describe("oaexample load and populate add forms", async () => {
             if (Cypress.env("viewportWidth") <= 600) {
                 cy.clickIf('[aria-label="Close Drawer"]')
             }
+
 
             cy.intercept('GET', `/forms${navItem.screen}/0/add*`).as(`GetForm${navItem.type}`) // wildcard for query params
             cy.grab(`[data-href="/forms${navItem.screen}/0/add" i]`).showClick();

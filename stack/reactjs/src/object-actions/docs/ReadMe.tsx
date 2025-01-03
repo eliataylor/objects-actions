@@ -200,7 +200,7 @@ const ReadMe: React.FC = () => {
                             />
                             <CardMedia height={mediaHeight} sx={{position: 'relative'}} component={'img'}
                                        alt={'Backend-End API'}
-                                       src={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/nod-backend_admin.png"}/>
+                                       src={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_admin.png"}/>
                             <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
                                 <a href={'https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/admin.py'}
                                    target={'_blank'}>
@@ -222,7 +222,7 @@ const ReadMe: React.FC = () => {
                                         subheader={'React.JS'}
                             />
                             <CardMedia height={mediaHeight} component={'img'} alt={'Front-End WebApp'}
-                                       src={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/nod-oa-interface.png"}/>
+                                       src={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png"}/>
                             <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
                                 <a href={'https://github.com/eliataylor/objects-actions/blob/main/stack/reactjs/src/theme/ThemeContext.js'}
                                    target={'_blank'}>
@@ -244,7 +244,7 @@ const ReadMe: React.FC = () => {
                                         subheader={'Django DRF'}
                             />
                             <CardMedia height={mediaHeight} component={'img'} alt={'Backend-End API'}
-                                       src={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/nod-backend_swagger.png"}/>
+                                       src={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_swagger.png"}/>
                             <Box sx={{textAlign: 'right', p: 1, alignContent: 'flex-end'}}>
                                 <a href={'https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/urls.py'}
                                    target={'_blank'}>
