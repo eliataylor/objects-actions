@@ -49,7 +49,7 @@ SESSION_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
 SESSION_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
 if API_HOST_PARTS.scheme.lower() == 'https':
-#    SECURE_SSL_REDIRECT = True
+#    SECURE_SSL_REDIRECT = True # only use if not served behind a reverse proxy like Cloud Run / Nginx /..
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Apply HSTS to all subdomains

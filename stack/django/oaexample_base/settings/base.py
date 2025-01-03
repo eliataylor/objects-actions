@@ -20,9 +20,6 @@ DEBUG = myEnv('DJANGO_DEBUG', 'True') == 'True'
 logger.debug(f"[OADJANGO] DJANGO_ENV: {DJANGO_ENV} ")
 logger.debug(f"[OADJANGO] DEBUG: {DEBUG} ")
 
-PREPEND_WWW = False
-APPEND_SLASH = False
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

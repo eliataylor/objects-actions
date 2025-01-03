@@ -52,10 +52,10 @@ OARouter.register('attendees', AttendeesViewSet, basename='attendees')
 
 if urlpatterns is None:
     urlpatterns = []
-    
+
 urlpatterns += [
     re_path(r'^account/.*$', redirect_to_frontend, name='provider_callback_no_provider'),
-        
+
     path('api/users/<int:user_id>/<str:model_name>/list', UserModelListView.as_view(), name='user-model-list'),
     path('api/users/<int:user_id>/<str:model_name>/stats', UserStatsView.as_view(), name='user-model-stats'),
 

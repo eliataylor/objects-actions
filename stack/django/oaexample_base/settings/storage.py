@@ -17,7 +17,6 @@ logger.debug(f"[OADJANGO] STORAGE USING: {OA_ENV_STORAGE} ")
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 if OA_ENV_STORAGE == 'gcp':
-    from google.oauth2 import service_account
     import re
 
     # follows naming conventions found during deploy/create-bucket.sh
@@ -32,13 +31,17 @@ if OA_ENV_STORAGE == 'gcp':
         name = name[:63]
         return name
 
-
+    # https://django-storages.readthedocs.io/en/1.12.2/backends/gcloud.html
     GS_CREDENTIALS_PATH = myEnv('GCP_SA_KEY_PATH', False)
     if os.path.isfile(GS_CREDENTIALS_PATH):
-        GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
+        GOOGLE_APPLICATION_CREDENTIALS = GS_CREDENTIALS_PATH
+        logger.debug(f'loading Google Service credentials from {GS_CREDENTIALS_PATH}')
     else:
-        GS_CREDENTIALS = myEnv('GS_CREDENTIALS')
-        logger.warning(f'Google Service credentials from secret manager: {GS_CREDENTIALS}')
+        import json
+        from google.oauth2 import service_account
+        credentials_info = json.loads(myEnv('GS_CREDENTIALS'))
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_info(credentials_info)
+        logger.debug(f'Using Google Service credentials from secret manager')
 
     GS_FILE_OVERWRITE = False
     GS_BUCKET_NAME = sanitize_bucket_name(myEnv('GCP_BUCKET_API_NAME', 'oaexample-media'))
@@ -52,7 +55,6 @@ if OA_ENV_STORAGE == 'gcp':
         "default": {  # Media files
             "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
             "OPTIONS": {
-                "credentials": GS_CREDENTIALS,
                 "bucket_name": GS_BUCKET_NAME,
                 "location": MEDIAFILES_LOCATION
             },
@@ -60,12 +62,13 @@ if OA_ENV_STORAGE == 'gcp':
         "staticfiles": {  # Static files
             "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
             "OPTIONS": {
-                "credentials": GS_CREDENTIALS,
                 "bucket_name": GS_BUCKET_NAME,
                 "location": STATICFILES_LOCATION
             },
         },
     }
+
+    GS_DEFAULT_ACL = "publicRead"
 
     # URL paths for serving static and media files
     STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/{STATICFILES_LOCATION}/"

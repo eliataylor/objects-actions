@@ -51,7 +51,6 @@ class DjangoBuilder:
                             "from .views import UserStatsView",
                             "from .views import RenderFrontendIndex",
                             "from .views import redirect_to_frontend",
-                            "from .views import migrate, collectstatic"
                         ],
                         "permissions": [
                             "from rest_framework import permissions",
@@ -168,9 +167,6 @@ urlpatterns += [
     {(",\n\t").join(extra_patterns) + ',' if len(extra_patterns) > 0 else ''}    
     path('api/users/<int:user_id>/<str:model_name>/list', UserModelListView.as_view(), name='user-model-list'),
     path('api/users/<int:user_id>/<str:model_name>/stats', UserStatsView.as_view(), name='user-model-stats'),
-
-    path('migrate', migrate, name='migrate'),
-    path('collectstatic', collectstatic, name='collectstatic'),
     path('api/', include(OARouter.urls)),
 ]"""
 
