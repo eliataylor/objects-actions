@@ -3,7 +3,7 @@
 
 ## To Install
 ```
-cp .env.public .env 
+cp .env.public .env
 npm install
 ```
 

@@ -1,6 +1,7 @@
-from urllib.parse import urlparse
-from .base import myEnv, DJANGO_ENV
 import os
+from urllib.parse import urlparse
+
+from .base import myEnv, DJANGO_ENV
 
 APP_HOST = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
 APP_HOST_PARTS = urlparse(APP_HOST)
@@ -74,9 +75,11 @@ SOCIALACCOUNT_PROVIDERS = {
             'client_id': myEnv('GOOGLE_OAUTH_CLIENT_ID', ""),
             'secret': myEnv('GOOGLE_OAUTH_SECRET', ""),
             'key': myEnv('GOOGLE_OAUTH_KEY', ""),
+            'redirect_uri': f"{API_HOST}/accounts/google/login/callback"
         },
         'EMAIL_AUTHENTICATION': True,
         'FETCH_USERINFO': True,
+        "VERIFIED_EMAIL": True,
         'SCOPE': [
             'profile',
             'email',

@@ -1,6 +1,8 @@
 import os
 from urllib.parse import urlparse
 from corsheaders.defaults import default_headers
+
+from . import DJANGO_ENV
 from .base import myEnv
 
 def get_tld(hostname):
@@ -56,20 +58,21 @@ if API_HOST_PARTS.scheme.lower() == 'https':
     SECURE_HSTS_PRELOAD = True  # Allow the site to be included in browsers' HSTS preload list
 
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+if DJANGO_ENV == 'production':
+    AUTH_PASSWORD_VALIDATORS = [
+        {
+            'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        },
+    ]
 
 
 if APP_HOST == 'localhost' or API_HOST == 'localhost':

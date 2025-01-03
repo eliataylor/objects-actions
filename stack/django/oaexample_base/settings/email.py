@@ -15,14 +15,14 @@ EMAIL_HOST_USER = myEnv("EMAIL_HOST_USER", "info@oaexample.com")
 EMAIL_HOST_PASSWORD = myEnv("EMAIL_HOST_PASSWORD")
 EMAIL_HOST = myEnv("SMTP_EMAIL_HOST", 'smtp.gmail.com')
 EMAIL_PORT = myEnv("SMTP_EMAIL_PORT", 587)
-EMAIL_USE_TLS = True
 
 logger.debug(f"[OADJANGO] Using {EMAIL_HOST_USER}")
 
 DEFAULT_FROM_EMAIL = myEnv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 ADMIN_EMAIL = myEnv("ADMIN_EMAIL", EMAIL_HOST_USER)
 EMAIL_USE_LOCALTIME = True
-EMAIL_USE_SSL = API_HOST_PARTS.scheme == 'https'
+
+EMAIL_USE_TLS = True
 
 if OA_ENV_EMAIL == 'django':
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -42,7 +42,6 @@ if DEBUG:
     import certifi
     cert = certifi.where()
     if os.path.isfile(cert) and os.access(cert, os.R_OK):
-        EMAIL_SSL_CERTFILE = cert
         logger.debug(f"[OADJANGO] SSL certificate file is valid and readable: {cert}")
     else:
         logger.debug(f"[OADJANGO] SSL certificate file is not valid or readable: {cert}")
