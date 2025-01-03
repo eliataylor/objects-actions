@@ -1,7 +1,10 @@
-from urllib.parse import urlparse
 import os
+from urllib.parse import urlparse
+
 from .base import myEnv, logger
 
+# Configure where to put uploaded and system files
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 APP_HOST = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
 APP_HOST_PARTS = urlparse(APP_HOST)
@@ -9,34 +12,9 @@ API_HOST = os.getenv('REACT_APP_API_HOST', 'https://localapi.oaexample.com:8080'
 API_HOST_PARTS = urlparse(API_HOST)
 
 OA_ENV_STORAGE = os.getenv("OA_ENV_STORAGE", "local")
-logger.debug(f"[DJANGO] STORAGE USING: {OA_ENV_STORAGE} ")
+logger.debug(f"[OADJANGO] STORAGE USING: {OA_ENV_STORAGE} ")
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.dirname(PROJECT_DIR)
-
-STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        # ManifestStaticFilesStorage is recommended in production, to prevent
-        # outdated JavaScript / CSS assets being served from cache
-        # (e.g. after a Wagtail upgrade).
-        # See https://docs.djangoproject.com/en/5.0/ref/contrib/staticfiles/#manifeststaticfilesstorage
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
-        },
-    }
-
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
-
-STATICFILES_DIRS = [
-    os.path.join(PROJECT_DIR, 'static'),
-]
 
 if OA_ENV_STORAGE == 'gcp':
     from google.oauth2 import service_account
@@ -54,23 +32,74 @@ if OA_ENV_STORAGE == 'gcp':
         name = name[:63]
         return name
 
-    GS_CREDENTIALS_PATH = myEnv('GCP_SA_KEY_PATH')
-    if os.path.isdir(GS_CREDENTIALS_PATH):
+
+    GS_CREDENTIALS_PATH = myEnv('GCP_SA_KEY_PATH', False)
+    if os.path.isfile(GS_CREDENTIALS_PATH):
         GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
     else:
-        logger.warning('Google Service credentials should be set in Secret Manager')
+        GS_CREDENTIALS = myEnv('GS_CREDENTIALS')
+        logger.warning(f'Google Service credentials from secret manager: {GS_CREDENTIALS}')
 
     GS_FILE_OVERWRITE = False
     GS_BUCKET_NAME = sanitize_bucket_name(myEnv('GCP_BUCKET_API_NAME', 'oaexample-media'))
 
-    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-    GS_DEFAULT_ACL = "publicRead"
+    # Ensure the correct file storage structure within the bucket
+    STATICFILES_LOCATION = "static"
+    MEDIAFILES_LOCATION = "media"
 
-    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+    # Static and Media Settings
+    STORAGES = {
+        "default": {  # Media files
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "credentials": GS_CREDENTIALS,
+                "bucket_name": GS_BUCKET_NAME,
+                "location": MEDIAFILES_LOCATION
+            },
+        },
+        "staticfiles": {  # Static files
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "credentials": GS_CREDENTIALS,
+                "bucket_name": GS_BUCKET_NAME,
+                "location": STATICFILES_LOCATION
+            },
+        },
+    }
+
+    # URL paths for serving static and media files
+    STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/{STATICFILES_LOCATION}/"
+    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/{MEDIAFILES_LOCATION}/"
+
+    # Additional Django settings for staticfiles
+    STATICFILES_DIRS = []  # Include any additional static file directories
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    BASE_DIR = os.path.dirname(PROJECT_DIR)
+
+    # Static files (CSS, JavaScript, Images)
     STATIC_URL = '/static/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory where static files are collected
+    STATICFILES_DIRS = [os.path.join(PROJECT_DIR, 'static')]  # Additional static file directories
+
+    # Media files (uploaded content)
     MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory to store uploaded media files
+
+    # Staticfiles settings
+    STATICFILES_FINDERS = [
+        'django.contrib.staticfiles.finders.FileSystemFinder',
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    ]
+
+    # Default storage settings
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "OPTIONS": {
+                "location": MEDIA_ROOT,  # Media file storage location
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }

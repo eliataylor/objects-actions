@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-logger.debug(f"[DJANGO] Using Root Dir {ROOT_DIR}")
+logger.debug(f"[OADJANGO] Using Root Dir {ROOT_DIR}")
 
 # Only use this when you still want the private version in debug mode / locally like for social keys
 def myEnv(key, default=None):
@@ -17,8 +17,11 @@ def myEnv(key, default=None):
 DJANGO_ENV = myEnv('DJANGO_ENV', 'production')
 DEBUG = myEnv('DJANGO_DEBUG', 'True') == 'True'
 
-logger.debug(f"[DJANGO] DJANGO_ENV: {DJANGO_ENV} ")
-logger.debug(f"[DJANGO] DEBUG: {DEBUG} ")
+logger.debug(f"[OADJANGO] DJANGO_ENV: {DJANGO_ENV} ")
+logger.debug(f"[OADJANGO] DEBUG: {DEBUG} ")
+
+PREPEND_WWW = False
+APPEND_SLASH = False
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -78,13 +81,12 @@ AUTHENTICATION_BACKENDS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     #    'csp.middleware.CSPMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',

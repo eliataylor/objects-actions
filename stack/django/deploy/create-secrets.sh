@@ -15,12 +15,12 @@ set_project $GCP_PROJECT_ID
 json_string=$(jq -r ${GCP_SA_KEY_PATH})
 printf json_string
 show_loading "Setting Service Agent key a string in Secrets Manager"
-create_secret "GCP_SA_KEY" "$json_string"
+create_secret "GS_CREDENTIALS" "$json_string"
 if [ $? -ne 0 ]; then
-    print_error "GCP_SA_KEY failed to set!"
+    print_error "GS_CREDENTIALS failed to set!"
     exit 1
 else
-    print_success "GCP_SA_KEY set"
+    print_success "GS_CREDENTIALS set"
 fi
 
 variable_names=("GCP_PROJECT_ID" \

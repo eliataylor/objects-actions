@@ -13,6 +13,7 @@ REQUIRED_VARS=("GCP_PROJECT_ID" \
               "GCP_MYSQL_ZONE" \
               "GCP_MYSQL_INSTANCE" \
               "GCP_MYSQL_HOST" \
+              "GCP_API_IP" \
               "MYSQL_DATABASE" \
               "EMAIL_HOST_USER" \
               "ADMIN_EMAIL" \
@@ -53,6 +54,8 @@ if [[ "${REACT_APP_APP_HOST}" =~ localhost|localapi|:[0-9]+ ]]; then
   fi
 fi
 
+
+
 show_section_header "DEPLOY CLOUD RUN FROM SOURCE"
 
 login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID"
@@ -72,6 +75,7 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-env-vars OA_ENV_STORAGE=gcp \
     --set-env-vars OA_ENV_EMAIL=$OA_ENV_EMAIL \
     --set-env-vars DJANGO_DEBUG=$DJANGO_DEBUG \
+    --set-env-vars GCP_API_IP=$GCP_API_IP \
     --set-env-vars GCP_PROJECT_ID=$GCP_PROJECT_ID \
     --set-env-vars GCP_BUCKET_API_NAME=$GCP_BUCKET_API_NAME \
     --set-env-vars DJANGO_SUPERUSER_USERNAME=$DJANGO_SUPERUSER_USERNAME \
@@ -96,6 +100,7 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-secrets TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest \
     --set-secrets GOOGLE_OAUTH_SECRET=GOOGLE_OAUTH_SECRET:latest \
     --set-secrets GITHUB_SECRET=GITHUB_SECRET:latest \
+    --set-secrets GS_CREDENTIALS=GS_CREDENTIALS:latest \
     --set-secrets LINKEDIN_SECRET=LINKEDIN_SECRET:latest \
     --set-secrets EMAIL_HOST_PASSWORD=EMAIL_HOST_PASSWORD:latest \
     --set-secrets SPOTIFY_SECRET=SPOTIFY_SECRET:latest \
