@@ -63,7 +63,7 @@ class UserModelListView(generics.GenericAPIView):
         if search_query:
             queryset = self.filter_queryset(queryset)
 
-        serializer_class = self.get_serializer_class(model_class)
+        serializer_class = self.get_serializer_classname(model_class)
 
         if not serializer_class:
             return JsonResponse({'detail': 'Serializer not found for this model.'}, status=404)
@@ -74,7 +74,7 @@ class UserModelListView(generics.GenericAPIView):
         serializer = serializer_class(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
 
-    def get_serializer_class(self, model_class):
+    def get_serializer_classname(self, model_class):
         # Dynamically determine the serializer class based on the model
         return SERIALZE_MODEL_MAP.get(model_class.__name__)
 
@@ -115,11 +115,11 @@ class RenderFrontendIndex(APIView):
         return HttpResponse(modified_html, content_type='text/html')
 
 def redirect_to_frontend(request, provider=None):
-    frontend_url = settings.FRONTEND_URL
+    frontend_url = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
     redirect_path = request.path
     query_params = request.GET.copy()
-    if provider:
-        query_params['provider'] = provider
+    if "provider" in query_params:
+        redirect_path = redirect_path.replace("provider", query_params['provider'])
     query_string = query_params.urlencode()
     response = redirect(f'{frontend_url}{redirect_path}?{query_string}')
     return response

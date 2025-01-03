@@ -15,32 +15,32 @@ exec "$@"
 
 echo "[DJANGO] Building oaexample migrations"
 output=$(python manage.py makemigrations oaexample_app --noinput 2>&1) || {
-    echo "[DJANGO] Make migrations failed: $output";
+    echo "[DJANGO] Make migrations output: $output";
 }
 
 echo "[DJANGO] Building all migrations"
 output=$(python manage.py makemigrations --noinput 2>&1) || {
-    echo "[DJANGO] Make all migrations failed: $output";
+    echo "[DJANGO] Make all migrations output: $output";
 }
 
 echo "[DJANGO] Migrating"
 output=$(python manage.py migrate --noinput 2>&1) || {
-    echo "[DJANGO] Migrate failed: $output";
+    echo "[DJANGO] Migrate output: $output";
 }
 
 echo "[DJANGO] Sync DB"
 output=$(python manage.py migrate --run-syncdb --noinput 2>&1) || {
-    echo "[DJANGO] Migrate db sync failed: $output";
+    echo "[DJANGO] Migrate db sync output: $output";
 }
 
 echo "[DJANGO] Creating superuser"
 output=$(python manage.py createsuperuser --noinput 2>&1) || {
-    echo "[DJANGO] createsuperuser failed: $output";
+    echo "[DJANGO] createsuperuser output: $output";
 }
 
 echo "[DJANGO] Build static files"
 output=$(python manage.py collectstatic --noinput 2>&1) || {
-    echo "[DJANGO] static files failed: $output";
+    echo "[DJANGO] static files output: $output";
 }
 
 if [ "$DJANGO_ENV" = "testing" ] || [ "$DJANGO_ENV" = "development" ] || { [ "$DJANGO_ENV" = "docker" ] && [ "$DJANGO_DEBUG" = "True" ]; }; then

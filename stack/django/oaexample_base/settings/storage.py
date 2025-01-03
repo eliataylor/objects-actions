@@ -42,6 +42,7 @@ if OA_ENV_STORAGE == 'gcp':
     from google.oauth2 import service_account
     import re
 
+    # follows naming conventions found during deploy/create-bucket.sh
     def sanitize_bucket_name(name: str) -> str:
         # Convert to lowercase
         name = name.lower()

@@ -366,7 +366,7 @@ class UserModelListView(generics.GenericAPIView):
         if search_query:
             queryset = self.filter_queryset(queryset)
 
-        serializer_class = self.get_serializer_class(model_class)
+        serializer_class = self.get_serializer_classname(model_class)
 
         if not serializer_class:
             return JsonResponse({'detail': 'Serializer not found for this model.'}, status=404)
@@ -377,7 +377,7 @@ class UserModelListView(generics.GenericAPIView):
         serializer = serializer_class(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
 
-    def get_serializer_class(self, model_class):
+    def get_serializer_classname(self, model_class):
         # Dynamically determine the serializer class based on the model
         return SERIALZE_MODEL_MAP.get(model_class.__name__)
 

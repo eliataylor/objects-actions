@@ -16,8 +16,6 @@ MFA_FORMS = {
     'deactivate_totp': 'allauth.mfa.forms.DeactivateTOTPForm',
 }
 
-EMAIL_USE_SSL = False  # True if using SSL
-
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_EMAIL_VERIFICATION = "optional"  # since SMS only is allowed
@@ -30,6 +28,7 @@ ACCOUNT_USER_DISPLAY = lambda user: user.get_full_name()
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 
 if DJANGO_ENV != 'production':
+    EMAIL_USE_SSL = False  # True if using SSL
     ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # allow both for the sake of databuilder
     ACCOUNT_RATE_LIMITS = False
 
