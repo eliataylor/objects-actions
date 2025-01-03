@@ -27,7 +27,7 @@ SUPERUSER_USERNAME = myEnv('DJANGO_SUPERUSER_USERNAME', 'superadmin')
 SUPERUSER_PASSWORD = myEnv('DJANGO_SUPERUSER_PASSWORD', 'admin')
 SUPERUSER_EMAIL = myEnv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 
-ALLOWED_HOSTS = [get_tld(API_HOST_PARTS.hostname), f".{get_tld(API_HOST_PARTS.hostname)}", myEnv('GCP_API_IP'), '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [get_tld(API_HOST_PARTS.hostname), f".{get_tld(API_HOST_PARTS.hostname)}"]
 
 CORS_ALLOWED_ORIGINS = [API_HOST, APP_HOST]
 CORS_ALLOW_CREDENTIALS = True # using cookies
