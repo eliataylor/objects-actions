@@ -11,7 +11,7 @@ COPY package.json package-lock.json /app/cypress/
 RUN npm install
 
 # Copy the ReactJS project source code
+RUN [ ! -f cypress.env.json ] && cp cypress.public.json cypress.env.json || true
 COPY . /app/cypress/
-COPY .env /app/cypress/
 
 CMD ["npm", "run", "cy:run"]

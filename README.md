@@ -39,7 +39,6 @@ https://github.com/user-attachments/assets/1263c2d0-0ed3-45af-9d3c-0037ec4db77b
 - `git clone git@github.com:eliataylor/object-actions.git`
 - `cd object-actions`
 - `cp .env.public .env`
-- `cp stack/cypress/cypress.public.json stack/cypress/cypress.env.json`
 - `docker-compose up --build`
 
 # TO BUILD:
