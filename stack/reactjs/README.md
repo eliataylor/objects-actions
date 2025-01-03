@@ -2,7 +2,7 @@
 
 #### Start App template
 ```sh
-cp .env.public .env # and set your google anayltics GA ID
+cp .env.public .env # and update your configs
 npm install
 npm start
 ```
