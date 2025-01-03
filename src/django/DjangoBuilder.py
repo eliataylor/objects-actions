@@ -185,8 +185,9 @@ urlpatterns += [
             model_name = create_object_name(class_name)
             code = tpl.replace('__CLASSNAME__', model_name)
             if model_name == 'Users':
+                code = code.replace("CustomSerializer", "CustomUsersSerializer"),
                 code = code.replace("fields = '__all__'",
-                                    "fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]")
+                                    "exclude = ('password', 'email', 'is_active', 'is_staff', 'is_superuser')")
             parts.append(code)
 
             self.append_import("serializers", f"from .models import {model_name}")
@@ -230,7 +231,13 @@ urlpatterns += [
     lookup_field = '{has_slug['Field Name']}'""")
 
             self.append_import("views", f"from .models import {model_name}")
-            self.append_import("views", f"from .serializers import {model_name}Serializer")
+
+            if model_name == 'Users':
+                self.append_import("views", f"from .serializers import Custom{model_name}Serializer")
+            else:
+                self.append_import("views", f"from .serializers import {model_name}Serializer")
+
+
 
         inject_generated_code(outpath, '\n'.join(self.imports["views"]), 'VIEWSET-IMPORTS')
 

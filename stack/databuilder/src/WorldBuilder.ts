@@ -79,7 +79,10 @@ export class WorldBuilder {
             if (!hasId) {
                 name.push(received.id ?? sent.id)
             }
+            console.log(`SAVED: ${name.join('-')} by ${owner?.id || 'unknown'}`)
             fs.writeFileSync(`${this.fixturePath}/${name.join('-')}.json`, JSON.stringify(data, null, 2));
+        } else {
+            console.warn(`No such fixture path found ${this.fixturePath}.`);
         }
         // console.log(`User ${owner.username} created a ${received._type} with these roles ${JSON.stringify(owner.groups)}`)
     }
@@ -152,7 +155,7 @@ export class WorldBuilder {
 
         let randomIndex = Math.floor(Math.random() * authors.length);
         let author = authors[randomIndex] as Creators
-        console.log(`REUSING CREATOR ${author.username}`);
+        console.log(`using creator ${author.username}`);
         if (!author.cookie) {
             const works = await this.loginUser(author.email || author.username) // get cookie
             if (works) {
@@ -180,35 +183,23 @@ export class WorldBuilder {
     }
 
     public async buildObject(item: NavItem) {
-
-        if (typeof TypeFieldSchema[item.type] === 'undefined') {
-            console.error('Invalid Type', item)
-            return
-        }
-        const hasUrl = NAVITEMS.find(nav => nav.type === item.type);
-        if (!hasUrl) {
-            console.error('Invalid URL Type', item)
-            return
-        }
         if (item.type === "Users") {
             console.error("Use the `registerUsers` function", item)
             return
         }
-
         const creator = await this.loadAuthorByRole(null);
         if (!creator) {
             return console.warn("Failed to get a oa-tester. run `users-add` to create some first")
         }
 
-        let entity: any = {author: creator.id};
-        entity = await this.populateEntity(entity, hasUrl)
+        const entity = await this.populateEntity({}, item)
         const {formData, headers} = await this.serializePayload(entity);
 
-        const response = await this.apiClient.post(hasUrl.api, formData, headers);
+        const response = await this.apiClient.post(item.api, formData, headers);
         if (!response.data?.id) {
             console.error(`Error creating ${item.type}. ${response.error}`)
         } else {
-            this.saveFixture('add', hasUrl.api, formData, response.data, creator);
+            this.saveFixture('add', item.api, formData, response.data, creator);
         }
         return response;
     }
@@ -282,16 +273,19 @@ export class WorldBuilder {
                 // const mediaUrl = "https://api.trackauthoritymusic.com/sites/default/files/products/therapruler-book.jpeg"
                 // const mediaUrl = "https://live.staticflickr.com/65535/51418651934_309ddab4f2_n.jpg"
                 // console.log(`streaming ${mediaUrl}`)
+                try {
+                    let filename = new URL(mediaUrl).pathname;
+                    filename = filename.substring(filename.lastIndexOf('/') + 1)
+                    if (filename.indexOf('.') < 0) {
+                        filename += '.jpg'
+                    }
 
-                let filename = new URL(mediaUrl).pathname;
-                filename = filename.substring(filename.lastIndexOf('/') + 1)
-                if (filename.indexOf('.') < 0) {
-                    filename += '.jpg'
+                    const mediaResponse = {stream: mediaUrl, filename}
+                    entity.hasImage = true;
+                    entity[field.machine] = mediaResponse
+                } catch (e) {
+                    console.warn(`Invalid url for ${field.machine}`, field, e)
                 }
-
-                const mediaResponse = {stream: mediaUrl, filename}
-                entity.hasImage = true;
-                entity[field.machine] = mediaResponse
 
             } else {
                 entity[field.machine] = await fakeFieldData(field.field_type, field.machine, field.options, hasUrl.plural)

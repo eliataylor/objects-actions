@@ -124,9 +124,10 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
             </ListItem>)
         } else if (field && field.field_type === 'video') {
             content.push(<Card key={`prop${key}-${i}`}
-                               sx={{maxWidth: 300, minHeight: 200, flexGrow: 1, position: 'relative'}}>
+                               sx={{flexGrow: 1, position: 'relative'}}>
                 <CardMedia>
                     <video
+                        width={'100%'} style={{maxWidth: '600'}}
                         autoPlay
                         muted
                         controls={true}

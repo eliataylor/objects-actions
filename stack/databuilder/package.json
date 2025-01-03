@@ -6,6 +6,7 @@
     "start": "npx tsx src/main.ts --env-file=.env --action=objects-add --count=1",
     "objects-add": "npx tsx src/main.ts --env-file=.env --action=objects-add --count=1",
     "users-add": "npx tsx src/main.ts --env-file=.env --action=users-add --count=1",
+    "object-add": "npx tsx src/main.ts --env-file=.env --action=object-add --type=resources --count=1",
     "delete-all": "npx tsx src/main.ts --env-file=.env --action=delete-all"
   },
   "devDependencies": {

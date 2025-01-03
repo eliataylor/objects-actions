@@ -35,7 +35,7 @@ const EntityList: React.FC<EntityListProps> = ({model, author, showFab = false})
 
         let apiUrl = ``;
         if (author) {
-            apiUrl += `/api/users/${author}/${hasUrl.type.toLowerCase()}`
+            apiUrl += `/api/users/${author}/${hasUrl.type.toLowerCase()}/list`
         } else {
             apiUrl += hasUrl.api
         }

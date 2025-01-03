@@ -31,19 +31,23 @@ SUPERUSER_EMAIL = myEnv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 
 ALLOWED_HOSTS = [get_tld(API_HOST_PARTS.hostname), f".{get_tld(API_HOST_PARTS.hostname)}"]
 
-CORS_ALLOWED_ORIGINS = [API_HOST, APP_HOST]
+CORS_ALLOWED_ORIGINS = [APP_HOST, API_HOST]
+if DJANGO_ENV == 'production':
+    # allow localhost to tap production to ease front-end dev contributors
+    port = '3000' if not APP_HOST_PARTS.port else APP_HOST_PARTS.port
+    CORS_ALLOWED_ORIGINS += [f"{APP_HOST_PARTS.scheme}://localhost:{port}", f"{APP_HOST_PARTS.scheme}://127.0.0.1:{port}", f"{APP_HOST_PARTS.scheme}://localhost.oaexample.com:{port}"]
+
 CORS_ALLOW_CREDENTIALS = True # using cookies
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'x-email-verification-key',  # used by allauth
     'X-App-Client',  # used by mobile to toggle to Token auth
 ]
 
-CSRF_TRUSTED_ORIGINS = [APP_HOST, API_HOST]
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
-
 
 SESSION_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
 SESSION_COOKIE_SAMESITE = 'Lax'

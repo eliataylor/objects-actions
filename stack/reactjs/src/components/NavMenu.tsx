@@ -10,14 +10,14 @@ const NavMenu = () => {
     const location = useLocation()
 
     return (
-        <List id={"NavMenu"}>
+        <List id={"NavMenu"} dense={true}>
             <AuthMenu/>
 
             <ListItemButton
                 component={Link} to={'/readme'}
                 selected={location.pathname === '/readme'}
             >
-                <ListItemAvatar><LocalLibraryIcon/></ListItemAvatar>
+                <ListItemAvatar sx={{minWidth:40}}><LocalLibraryIcon fontSize={'small'}/></ListItemAvatar>
                 <ListItemText primary={"Read Me"}/>
             </ListItemButton>
 

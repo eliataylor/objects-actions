@@ -74,7 +74,7 @@ const Layout: React.FC = () => {
 
             <Grid container justifyContent={'space-around'} flexWrap={'nowrap'}>
                 {isMounted === true &&
-                  <Grid item sx={{ml: 2, mt: 3}} style={{maxWidth: 240}}>
+                  <Grid item sx={{ml: 2, mt: 3}} style={{maxWidth: 240, minWidth: 130}}>
                       {(location.pathname.length > 1) &&
                         <Box sx={{pl: 2}}>
                           <Logo height={45}/>

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group
+from .serializers import CustomUserSerializer
 from .models import Users
-from .serializers import UsersSerializer
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -18,7 +18,14 @@ OA_TESTER_GROUP = 'oa-tester'
 class OATesterPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 300
+
+
+class OATesterSerializer(CustomUserSerializer):
+    class Meta():
+        model = Users
+        exclude = ('password',)
+        # fields = [field.name for field in Users._meta.fields if field.name not in ('password')]
 
 # ViewSet
 @extend_schema_view(
@@ -31,7 +38,7 @@ class OATesterPagination(PageNumberPagination):
 )
 class OATesterUserViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.filter(groups__name=OA_TESTER_GROUP).order_by('id')
-    serializer_class = UsersSerializer
+    serializer_class = OATesterSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = OATesterPagination
 
