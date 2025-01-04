@@ -99,11 +99,16 @@ web_modules/
 
 # dotenv environment variable files
 .env
+reactjs/.env
+databuilder/.env
+cypress/cypress.env.json
+
 .env.development.local
 .env.test.local
 .env.production.local
 .env.local
 .env.private
+*/.env.private
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

@@ -15,7 +15,6 @@ RUN npm install
 
 # Copy the ReactJS project source code
 COPY . /app/reactjs/
-COPY .env /app/reactjs/
 
 RUN chmod +x /app/reactjs/entrypoint.sh
 

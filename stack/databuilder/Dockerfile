@@ -1,5 +1,5 @@
-# Use Node.js 20 alpine image as base
-FROM node:20-alpine
+# Use Node.js 18 alpine image as base
+FROM node:18-alpine
 
 # Set working directory specific to ReactJS
 WORKDIR /app/databuilder
@@ -12,7 +12,6 @@ RUN npm install
 
 # Copy the ReactJS project source code
 COPY . /app/databuilder/
-COPY .env /app/databuilder/
 
 RUN chmod +x /app/databuilder/entrypoint.sh
 

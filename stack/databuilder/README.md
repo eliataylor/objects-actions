@@ -1,5 +1,6 @@
 # Fake User & Data generator
 
+# LOCALLY
 
 ## To Install
 ```
@@ -30,3 +31,17 @@ Edit [generate_users.py](stack/django/oaexample_app/management/commands/generate
 docker-compose exec django python manage.py generate-users
 ```
 (all these users are given the 'oa-tester' group which will be auto deleted during delete commands above)
+
+
+# IN DOCKER
+
+```aiignore
+docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=objects-add --count=5
+```
+
+or
+
+```aiignore
+docker exec -it databuilder-service /bin/sh
+npx tsx src/main.ts --env-file=.env --action=users-add --count=1
+```

@@ -10,8 +10,15 @@ if [ ! -f "$ssl_cert_path" ]; then
         -out "$ssl_cert_path" \
         -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=localhost"
 fi
+
+if [ ! -f /app/reactjs/.env ]; then
+  echo "No .env file found. Using default .env.public."
+  cp /app/reactjs/.env.public /app/reactjs/.env
+else
+  echo ".env file found. Using the provided version."
+fi
+
 exec "$@"
 
 echo "Starting ReactJS"
-npm install
 npm run start-ssl-in-docker

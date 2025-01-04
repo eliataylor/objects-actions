@@ -42,13 +42,13 @@ export class WorldBuilder {
 
         this.fixturePath = path.resolve('..', 'cypress/cypress/fixtures'); // on local host
         if (!fs.existsSync(this.fixturePath)) {
-            console.log(`no such fixture path ${this.fixturePath}`)
-            this.fixturePath = '/app/cypress/cypress/fixtures'; // in docker
+            this.fixturePath = '/app/databuilder/fixtures';
             if (!fs.existsSync(this.fixturePath)) {
-                console.log(`no such fixture path ${this.fixturePath}`)
-                this.fixturePath = ''; // ignore
+                fs.mkdirSync(this.fixturePath);
+                console.log(`Created fixture storage ${this.fixturePath}`)
             }
         }
+        console.log(`Output will be stored in ${this.fixturePath}`)
     }
 
     saveFixture(verb: string, url: string, sent: any, received: any, owner: Users) {
