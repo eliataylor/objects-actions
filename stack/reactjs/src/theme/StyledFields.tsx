@@ -127,7 +127,7 @@ export const ButtonPill = styled((props: ButtonProps & { to?: string }) => {
 export const TightButton = styled(Button)(({theme}) => ({
     borderRadius: 4,
     textTransform: 'none',
-    color: theme.palette.text.primary,
+    color: theme.palette.mode === 'dark' ? theme.palette.text.primary : '',
     margin: 'auto'
 }));
 

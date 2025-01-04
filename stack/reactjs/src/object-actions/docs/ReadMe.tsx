@@ -25,7 +25,7 @@ const ReadMe: React.FC = () => {
                             <a href={'https://github.com/eliataylor/objects-actions'}
                                target={'_blank'}>
                                 <TightButton size={'small'} variant={'contained'}
-                                             startIcon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
+                                             startIcon={<LightDarkImg light={'/oa-assets/github-mark-white.svg'}
                                                                       dark={'/oa-assets/github-mark-white.svg'}
                                                                       styles={{height: 20}}/>}>Open
                                     Source</TightButton>
