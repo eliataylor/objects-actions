@@ -5,6 +5,6 @@
     "viewportHeight": 768,
     "email": "info@oaexample.com",
     "password": "APasswordYouShouldChange",
-    "REACT_APP_APP_HOST": "https://localhost.oaexample.com:3000",
-    "REACT_APP_API_HOST" : "https://localapi.oaexample.com:8080"
+    "REACT_APP_APP_HOST": "https://reactjs-service:3000",
+    "REACT_APP_API_HOST" : "https://django-service:8080"
 }

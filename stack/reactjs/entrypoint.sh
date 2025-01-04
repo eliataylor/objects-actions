@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! -d "/app/reactjs/node_modules" ]; then
+  echo "Falling back to npm installing dependencies from entrypoint.sh"
+  npm install
+fi
+
 # Ensure the SSL certificate exists or create one
 ssl_cert_path="$HOME/.ssl/certificate.crt"
 if [ ! -f "$ssl_cert_path" ]; then

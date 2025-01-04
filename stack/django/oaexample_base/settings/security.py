@@ -24,7 +24,7 @@ APP_HOST_PARTS = urlparse(APP_HOST)
 API_HOST = os.getenv('REACT_APP_API_HOST', 'https://localapi.oaexample.com:8080')
 API_HOST_PARTS = urlparse(API_HOST)
 
-SECRET_KEY = myEnv('DJANGO_SECRET_KEY', 'm(##s4x5rs))6f09xu_xq@1a3-*5sm@n8bh^9dm(p46-%t@et%')
+SECRET_KEY = myEnv('DJANGO_SECRET_KEY', 'default')
 SUPERUSER_USERNAME = myEnv('DJANGO_SUPERUSER_USERNAME', 'superadmin')
 SUPERUSER_PASSWORD = myEnv('DJANGO_SUPERUSER_PASSWORD', 'admin')
 SUPERUSER_EMAIL = myEnv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
@@ -32,10 +32,17 @@ SUPERUSER_EMAIL = myEnv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 ALLOWED_HOSTS = [get_tld(API_HOST_PARTS.hostname), f".{get_tld(API_HOST_PARTS.hostname)}"]
 
 CORS_ALLOWED_ORIGINS = [APP_HOST, API_HOST]
-if DJANGO_ENV == 'production':
-    # allow localhost to tap production to ease front-end dev contributors
-    port = '3000' if not APP_HOST_PARTS.port else APP_HOST_PARTS.port
-    CORS_ALLOWED_ORIGINS += [f"{APP_HOST_PARTS.scheme}://localhost:{port}", f"{APP_HOST_PARTS.scheme}://127.0.0.1:{port}", f"{APP_HOST_PARTS.scheme}://localhost.oaexample.com:{port}"]
+APP_PORT = '3000' if not APP_HOST_PARTS.port else APP_HOST_PARTS.port
+
+# allow localhost to tap production to ease front-end dev contributors
+CORS_ALLOWED_ORIGINS += [f"{APP_HOST_PARTS.scheme}://localhost:{APP_PORT}",
+                         f"{APP_HOST_PARTS.scheme}://127.0.0.1:{APP_PORT}",
+                         f"{APP_HOST_PARTS.scheme}://localhost.oaexample.com:{APP_PORT}",
+                         f"{APP_HOST_PARTS.scheme}://reactjs-service:{APP_PORT}"]
+
+if DJANGO_ENV != 'production':
+    # for docker networking
+    ALLOWED_HOSTS += ["localapi.oaexample.com", "localhost", "127.0.0.1", "django-service"]
 
 CORS_ALLOW_CREDENTIALS = True # using cookies
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -44,15 +51,19 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ]
 
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
-CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
+if DJANGO_ENV == 'production':
+    CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
+else:
+    CSRF_COOKIE_DOMAIN = None
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
-SESSION_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
-SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
-SESSION_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
+# same for session cookies
+SESSION_COOKIE_DOMAIN = CSRF_COOKIE_DOMAIN
+SESSION_COOKIE_SAMESITE = CSRF_COOKIE_SAMESITE
+SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE
+SESSION_COOKIE_HTTPONLY = CSRF_COOKIE_HTTPONLY
 
 if API_HOST_PARTS.scheme.lower() == 'https':
 #    SECURE_SSL_REDIRECT = True # only use if not served behind a reverse proxy like Cloud Run / Nginx /..

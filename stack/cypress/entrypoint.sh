@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ ! -d "/app/cypress/node_modules" ]; then
+  echo "Falling back to npm installing dependencies from entrypoint.sh"
+  npm install
+fi
+
 # Check if cypress.env.json exists; if not, create it from cypress.public.json
 if [ ! -f /app/cypress/cypress.env.json ]; then
   echo "No cypress.env.json file found. Using default cypress.public.json."

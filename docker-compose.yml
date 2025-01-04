@@ -67,6 +67,8 @@ services:
     depends_on:
       django:
         condition: service_started
+    extra_hosts:
+      - "localapi.oaexample.com:127.0.0.1"
 
   # Front-end end-to-end testing
   cypress:
@@ -88,7 +90,13 @@ services:
       default:
         aliases:
           - cypress-network
+    extra_hosts:
+      - "localapi.oaexample.com:127.0.0.1"
+      - "localhost.oaexample.com:127.0.0.1"
 
+networks:
+  default:
+    name: my_oaexample_network
 
 volumes:
   mysql-data:

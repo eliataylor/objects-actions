@@ -8,13 +8,13 @@ WORKDIR /app/reactjs
 RUN apk add --no-cache openssl
 
 # Copy dependency files to install dependencies
-COPY package.json package-lock.json /app/reactjs/
+COPY package.json package-lock.json ./
 
 # Install Node.js dependencies
 RUN npm install
 
 # Copy the ReactJS project source code
-COPY . /app/reactjs/
+COPY . .
 
 RUN chmod +x /app/reactjs/entrypoint.sh
 

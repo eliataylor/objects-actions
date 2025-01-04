@@ -5,6 +5,8 @@ WORKDIR /app/cypress
 
 # Copy dependencies files and install
 COPY package.json package-lock.json ./
+
+# Install Node.js dependencies
 RUN npm install
 
 # Copy the entire Cypress project

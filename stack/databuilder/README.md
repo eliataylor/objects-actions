@@ -36,7 +36,7 @@ docker-compose exec django python manage.py generate-users
 # IN DOCKER
 
 ```aiignore
-docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=objects-add --count=5
+docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=users-add --count=1
 ```
 
 or

@@ -5,13 +5,13 @@ FROM node:18-alpine
 WORKDIR /app/databuilder
 
 # Copy dependency files to install dependencies
-COPY package.json package-lock.json /app/databuilder/
+COPY package.json package-lock.json ./
 
 # Install Node.js dependencies
 RUN npm install
 
 # Copy the ReactJS project source code
-COPY . /app/databuilder/
+COPY . .
 
 RUN chmod +x /app/databuilder/entrypoint.sh
 
