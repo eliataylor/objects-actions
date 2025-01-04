@@ -11,7 +11,7 @@ RUN apk add --no-cache openssl
 COPY package.json package-lock.json ./
 
 # Install Node.js dependencies
-RUN npm install
+RUN npm ci
 
 # Copy the ReactJS project source code
 COPY . .

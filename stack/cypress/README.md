@@ -9,7 +9,7 @@ cp cypress.public.json cypress.env.json
 npm install
 ```
 
-## To watch Tests as they run:
+## To watch Tests as they run and debug interactively:
 ```
 npm run cy:open
 ```
@@ -21,23 +21,27 @@ npm run cy:run
 
 # IN DOCKER
 
-run tests:
+Open to `stack/reactjs/.env` and set the API url to `REACT_APP_API_HOST=https://django-service:8080`
 
+then run tests:
 ```
 docker exec -it cypress-service npx cypress run --spec cypress/e2e/read-only/load-form.cy.ts
 ```
 
+
+### Troubleshoting
 Check if Xvfb is running inside the container:
 ```
 docker exec -it cypress-service ps aux | grep Xvfb
 ```
 
-Test Cypress directly inside the container:
-```
-docker exec -it cypress-service npx cypress run --headless --browser chrome
-```
-
 Ensure the DISPLAY environment variable is correctly set in the container by running:
 ```
 docker exec -it cypress-service sh -c "echo $DISPLAY"
+```
+
+
+Test Cypress directly inside the container:
+```
+docker exec -it cypress-service npx cypress run --headless --browser electron
 ```

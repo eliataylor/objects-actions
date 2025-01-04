@@ -7,7 +7,7 @@ fi
 
 # Check if cypress.env.json exists; if not, create it from cypress.public.json
 if [ ! -f /app/cypress/cypress.env.json ]; then
-  echo "No cypress.env.json file found. Using default cypress.public.json."
+  echo "No cypress.env.json file found. copying cypress.public.json."
   cp /app/cypress/cypress.public.json /app/cypress/cypress.env.json
 else
   echo "cypress.env.json file found. Using the provided version."
@@ -29,7 +29,10 @@ fi
 
 # Execute the given command or default to Cypress run
 if [ "$#" -gt 0 ]; then
-  exec ./node_modules/.bin/cypress "$@"
+  # exec ./node_modules/.bin/cypress "$@"
+  exec "$@"
 else
-  npx cypress run --headless --browser chrome
+  echo "Container is ready. Use the following commands to run Cypress:"
+  echo "  - Run tests: docker exec -it cypress-service npx cypress run"
+  tail -f /dev/null
 fi

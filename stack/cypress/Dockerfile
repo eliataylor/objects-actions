@@ -1,4 +1,4 @@
-FROM cypress/included:13.16.1
+FROM cypress/included:cypress-13.16.1-node-22.12.0-chrome-131.0.6778.108-1-ff-133.0-edge-131.0.2903.70-1
 
 # Set working directory
 WORKDIR /app/cypress
@@ -7,31 +7,13 @@ WORKDIR /app/cypress
 COPY package.json package-lock.json ./
 
 # Install Node.js dependencies
-RUN npm install
+RUN npm ci
 
 # Copy the entire Cypress project
 COPY . .
 
-# Install Xvfb for headless mode
-RUN apt-get update && apt-get install -y \
-    xvfb \
-    libgtk2.0-0 \
-    libgtk-3-0 \
-    libgbm-dev \
-    libnotify-dev \
-    libgconf-2-4 \
-    libnss3 \
-    libxss1 \
-    libasound2 \
-    libxtst6 \
-    xauth \
-    dbus
-
 # Make entrypoint script executable
-RUN chmod +x /app/cypress/entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 # Set the entrypoint script
-ENTRYPOINT ["sh", "/app/cypress/entrypoint.sh"]
-
-# Default command to run Cypress in headless mode
-CMD ["run", "--headless", "--browser", "chrome"]
+ENTRYPOINT ["sh", "./entrypoint.sh"]

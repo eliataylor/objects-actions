@@ -80,16 +80,10 @@ services:
       - ./stack/cypress:/app/cypress
       - /tmp/.X11-unix:/tmp/.X11-unix # For GUI if needed
     environment:
-      - CYPRESS_BASE_URL=http://reactjs-service:3000 # Target ReactJS service
       - DISPLAY=:99.0 # For Xvfb headless mode
     depends_on:
       reactjs:
         condition: service_started
-    entrypoint: /bin/sh -c "tail -f /dev/null"
-    networks:
-      default:
-        aliases:
-          - cypress-network
     extra_hosts:
       - "localapi.oaexample.com:127.0.0.1"
       - "localhost.oaexample.com:127.0.0.1"
