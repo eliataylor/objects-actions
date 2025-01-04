@@ -3,8 +3,6 @@ _Objects/Actions_
 **Live Demo and Docs: [https://oaexample.com/readme](https://oaexample.com/readme)**
 # From Spreadsheets to Full Stack
 
----
-
 ## WHY
 
 - [x] Document your Idea and Database
