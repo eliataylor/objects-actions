@@ -116,11 +116,15 @@ const EntityCard: React.FC<EntityCardProps> = ({entity}) => {
         }
 
         if (field && field.field_type === 'image') {
-            content.push(<ListItem key={`prop${key}-${i}`}>
+            if (typeof atts.secondary === 'string') {
+                atts.secondary = <Typography sx={{wordBreak: 'break-word'}}
+                                             variant={'body2'}>{atts.secondary}</Typography>
+            }
+            content.push(<ListItem className={'EntityImage'} dense={true} key={`prop${key}-${i}`} sx={{maxWidth:'100%'}}>
                 <ListItemAvatar>
                     <Avatar src={val}/>
                 </ListItemAvatar>
-                <ListItemText  {...atts}  />
+                <ListItemText {...atts}  />
             </ListItem>)
         } else if (field && field.field_type === 'video') {
             content.push(<Card key={`prop${key}-${i}`}
