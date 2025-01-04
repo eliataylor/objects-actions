@@ -38,10 +38,19 @@ https://github.com/user-attachments/assets/1263c2d0-0ed3-45af-9d3c-0037ec4db77b
 
 - `git clone git@github.com:eliataylor/object-actions.git`
 - `cd object-actions`
-- `cp .env.public .env`
 - `docker-compose up --build`
 
-# TO BUILD:
+Out-of-the-Box this will give you:
+
+- [x] ReactJS Front-End: https://localhost.oaexample.com:3000
+- [x] Django Admin: https://localapi.oaexample.com:8080/admin/login
+- [x] Django API: https://localapi.oaexample.com:8080/api/schema/swagger
+- [x] NodeJS Databuilder: Follow [README.md](stack/databuilder/README.md) to generate data
+- [x] Cypress Test Suite: Follow [README.md](stack/cypress/README.md) to run end-to-end tests
+
+As well, edits to all source are automatically reloaded. For example, try changing the theme colors in [ThemeContext.js](stack/reactjs/src/theme/ThemeContext.js)  
+
+# TO CUSTOMIZE:
 1. Copy and customize your own worksheets from this [Empty version](https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing) or this populated [Example version](https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?usp=sharing):
 2. Download your Object Fields and set the `TYPES_PATH` in your [.env](.env) 
 3. Download your Permissions Matrix and set the `PERMISSIONS_PATH` in your [.env](.env)
