@@ -32,7 +32,7 @@ const OaMenu: React.FC<{ handleClick: () => void }> = ({handleClick}) => {
             <NavBarItem to={'/oa/extend'} icon={<ExtendIcon fontSize={'small'}/>} name={'Extend'} />
             <NavBarItem to={'/oa/contribute'} icon={<ContributeIcon fontSize={'small'}/>} name={'Contribute'} />
             {/* <NavBarItem to={'https://github.com/sponsors/eliataylor'} icon={<SponsorIcon fontSize={'small'}/>} name={'Sponsor'}/> */}
-            <NavBarItem to={'https://github.com/eliataylor/objects-actions'} icon={<LightDarkImg light={'/oa-assets/github-mark-white.svg'}
+            <NavBarItem to={'https://github.com/eliataylor/objects-actions'} icon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
                                                                       dark={'/oa-assets/github-mark-white.svg'}
                                                                       styles={{height: 18}}/>} name={'Open Source'} />
 

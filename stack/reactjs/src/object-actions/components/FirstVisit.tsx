@@ -24,7 +24,7 @@ const FirstVisit: React.FC = () => {
     const handleClose = (dest: string = '/oa/readme') => {
         setNavOADrawerWidth(180) // open oa menu
         setIsFirstVisit('false'); // close now
-        sessionStorage.setItem("firstVisit", "true"); // Set "firstVisit" to prevent modal from reappearing
+        sessionStorage.setItem("firstVisit", "false"); // Set "firstVisit" to prevent modal from reappearing
         navigate(dest) // navigate
     };
 
