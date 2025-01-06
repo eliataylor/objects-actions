@@ -4,11 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import { Link } from 'react-router-dom';
-import {
-  Command,
-  StyledPaper,
-  StyledTypography,
-} from '../components/StyledComponents';
+import { Command, StyledPaper, StyledTypography } from '../components/StyledComponents';
 import { useEnvContext } from '../EnvProvider';
 import OutputLinks from './OutputLinks';
 
@@ -89,9 +85,7 @@ const Install: React.FC = () => {
             command="sudo bash docs/os-hosts-install"
             help={
               <>
-                This will add a entry to your computers `/etc/hosts` so that
-                localhost.oxample.com and localapi.oxample.com resolves to your
-                local development environment
+                This will add a entry to your computers `/etc/hosts` so that localhost.oxample.com and localapi.oxample.com resolves to your local development environment
               </>
             }
           />

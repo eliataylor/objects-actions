@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Card, CardHeader, CardMedia, Grid } from '@mui/material';
+import { Card, CardHeader, CardMedia, Grid } from '@mui/material';
 import { TightButton } from '../../theme/StyledFields';
 
 const SpreadsheetCards: React.FC = () => {

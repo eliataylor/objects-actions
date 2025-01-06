@@ -1,14 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import {
-  Box,
-  Collapse,
-  Divider,
-  List,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-} from '@mui/material';
+import { Box, Collapse, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 import { NAVITEMS } from '../object-actions/types/types';
 import AuthMenu from '../components/AuthMenu';
 import { useObjectActions } from '../object-actions/ObjectActionsProvider';

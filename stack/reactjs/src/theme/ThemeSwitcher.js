@@ -16,11 +16,11 @@ const ThemeSwitcher = () => {
     <FormControlLabel
       size={'small'}
       label={
-        <Typography variant={'body2'} style={{ fontSize: 12 }}>
+        <Typography variant="body2" style={{ fontSize: 12 }}>
           Dark Mode
         </Typography>
       }
-      color={'primary'}
+      color="primary"
       control={
         <Switch
           size={'small'}

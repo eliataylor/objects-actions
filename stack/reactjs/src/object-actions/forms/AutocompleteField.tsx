@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Avatar,
-  CircularProgress,
-  ListItem,
-  Autocomplete,
-  ListItemAvatar,
-  ListItemText,
-} from '@mui/material';
+import { Autocomplete, Avatar, CircularProgress, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import ApiClient from '../../config/ApiClient';
 import { NAVITEMS, RelEntity } from '../types/types';
 import { Search } from '@mui/icons-material';

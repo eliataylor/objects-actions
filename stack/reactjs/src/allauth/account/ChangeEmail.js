@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as allauth from '../lib/allauth';
 import FormErrors from '../components/FormErrors';
-import {
-  Box,
-  Button,
-  InputAdornment,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';

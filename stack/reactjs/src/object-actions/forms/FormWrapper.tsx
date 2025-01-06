@@ -6,12 +6,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import LinkIcon from '@mui/icons-material/Link';
-import {
-  EntityTypes,
-  FieldTypeDefinition,
-  NAVITEMS,
-  TypeFieldSchema,
-} from '../types/types';
+import { EntityTypes, FieldTypeDefinition, NAVITEMS, TypeFieldSchema } from '../types/types';
 import { useLocation } from 'react-router-dom';
 import { Typography } from '@mui/material';
 

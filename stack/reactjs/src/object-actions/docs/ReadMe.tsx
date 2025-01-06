@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Card,
-  CardHeader,
-  CardMedia,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from '@mui/material';
+import { Box, Grid, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { CheckBoxOutlined, CheckCircleOutline } from '@mui/icons-material';
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import { TightButton } from '../../theme/StyledFields';

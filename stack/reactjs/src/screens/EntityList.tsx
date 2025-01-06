@@ -6,7 +6,6 @@ import TablePaginator from '../components/TablePaginator';
 import ApiClient from '../config/ApiClient';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Add } from '@mui/icons-material';
-import { canDo, getEndpoints } from '../object-actions/types/access';
 
 interface EntityListProps {
   model?: string;

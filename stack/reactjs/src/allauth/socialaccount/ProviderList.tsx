@@ -1,7 +1,7 @@
 import React from 'react';
 import { useConfig } from '../auth';
 import { redirectToProvider } from '../lib/allauth';
-import { Grid, SvgIcon, Button } from '@mui/material';
+import { Button, Grid, SvgIcon } from '@mui/material';
 import { ReactComponent as Spotify } from '../logos/spotify.svg';
 import { ReactComponent as Github } from '../logos/github-mark-white.svg';
 import { ReactComponent as Linkedin } from '../logos/linkedin.svg';

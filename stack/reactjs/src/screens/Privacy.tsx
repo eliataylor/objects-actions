@@ -1,5 +1,5 @@
 import React from 'react';
-import { CircularProgress, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import Logo from '../theme/Logo';
 
 interface PrivacyProps {

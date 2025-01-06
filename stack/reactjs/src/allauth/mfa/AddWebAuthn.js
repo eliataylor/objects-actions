@@ -3,10 +3,7 @@ import { Navigate } from 'react-router-dom';
 import FormErrors from '../components/FormErrors';
 import { Button, TextField } from '@mui/material';
 import * as allauth from '../lib/allauth';
-import {
-  create,
-  parseCreationOptionsFromJSON,
-} from '@github/webauthn-json/browser-ponyfill';
+import { create, parseCreationOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
 
 export default function AddWebAuthn(props) {
   const [passwordless, setPasswordless] = useState(false);

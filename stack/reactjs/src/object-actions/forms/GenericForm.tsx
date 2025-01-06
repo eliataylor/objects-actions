@@ -1,20 +1,6 @@
 import React, { ChangeEvent, ReactElement, useState } from 'react';
-import {
-  Button,
-  CircularProgress,
-  FormHelperText,
-  Grid,
-  MenuItem,
-  TextField,
-  Typography,
-} from '@mui/material';
-import {
-  EntityTypes,
-  FieldTypeDefinition,
-  NavItem,
-  NAVITEMS,
-  RelEntity,
-} from '../types/types';
+import { Button, CircularProgress, FormHelperText, Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, RelEntity } from '../types/types';
 import AutocompleteField from './AutocompleteField';
 import ApiClient from '../../config/ApiClient';
 import AutocompleteMultipleField from './AutocompleteMultipleField';

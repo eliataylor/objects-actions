@@ -4,13 +4,7 @@ import { login } from '../lib/allauth';
 import { Link } from 'react-router-dom';
 import { useConfig } from '../auth';
 import ProviderList from '../socialaccount/ProviderList';
-import {
-  Button,
-  FormHelperText,
-  Grid,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Button, FormHelperText, Grid, TextField, Typography } from '@mui/material';
 import { Phone } from '@mui/icons-material';
 
 export default function Login() {

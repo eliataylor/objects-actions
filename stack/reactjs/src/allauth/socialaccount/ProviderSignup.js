@@ -2,6 +2,7 @@ import { useState } from 'react';
 import FormErrors from '../components/FormErrors';
 import { providerSignup } from '../lib/allauth';
 import { Box, Button } from '@mui/material';
+
 export default function ProviderSignup() {
   const [email, setEmail] = useState('');
   const [response, setResponse] = useState({ fetching: false, content: null });

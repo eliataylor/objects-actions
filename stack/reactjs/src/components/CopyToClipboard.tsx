@@ -1,6 +1,5 @@
 import React from 'react';
 import { IconButton } from '@mui/material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useSnackbar } from 'notistack';
 
 interface CopyToClipboardProps {

@@ -1,10 +1,6 @@
 // ThemeContext.js
 import React, { createContext, useMemo, useState } from 'react';
-import {
-  createTheme,
-  responsiveFontSizes,
-  ThemeProvider as MuiThemeProvider,
-} from '@mui/material/styles';
+import { createTheme, responsiveFontSizes, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { green, orange } from '@mui/material/colors';
 

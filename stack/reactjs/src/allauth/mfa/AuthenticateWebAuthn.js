@@ -5,10 +5,7 @@ import {
   getWebAuthnRequestOptionsForAuthentication,
 } from '../lib/allauth';
 import { Button } from '@mui/material';
-import {
-  get,
-  parseRequestOptionsFromJSON,
-} from '@github/webauthn-json/browser-ponyfill';
+import { get, parseRequestOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
 import AuthenticateFlow from './AuthenticateFlow';
 
 export default function AuthenticateWebAuthn(props) {

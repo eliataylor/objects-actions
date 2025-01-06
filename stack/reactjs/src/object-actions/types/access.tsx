@@ -151,9 +151,7 @@ export function canDo(
   }
   errstr += ` to ${verb}`;
 
-  // @ts-ignore
-  const isMine =
-    typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
+  const isMine = false; // typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
   const myGroups = new Set(
     me?.groups && me?.groups.length > 0 ? me.groups : [],
   );
@@ -188,9 +186,7 @@ export function canDoOld(
     return others.roles.some((element) => myGroups.has(element));
   }
 
-  // @ts-ignore
-  const isMine =
-    typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
+  const isMine = false; // typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
 
   const myGroups = new Set(
     me?.groups && me?.groups.length > 0 ? me.groups : ['anonymous'],

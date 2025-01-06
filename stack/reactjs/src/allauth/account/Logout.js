@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { logout } from '../lib/allauth';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 export default function Logout() {
   const [response, setResponse] = useState({ fetching: false, content: null });

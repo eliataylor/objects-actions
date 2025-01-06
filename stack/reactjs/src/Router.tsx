@@ -7,11 +7,7 @@ import { NAVITEMS } from './object-actions/types/types';
 import EntityView from './screens/EntityView';
 import EntityList from './screens/EntityList';
 import EntityForm from './screens/EntityForm';
-import {
-  AnonymousRoute,
-  AuthChangeRedirector,
-  AuthenticatedRoute,
-} from './allauth/auth';
+import { AnonymousRoute, AuthChangeRedirector, AuthenticatedRoute } from './allauth/auth';
 import Login from './allauth/account/Login';
 import RequestLoginCode from './allauth/account/RequestLoginCode';
 import ConfirmLoginCode from './allauth/account/ConfirmLoginCode';
@@ -21,33 +17,19 @@ import ProviderSignup from './allauth/socialaccount/ProviderSignup';
 import ProviderCallback from './allauth/socialaccount/ProviderCallback';
 import ChangeEmail from './allauth/account/ChangeEmail';
 import ManageProviders from './allauth/socialaccount/ManageProviders';
-import VerifyEmail, {
-  loader as verifyEmailLoader,
-} from './allauth/account/VerifyEmail';
+import VerifyEmail, { loader as verifyEmailLoader } from './allauth/account/VerifyEmail';
 import VerificationEmailSent from './allauth/account/VerificationEmailSent';
 import RequestPasswordReset from './allauth/account/RequestPasswordReset';
 import ChangePassword from './allauth/account/ChangePassword';
-import MFAOverview, {
-  loader as mfaOverviewLoader,
-} from './allauth/mfa/MFAOverview';
-import ActivateTOTP, {
-  loader as activateTOTPLoader,
-} from './allauth/mfa/ActivateTOTP';
+import MFAOverview, { loader as mfaOverviewLoader } from './allauth/mfa/MFAOverview';
+import ActivateTOTP, { loader as activateTOTPLoader } from './allauth/mfa/ActivateTOTP';
 import DeactivateTOTP from './allauth/mfa/DeactivateTOTP';
-import RecoveryCodes, {
-  loader as recoveryCodesLoader,
-} from './allauth/mfa/RecoveryCodes';
+import RecoveryCodes, { loader as recoveryCodesLoader } from './allauth/mfa/RecoveryCodes';
 import AddWebAuthn from './allauth/mfa/AddWebAuthn';
 import ReauthenticateWebAuthn from './allauth/mfa/ReauthenticateWebAuthn';
-import ListWebAuthn, {
-  loader as listWebAuthnLoader,
-} from './allauth/mfa/ListWebAuthn';
-import GenerateRecoveryCodes, {
-  loader as generateRecoveryCodesLoader,
-} from './allauth/mfa/GenerateRecoveryCodes';
-import ResetPassword, {
-  loader as resetPasswordLoader,
-} from './allauth/account/ResetPassword';
+import ListWebAuthn, { loader as listWebAuthnLoader } from './allauth/mfa/ListWebAuthn';
+import GenerateRecoveryCodes, { loader as generateRecoveryCodesLoader } from './allauth/mfa/GenerateRecoveryCodes';
+import ResetPassword, { loader as resetPasswordLoader } from './allauth/account/ResetPassword';
 import AuthenticateTOTP from './allauth/mfa/AuthenticateTOTP';
 import AuthenticateRecoveryCodes from './allauth/mfa/AuthenticateRecoveryCodes';
 import AuthenticateWebAuthn from './allauth/mfa/AuthenticateWebAuthn';

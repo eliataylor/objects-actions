@@ -11,7 +11,6 @@ import Logo from './Logo';
 import { useNavDrawer } from '../NavDrawerProvider';
 import NavMenu from '../components/NavMenu';
 import Snackbar from '@mui/material/Snackbar';
-import OaMenu from '../object-actions/docs/OaMenu';
 import OALogo from '../object-actions/docs/OALogo';
 
 const DrawerHeader = styled('div')(({ theme }) => ({

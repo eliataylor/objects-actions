@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import GenericForm from '../object-actions/forms/GenericForm';
 import { Box, CircularProgress, Grid, Typography } from '@mui/material';
-import {
-  EntityTypes,
-  NAVITEMS,
-  TypeFieldSchema,
-} from '../object-actions/types/types';
+import { EntityTypes, NAVITEMS, TypeFieldSchema } from '../object-actions/types/types';
 import { canDo, parseFormURL } from '../object-actions/types/access';
 import { useLocation, useParams } from 'react-router-dom';
 import ApiClient from '../config/ApiClient';

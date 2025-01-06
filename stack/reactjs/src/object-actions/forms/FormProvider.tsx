@@ -1,26 +1,10 @@
-import React, {
-  createContext,
-  ReactElement,
-  ReactNode,
-  useContext,
-  useState,
-} from 'react';
-import {
-  EntityTypes,
-  FieldTypeDefinition,
-  getProp,
-  NavItem,
-} from '../types/types';
+import React, { createContext, ReactElement, ReactNode, useContext, useState } from 'react';
+import { EntityTypes, FieldTypeDefinition, getProp, NavItem } from '../types/types';
 import ApiClient from '../../config/ApiClient';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import {
-  FormControlLabel,
-  FormHelperText,
-  MenuItem,
-  TextField,
-} from '@mui/material';
+import { FormControlLabel, FormHelperText, MenuItem, TextField } from '@mui/material';
 import ImageUpload from './ImageUpload';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';

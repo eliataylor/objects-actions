@@ -13,14 +13,7 @@ import {
   SwitchAccount,
   VpnKey,
 } from '@mui/icons-material';
-import {
-  Collapse,
-  List,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from '@mui/material';
+import { Collapse, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 
 interface PermissionProps {
   to: string;

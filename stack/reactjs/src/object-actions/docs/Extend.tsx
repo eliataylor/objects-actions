@@ -1,10 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import {
-  Command,
-  StyledPaper,
-  StyledTypography,
-} from '../components/StyledComponents';
+import { Command, StyledPaper, StyledTypography } from '../components/StyledComponents';
 import EnvBuilder from '../components/EnvBuilder';
 import { useEnvContext } from '../EnvProvider';
 

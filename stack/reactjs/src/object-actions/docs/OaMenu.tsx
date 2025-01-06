@@ -1,6 +1,4 @@
 import React from 'react';
-import { Box } from '@mui/material';
-import ThemeSwitcher from '../../theme/ThemeSwitcher';
 import { useLocation } from 'react-router-dom';
 import { useObjectActions } from '../ObjectActionsProvider';
 import { LocalLibrary } from '@mui/icons-material';
