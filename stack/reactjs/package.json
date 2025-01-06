@@ -40,7 +40,6 @@
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
-    "prebuild": "npm run lint && npm run format",
     "postbuild": "node deploy/postbuild.js"
   },
   "eslintConfig": {

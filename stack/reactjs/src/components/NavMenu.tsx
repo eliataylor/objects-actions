@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Box, Collapse, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 import { NAVITEMS } from '../object-actions/types/types';
 import AuthMenu from '../components/AuthMenu';
-import { useObjectActions } from '../object-actions/ObjectActionsProvider';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import OALogo from '../object-actions/docs/OALogo';
 import OaMenu from '../object-actions/docs/OaMenu';
@@ -11,7 +10,6 @@ import ThemeSwitcher from '../theme/ThemeSwitcher';
 
 const NavMenu = () => {
   const location = useLocation();
-  const { setNavOADrawerWidth } = useObjectActions();
   const [objectsOpen, setObjectsOpen] = React.useState(false);
   const [oaMenuOpen, setOAMenuOpen] = React.useState(
     location.pathname.indexOf('/oa/') === 0,
@@ -70,10 +68,13 @@ const NavMenu = () => {
 
       <List dense={true}>
         <ListItemButton onClick={() => setOAMenuOpen(!oaMenuOpen)}>
-          <ListItemAvatar sx={{ minWidth: 40 }}>
-            <OALogo height={24} />
-          </ListItemAvatar>
-          <ListItemText primary={'O/A Menu'} />
+          <OALogo height={24} />
+          <ListItemText sx={{ml:1}} primary={'O/A'} />
+          {objectsOpen ? (
+            <ExpandLess fontSize={'small'} />
+          ) : (
+            <ExpandMore fontSize={'small'} />
+          )}
         </ListItemButton>
 
         <Collapse in={oaMenuOpen} timeout="auto" unmountOnExit>

@@ -33,7 +33,7 @@ const Install: React.FC = () => {
           href={method}
           action={<img src={'/oa-assets/logo-react.svg'} height={30} />}
           subheader={'ReactJS Front-End'}
-          title={<u>{method}</u>}
+          title={<u style={{wordBreak:"break-word"}}>{method}</u>}
         />
 
         <CardHeader
@@ -45,10 +45,10 @@ const Install: React.FC = () => {
               ? 'https://localapi.oaexample.com:8080/admin/login'
               : 'http://localhost:8080/admin/login'
           }
-          action={<img src={'/oa-assets/logo-django.svg'} height={30} />}
+          action={<img src={'/oa-assets/logo-django.svg'} height={15} />}
           subheader={'Backend Content Manager'}
           title={
-            <u>
+            <u style={{wordBreak:"break-word"}}>
               {method.indexOf('https:') === 0
                 ? 'https://localapi.oaexample.com:8080/admin/login'
                 : 'http://localhost:8080/admin/login'}
@@ -65,10 +65,10 @@ const Install: React.FC = () => {
               ? 'https://localapi.oaexample.com:8080/api/schema/swagger'
               : 'http://localhost:8080/api/schema/swagger'
           }
-          action={<img src={'/oa-assets/logo-drf.png'} height={30} />}
+          action={<img src={'/oa-assets/logo-drf.png'} height={20} />}
           subheader={'Backend-End API'}
           title={
-            <u>
+            <u style={{wordBreak:"break-word"}}>
               {method.indexOf('https:') === 0
                 ? 'https://localapi.oaexample.com:8080/api/schema/swagger'
                 : 'http://localhost:8080/api/schema/swagger'}
