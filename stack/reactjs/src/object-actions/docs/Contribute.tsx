@@ -16,7 +16,7 @@ const Contribute: React.FC = () => {
 
       <StyledPaper>
         <Typography variant="h5" sx={{ mb: 1 }}>
-          Front-End
+          Frontend
         </Typography>
         <Typography variant="body1" gutterBottom={true}>
           Help write interactive documentation. Start around{' '}

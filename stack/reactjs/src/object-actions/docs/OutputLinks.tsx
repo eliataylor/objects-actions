@@ -32,7 +32,7 @@ const Install: React.FC = () => {
           style={{ textDecoration: 'none' }}
           href={method}
           action={<img src={'/oa-assets/logo-react.svg'} height={30} />}
-          subheader={'ReactJS Front-End'}
+          subheader={'ReactJS Frontend'}
           title={<u style={{wordBreak:"break-word"}}>{method}</u>}
         />
 
@@ -103,7 +103,7 @@ const Install: React.FC = () => {
             />
           }
           subheader={<u>README</u>}
-          title={'Front-End Test Suite'}
+          title={'Frontend Test Suite'}
           to={
             'https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder/README.md'
           }

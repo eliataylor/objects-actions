@@ -26,7 +26,7 @@ const OaStackCards: React.FC = () => {
               />
             }
             subheader={'Cypress.io'}
-            title={'Front-End Test Suite'}
+            title={'Frontend Test Suite'}
           />
           <CardMedia sx={{ height: mediaHeight, position: 'relative' }}>
             <video
@@ -70,13 +70,13 @@ const OaStackCards: React.FC = () => {
           <CardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={<img src={'/oa-assets/logo-react.svg'} height={30} />}
-            title={'This Front-End WebApp'}
+            title={'This Frontend WebApp'}
             subheader={'React.JS'}
           />
           <CardMedia
             height={mediaHeight}
             component={'img'}
-            alt={'Front-End WebApp'}
+            alt={'Frontend WebApp'}
             src={
               'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png'
             }
