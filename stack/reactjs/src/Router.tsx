@@ -44,6 +44,7 @@ import Privacy from "./screens/Privacy";
 import Install from "./object-actions/docs/Install";
 import Contribute from "./object-actions/docs/Contribute";
 import Extend from "./object-actions/docs/Extend";
+import Customize from "./object-actions/docs/Customize";
 
 function createRouter() {
     const allRoutes = [
@@ -197,7 +198,7 @@ function createRouter() {
     allRoutes[0].children.push({path: `/readme`, element: <ReadMe />}) // legacy route
     allRoutes[0].children.push({path: `/oa/readme`, element: <ReadMe />})
     allRoutes[0].children.push({path: `/oa/install`, element: <Install />})
-    allRoutes[0].children.push({path: `/oa/customize`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/customize`, element: <Customize />})
     allRoutes[0].children.push({path: `/oa/extend`, element: <Extend />})
     allRoutes[0].children.push({path: `/oa/contribute`, element: <Contribute />})
     allRoutes[0].children.push({path: `/oa/sponsor`, element: <ReadMe />})

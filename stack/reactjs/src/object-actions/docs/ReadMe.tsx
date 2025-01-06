@@ -6,6 +6,7 @@ import {TightButton} from "../../theme/StyledFields";
 import Avatar from "@mui/material/Avatar";
 import LightDarkImg from "../../components/LightDarkImg";
 import OaStackCards from "./OaStackCards";
+import SpreadsheetCards from "./SpreadsheetCards";
 
 const ReadMe: React.FC = () => {
 
@@ -100,50 +101,7 @@ const ReadMe: React.FC = () => {
                     </Grid>
                 </Grid>
 
-
-                <Grid container spacing={1} >
-
-                    <Grid item xs={12} sm={6}>
-                        <Card variant="outlined">
-                            <CardHeader sx={{mb: 0, p: 1}}
-                                        title={'Define your Fields'}
-                                        subheader={'for each Object type'}
-
-                            />
-                            <CardMedia height={320} component={'img'} alt={'Object Field Types'}
-                                       src={"https://raw.githubusercontent.com/eliataylor/objects-actions/refs/heads/v3.2/docs/images/object-fields-demo.png"}/>
-                            <Box sx={{p: 1}}>
-                                <a href={'https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing'}
-                                   target={'_blank'}>
-                                    <TightButton size={'small'}
-                                                 startIcon={<img src={'/oa-assets/Google_Sheets_2020_Logo.svg'}
-                                                                 height={20}/>}>Clone</TightButton>
-                                </a>
-                            </Box>
-                        </Card>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                        <Card>
-                            <CardHeader sx={{mb: 0, p: 1}}
-                                        title={'Define your roles and permissions'}
-                                        subheader={'for each Action on any Object'}
-
-                            />
-                            <CardMedia height={320} component={'img'} alt={'Permission Matrix'}
-                                       src={"https://raw.githubusercontent.com/eliataylor/objects-actions/refs/heads/v3.2/docs/images/permissions-matrix-demo.png"}/>
-                            <Box sx={{p: 1}}>
-                                <a href={'https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing'}
-                                   target={'_blank'}>
-                                    <TightButton size={'small'}
-                                                 startIcon={<img src={'/oa-assets/Google_Sheets_2020_Logo.svg'}
-                                                                 height={20}/>}>Clone</TightButton>
-                                </a>
-                            </Box>
-                        </Card>
-                    </Grid>
-
-                </Grid>
+                <SpreadsheetCards />
             </Box>
 
             <Box p={0} mt={2} mb={2} sx={{textAlign: 'center'}}>
