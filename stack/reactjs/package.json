@@ -20,6 +20,7 @@
     "axios": "^1.7.2",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.11",
+    "notistack": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-json-tree": "^0.19.0",

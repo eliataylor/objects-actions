@@ -6,7 +6,6 @@ import {
     AppRegistration,
     DevicesOther,
     ExpandLess,
-    ExpandMore,
     Login,
     Logout,
     Password,
@@ -22,14 +21,14 @@ interface PermissionProps {
     name?: string;
 }
 
-const NavBarItem: React.FC<PermissionProps> = (props) => {
+export const NavBarItem: React.FC<PermissionProps> = (props) => {
     const location = useLocation()
     const isActive = location.pathname.startsWith(props.to)
     return (props.to.indexOf("http://") === 0 || props.to.indexOf("https://") === 0)
         ?
-        <ListItemButton dense={true}  component={Link} to={props.to} selected={isActive} alignItems={'center'}>
+        <ListItemButton dense={true} selected={isActive} alignItems={'center'}>
             {props.icon && <ListItemAvatar sx={{minWidth:40}}>{props.icon}</ListItemAvatar>}
-            <a target={'_blank'} href={props.to}>{props.name}</a>
+            <a target={'_blank'} style={{textDecoration:'none', fontSize: 12}} href={props.to}>{props.name}</a>
         </ListItemButton>
         :
         <ListItemButton dense={true} component={Link} to={props.to} selected={isActive} alignItems={'center'}>
@@ -63,7 +62,7 @@ export default function AuthMenu() {
             <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" sx={{pl: 1}}>
                     <NavBarItem to='/account/email' icon={<AlternateEmail  fontSize={'small'}/>} name='Change Email'/>
-                    <NavBarItem to='/account/password/change' icon={<Password  fontSize={'small'}/>} name='Change Password'/>
+                    <NavBarItem to='/account/password/change' icon={<Password fontSize={'small'}/>} name='Change Password'/>
                     {config.data.socialaccount
                         ? <NavBarItem to='/account/providers' icon={<SwitchAccount  fontSize={'small'}/>} name='Providers'/>
                         : null}

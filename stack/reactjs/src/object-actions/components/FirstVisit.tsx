@@ -47,9 +47,9 @@ const FirstVisit: React.FC = () => {
                 <Box mt={2}>
                     <Typography variant={'body2'}
                                 style={{lineHeight: 1.6}}>
-                        The data and menus preloaded here were built from
+                        The sample data and menus preloaded here were built from
                         demo spreadsheets describing an example platform for organizing
-                        civic engagement through meetings meant to develop action plans.</Typography>
+                        rallies and meetings for collaborating on civic engagement action plans.</Typography>
                 </Box>
 
                 <Button

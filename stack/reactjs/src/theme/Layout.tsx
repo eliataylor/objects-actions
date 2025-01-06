@@ -102,8 +102,6 @@ const Layout: React.FC = () => {
                 </Grid>
             </Grid>
 
-            <OaMenu/>
-
             <Drawer
                 anchor="right"
                 variant="temporary"

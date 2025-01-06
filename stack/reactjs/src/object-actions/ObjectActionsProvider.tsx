@@ -26,6 +26,7 @@ const ObjectActionsProvider: React.FC<ObjectActionsProviderProps> = ({children})
     const [viewFormat, setViewFormat] = useState<string>('cards');
     const [accessDefault, setAccessDefault] = useState<string>('AllowAny');
     const [navOADrawerWidth, setNavOADrawerWidth] = useState<number>(0); // default width
+    const [env, setEnv] = useState<number>(0); // default width
 
     return <ObjectActionsContext.Provider
         value={{navOADrawerWidth, setNavOADrawerWidth, accessDefault, setAccessDefault, viewFormat, setViewFormat, listData, updateListView, entityData, updateEntityTypes}}>

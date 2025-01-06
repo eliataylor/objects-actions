@@ -42,6 +42,8 @@ import UserView from "./screens/UserView";
 import ReadMe from "./object-actions/docs/ReadMe";
 import Privacy from "./screens/Privacy";
 import Install from "./object-actions/docs/Install";
+import Contribute from "./object-actions/docs/Contribute";
+import Extend from "./object-actions/docs/Extend";
 
 function createRouter() {
     const allRoutes = [
@@ -196,10 +198,9 @@ function createRouter() {
     allRoutes[0].children.push({path: `/oa/readme`, element: <ReadMe />})
     allRoutes[0].children.push({path: `/oa/install`, element: <Install />})
     allRoutes[0].children.push({path: `/oa/customize`, element: <ReadMe />})
-    allRoutes[0].children.push({path: `/oa/extend`, element: <ReadMe />})
-    allRoutes[0].children.push({path: `/oa/contribute`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/extend`, element: <Extend />})
+    allRoutes[0].children.push({path: `/oa/contribute`, element: <Contribute />})
     allRoutes[0].children.push({path: `/oa/sponsor`, element: <ReadMe />})
-    allRoutes[0].children.push({path: `/oa/source`, element: <ReadMe />})
     allRoutes[0].children.push({path: `/oa/privacy`, element: <Privacy />})
 
     return createBrowserRouter(allRoutes)

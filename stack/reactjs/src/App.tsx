@@ -7,20 +7,27 @@ import TrackingConsent from "./components/TrackingConsent";
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {AuthContextProvider} from "./allauth/auth";
+import {SnackbarProvider} from "notistack";
 
 export default function App() {
 
     return (<ThemeProvider>
-            <AuthContextProvider>
-                <NavDrawerProvider>
-                    <TrackingConsent/>
-                    <ObjectActionsProvider>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <Router/>
-                        </LocalizationProvider>
-                    </ObjectActionsProvider>
-                </NavDrawerProvider>
-            </AuthContextProvider>
+            <SnackbarProvider maxSnack={4} anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
+                              style={{marginBottom: 50}}>
+                <AuthContextProvider>
+                    <NavDrawerProvider>
+                        <TrackingConsent/>
+                        <ObjectActionsProvider>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <Router/>
+                            </LocalizationProvider>
+                        </ObjectActionsProvider>
+                    </NavDrawerProvider>
+                </AuthContextProvider>
+            </SnackbarProvider>
         </ThemeProvider>
     );
 }
