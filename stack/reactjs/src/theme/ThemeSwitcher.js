@@ -13,12 +13,10 @@ const ThemeSwitcher = () => {
     }
 
     return (
-        <div style={{display: 'flex', alignItems: 'center', alignContent: 'center', justifyContent: 'center'}}>
-            <FormControlLabel
-                label={<Typography variant={'body2'}>Dark Mode</Typography>} color={'primary'}
-                control={<Switch size={'small'} color={'primary'} checked={darkMode} onChange={handleToggle}/>}
-            />
-        </div>
+        <FormControlLabel size={'small'}
+            label={<Typography variant={'body2'}>Dark Mode</Typography>} color={'primary'}
+            control={<Switch size={'small'} color={'primary'} checked={darkMode} onChange={handleToggle} />}
+        />
     )
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Link} from "react-router-dom";
-import {GradientButton} from "./StyledFields";
+import {SvgIcon} from '@mui/material';
+import {ReactComponent as LOGO} from '../oa-logo.svg';
 
 interface LogoProps {
     height?: number;
@@ -21,10 +21,8 @@ const Logo: React.FC<LogoProps> = (props) => {
         toPass.sx.height = 'auto';
     }
 
-    return <Link to={'/'}>
-        <GradientButton variant={'outlined'} color={'secondary'}
-                        sx={{fontSize: 9, width: '100%'}}>Your Logo</GradientButton>
-    </Link>
+
+    return <SvgIcon viewBox="0 0 292 116" component={LOGO} {...toPass} inheritViewBox/>
 };
 
 export default Logo;

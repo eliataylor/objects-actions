@@ -14,9 +14,9 @@ _Objects/Actions_
 
 ## HOW
 
-|                                                          1: Define your Fields for each Object Type                                                          |                                                                     2: Define your roles and permissions                                                                    |
-|:----------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <a href="docs/images/objects-nod.png" target="_blank"><img src="docs/images/objects-nod.png" alt="Objects to Actions" height="300"/></a> | <a href="docs/images/permissions-matrix-nod.png" target="_blank"><img src="docs/images/permissions-matrix-nod.png" alt="Permission Matrix" height="300"/></a> |
+|                                                   1: Define your Fields for each Object Type                                                    |                                                              2: Define your roles and permissions                                                               |
+|:-----------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| <a href="docs/images/object-fields-demo.png" target="_blank"><img src="docs/images/object-fields-demo.png" alt="Objects to Actions" height="300"/></a> | <a href="docs/images/permissions-matrix-demo.png" target="_blank"><img src="docs/images/permissions-matrix-demo.png" alt="Permission Matrix" height="300"/></a> |
 
 > `docker-compose up --build`
 >
@@ -40,7 +40,7 @@ https://github.com/user-attachments/assets/1263c2d0-0ed3-45af-9d3c-0037ec4db77b
 - `cd object-actions`
 - `docker-compose up --build`
 
-Out-of-the-Box this will give you:
+Out-of-the-Box this will give you:f
 
 - [x] ReactJS Front-End: https://localhost.oaexample.com:3000
 - [x] Django Admin: https://localapi.oaexample.com:8080/admin/login

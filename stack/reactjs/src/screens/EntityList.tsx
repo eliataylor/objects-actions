@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {AppBar, Box, Fab, Grid} from "@mui/material";
 import {ApiListResponse, NAVITEMS} from "../object-actions/types/types";
-import EntityCard from "../object-actions/EntityCard";
+import EntityCard from "../object-actions/components/EntityCard";
 import TablePaginator from "../components/TablePaginator";
 import ApiClient from "../config/ApiClient";
 import {useLocation, useNavigate} from "react-router-dom";

@@ -25,12 +25,19 @@ export interface MySession {
 
 interface AccessPoint {
     verb: CRUDVerb;
-    context: EntityTypes[];
+    context: string[]; // a string of EntityType names
     ownership: string; // "own" / "any"
     id_index?: number;
     roles: string[];
     endpoint: string;
     alias?: string;
+}
+
+function getPermsByTypeAndVerb(type:String, verb:String) {
+    const matches = (permissions as unknown as AccessPoint[]).find((perms: AccessPoint) => {
+        return (perms.context.join('-') === type && perms.verb === verb); // TODO: permissions.json needs built differently
+    })
+    return matches;
 }
 
 export function getEndpoints(url: string, verb: CRUDVerb): AccessPoint[] {
@@ -73,7 +80,59 @@ export function can_view(verb: CRUDVerb, url: string, me: MySession | null, obj:
     return true;
 }
 
-export function canDo(verb: CRUDVerb, url: string, me: MySession | null, obj: EntityTypes): boolean {
+// returns error string or true if passes
+export function canDo(verb: CRUDVerb, obj: EntityTypes, me?: MySession | null): boolean | string {
+    const perm = getPermsByTypeAndVerb(obj._type, verb);
+    console.log(perm);
+
+    if (!perm) {
+        // TODO: check store.accessor.default
+        return true;
+    }
+
+    if (!me) {
+        // test what is allowed for anonymous visitors
+        if (verb !== 'add') {
+            // can anonymous users edit / delete content authored by other users
+            const others = perm.ownership === 'others';
+            if (!others) return `anonymous cannot ${verb} this ${obj._type}`;
+        }
+        // can anonymous users add / edit / delete this content type
+        const hasRole = perm.roles.indexOf('anonymous') > -1
+        if (hasRole) {
+            return true
+        }
+        return `Anonymous cannot ${verb} this ${obj._type}`;
+    }
+
+    let errstr = `You must `;
+    if (perm.roles.length === 1) {
+        errstr += ` be ${perm.roles[0]}`;
+    } else {
+        errstr += ` have one of these roles - ${perm.roles[0]} - `;
+    }
+    errstr += ` to ${verb}`
+
+    // @ts-ignore
+    const isMine = typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
+    const myGroups = new Set(me?.groups && me?.groups.length > 0 ? me.groups : []);
+
+    if (isMine && perm.ownership === 'own') {
+        if (perm.roles.some((element) => myGroups.has(element))) {
+            return true;
+        }
+        return `${errstr} your own ${obj._type}`
+    } else if (!isMine && perm.ownership === 'others') {
+        if (perm.roles.some((element) => myGroups.has(element))) {
+            return true;
+        }
+        return `${errstr} someone else's ${obj._type}`
+    }
+
+    return `${errstr} ${isMine ? "your own" : "someone else's"} ${obj._type}`
+}
+
+export function canDoOld(verb: CRUDVerb, url: string, me: MySession | null, obj: EntityTypes): boolean {
     const byurl = getEndpoints(url, verb)
     console.log(`MATCHING ${url} - ${verb}`, byurl)
 

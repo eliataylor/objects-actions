@@ -132,11 +132,10 @@ export const TightButton = styled(Button)(({theme}) => ({
 }));
 
 export const GradientButton = styled(Button)(({theme}) => ({
-    height: 100,
-    minWidth: '80%',
-    borderRadius: 16,
+    borderRadius: 4,
     textTransform: 'none',
-    background: `linear-gradient(90deg, ${theme.palette.secondary.main}, ${theme.palette.primary.main})`,
+    transition: 'all 1s',
+    background: `linear-gradient(150deg, ${theme.palette.secondary.main}, ${theme.palette.primary.main})`,
     color: theme.palette.common.white,
     '&:hover': {
         background: `linear-gradient(90deg, ${theme.palette.secondary.dark}, ${theme.palette.primary.dark})`,

@@ -185,14 +185,21 @@ function createRouter() {
 
     allRoutes[0].children.push({path: `/users/:uid`, element: <UserView/>})
     NAVITEMS.forEach(item => {
-        allRoutes[0].children.push({path: `/${item.screen}`, element: <EntityList showFab={true}/>})
-        allRoutes[0].children.push({path: `/${item.screen}/:id`, element: <EntityView />})
-        allRoutes[0].children.push({path: `/forms${item.screen}/:id/edit`, element: <EntityForm/>})
-        allRoutes[0].children.push({path: `/forms${item.screen}/0/add`, element: <EntityForm/>})
+        allRoutes[0].children.push({path: `/${item.segment}`, element: <EntityList showFab={true}/>})
+        allRoutes[0].children.push({path: `/${item.segment}/:id`, element: <EntityView />})
+        allRoutes[0].children.push({path: `/forms/${item.segment}/:id/edit`, element: <EntityForm/>})
+        allRoutes[0].children.push({path: `/forms/${item.segment}/0/add`, element: <EntityForm/>})
     })
 
-    allRoutes[0].children.push({path: `/readme`, element: <ReadMe />})
-    allRoutes[0].children.push({path: `/privacy`, element: <Privacy />})
+    allRoutes[0].children.push({path: `/readme`, element: <ReadMe />}) // legacy route
+    allRoutes[0].children.push({path: `/oa/readme`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/install`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/customize`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/extend`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/contribute`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/sponsor`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/source`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/privacy`, element: <Privacy />})
 
     return createBrowserRouter(allRoutes)
 }

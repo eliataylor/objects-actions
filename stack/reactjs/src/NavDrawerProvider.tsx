@@ -29,7 +29,7 @@ interface NavDrawerProviderProps {
 
 // Provider component
 export const NavDrawerProvider: React.FC<NavDrawerProviderProps> = ({children}) => {
-    const [navDrawerWidth, setNavDrawerWidth] = useState<number>(300); // default width
+    const [navDrawerWidth, setNavDrawerWidth] = useState<number>(125); // default width
     const [isMounted, setMounting] = useState<boolean>(window.innerWidth > 600);
     const [keyword, setKeyword] = useState<string>('');
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Outlet, useLocation} from 'react-router-dom';
-import {AppBar, Box, Grid, Typography} from "@mui/material";
+import {Link, Outlet, useLocation} from 'react-router-dom';
+import {AppBar, Box, Grid} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Drawer from "@mui/material/Drawer";
@@ -11,6 +11,8 @@ import Logo from "./Logo";
 import {useNavDrawer} from "../NavDrawerProvider";
 import NavMenu from "../components/NavMenu";
 import Snackbar from '@mui/material/Snackbar';
+import OaMenu from "../object-actions/docs/OaMenu";
+import OALogo from "../object-actions/docs/OALogo";
 
 const DrawerHeader = styled('div')(({theme}) => ({
     display: 'flex',
@@ -41,14 +43,18 @@ const Layout: React.FC = () => {
         setNavDrawerWidth(0);
     };
 
+    const MainLogo = location.pathname.indexOf("/oa/") === 0 ? OALogo : Logo;
+
 
     const appBar = <AppBar position="fixed" color={'default'}>
         <Grid container justifyContent={'space-between'} alignItems={'center'} padding={1}
               spacing={2}>
             {location.pathname.length > 1 &&
-              <Grid item>
-                <Logo height={50}/>
-              </Grid>
+                <Grid item>
+                    <Link to={'/'}>
+                        <MainLogo height={50}/>
+                    </Link>
+                </Grid>
             }
             <Grid item style={{flexGrow: 1}}></Grid>
             <Grid item>
@@ -74,14 +80,14 @@ const Layout: React.FC = () => {
 
             <Grid container justifyContent={'space-around'} flexWrap={'nowrap'}>
                 {isMounted === true &&
-                  <Grid item sx={{ml: 2, mt: 3}} style={{maxWidth: 240, minWidth: 130}}>
-                      {(location.pathname.length > 1) &&
-                        <Box sx={{pl: 2}}>
-                          <Logo height={45}/>
-                        </Box>
-                      }
-                    <NavMenu/>
-                  </Grid>
+                    <Grid item sx={{ml: 2, mt: 3}} style={{maxWidth: 240, minWidth: 140}}>
+                        {(location.pathname.length > 1) &&
+                            <Box sx={{pl: 2}}>
+                                <Logo height={45}/>
+                            </Box>
+                        }
+                        <NavMenu/>
+                    </Grid>
                 }
                 <Grid item flexGrow={1}>
                     {isMounted === false && appBar}
@@ -96,6 +102,7 @@ const Layout: React.FC = () => {
                 </Grid>
             </Grid>
 
+            <OaMenu/>
 
             <Drawer
                 anchor="right"
@@ -116,6 +123,7 @@ const Layout: React.FC = () => {
                     </IconButton>
                 </DrawerHeader>
                 <DrawerMenu/>
+
             </Drawer>
         </React.Fragment>
     );

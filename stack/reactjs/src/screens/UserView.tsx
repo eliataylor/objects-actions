@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {useLocation, useParams} from 'react-router-dom';
 import {Box} from "@mui/material";
 import {EntityTypes, NAVITEMS} from "../object-actions/types/types";
-import EntityCard from "../object-actions/EntityCard";
+import EntityCard from "../object-actions/components/EntityCard";
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';

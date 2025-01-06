@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {useLocation, useParams} from 'react-router-dom';
 import {EntityTypes, NAVITEMS} from "../object-actions/types/types";
-import EntityCard from "../object-actions/EntityCard";
+import EntityCard from "../object-actions/components/EntityCard";
 import ApiClient from "../config/ApiClient";
 
 

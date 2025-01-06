@@ -52,7 +52,12 @@ const ThemeProvider = ({children}) => {
             return responsiveFontSizes(createTheme({
                 typography: {
                     fontSize: 15,
-                    h1: {fontSize: '2.5rem', fontWeight: 100},
+                    h1: {fontSize: '3.5rem', fontWeight: 100},
+                    h2: {fontSize: '3.0rem', fontWeight: 200},
+                    h3: {fontSize: '2.5rem', fontWeight: 300},
+                    h4: {fontSize: '2.0rem', fontWeight: 400},
+                    h5: {fontSize: '1.5rem', fontWeight: 500},
+                    h6: {fontSize: '1.0rem', fontWeight: 600},
                     body1: {fontSize: '0.9rem', lineHeight: 1.5},
                     body2: {fontSize: '0.8rem', lineHeight: 1.4},
                     button: {fontSize: '0.8rem', textTransform: 'none', textDecoration: "none"},

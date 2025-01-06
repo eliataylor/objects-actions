@@ -1,6 +1,6 @@
 import React from 'react';
 import {Card, CardContent, Grid, ListItem, ListItemAvatar, Typography} from "@mui/material";
-import {EntityTypes, FieldTypeDefinition, getProp, NAVITEMS, TypeFieldSchema} from "./types/types";
+import {EntityTypes, FieldTypeDefinition, getProp, NAVITEMS, TypeFieldSchema} from "../types/types";
 import ListItemText, {ListItemTextProps} from "@mui/material/ListItemText";
 import CardHeader, {CardHeaderProps} from '@mui/material/CardHeader';
 import {Link, useNavigate} from "react-router-dom";
@@ -9,8 +9,8 @@ import {Edit, ReadMore} from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import RelEntityHead from "./RelEntityHead";
 import CardMedia from '@mui/material/CardMedia';
-import {humanize} from "../utils";
-import {AlternatingList} from "../theme/StyledFields";
+import {humanize} from "../../utils";
+import {AlternatingList} from "../../theme/StyledFields";
 
 interface EntityCardProps {
     entity: EntityTypes;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {NAVITEMS, RelEntity} from "./types/types";
+import {NAVITEMS, RelEntity} from "../types/types";
 import CardHeader, {CardHeaderProps} from '@mui/material/CardHeader';
 import {Link} from "react-router-dom";
 import Avatar from '@mui/material/Avatar';

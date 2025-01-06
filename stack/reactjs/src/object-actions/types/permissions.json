@@ -375,7 +375,7 @@
   },
   {
     "context": [
-      "Rallies"
+      "Rallies", "Comment"
     ],
     "endpoint": "rally/:id/comment/:id/add",
     "verb": "add",
@@ -399,7 +399,7 @@
   },
   {
     "context": [
-      "Rallies"
+      "Rallies", "Comment"
     ],
     "endpoint": "rally/:id/comment/:id/delete",
     "verb": "delete",
@@ -411,7 +411,7 @@
   },
   {
     "context": [
-      "Rallies"
+      "Rallies", "Comment"
     ],
     "endpoint": "rally/:id/comment/:id/delete",
     "verb": "delete",
