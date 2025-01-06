@@ -34,7 +34,11 @@ const OaMenu = () => {
     const {setNavDrawerWidth} = useNavDrawer()
 
     function closeMenu() {
-        // setNavOADrawerWidth(0)
+        setNavOADrawerWidth(0)
+        setNavDrawerWidth(0)
+    }
+
+    function handleClick() {
         setNavDrawerWidth(0)
     }
 
@@ -42,15 +46,14 @@ const OaMenu = () => {
         <React.Fragment>
             <FirstVisit/>
             <Drawer
-                anchor="left"
-                variant="temporary"
                 open={navOADrawerWidth > 0}
+                onClose={closeMenu}
                 sx={{
                     '& .MuiDrawer-paper': {boxSizing: 'border-box', width: navOADrawerWidth},
                 }}
             >
                 <DrawerHeader>
-                    <IconButton aria-label={'Close OA Drawer'} onClick={() => setNavOADrawerWidth(0)}>
+                    <IconButton aria-label={'Close OA Drawer'} onClick={() => closeMenu()}>
                         <ChevronLeftOutlined/>
                     </IconButton>
                     <OALogo height={45}/>
@@ -61,7 +64,7 @@ const OaMenu = () => {
 
                         <ListItemButton component={Link} to={'/oa/readme'}
                                         selected={location.pathname === '/oa/readme'}
-                                        onClick={() => closeMenu()}
+                                        onClick={() => handleClick()}
                         >
                             <ListItemIcon>
                                 <LocalLibrary/>
@@ -73,7 +76,7 @@ const OaMenu = () => {
                             component={Link}
                             to="/oa/install"
                             selected={location.pathname === "/oa/install"}
-                            onClick={() => closeMenu()}
+                            onClick={() => handleClick()}
                         >
                             <ListItemIcon>
                                 <InstallIcon/>
@@ -85,7 +88,7 @@ const OaMenu = () => {
                             component={Link}
                             to="/oa/customize"
                             selected={location.pathname === "/oa/customize"}
-                            onClick={() => closeMenu()}
+                            onClick={() => handleClick()}
                         >
                             <ListItemIcon>
                                 <CustomizeIcon/>
@@ -97,7 +100,7 @@ const OaMenu = () => {
                             component={Link}
                             to="/oa/extend"
                             selected={location.pathname === "/oa/extend"}
-                            onClick={() => closeMenu()}
+                            onClick={() => handleClick()}
                         >
                             <ListItemIcon>
                                 <ExtendIcon/>
@@ -109,7 +112,7 @@ const OaMenu = () => {
                             component={Link}
                             to="/oa/contribute"
                             selected={location.pathname === "/oa/contribute"}
-                            onClick={() => closeMenu()}
+                            onClick={() => handleClick()}
                         >
                             <ListItemIcon>
                                 <ContributeIcon/>
@@ -121,7 +124,7 @@ const OaMenu = () => {
                             component={Link}
                             to="/oa/sponsor"
                             selected={location.pathname === "/oa/sponsor"}
-                            onClick={() => closeMenu()}
+                            onClick={() => handleClick()}
                         >
                             <ListItemIcon>
                                 <SponsorIcon/>
@@ -133,12 +136,12 @@ const OaMenu = () => {
                             component={Link}
                             to="/oa/source"
                             selected={location.pathname === "/oa/source"}
-                            onClick={() => closeMenu()}
+                            onClick={() => handleClick()}
                         >
                             <ListItemIcon>
                                 <SourceIcon/>
                             </ListItemIcon>
-                            <ListItemText primary="Source"/>
+                            <ListItemText primary="Open Source"/>
                         </ListItemButton>
 
                         <FormControl sx={{marginTop: 3, marginBottom: 3}} variant={'filled'} fullWidth={true}

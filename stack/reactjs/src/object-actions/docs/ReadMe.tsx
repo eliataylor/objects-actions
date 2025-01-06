@@ -110,7 +110,7 @@ const ReadMe: React.FC = () => {
 
                             />
                             <CardMedia height={320} component={'img'} alt={'Object Field Types'}
-                                       src={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/objects-nod.png"}/>
+                                       src={"https://raw.githubusercontent.com/eliataylor/objects-actions/refs/heads/v3.2/docs/images/object-fields-demo.png"}/>
                             <Box sx={{p: 1}}>
                                 <a href={'https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing'}
                                    target={'_blank'}>
@@ -130,7 +130,7 @@ const ReadMe: React.FC = () => {
 
                             />
                             <CardMedia height={320} component={'img'} alt={'Permission Matrix'}
-                                       src={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/permissions-matrix-nod.png"}/>
+                                       src={"https://raw.githubusercontent.com/eliataylor/objects-actions/refs/heads/v3.2/docs/images/permissions-matrix-demo.png"}/>
                             <Box sx={{p: 1}}>
                                 <a href={'https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing'}
                                    target={'_blank'}>

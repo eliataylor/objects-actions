@@ -1,7 +1,6 @@
 import React from 'react';
 import {CircularProgress, Divider, Grid, Typography} from "@mui/material";
 import {TightButton} from "../theme/StyledFields";
-import LightDarkImg from "../components/LightDarkImg";
 import {Link} from "react-router-dom";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import OALogo from "../object-actions/docs/OALogo";
@@ -18,10 +17,10 @@ const Home: React.FC<HomeProps> = ({loading = false}) => {
 
     return (
         <Grid id={"HomeScreen"} container direction={'column'} gap={4} justifyContent={'space-between'}
-              sx={{textAlign: 'center', maxWidth: 400, margin: '70px auto', minHeight: '70vh'}}>
+              sx={{textAlign: 'center', maxWidth:900, margin: '70px auto', minHeight: '70vh'}}>
 
             <Grid item>
-                <Typography variant="h4" style={{fontWeight: 100}}>Your Brand Name</Typography>
+                <Typography variant="h1" style={{fontWeight: 100}}>Your Brand Name</Typography>
                 <Grid sx={{width: 300, margin: 'auto', marginTop: 3}}>
                     <Logo height={120}/>
                 </Grid>
@@ -31,7 +30,7 @@ const Home: React.FC<HomeProps> = ({loading = false}) => {
 
             {loading && <Grid item><CircularProgress sx={{height: 100}}/></Grid>}
 
-            <Grid container wrap={'nowrap'} justifyContent={'space-between'} alignContent={'center'} gap={2}>
+            <Grid container wrap={'nowrap'} justifyContent={'space-between'} alignItems={'center'} alignContent={'center'} gap={2}>
                 <Grid item>
                     <OALogo height={80}/>
                 </Grid>
@@ -46,15 +45,6 @@ const Home: React.FC<HomeProps> = ({loading = false}) => {
                     </Link>
                 </Grid>
             </Grid>
-
-            <a href={'https://github.com/eliataylor/objects-actions'}
-               target={'_blank'}>
-                <TightButton size={'small'} sx={{position: 'fixed', right: 20, bottom: 20}}
-                             startIcon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
-                                                      dark={'/oa-assets/github-mark-white.svg'}
-                                                      styles={{height: 20}}/>}>Open
-                    Source</TightButton>
-            </a>
 
         </Grid>
     );

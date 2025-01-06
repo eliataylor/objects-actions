@@ -41,6 +41,7 @@ import SmsSigninOrUp from "./allauth/SmsSigninOrUp";
 import UserView from "./screens/UserView";
 import ReadMe from "./object-actions/docs/ReadMe";
 import Privacy from "./screens/Privacy";
+import Install from "./object-actions/docs/Install";
 
 function createRouter() {
     const allRoutes = [
@@ -193,7 +194,7 @@ function createRouter() {
 
     allRoutes[0].children.push({path: `/readme`, element: <ReadMe />}) // legacy route
     allRoutes[0].children.push({path: `/oa/readme`, element: <ReadMe />})
-    allRoutes[0].children.push({path: `/oa/install`, element: <ReadMe />})
+    allRoutes[0].children.push({path: `/oa/install`, element: <Install />})
     allRoutes[0].children.push({path: `/oa/customize`, element: <ReadMe />})
     allRoutes[0].children.push({path: `/oa/extend`, element: <ReadMe />})
     allRoutes[0].children.push({path: `/oa/contribute`, element: <ReadMe />})
