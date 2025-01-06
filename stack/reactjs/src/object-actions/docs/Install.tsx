@@ -67,8 +67,8 @@ const Install: React.FC = () => {
 
                 {method === 'https://localhost.oaexample.com:3000' &&
                     <Command command="sudo bash docs/os-hosts-install"
-                             help={<>This will add a entry to your computers `/etc/hosts` so that localhost.oxample.com
-                                 resolves to your localhost development environment</>}/>
+                             help={<>This will add a entry to your computers `/etc/hosts` so that localhost.oxample.com and localapi.oxample.com
+                                 resolves to your local development environment</>}/>
                 }
 
                 <Command command="docker-compose up --build -d"/>

@@ -18,11 +18,9 @@ const Customize: React.FC = () => {
             </StyledTypography>
 
             <StyledPaper>
-                <Typography variant="h6">Copy and customize your worksheets:</Typography>
+                <Typography variant="h6">Copy and customize your spreadsheets:</Typography>
                 <FormHelperText>
-                    Use this <a
-                    href="https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?usp=sharing"
-                    target="_blank" rel="noopener noreferrer">Empty version</a> or this .
+                    You do not to need to finish them before continuing. You can rebuild you stack as you refine your idea.
                 </FormHelperText>
 
                 <SpreadsheetCards />
@@ -30,6 +28,9 @@ const Customize: React.FC = () => {
 
             <StyledPaper>
                 <Typography variant="h6" gutterBottom={true} sx={{mb:3}}>Set the CSV paths in your .env below:</Typography>
+                <FormHelperText>
+                    The permissions matrix is optional. The server's default permission is `Is Authenticated or Read only`
+                </FormHelperText>
                 <EnvBuilder/>
             </StyledPaper>
 
