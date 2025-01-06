@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, Collapse, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
+import { Box, Collapse, Divider, List, ListItemButton, ListItemText } from '@mui/material';
 import { NAVITEMS } from '../object-actions/types/types';
 import AuthMenu from '../components/AuthMenu';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
@@ -70,7 +70,7 @@ const NavMenu = () => {
         <ListItemButton onClick={() => setOAMenuOpen(!oaMenuOpen)}>
           <OALogo height={24} />
           <ListItemText sx={{ml:1}} primary={'O/A'} />
-          {objectsOpen ? (
+          {oaMenuOpen ? (
             <ExpandLess fontSize={'small'} />
           ) : (
             <ExpandMore fontSize={'small'} />

@@ -64,27 +64,27 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
+
       <Grid item xs={12} sm={6}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img src={'/oa-assets/logo-django.svg'} height={30} />}
-            title={'Backend Content Manager'}
-            subheader={'Django Admin'}
+            avatar={<img src={'/oa-assets/logo-react.svg'} height={30} />}
+            title={'This Front-End WebApp'}
+            subheader={'React.JS'}
           />
           <CardMedia
             height={mediaHeight}
-            sx={{ position: 'relative' }}
             component={'img'}
-            alt={'Backend API'}
+            alt={'Front-End WebApp'}
             src={
-              'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_admin.png'
+              'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png'
             }
           />
           <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
             <a
               href={
-                'https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/admin.py'
+                'https://github.com/eliataylor/objects-actions/blob/main/stack/reactjs/src/theme/ThemeContext.js'
               }
               target={'_blank'}
             >
@@ -110,22 +110,23 @@ const OaStackCards: React.FC = () => {
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img src={'/oa-assets/logo-react.svg'} height={30} />}
-            title={'Front-End WebApp'}
-            subheader={'React.JS'}
+            avatar={<img src={'/oa-assets/logo-django.svg'} height={30} />}
+            title={'Backend Content Manager'}
+            subheader={'Django Admin'}
           />
           <CardMedia
             height={mediaHeight}
+            sx={{ position: 'relative' }}
             component={'img'}
-            alt={'Front-End WebApp'}
+            alt={'Backend API'}
             src={
-              'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png'
+              'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_admin.png'
             }
           />
           <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
             <a
               href={
-                'https://github.com/eliataylor/objects-actions/blob/main/stack/reactjs/src/theme/ThemeContext.js'
+                'https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/admin.py'
               }
               target={'_blank'}
             >
