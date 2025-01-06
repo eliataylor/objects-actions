@@ -75,7 +75,7 @@ const Contribute: React.FC = () => {
 
       <StyledPaper>
         <Typography variant="h5" sx={{ mb: 1 }}>
-          Backend-End
+          Backend
         </Typography>
         <Typography variant="body1" gutterBottom={true}>
           Write pre-trained Chat Assistant to generate populated Spreadsheets

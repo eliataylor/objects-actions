@@ -66,7 +66,7 @@ const Install: React.FC = () => {
               : 'http://localhost:8080/api/schema/swagger'
           }
           action={<img src={'/oa-assets/logo-drf.png'} height={20} />}
-          subheader={'Backend-End API'}
+          subheader={'Backend API'}
           title={
             <u style={{wordBreak:"break-word"}}>
               {method.indexOf('https:') === 0
