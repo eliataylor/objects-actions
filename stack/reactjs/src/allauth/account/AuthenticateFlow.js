@@ -1,39 +1,42 @@
-import { Link, useLocation } from 'react-router-dom'
-import { pathForFlow } from '../auth'
-import { AuthenticatorType, Flows } from '../lib/allauth'
-import { Box, Typography } from '@mui/material'
+import { Link, useLocation } from 'react-router-dom';
+import { pathForFlow } from '../auth';
+import { AuthenticatorType, Flows } from '../lib/allauth';
+import { Box, Typography } from '@mui/material';
 
-const flowLabels = {}
-flowLabels[Flows.REAUTHENTICATE] = 'Use your password'
-flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.TOTP}`] = 'Use your authenticator app'
-flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.RECOVERY_CODES}`] = 'Use a recovery code'
-flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.WEBAUTHN}`] = 'Use security key'
+const flowLabels = {};
+flowLabels[Flows.REAUTHENTICATE] = 'Use your password';
+flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.TOTP}`] =
+  'Use your authenticator app';
+flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.RECOVERY_CODES}`] =
+  'Use a recovery code';
+flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.WEBAUTHN}`] =
+  'Use security key';
 
-function flowsToMethods (flows) {
-  const methods = []
-  flows.forEach(flow => {
+function flowsToMethods(flows) {
+  const methods = [];
+  flows.forEach((flow) => {
     if (flow.id === Flows.MFA_REAUTHENTICATE) {
-      flow.types.forEach(typ => {
+      flow.types.forEach((typ) => {
         methods.push({
           label: flowLabels[`${flow.id}:${typ}`] || flow.id,
           id: flow.id,
-          path: pathForFlow(flow, typ)
-        })
-      })
+          path: pathForFlow(flow, typ),
+        });
+      });
     } else {
       methods.push({
         label: flowLabels[flow.id] || flow.id,
         id: flow.id,
-        path: pathForFlow(flow)
-      })
+        path: pathForFlow(flow),
+      });
     }
-  })
-  return methods
+  });
+  return methods;
 }
 
-export default function ReauthenticateFlow (props) {
-  const location = useLocation()
-  const methods = flowsToMethods(location.state.reauth.data.flows)
+export default function ReauthenticateFlow(props) {
+  const location = useLocation();
+  const methods = flowsToMethods(location.state.reauth.data.flows);
 
   return (
     <Box p={1}>
@@ -43,20 +46,28 @@ export default function ReauthenticateFlow (props) {
       </Typography>
       {props.children}
 
-      {methods.length > 1
-        ? <><h2>Alternative Options</h2>
+      {methods.length > 1 ? (
+        <>
+          <h2>Alternative Options</h2>
           <ul>
-            {methods.filter(method => method.id !== props.method).map(method => {
-              return (
-                <li key={method.id}>
-                  <Link replace state={location.state} to={method.path + location.search}>{method.label}</Link>
-                </li>
-              )
-            })}
+            {methods
+              .filter((method) => method.id !== props.method)
+              .map((method) => {
+                return (
+                  <li key={method.id}>
+                    <Link
+                      replace
+                      state={location.state}
+                      to={method.path + location.search}
+                    >
+                      {method.label}
+                    </Link>
+                  </li>
+                );
+              })}
           </ul>
         </>
-        : null}
+      ) : null}
     </Box>
-
-  )
+  );
 }

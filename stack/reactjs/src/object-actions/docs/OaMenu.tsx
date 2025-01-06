@@ -1,41 +1,66 @@
 import React from 'react';
-import {Box, FormHelperText, MenuItem} from '@mui/material';
-import ThemeSwitcher from "../../theme/ThemeSwitcher";
-import {useLocation} from "react-router-dom";
-import {useObjectActions} from "../ObjectActionsProvider";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import FormControl from "@mui/material/FormControl";
-import {LocalLibrary} from "@mui/icons-material";
-import InstallIcon from "@mui/icons-material/Download";
-import CustomizeIcon from "@mui/icons-material/Build";
-import ExtendIcon from "@mui/icons-material/Extension";
-import ContributeIcon from "@mui/icons-material/VolunteerActivism";
+import { Box } from '@mui/material';
+import ThemeSwitcher from '../../theme/ThemeSwitcher';
+import { useLocation } from 'react-router-dom';
+import { useObjectActions } from '../ObjectActionsProvider';
+import { LocalLibrary } from '@mui/icons-material';
+import InstallIcon from '@mui/icons-material/Download';
+import CustomizeIcon from '@mui/icons-material/Build';
+import ExtendIcon from '@mui/icons-material/Extension';
+import ContributeIcon from '@mui/icons-material/VolunteerActivism';
 // import SponsorIcon from "@mui/icons-material/MonetizationOn";
 // import SourceIcon from "@mui/icons-material/Code";
-import FirstVisit from "../components/FirstVisit";
-import {NavBarItem} from "../../components/AuthMenu";
-import LightDarkImg from "../../components/LightDarkImg";
+import FirstVisit from '../components/FirstVisit';
+import { NavBarItem } from '../../components/AuthMenu';
+import LightDarkImg from '../../components/LightDarkImg';
 
-const OaMenu: React.FC<{ handleClick: () => void }> = ({handleClick}) => {
+const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick }) => {
+  const location = useLocation();
+  const { accessDefault, setAccessDefault } = useObjectActions();
 
-    const location = useLocation()
-    const {accessDefault, setAccessDefault} = useObjectActions()
+  return (
+    <React.Fragment>
+      <FirstVisit />
 
-    return (
-        <React.Fragment>
-            <FirstVisit/>
+      <NavBarItem
+        to={'/oa/readme'}
+        icon={<LocalLibrary fontSize={'small'} />}
+        name={'About O/A'}
+      />
+      <NavBarItem
+        to={'/oa/install'}
+        icon={<InstallIcon fontSize={'small'} />}
+        name={'Install'}
+      />
+      <NavBarItem
+        to={'/oa/customize'}
+        icon={<CustomizeIcon fontSize={'small'} />}
+        name={'Customize'}
+      />
+      <NavBarItem
+        to={'/oa/extend'}
+        icon={<ExtendIcon fontSize={'small'} />}
+        name={'Extend'}
+      />
+      <NavBarItem
+        to={'/oa/contribute'}
+        icon={<ContributeIcon fontSize={'small'} />}
+        name={'Contribute'}
+      />
+      {/* <NavBarItem to={'https://github.com/sponsors/eliataylor'} icon={<SponsorIcon fontSize={'small'}/>} name={'Sponsor'}/> */}
+      <NavBarItem
+        to={'https://github.com/eliataylor/objects-actions'}
+        icon={
+          <LightDarkImg
+            light={'/oa-assets/github-mark.svg'}
+            dark={'/oa-assets/github-mark-white.svg'}
+            styles={{ height: 18 }}
+          />
+        }
+        name={'Open Source'}
+      />
 
-            <NavBarItem to={'/oa/readme'} icon={<LocalLibrary fontSize={'small'}/>} name={'About O/A'} />
-            <NavBarItem to={'/oa/install'} icon={<InstallIcon fontSize={'small'}/>} name={'Install'} />
-            <NavBarItem to={'/oa/customize'} icon={<CustomizeIcon fontSize={'small'}/>} name={'Customize'} />
-            <NavBarItem to={'/oa/extend'} icon={<ExtendIcon fontSize={'small'}/>} name={'Extend'} />
-            <NavBarItem to={'/oa/contribute'} icon={<ContributeIcon fontSize={'small'}/>} name={'Contribute'} />
-            {/* <NavBarItem to={'https://github.com/sponsors/eliataylor'} icon={<SponsorIcon fontSize={'small'}/>} name={'Sponsor'}/> */}
-            <NavBarItem to={'https://github.com/eliataylor/objects-actions'} icon={<LightDarkImg light={'/oa-assets/github-mark.svg'}
-                                                                      dark={'/oa-assets/github-mark-white.svg'}
-                                                                      styles={{height: 18}}/>} name={'Open Source'} />
-
+      {/*
             <FormControl sx={{marginTop: 3, marginBottom: 3}} variant={'filled'} fullWidth={true} size={"small"}>
                 <InputLabel id="defaultperms-label">Default Permission</InputLabel>
                 <Select
@@ -57,12 +82,9 @@ const OaMenu: React.FC<{ handleClick: () => void }> = ({handleClick}) => {
                 </Select>
                 <FormHelperText>Default permission for Actions NOT matched in your matrix spreadsheet</FormHelperText>
             </FormControl>
-
-            <Box p={1}>
-                <ThemeSwitcher/>
-            </Box>
-
-        </React.Fragment>);
+            */}
+    </React.Fragment>
+  );
 };
 
 export default OaMenu;

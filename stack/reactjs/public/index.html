@@ -1,40 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"
+    ></script>
     <script>
-        // Define dataLayer and the gtag function.
-        window.dataLayer = window.dataLayer || [];
+      // Define dataLayer and the gtag function.
+      window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
+      function gtag() {
+        dataLayer.push(arguments);
+      }
 
-        gtag('js', new Date());
-        gtag('config', '%REACT_APP_GA_ID%');
-        gtag('consent', 'default', {
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied',
-            'analytics_storage': 'granted'
-        });
+      gtag('js', new Date());
+      gtag('config', '%REACT_APP_GA_ID%');
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'granted',
+      });
     </script>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta
-            name="description"
-            content="%REACT_APP_TITLE%"
-    />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96"/>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
-    <link rel="shortcut icon" href="/favicon.ico"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
-    <meta name="apple-mobile-web-app-title" content="oaexample"/>
-    <link rel="manifest" href="/site.webmanifest"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="%REACT_APP_TITLE%" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="oaexample" />
+    <link rel="manifest" href="/site.webmanifest" />
     <title>%REACT_APP_TITLE%</title>
-</head>
-<body>
-<noscript>You need to enable JavaScript to run this app.</noscript>
-<div id="root"></div>
-</body>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
 </html>
