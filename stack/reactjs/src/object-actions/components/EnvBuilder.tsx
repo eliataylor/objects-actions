@@ -114,9 +114,7 @@ OA_ENV_STORAGE=${envConfig.OA_ENV_STORAGE}
           onChange={(e) => handleChange('REACT_APP_API_HOST', e.target.value)}
           variant="outlined"
           size="small"
-          helperText={
-            'Absolute file path to your Permission Matrix CSV Spreadsheet (optional)'
-          }
+          helperText={'Your API WebServer URL'}
           sx={{ mb: 2 }}
         />
       </Grid>
@@ -129,6 +127,7 @@ OA_ENV_STORAGE=${envConfig.OA_ENV_STORAGE}
           onChange={(e) => handleChange('REACT_APP_APP_HOST', e.target.value)}
           variant="outlined"
           size="small"
+          helperText={'Your WebApp URL'}
           sx={{ mb: 2 }}
         />
       </Grid>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import TrackingPermissions, { PermissionKeys } from './TrackingPermissions';
-import { AppBar, Fab, Toolbar } from '@mui/material';
+import { AppBar, Box, Fab, Toolbar } from "@mui/material";
 import { Check } from '@mui/icons-material';
 
 import { styled } from '@mui/material/styles';
@@ -34,18 +34,19 @@ const TrackingConsent: React.FC = () => {
   }
 
   return (
-    <AppBar position="fixed" sx={{ top: 'auto', bottom: 0, padding: 3 }}>
+    <Box position="fixed" sx={{borderRadius:'0 0 0 10px', zIndex:9, bottom: 8, left:8, padding:2, backgroundColor: 'background.paper' }}>
       <Toolbar>
         <StyledFab
           aria-label={'Dismiss EULA Notice'}
           color="secondary"
+          size={'small'}
           onClick={() => handleAccepted()}
         >
-          <Check fontSize={'large'} />
+          <Check />
         </StyledFab>
         <TrackingPermissions permissions={permissions} />
       </Toolbar>
-    </AppBar>
+    </Box>
   );
 };
 

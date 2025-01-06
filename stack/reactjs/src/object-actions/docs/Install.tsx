@@ -82,10 +82,10 @@ const Install: React.FC = () => {
 
         {method === 'https://localhost.oaexample.com:3000' && (
           <Command
-            command="sudo bash docs/os-hosts-install"
+            command="sudo bash docs/os-hosts-install.sh"
             help={
               <>
-                This will add a entry to your computers `/etc/hosts` so that localhost.oxample.com and localapi.oxample.com resolves to your local development environment
+                This will add a entry to your computers `/etc/hosts` so that localhost.oxample.com and localapi.oxample.com resolves to your local development environment. It will also backup the original as `/etc/hosts.bak.timestamp`
               </>
             }
           />

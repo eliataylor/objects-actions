@@ -24,7 +24,6 @@ export default function App() {
         <EnvProvider>
           <AuthContextProvider>
             <NavDrawerProvider>
-              <TrackingConsent />
               <ObjectActionsProvider>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Router />
