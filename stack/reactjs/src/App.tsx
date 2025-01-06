@@ -8,6 +8,7 @@ import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {AuthContextProvider} from "./allauth/auth";
 import {SnackbarProvider} from "notistack";
+import {EnvProvider} from "./object-actions/EnvProvider";
 
 export default function App() {
 
@@ -17,16 +18,18 @@ export default function App() {
                 horizontal: 'center',
             }}
                               style={{marginBottom: 50}}>
-                <AuthContextProvider>
-                    <NavDrawerProvider>
-                        <TrackingConsent/>
-                        <ObjectActionsProvider>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <Router/>
-                            </LocalizationProvider>
-                        </ObjectActionsProvider>
-                    </NavDrawerProvider>
-                </AuthContextProvider>
+                <EnvProvider>
+                    <AuthContextProvider>
+                        <NavDrawerProvider>
+                            <TrackingConsent/>
+                            <ObjectActionsProvider>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <Router/>
+                                </LocalizationProvider>
+                            </ObjectActionsProvider>
+                        </NavDrawerProvider>
+                    </AuthContextProvider>
+                </EnvProvider>
             </SnackbarProvider>
         </ThemeProvider>
     );
