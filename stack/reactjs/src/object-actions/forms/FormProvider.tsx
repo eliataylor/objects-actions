@@ -50,7 +50,7 @@ export const FormProvider = <T extends EntityTypes>({
   navItem,
 }: FormProviderProps<T>) => {
   const navigate = useNavigate();
-  const eid = original.id || 0;
+  const eid: string | number = original.id || 0;
   const [entity, setEntity] = useState<EntityTypes>(original);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const [syncing, setSyncing] = useState(false);
@@ -91,9 +91,9 @@ export const FormProvider = <T extends EntityTypes>({
   const structureToPost = async () => {
     const tosend: any = { id: eid };
     let hasImage = false;
-    for (let key in entity) {
+    for (const key in entity) {
       let val: any = entity[key as keyof EntityTypes];
-      let was: any = original[key as keyof EntityTypes];
+      const was: any = original[key as keyof EntityTypes];
       if (JSON.stringify(was) === JSON.stringify(val)) {
         continue;
       }
@@ -125,8 +125,7 @@ export const FormProvider = <T extends EntityTypes>({
     };
     if (hasImage) {
       const formData = new FormData();
-      for (let key in tosend) {
-        // @ts-ignore
+      for (const key in tosend) {
         formData.append(key, tosend[key]);
       }
       headers['Content-Type'] = `multipart/form-data`;
@@ -153,7 +152,7 @@ export const FormProvider = <T extends EntityTypes>({
         let response = null;
         if (apiUrl) {
           response = await ApiClient.post(apiUrl, tosend, headers);
-        } else if (eid > 0) {
+        } else if (eid && eid !== 0) {
           response = await ApiClient.patch(
             `${navItem.api}/${eid}`,
             tosend,
@@ -187,7 +186,7 @@ export const FormProvider = <T extends EntityTypes>({
 
         if (response.success) {
           resolve(response);
-          navigate(navItem.screen);
+          navigate(`/${navItem.segment}`);
         } else {
           setErrors(response.errors || { general: [response.error] });
           reject(response);
@@ -200,7 +199,7 @@ export const FormProvider = <T extends EntityTypes>({
 
   const renderField = (
     field: FieldTypeDefinition,
-    index: number = 0,
+    index = 0,
     topass: any = {},
   ) => {
     const value: any = entity[field.machine as keyof EntityTypes];

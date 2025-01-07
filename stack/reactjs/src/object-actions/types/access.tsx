@@ -58,7 +58,7 @@ interface AccessPoint {
   alias?: string;
 }
 
-function getPermsByTypeAndVerb(type: String, verb: String) {
+function getPermsByTypeAndVerb(type: string, verb: string) {
   const matches = (permissions as unknown as AccessPoint[]).find(
     (perms: AccessPoint) => {
       return perms.context.join('-') === type && perms.verb === verb; // TODO: permissions.json needs built differently
@@ -151,7 +151,12 @@ export function canDo(
   }
   errstr += ` to ${verb}`;
 
-  const isMine = false; // typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
+  let isMine = false;
+  if (obj._type === "Users") {
+    isMine = obj.id === me.id
+  } else {
+    isMine = "author" in obj && me.id === obj?.author?.id
+  }
   const myGroups = new Set(
     me?.groups && me?.groups.length > 0 ? me.groups : [],
   );

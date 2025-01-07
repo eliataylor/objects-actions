@@ -37,7 +37,9 @@ const EnvContext = createContext<{
   ) => void;
 }>({
   envConfig: defaultEnvConfig,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setEnvConfig: () => {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setConfigItem: () => {},
 });
 

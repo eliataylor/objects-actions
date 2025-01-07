@@ -48,7 +48,7 @@ const EntityForm = () => {
   if (!target) {
     return <Typography variant={'h6'}>Invalid URL pattern</Typography>;
   }
-  const hasUrl = NAVITEMS.find((nav) => nav.screen === `/${target.object}`);
+  const hasUrl = NAVITEMS.find((nav) => nav.segment === target.object);
   if (!hasUrl) return <Typography>Unknown Type</Typography>;
 
   let allow: boolean | string = true;

@@ -41,9 +41,9 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
   }
 
   const titles = ['title', 'name', 'first_name', 'last_name', 'slug', 'id'];
-  for (let key of titles) {
+  for (const key of titles) {
     if (key in entity) {
-      headerProps.title = getProp(entity, key) as string;
+      headerProps.title = getProp(entity, key as keyof EntityTypes) as string;
       displayed.push(key);
       break;
     }
@@ -62,7 +62,7 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
       <IconButton
         color="secondary"
         size="small"
-        onClick={() => navigate(`${hasUrl.screen}/${getProp(entity, 'id')}`)}
+        onClick={() => navigate(`/${hasUrl.segment}/${getProp(entity, 'id')}`)}
       >
         <ReadMore />
       </IconButton>
@@ -70,7 +70,7 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
         color="secondary"
         size="small"
         onClick={() =>
-          navigate(`/forms${hasUrl.screen}/${getProp(entity, 'id')}/edit`)
+          navigate(`/forms/${hasUrl.segment}/${getProp(entity, 'id')}/edit`)
         }
       >
         <Edit />
@@ -101,7 +101,7 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
             if (relNavItem) {
               return (
                 <div key={`rel-${v['id']}`}>
-                  <Link to={`${relNavItem.screen}/${v['id']}`}>
+                  <Link to={`${relNavItem.segment}/${v['id']}`}>
                     {' '}
                     {v['str']}
                   </Link>

@@ -185,7 +185,7 @@ urlpatterns += [
             model_name = create_object_name(class_name)
             code = tpl.replace('__CLASSNAME__', model_name)
             if model_name == 'Users':
-                code = code.replace("CustomSerializer", "CustomUsersSerializer"),
+                code = code.replace("CustomSerializer", "CustomUsersSerializer")
                 code = code.replace("fields = '__all__'",
                                     "exclude = ('password', 'email', 'is_active', 'is_staff', 'is_superuser')")
             parts.append(code)
@@ -230,11 +230,12 @@ urlpatterns += [
     serializer_class = {model_name}Serializer
     lookup_field = '{has_slug['Field Name']}'""")
 
-            self.append_import("views", f"from .models import {model_name}")
 
             if model_name == 'Users':
-                self.append_import("views", f"from .serializers import Custom{model_name}Serializer")
+                self.append_import("views", f"from .serializers import CustomUsersSerializer")
+                self.append_import("views", f"from .models import CustomUsersSerializer")
             else:
+                self.append_import("views", f"from .models import {model_name}")
                 self.append_import("views", f"from .serializers import {model_name}Serializer")
 
 

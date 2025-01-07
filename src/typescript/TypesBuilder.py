@@ -1,10 +1,9 @@
 import json
-from utils.utils import inject_generated_code, build_permissions_from_csv, find_model_details, find_search_fields, create_machine_name, create_object_name, infer_field_datatype, build_types_from_csv, capitalize, find_object_by_key_value
+from utils.utils import inject_generated_code, create_options, build_permissions_from_csv, find_model_details, find_search_fields, create_machine_name, create_object_name, infer_field_datatype, build_types_from_csv, capitalize, find_object_by_key_value
 from loguru import logger
-import ast
-import re
 import inflect
 import os
+
 
 class TypesBuilder:
     def __init__(self, field_csv, matrix_csv, output_dir):
@@ -48,10 +47,10 @@ class TypesBuilder:
             path_segment = create_machine_name(class_name, True, '-')
 
             if machine_name != 'users':
+                types.append(type_name)
                 code = [f"export interface {type_name} extends SuperModel {{"]
             else:
                 #TODO: check if all these are predefined!
-
                 code = [f"export interface {type_name} {{"]
                 code.append(f"\treadonly id: number | string")
                 code.append(f"\t_type: string")
@@ -70,7 +69,6 @@ class TypesBuilder:
 
             constant = {}
 
-            types.append(type_name)
 
             singular = self.pluralizer.singular_noun(class_name)
             if not singular:
@@ -78,18 +76,18 @@ class TypesBuilder:
                 logger.info(f"Singularizing failed on {class_name}")
 
             navItem = {"singular":singular}
-            navItem['plural'] = class_name if class_name.endswith('ies') else self.pluralizer.plural_noun(navItem['singular'])
+            navItem['plural'] = self.pluralizer.plural_noun(navItem['singular'])
             navItem = {**navItem,
                        "type":type_name,
                        "segment": path_segment,
                        "api":f"/api/{path_segment}",
-                       "screen":f"/{path_segment}",
                        "search_fields": find_search_fields(self.json, class_name)
                        }
 
             model_type = find_model_details(self.field_csv, class_name)
-            if model_type is not None:
-                navItem.model_type = model_type.model_type
+            if model_type is not None and  "model_type" in model_type:
+                navItem['model_type'] = model_type['model_type']
+                # if "example" in model_type: # todo make options list!
                 # navItem.examples = model_type.model_type
 
             urlItems.append(navItem)
@@ -110,13 +108,17 @@ class TypesBuilder:
                 field_js = {}
                 field_js['machine'] = field_name
                 field_label = capitalize(field['Field Label'])
-                field_js["singular"] = self.pluralizer.plural(field_label, 1)
-                field_js["plural"] = self.pluralizer.plural(field_label, 2)
+                field_js["singular"] = self.pluralizer.singular_noun(field_label, 1)
+                field_js["plural"] = self.pluralizer.plural_noun(field_label, 2)
+                if not field_js["singular"]:
+                    field_js["singular"] = field_label
+
+                if not field_js["plural"]:
+                    field_js["plural"] = field_label
 
                 field_def = "\t"
 
                 if field_name == 'id':
-                    noId = False
                     field_def += f"readonly {field_name}"
                 else:
                     field_def += field_name
@@ -138,27 +140,7 @@ class TypesBuilder:
                 field_js['example'] = field['Example'].strip()
 
                 if field_type == 'enum':
-                    list = field_js['example'].strip()
-                    if list == '':
-                        logger.warning(
-                            f"Field {field['Field Label']} has no list of structure of choices. Please list them as a flat json array.")
-                    try:
-                        if list[0] == '[':
-                            list = ast.literal_eval(list)
-                        else:
-                            list = list.split(',')
-                        field_js['options'] = []
-                        for name in list:
-                            name = re.sub("[\"\']", "", name)
-                            if name is None or name == '':
-                                continue
-                            field_js['options'].append({
-                                "label":capitalize(name),
-                                "id": create_machine_name(name, True)
-                            })
-                    except Exception as e:
-                        logger.warning(
-                            f"{field['Field Label']} has invalid structure of choices: {field_js['example']}  \nPlease list them as a flat json array. {str(e)}")
+                    field_js = create_options(field_js)
 
                 constant[field_name] = field_js
 
@@ -192,7 +174,8 @@ export interface NewEntity {{
     id: number | string
 }}
 
-export type EntityTypes = {" | ".join(types)};
+export type ObjectTypes = {" | ".join(types)};
+export type EntityTypes = Users | {" | ".join(types)};
 
 export interface ApiListResponse<T = EntityTypes> {{
     count: number;
@@ -203,10 +186,9 @@ export interface ApiListResponse<T = EntityTypes> {{
     results: T[]
 }}
 
-export function getProp<T extends EntityTypes, K extends keyof T>(entity: EntityTypes, key: string): T[K] | null {{
-    // @ts-ignore
-    if (key in entity) return entity[key]
-	return null;
+export function getProp<T extends EntityTypes, K extends keyof T>(entity: T, key: K): T[K] | null {{
+  if (key in entity) return entity[key];
+  return null;
 }}
 
 export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema, entity: any): any {{
@@ -243,7 +225,6 @@ export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema
         singular: string;
         plural: string;
         segment: string;
-        screen: string;
         api: string;
         icon?: string;
         type: string;

@@ -1,26 +1,26 @@
 TYPES,Field Label,Field Name,Field Type,HowMany,Required,Relationship,Default,Example
-Topics,vocabulary,,,,,,,"(technology, agriculture, health care, ...)"
+Topics,,,vocabulary,,,,,"(technology, agriculture, health care, ...)"
 ,Name,,text,,,,,
 ,Icon,,image,1,0,,,
 ,Photo,,image,1,0,,,
 ,,,,,,,,
-Resource Types,vocabulary,,,,,,,"(consulting, sales, labor, ....)"
+Resource Types,,,vocabulary,,,,,"(consulting, sales, labor, ....)"
 ,Name,,text,,,,,
 ,,,,,,,,
-Meeting Types,vocabulary,,,,,,,"(rally-2-discuss, rally-2-write, rally-2-move, city council meeting, hearing, ...)"
+Meeting Types,,,vocabulary,,,,,"(rally-2-discuss, rally-2-write, rally-2-move, city council meeting, hearing, ...)"
 ,Name,,text,,,,,
 ,,,,,,,,
-States,vocabulary,,,,,,,"(california, new york, arizona)"
+States,,,vocabulary,,,,,"(california, new york, arizona)"
 ,Name,,text,,,,,
 ,Website,,URL,1,0,,,
 ,Icon,,image,1,0,,,
 ,,,,,,,,
-Parties,vocabulary,,,,,,,"(democratic, republican, indedepent, liberaterian)"
+Parties,,,vocabulary,,,,,"(democratic, republican, indedepent, liberaterian)"
 ,Name,,text,,,,,
 ,Logo,,image,1,0,,,
 ,Website,,URL,1,0,,,
 ,,,,,,,,
-Stakeholders,vocabulary,,,,,,,"(youth, elderly, mechanics, gardeners, police officers....)"
+Stakeholders,,,vocabulary,,,,,"(youth, elderly, mechanics, gardeners, police officers....)"
 ,Name,,text,,,,,
 ,Image,,image,1,0,,,
 ,,,,,,,,

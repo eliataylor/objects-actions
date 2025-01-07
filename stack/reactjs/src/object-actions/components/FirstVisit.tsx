@@ -4,7 +4,7 @@ import { useObjectActions } from '../ObjectActionsProvider';
 import { Link, useNavigate } from 'react-router-dom';
 
 const modalStyle = {
-  position: 'absolute' as 'absolute',
+  position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -22,7 +22,7 @@ const FirstVisit: React.FC = () => {
   const { setNavOADrawerWidth } = useObjectActions();
   const navigate = useNavigate();
 
-  const handleClose = (dest: string = '/oa/readme') => {
+  const handleClose = (dest = '/oa/readme') => {
     setNavOADrawerWidth(180); // open oa menu
     setIsFirstVisit('false'); // close now
     sessionStorage.setItem('firstVisit', 'false'); // Set "firstVisit" to prevent modal from reappearing

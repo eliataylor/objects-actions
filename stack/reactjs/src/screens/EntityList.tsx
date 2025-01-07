@@ -26,13 +26,13 @@ const EntityList: React.FC<EntityListProps> = ({
 
   const hasUrl = NAVITEMS.find((nav) => {
     if (!model) {
-      return location.pathname.indexOf(nav.screen) === 0;
+      return location.pathname.indexOf(`/${nav.segment}`) === 0;
     } else {
       return model === nav.type;
     }
   });
 
-  const fetchData = async (page: number = 0, pageSize: number = 0) => {
+  const fetchData = async (page = 0, pageSize = 0) => {
     if (!hasUrl) {
       console.error('NO URL ' + model, location.pathname);
       return;
@@ -42,7 +42,7 @@ const EntityList: React.FC<EntityListProps> = ({
     if (author) {
       apiUrl += `/api/users/${author}/${hasUrl.type.toLowerCase()}/list`;
     } else {
-      apiUrl += hasUrl.api;
+      apiUrl += `/api/${hasUrl.segment}`;
     }
 
     const params = new URLSearchParams();
@@ -130,8 +130,8 @@ const EntityList: React.FC<EntityListProps> = ({
           color="secondary"
           size="small"
           sx={{ position: 'fixed', right: 20, bottom: 20 }}
-          data-href={`/forms${hasUrl.screen}/0/add`}
-          onClick={() => navigate(`/forms${hasUrl.screen}/0/add`)}
+          data-href={`/forms/${hasUrl.segment}/0/add`}
+          onClick={() => navigate(`/forms/${hasUrl.segment}/0/add`)}
         >
           <Add />
         </Fab>

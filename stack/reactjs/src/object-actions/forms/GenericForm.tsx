@@ -30,7 +30,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
   const eid =
     typeof original['id' as keyof EntityTypes] !== 'undefined'
       ? original['id' as keyof EntityTypes]
-      : 0;
+      : '0';
   const [entity, setEntity] = useState<EntityTypes>(original);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
           window.location.href = '/';
         } else {
           alert('Deleted');
-          navigate(navItem.screen);
+          navigate(navItem.segment);
         }
       } else if (response.errors) {
         setErrors(response.errors);
@@ -90,9 +90,9 @@ const GenericForm: React.FC<GenericFormProps> = ({
 
     const tosend: any = { id: eid };
     let hasImage = false;
-    for (let key in entity) {
+    for (const key in entity) {
       let val: any = entity[key as keyof EntityTypes];
-      let was: any = original[key as keyof EntityTypes];
+      const was: any = original[key as keyof EntityTypes];
       if (JSON.stringify(was) === JSON.stringify(val)) {
         continue;
       }
@@ -124,8 +124,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
     };
     if (hasImage) {
       const formData = new FormData();
-      for (let key in tosend) {
-        // @ts-ignore
+      for (const key in tosend) {
         formData.append(key, tosend[key]);
       }
       headers['Content-Type'] = `multipart/form-data`;
@@ -134,7 +133,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
     }
 
     setSyncing(true);
-    if (eid > 0) {
+    if (eid && eid !== '0') {
       response = await ApiClient.patch(
         `${navItem.api}/${eid}`,
         formData,
@@ -146,8 +145,8 @@ const GenericForm: React.FC<GenericFormProps> = ({
     setSyncing(false);
     if (response.success && response.data) {
       const newEntity = response.data as EntityTypes;
-      //            navigate(`/forms${navItem.screen}/${newEntity.id}/edit`)
-      navigate(`${navItem.screen}/${newEntity.id}`);
+      //            navigate(`/forms/${navItem.segment}/${newEntity.id}/edit`)
+      navigate(`/${navItem.segment}/${newEntity.id}`);
       //            alert('Submitted successfully');
       setErrors({});
       return;
@@ -284,7 +283,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
     <Grid id={'GenericForm'} container spacing={2}>
       {fields.map((field) => {
         if (field.field_type === 'id_auto_increment') return null;
-        let error: string[] | undefined = errors[field.machine];
+        const error: string[] | undefined = errors[field.machine];
         if (error) {
           delete errorcopy[field.machine];
         }

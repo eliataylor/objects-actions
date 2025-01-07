@@ -13,16 +13,14 @@ const EntityView: React.FC = () => {
   );
 
   useEffect(() => {
-    const hasUrl = NAVITEMS.find(
-      (nav) => location.pathname.indexOf(nav.screen) === 0,
-    );
+    const hasUrl = NAVITEMS.find((nav) => location.pathname.indexOf(`/${nav.segment}`) === 0);
     if (hasUrl) {
       const fetchData = async () => {
-        let apiUrl = `/api`;
+        let apiUrl = `/api/`;
         if (id && parseInt(id) > 0) {
           apiUrl += `${location.pathname}${location.search}`;
         } else {
-          apiUrl += `/u/${hasUrl.type.toLowerCase()}/${id}/${location.search}`;
+          apiUrl += `u/${hasUrl.type.toLowerCase()}/${id}/${location.search}`;
         }
         const response = await ApiClient.get(apiUrl);
         if (response.error) {

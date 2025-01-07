@@ -30,7 +30,7 @@ const RelEntityHead: React.FC<RelEntityHeadProps> = ({ rel, label }) => {
       {!hasUrl ? (
         rel.str
       ) : (
-        <Link to={`${hasUrl.screen}/${rel.id}`}>{rel.str}</Link>
+        <Link to={`/${hasUrl.segment}/${rel.id}`}>{rel.str}</Link>
       )}
     </Typography>
   );

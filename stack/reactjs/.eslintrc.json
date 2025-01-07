@@ -7,8 +7,9 @@
   ],
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": "off",
     "@typescript-eslint/no-explicit-any": "warn",
-    "max-len": ["error", { "code": 180, "ignoreUrls": true, "ignoreStrings": true, "ignoreTemplateLiterals": true }]
+    "@typescript-eslint/ban-ts-comment": "off",
+    "max-len": "off"
   }
 }

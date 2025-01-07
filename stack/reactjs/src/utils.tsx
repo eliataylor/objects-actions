@@ -21,7 +21,7 @@ export const getModelName = (model: string) => {
 };
 
 export const getUsername = (entity: { [key: string]: any }) => {
-  let username = entity.str ? entity.str : getFieldValue(entity, 'username');
+  const username = entity.str ? entity.str : getFieldValue(entity, 'username');
   if (username.length > 0) return `@${username.toLowerCase()}`;
   return '';
 };

@@ -1,4 +1,4 @@
-# parse src/examples/democrasee-permissions.csv
+# parse src/examples/demo-permissions.csv
 
 """
 # loop over roles:

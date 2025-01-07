@@ -25,8 +25,8 @@ from .models import Stakeholders
 from .serializers import StakeholdersSerializer
 from .models import Resources
 from .serializers import ResourcesSerializer
-from .models import Users
-from .serializers import UsersSerializer
+from .serializers import CustomUsersSerializer
+from .models import CustomUsersSerializer
 from .models import Cities
 from .serializers import CitiesSerializer
 from .models import Officials
@@ -117,7 +117,7 @@ class TopicsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class ResourceTypesViewSet(viewsets.ModelViewSet):
     queryset = ResourceTypes.objects.all().order_by('id')
     serializer_class = ResourceTypesSerializer
@@ -125,7 +125,7 @@ class ResourceTypesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class MeetingTypesViewSet(viewsets.ModelViewSet):
     queryset = MeetingTypes.objects.all().order_by('id')
     serializer_class = MeetingTypesSerializer
@@ -133,7 +133,7 @@ class MeetingTypesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class StatesViewSet(viewsets.ModelViewSet):
     queryset = States.objects.all().order_by('id')
     serializer_class = StatesSerializer
@@ -141,7 +141,7 @@ class StatesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class PartiesViewSet(viewsets.ModelViewSet):
     queryset = Parties.objects.all().order_by('id')
     serializer_class = PartiesSerializer
@@ -149,7 +149,7 @@ class PartiesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class StakeholdersViewSet(viewsets.ModelViewSet):
     queryset = Stakeholders.objects.all().order_by('id')
     serializer_class = StakeholdersSerializer
@@ -157,7 +157,7 @@ class StakeholdersViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class ResourcesViewSet(viewsets.ModelViewSet):
     queryset = Resources.objects.all().order_by('id')
     serializer_class = ResourcesSerializer
@@ -165,7 +165,7 @@ class ResourcesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-
+    
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.all().order_by('id')
     serializer_class = UsersSerializer
@@ -173,7 +173,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['first_name', 'last_name']
 
-
+    
 class CitiesViewSet(viewsets.ModelViewSet):
     queryset = Cities.objects.all().order_by('id')
     serializer_class = CitiesSerializer
@@ -181,7 +181,7 @@ class CitiesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class OfficialsViewSet(viewsets.ModelViewSet):
     queryset = Officials.objects.all().order_by('id')
     serializer_class = OfficialsSerializer
@@ -189,7 +189,7 @@ class OfficialsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-
+    
 class RalliesViewSet(viewsets.ModelViewSet):
     queryset = Rallies.objects.all().order_by('id')
     serializer_class = RalliesSerializer
@@ -197,7 +197,7 @@ class RalliesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-
+    
 class ActionPlansViewSet(viewsets.ModelViewSet):
     queryset = ActionPlans.objects.all().order_by('id')
     serializer_class = ActionPlansSerializer
@@ -205,7 +205,7 @@ class ActionPlansViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-
+    
 class MeetingsViewSet(viewsets.ModelViewSet):
     queryset = Meetings.objects.all().order_by('id')
     serializer_class = MeetingsSerializer
@@ -213,7 +213,7 @@ class MeetingsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-
+    
 class InvitesViewSet(viewsets.ModelViewSet):
     queryset = Invites.objects.all().order_by('id')
     serializer_class = InvitesSerializer
@@ -221,7 +221,7 @@ class InvitesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['meeting__title']
 
-
+    
 class SubscriptionsViewSet(viewsets.ModelViewSet):
     queryset = Subscriptions.objects.all().order_by('id')
     serializer_class = SubscriptionsSerializer
@@ -229,7 +229,7 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['rally__title', 'meeting__title']
 
-
+    
 class RoomsViewSet(viewsets.ModelViewSet):
     queryset = Rooms.objects.all().order_by('id')
     serializer_class = RoomsSerializer
@@ -237,13 +237,13 @@ class RoomsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['rally__title', 'meeting__title']
 
-
+    
 class AttendeesViewSet(viewsets.ModelViewSet):
     queryset = Attendees.objects.all().order_by('id')
     serializer_class = AttendeesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
+    
+    
 ####OBJECT-ACTIONS-VIEWSETS-ENDS####
 
 
@@ -252,15 +252,6 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
-
-def migrate(request):
-    call_command('migrate')
-    return JsonResponse({'status': 'migrations complete'})
-
-def collectstatic(request):
-    call_command('collectstatic', '--noinput')
-    return JsonResponse({'status': 'static files collected'})
-
 
 SEARCH_FIELDS_MAPPING = {
   "Topics": [
@@ -320,7 +311,7 @@ SEARCH_FIELDS_MAPPING = {
 SERIALZE_MODEL_MAP = { "Topics": TopicsSerializer,"ResourceTypes": ResourceTypesSerializer,"MeetingTypes": MeetingTypesSerializer,"States": StatesSerializer,"Parties": PartiesSerializer,"Stakeholders": StakeholdersSerializer,"Resources": ResourcesSerializer,"Users": UsersSerializer,"Cities": CitiesSerializer,"Officials": OfficialsSerializer,"Rallies": RalliesSerializer,"ActionPlans": ActionPlansSerializer,"Meetings": MeetingsSerializer,"Invites": InvitesSerializer,"Subscriptions": SubscriptionsSerializer,"Rooms": RoomsSerializer,"Attendees": AttendeesSerializer }
 
 class UserStatsView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, user_id, model_name):
         # Get the model class from the model name
@@ -347,7 +338,7 @@ class UserStatsView(APIView):
 )
 class UserModelListView(generics.GenericAPIView):
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
     def get(self, request, user_id, model_name):
@@ -397,7 +388,7 @@ class RenderFrontendIndex(APIView):
             html_content = file.read()
 
         modified_html = html_content
-        frontend_url = os.getenv('REACT_APP_APP_HOST', 'https://localhost.oaexample.com:3000')
+        frontend_url = settings.FRONTEND_URL
 
         # Prepend the host to all relative URLs
         def prepend_host(match):

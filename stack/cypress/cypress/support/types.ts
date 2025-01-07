@@ -11,7 +11,8 @@ export interface NewEntity {
     id: number | string
 }
 
-export type EntityTypes = Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders | Resources | Users | Cities | Officials | Rallies | ActionPlans | Meetings | Invites | Subscriptions | Rooms | Attendees;
+export type ObjectTypes = Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders | Resources | Cities | Officials | Rallies | ActionPlans | Meetings | Invites | Subscriptions | Rooms | Attendees;
+export type EntityTypes = Users | Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders | Resources | Cities | Officials | Rallies | ActionPlans | Meetings | Invites | Subscriptions | Rooms | Attendees;
 
 export interface ApiListResponse<T = EntityTypes> {
     count: number;
@@ -22,10 +23,9 @@ export interface ApiListResponse<T = EntityTypes> {
     results: T[]
 }
 
-export function getProp<T extends EntityTypes, K extends keyof T>(entity: EntityTypes, key: string): T[K] | null {
-    // @ts-ignore
-    if (key in entity) return entity[key]
-	return null;
+export function getProp<T extends EntityTypes, K extends keyof T>(entity: T, key: K): T[K] | null {
+  if (key in entity) return entity[key];
+  return null;
 }
 
 export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema, entity: any): any {
@@ -61,7 +61,6 @@ export interface NavItem {
         singular: string;
         plural: string;
         segment: string;
-        screen: string;
         api: string;
         icon?: string;
         type: string;
@@ -76,10 +75,10 @@ export const NAVITEMS: NavItem[] = [
     "type": "Topics",
     "segment": "topics",
     "api": "/api/topics",
-    "screen": "/topics",
     "search_fields": [
       "name"
-    ]
+    ],
+    "model_type": "vocabulary"
   },
   {
     "singular": "Resource Type",
@@ -87,10 +86,10 @@ export const NAVITEMS: NavItem[] = [
     "type": "ResourceTypes",
     "segment": "resource-types",
     "api": "/api/resource-types",
-    "screen": "/resource-types",
     "search_fields": [
       "name"
-    ]
+    ],
+    "model_type": "vocabulary"
   },
   {
     "singular": "Meeting Type",
@@ -98,10 +97,10 @@ export const NAVITEMS: NavItem[] = [
     "type": "MeetingTypes",
     "segment": "meeting-types",
     "api": "/api/meeting-types",
-    "screen": "/meeting-types",
     "search_fields": [
       "name"
-    ]
+    ],
+    "model_type": "vocabulary"
   },
   {
     "singular": "State",
@@ -109,21 +108,21 @@ export const NAVITEMS: NavItem[] = [
     "type": "States",
     "segment": "states",
     "api": "/api/states",
-    "screen": "/states",
     "search_fields": [
       "name"
-    ]
+    ],
+    "model_type": "vocabulary"
   },
   {
     "singular": "Party",
-    "plural": "Parties",
+    "plural": "Partys",
     "type": "Parties",
     "segment": "parties",
     "api": "/api/parties",
-    "screen": "/parties",
     "search_fields": [
       "name"
-    ]
+    ],
+    "model_type": "vocabulary"
   },
   {
     "singular": "Stakeholder",
@@ -131,10 +130,10 @@ export const NAVITEMS: NavItem[] = [
     "type": "Stakeholders",
     "segment": "stakeholders",
     "api": "/api/stakeholders",
-    "screen": "/stakeholders",
     "search_fields": [
       "name"
-    ]
+    ],
+    "model_type": "vocabulary"
   },
   {
     "singular": "Resource",
@@ -142,7 +141,6 @@ export const NAVITEMS: NavItem[] = [
     "type": "Resources",
     "segment": "resources",
     "api": "/api/resources",
-    "screen": "/resources",
     "search_fields": [
       "title"
     ]
@@ -153,7 +151,6 @@ export const NAVITEMS: NavItem[] = [
     "type": "Users",
     "segment": "users",
     "api": "/api/users",
-    "screen": "/users",
     "search_fields": [
       "first_name",
       "last_name"
@@ -161,11 +158,10 @@ export const NAVITEMS: NavItem[] = [
   },
   {
     "singular": "City",
-    "plural": "Cities",
+    "plural": "Citys",
     "type": "Cities",
     "segment": "cities",
     "api": "/api/cities",
-    "screen": "/cities",
     "search_fields": [
       "name"
     ]
@@ -176,18 +172,16 @@ export const NAVITEMS: NavItem[] = [
     "type": "Officials",
     "segment": "officials",
     "api": "/api/officials",
-    "screen": "/officials",
     "search_fields": [
       "title"
     ]
   },
   {
     "singular": "Rally",
-    "plural": "Rallies",
+    "plural": "Rallys",
     "type": "Rallies",
     "segment": "rallies",
     "api": "/api/rallies",
-    "screen": "/rallies",
     "search_fields": [
       "title"
     ]
@@ -198,7 +192,6 @@ export const NAVITEMS: NavItem[] = [
     "type": "ActionPlans",
     "segment": "action-plans",
     "api": "/api/action-plans",
-    "screen": "/action-plans",
     "search_fields": [
       "title"
     ]
@@ -209,7 +202,6 @@ export const NAVITEMS: NavItem[] = [
     "type": "Meetings",
     "segment": "meetings",
     "api": "/api/meetings",
-    "screen": "/meetings",
     "search_fields": [
       "title"
     ]
@@ -220,7 +212,6 @@ export const NAVITEMS: NavItem[] = [
     "type": "Invites",
     "segment": "invites",
     "api": "/api/invites",
-    "screen": "/invites",
     "search_fields": [
       "meeting__title"
     ]
@@ -231,7 +222,6 @@ export const NAVITEMS: NavItem[] = [
     "type": "Subscriptions",
     "segment": "subscriptions",
     "api": "/api/subscriptions",
-    "screen": "/subscriptions",
     "search_fields": [
       "rally__title",
       "meeting__title"
@@ -243,7 +233,6 @@ export const NAVITEMS: NavItem[] = [
     "type": "Rooms",
     "segment": "rooms",
     "api": "/api/rooms",
-    "screen": "/rooms",
     "search_fields": [
       "rally__title",
       "meeting__title"
@@ -255,7 +244,6 @@ export const NAVITEMS: NavItem[] = [
     "type": "Attendees",
     "segment": "attendees",
     "api": "/api/attendees",
-    "screen": "/attendees",
     "search_fields": []
   }
 ]
@@ -486,7 +474,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "postal_address": {
       "machine": "postal_address",
-      "singular": "Postal Address",
+      "singular": "Postal Addres",
       "plural": "Postal Addresses",
       "field_type": "text",
       "data_type": "string",
@@ -596,7 +584,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "resources": {
       "machine": "resources",
-      "singular": "Resources",
+      "singular": "Resource",
       "plural": "Resourceses",
       "field_type": "type_reference",
       "data_type": "RelEntity",
@@ -634,7 +622,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "postal_address": {
       "machine": "postal_address",
-      "singular": "Postal Address",
+      "singular": "Postal Addres",
       "plural": "Postal Addresses",
       "field_type": "address",
       "data_type": "string",
@@ -670,7 +658,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "sponsors": {
       "machine": "sponsors",
-      "singular": "Sponsors",
+      "singular": "Sponsor",
       "plural": "Sponsorss",
       "field_type": "user_profile",
       "data_type": "RelEntity",
@@ -742,7 +730,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "officials": {
       "machine": "officials",
-      "singular": "Officials",
+      "singular": "Official",
       "plural": "Officialss",
       "field_type": "user_profile",
       "data_type": "RelEntity",
@@ -852,7 +840,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "social_links": {
       "machine": "social_links",
-      "singular": "Social Media links",
+      "singular": "Social Media link",
       "plural": "Social Media linkss",
       "field_type": "url",
       "data_type": "string",
@@ -926,7 +914,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "topics": {
       "machine": "topics",
-      "singular": "Topics",
+      "singular": "Topic",
       "plural": "Topicss",
       "field_type": "vocabulary_reference",
       "data_type": "RelEntity",
@@ -938,7 +926,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "comments": {
       "machine": "comments",
-      "singular": "Comments",
+      "singular": "Comment",
       "plural": "Commentss",
       "field_type": "textarea",
       "data_type": "string",
@@ -1012,7 +1000,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "coauthors": {
       "machine": "coauthors",
-      "singular": "CoAuthors",
+      "singular": "CoAuthor",
       "plural": "CoAuthorss",
       "field_type": "user_account",
       "data_type": "RelEntity",
@@ -1048,7 +1036,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "prerequisites": {
       "machine": "prerequisites",
-      "singular": "Prerequisites",
+      "singular": "Prerequisite",
       "plural": "Prerequisiteses",
       "field_type": "textarea",
       "data_type": "string",
@@ -1122,7 +1110,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "speakers": {
       "machine": "speakers",
-      "singular": "Speakers",
+      "singular": "Speaker",
       "plural": "Speakerss",
       "field_type": "user_account",
       "data_type": "RelEntity",
@@ -1134,7 +1122,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "moderators": {
       "machine": "moderators",
-      "singular": "Moderators",
+      "singular": "Moderator",
       "plural": "Moderatorss",
       "field_type": "user_account",
       "data_type": "RelEntity",
@@ -1146,7 +1134,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "sponsors": {
       "machine": "sponsors",
-      "singular": "Sponsors",
+      "singular": "Sponsor",
       "plural": "Sponsorss",
       "field_type": "user_account",
       "data_type": "RelEntity",
@@ -1158,7 +1146,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "address": {
       "machine": "address",
-      "singular": "Postal Address",
+      "singular": "Postal Addres",
       "plural": "Postal Addresses",
       "field_type": "address",
       "data_type": "string",

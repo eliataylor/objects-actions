@@ -22,7 +22,7 @@ from .models import Attendees
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
 
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
-class CustomUserSerializer(serializers.ModelSerializer):
+class CustomUsersSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # Get the original representation
         representation = super().to_representation(instance)
@@ -98,7 +98,6 @@ class CustomSerializer(serializers.ModelSerializer):
                         } for related in related_instances
                     ]
         return representation
-
 class TopicsSerializer(CustomSerializer):
     class Meta:
         model = Topics
@@ -127,10 +126,9 @@ class ResourcesSerializer(CustomSerializer):
     class Meta:
         model = Resources
         fields = '__all__'
-class UsersSerializer(CustomUserSerializer):
+class UsersSerializer(CustomUsersSerializer):
     class Meta:
         model = Users
-        # fields = [field.name for field in Users._meta.fields if field.name not in ('password', 'email')]
         exclude = ('password', 'email', 'is_active', 'is_staff', 'is_superuser')
 class CitiesSerializer(CustomSerializer):
     class Meta:

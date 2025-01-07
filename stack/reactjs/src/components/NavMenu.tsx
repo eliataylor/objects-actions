@@ -49,10 +49,10 @@ const NavMenu = () => {
             {NAVITEMS.map((item) => {
               return (
                 <ListItemButton
-                  key={`navmenu-${item.screen}`}
+                  key={`navmenu-${item.segment}`}
                   component={Link}
-                  to={item.screen}
-                  selected={location.pathname === item.screen}
+                  to={`/${item.segment}`}
+                  selected={location.pathname === `/${item.segment}`}
                 >
                   <ListItemText primary={item.plural} />
                 </ListItemButton>

@@ -29,10 +29,10 @@ const Customize: React.FC = () => {
       </StyledPaper>
 
       <StyledPaper>
-        <Typography variant="h6" gutterBottom={true} sx={{ mb: 3 }}>
+        <Typography variant="h6" >
           Set the CSV paths in your .env below:
         </Typography>
-        <FormHelperText>
+        <FormHelperText sx={{ mb: 3 }}>
           The permissions matrix is optional. The server's default permission is
           `Is Authenticated or Read only`
         </FormHelperText>

@@ -6,6 +6,9 @@ import sys
 from loguru import logger
 import pandas as pd
 import inflect
+import ast
+import re
+
 
 def find_model_details(csv_file, model_name):
     with open(csv_file, 'r') as csvfile:
@@ -14,7 +17,7 @@ def find_model_details(csv_file, model_name):
             obj_type = row['TYPES']
             if obj_type == model_name:
                 if row['Field Type'].lower() == 'vocabulary':
-                    return {'model_type': 'vocabulary', 'examples': row['Examples']}
+                    return {'model_type': 'vocabulary', 'example': row['Example']}
 
     return None
 
@@ -195,7 +198,6 @@ def build_types_from_csv(csv_file):
         reader = csv.DictReader(csvfile)
 
         cur_type = None
-        is_vocab = False
         # Iterate over each row in the CSV
         for row in reader:
             # Extract the type from the row
@@ -204,11 +206,10 @@ def build_types_from_csv(csv_file):
                 if row['Field Name'].lower() == 'user':
                     logger.info(f'making {obj_type} the internal auth user model')
                     cur_type = 'User'
-                    is_vocab = True if row['Field Label'] == 'vocabulary' else False
                 else:
                     cur_type = obj_type
 
-            if row['Field Type'] is None or row['Field Type'] == '':
+            if row['Field Type'] is None or row['Field Type'] == '' or row['Field Label'] is None or row['Field Label'] == '':
                 continue
 
             if row['Field Name'] is None or row['Field Name'] == '':
@@ -410,6 +411,31 @@ def create_machine_name(label, lower=True, punctuation='_'):
     if lower is True:
         machine_name = machine_name.lower()
     return machine_name
+
+def create_options(field_js):
+    list = field_js['example'].strip()
+    if list == '':
+        logger.warning(
+            f"Field {field_js['machine']} has no list of structure of choices. Please list them as a flat json array.")
+    try:
+        if list[0] == '[':
+            list = ast.literal_eval(list)
+        else:
+            list = list.split(',')
+        field_js['options'] = []
+        for name in list:
+            name = re.sub("[\"\']", "", name)
+            if name is None or name == '':
+                continue
+            field_js['options'].append({
+                "label": capitalize(name),
+                "id": create_machine_name(name, True)
+            })
+    except Exception as e:
+        logger.warning(
+            f"{field_js['machine']} has invalid structure of choices: {field_js['example']}  \nPlease list them as a flat json array. {str(e)}")
+
+    return field_js
 
 
 def find_search_fields(json_data, class_name):

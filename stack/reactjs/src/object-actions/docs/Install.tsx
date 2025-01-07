@@ -85,7 +85,8 @@ const Install: React.FC = () => {
             command="sudo bash docs/os-hosts-install.sh"
             help={
               <>
-                This will add a entry to your computers `/etc/hosts` so that localhost.oxample.com and localapi.oxample.com resolves to your local development environment. It will also backup the original as `/etc/hosts.bak.timestamp`
+                This will add a entry to your computers `/etc/hosts` so that localhost.oxample.com and localapi.oxample.com resolves to your local development environment.
+                It will also backup the original as `/etc/hosts.bak.timestamp`
               </>
             }
           />
