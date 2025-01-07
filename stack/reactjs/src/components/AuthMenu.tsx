@@ -5,14 +5,13 @@ import {
   AlternateEmail,
   AppRegistration,
   DevicesOther,
-  ExpandLess,
+  ExpandLess, ExpandMore,
   Login,
   Logout,
   Password,
-  Settings,
   SwitchAccount,
-  VpnKey,
-} from '@mui/icons-material';
+  VpnKey
+} from "@mui/icons-material";
 import { Collapse, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 
 interface PermissionProps {
@@ -89,7 +88,7 @@ export default function AuthMenu() {
         {open ? (
           <ExpandLess fontSize={'small'} />
         ) : (
-          <Settings fontSize={'small'} />
+          <ExpandMore fontSize={'small'} />
         )}
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>

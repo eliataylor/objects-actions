@@ -34,13 +34,17 @@ class DjangoBuilder:
                         "views": ["from rest_framework import viewsets, permissions, filters, generics",
                                   "from rest_framework.pagination import PageNumberPagination",
                                   "from rest_framework.views import APIView",
+                                  "from rest_framework.pagination import LimitOffsetPagination",
+                                  "from rest_framework import viewsets, permissions, filters, generics",
+                                  "from rest_framework.views import APIView",
                                   "from django.http import JsonResponse",
                                   "from django.core.management import call_command",
                                   "from django.apps import apps",
                                   "from django.http import HttpResponse",
                                   "from django.shortcuts import redirect",
                                   "from django.utils import timezone",
-                                  "import re", "import os",
+                                  "from .services import send_sms",
+                                  "import random", "import re", "import os",
                                   "from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse"
                                   ],
                         "urls": [
@@ -231,14 +235,8 @@ urlpatterns += [
     lookup_field = '{has_slug['Field Name']}'""")
 
 
-            if model_name == 'Users':
-                self.append_import("views", f"from .serializers import CustomUsersSerializer")
-                self.append_import("views", f"from .models import CustomUsersSerializer")
-            else:
-                self.append_import("views", f"from .models import {model_name}")
-                self.append_import("views", f"from .serializers import {model_name}Serializer")
-
-
+            self.append_import("views", f"from .serializers import {model_name}Serializer")
+            self.append_import("views", f"from .models import {model_name}")
 
         inject_generated_code(outpath, '\n'.join(self.imports["views"]), 'VIEWSET-IMPORTS')
 

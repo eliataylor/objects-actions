@@ -2,60 +2,60 @@
 from rest_framework import viewsets, permissions, filters, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework import viewsets, permissions, filters, generics
+from rest_framework.views import APIView
 from django.http import JsonResponse
 from django.core.management import call_command
 from django.apps import apps
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils import timezone
+from .services import send_sms
+import random
 import re
 import os
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-from .models import Topics
 from .serializers import TopicsSerializer
-from .models import ResourceTypes
+from .models import Topics
 from .serializers import ResourceTypesSerializer
-from .models import MeetingTypes
+from .models import ResourceTypes
 from .serializers import MeetingTypesSerializer
-from .models import States
+from .models import MeetingTypes
 from .serializers import StatesSerializer
-from .models import Parties
+from .models import States
 from .serializers import PartiesSerializer
-from .models import Stakeholders
+from .models import Parties
 from .serializers import StakeholdersSerializer
-from .models import Resources
+from .models import Stakeholders
 from .serializers import ResourcesSerializer
-from .serializers import CustomUsersSerializer
-from .models import CustomUsersSerializer
-from .models import Cities
+from .models import Resources
+from .serializers import UsersSerializer
+from .models import Users
 from .serializers import CitiesSerializer
-from .models import Officials
+from .models import Cities
 from .serializers import OfficialsSerializer
-from .models import Rallies
+from .models import Officials
 from .serializers import RalliesSerializer
-from .models import ActionPlans
+from .models import Rallies
 from .serializers import ActionPlansSerializer
-from .models import Meetings
+from .models import ActionPlans
 from .serializers import MeetingsSerializer
-from .models import Invites
+from .models import Meetings
 from .serializers import InvitesSerializer
-from .models import Subscriptions
+from .models import Invites
 from .serializers import SubscriptionsSerializer
-from .models import Rooms
+from .models import Subscriptions
 from .serializers import RoomsSerializer
-from .models import Attendees
+from .models import Rooms
 from .serializers import AttendeesSerializer
+from .models import Attendees
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-from rest_framework import viewsets, permissions, filters, generics
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.views import APIView
-from .services import send_sms
-import random
 
 class LimitedLimitOffsetPagination(LimitOffsetPagination):
     max_limit = 100
+
 
 class PaginatedViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
@@ -71,8 +71,8 @@ class PaginatedViewSet(viewsets.ModelViewSet):
             'count': paginator.count,  # Total number of items
             'limit': paginator.limit,  # Number of items per page
             'offset': paginator.offset,  # Starting position of the current page
-#            'next': paginator.get_next_link(),  # Link to the next page, if available
-#            'previous': paginator.get_previous_link(),  # Link to the previous page, if available
+            #            'next': paginator.get_next_link(),  # Link to the next page, if available
+            #            'previous': paginator.get_previous_link(),  # Link to the previous page, if available
             'results': serializer.data
         }
 
@@ -108,6 +108,7 @@ class PaginatedViewSet(viewsets.ModelViewSet):
 
         # Return the corresponding serializer class
         return model_to_serializer.get(model, self.get_serializer_class())
+
 
 ####OBJECT-ACTIONS-VIEWSETS-STARTS####
 class TopicsViewSet(viewsets.ModelViewSet):
