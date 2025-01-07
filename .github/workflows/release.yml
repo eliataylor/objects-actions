@@ -1,62 +1,66 @@
-name: Automate Tagging and Release
+name: Branch Protection and Release Management
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
 
 jobs:
-  create-release:
-    name: Create Release
+  branch-protection:
     runs-on: ubuntu-latest
-
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Set Up Git
+      - name: Check direct push to main
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            echo "New branch creation detected"
+          else
+            echo "Direct push to main detected"
+            exit 1
+          fi
 
-      - name: Get Current Date
-        id: date
-        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-
-      - name: Determine Next Version Tag
-        id: get-tag
-        run: |
-          # Fetch tags from the repo
-          git fetch --tags
-          # Get the latest tag
-          latest_tag=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          echo "Latest tag: $latest_tag"
-          # Increment the patch version (vX.Y.Z -> vX.Y.(Z+1))
-          IFS='.' read -r major minor patch <<<"${latest_tag#v}"
-          next_tag="v$major.$minor.$((patch+1))"
-          echo "Next tag: $next_tag"
-          echo "tag=$next_tag" >> $GITHUB_ENV
-
-      - name: Create New Tag
-        run: |
-          git tag -a ${{ env.tag }} -m "Release ${{ env.tag }}"
-          git push origin ${{ env.tag }}
-
-      - name: Push Tag
-        env:
-          PAT: ${{ secrets.PAT_TOKEN }}
-        run: |
-          git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
-          git push origin ${{ env.tag }}
-          
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
+  create-release:
+    needs: branch-protection
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          tag_name: ${{ env.tag }}
-          release_name: "Release ${{ env.tag }}"
-          body: |
-            ## Changes
-            - Automated release created from the latest changes merged into the `main` branch.
-            - Release date: ${{ env.date }}
+          fetch-depth: 0
+          
+      - name: Get latest tag
+        id: get-latest-tag
+        run: |
+          git fetch --tags
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Generate new version
+        id: generate-version
+        run: |
+          current_version=${LATEST_TAG#v}
+          IFS='.' read -ra version_parts <<< "$current_version"
+          new_patch=$((version_parts[2] + 1))
+          new_version="${version_parts[0]}.${version_parts[1]}.$new_patch"
+          echo "NEW_VERSION=v$new_version" >> $GITHUB_ENV
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "### Changes" > changelog.md
+          git log ${LATEST_TAG}..HEAD --pretty=format:"* %s" >> changelog.md
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.NEW_VERSION }}
+          release_name: Release ${{ env.NEW_VERSION }}
+          body_path: changelog.md
           draft: false
           prerelease: false
