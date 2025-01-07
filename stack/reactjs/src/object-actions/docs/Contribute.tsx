@@ -30,7 +30,7 @@ const Contribute: React.FC = () => {
           </a>
         </Typography>
         <Typography variant="body1" gutterBottom={true}>
-          Implement React render checks against permissions. Start around{' '}
+          Improve React render checks against permissions. Start around{' '}
           <a
             href="https://github.com/eliataylor/object-actions/blob/main/stack/reactjs/src/object-actions/types/access.tsx#L72"
             target="_blank"

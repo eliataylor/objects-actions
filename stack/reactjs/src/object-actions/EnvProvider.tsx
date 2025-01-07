@@ -24,7 +24,7 @@ const defaultEnvConfig: EnvConfig = {
   REACT_APP_LOGIN_EMAIL: 'info@oaexample.com',
   REACT_APP_LOGIN_PASS: 'APasswordYouShouldChange',
   OA_ENV_DB: 'docker',
-  OA_ENV_EMAIL: 'django',
+  OA_ENV_EMAIL: 'console',
   OA_ENV_STORAGE: 'local',
 };
 

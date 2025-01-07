@@ -34,7 +34,7 @@ REACT_APP_LOGIN_PASS=${envConfig.REACT_APP_LOGIN_PASS}
 # the location of mysql server: docker | local | gcp
 OA_ENV_DB=${envConfig.OA_ENV_DB}
 
-# how are emails sent: django | gmail | sendgrid
+# how are emails sent: console | files | gmail | sendgrid
 OA_ENV_EMAIL=${envConfig.OA_ENV_EMAIL}
 
 # where to store static files: gcp | local
@@ -191,7 +191,8 @@ OA_ENV_STORAGE=${envConfig.OA_ENV_STORAGE}
           size="small"
           sx={{ mb: 2 }}
         >
-          <MenuItem value="django">django</MenuItem>
+          <MenuItem value="console">console</MenuItem>
+          <MenuItem value="files">files</MenuItem>
           <MenuItem value="gmail">gmail</MenuItem>
           <MenuItem value="sendgrid">sendgrid</MenuItem>
         </TextField>
