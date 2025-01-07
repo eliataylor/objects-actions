@@ -1,9 +1,7 @@
 import os
 from urllib.parse import urlparse
 from corsheaders.defaults import default_headers
-
-from . import DJANGO_ENV
-from .base import myEnv
+from .base import myEnv, logger, DJANGO_ENV
 
 def get_tld(hostname):
     if hostname:
@@ -32,17 +30,17 @@ SUPERUSER_EMAIL = myEnv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 ALLOWED_HOSTS = [get_tld(API_HOST_PARTS.hostname), f".{get_tld(API_HOST_PARTS.hostname)}"]
 
 CORS_ALLOWED_ORIGINS = [APP_HOST, API_HOST]
-APP_PORT = '3000' if not APP_HOST_PARTS.port else APP_HOST_PARTS.port
+DEV_PORT = '3000' if not APP_HOST_PARTS.port else APP_HOST_PARTS.port
 
 # allow localhost to tap production to ease front-end dev contributors
-CORS_ALLOWED_ORIGINS += [f"{APP_HOST_PARTS.scheme}://localhost:{APP_PORT}",
-                         f"{APP_HOST_PARTS.scheme}://127.0.0.1:{APP_PORT}",
-                         f"{APP_HOST_PARTS.scheme}://localhost.oaexample.com:{APP_PORT}",
-                         f"{APP_HOST_PARTS.scheme}://reactjs-service:{APP_PORT}"]
+CORS_ALLOWED_ORIGINS += [f"{APP_HOST_PARTS.scheme}://localhost:{DEV_PORT}",
+                         f"{APP_HOST_PARTS.scheme}://127.0.0.1:{DEV_PORT}",
+                         f"{APP_HOST_PARTS.scheme}://localhost.oaexample.com:{DEV_PORT}",
+                         f"{APP_HOST_PARTS.scheme}://reactjs-service:{DEV_PORT}"]
 
 if DJANGO_ENV != 'production':
     # for docker networking
-    ALLOWED_HOSTS += ["localapi.oaexample.com", "localhost", "127.0.0.1", "django-service"]
+    ALLOWED_HOSTS += ["localhost", "127.0.0.1", "django-service"]
 
 CORS_ALLOW_CREDENTIALS = True # using cookies
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -50,11 +48,13 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'X-App-Client',  # used by mobile to toggle to Token auth
 ]
 
+logger.warning(f"Allowing Hosts: {", ".join(ALLOWED_HOSTS)}")
+
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
-if DJANGO_ENV == 'production':
-    CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
-else:
-    CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
+logger.warning(f"Allowed Origins: {CSRF_COOKIE_DOMAIN}")
+logger.warning(f"Allowed Trusted Domains: {", ".join(CSRF_TRUSTED_ORIGINS)}")
+
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie

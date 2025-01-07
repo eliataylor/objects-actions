@@ -1,4 +1,4 @@
-class CustomUserSerializer(serializers.ModelSerializer):
+class CustomUsersSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # Get the original representation
         representation = super().to_representation(instance)

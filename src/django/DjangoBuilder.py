@@ -34,13 +34,17 @@ class DjangoBuilder:
                         "views": ["from rest_framework import viewsets, permissions, filters, generics",
                                   "from rest_framework.pagination import PageNumberPagination",
                                   "from rest_framework.views import APIView",
+                                  "from rest_framework.pagination import LimitOffsetPagination",
+                                  "from rest_framework import viewsets, permissions, filters, generics",
+                                  "from rest_framework.views import APIView",
                                   "from django.http import JsonResponse",
                                   "from django.core.management import call_command",
                                   "from django.apps import apps",
                                   "from django.http import HttpResponse",
                                   "from django.shortcuts import redirect",
                                   "from django.utils import timezone",
-                                  "import re", "import os",
+                                  "from .services import send_sms",
+                                  "import random", "import re", "import os",
                                   "from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse"
                                   ],
                         "urls": [
@@ -185,7 +189,7 @@ urlpatterns += [
             model_name = create_object_name(class_name)
             code = tpl.replace('__CLASSNAME__', model_name)
             if model_name == 'Users':
-                code = code.replace("CustomSerializer", "CustomUsersSerializer"),
+                code = code.replace("CustomSerializer", "CustomUsersSerializer")
                 code = code.replace("fields = '__all__'",
                                     "exclude = ('password', 'email', 'is_active', 'is_staff', 'is_superuser')")
             parts.append(code)
@@ -230,14 +234,9 @@ urlpatterns += [
     serializer_class = {model_name}Serializer
     lookup_field = '{has_slug['Field Name']}'""")
 
+
+            self.append_import("views", f"from .serializers import {model_name}Serializer")
             self.append_import("views", f"from .models import {model_name}")
-
-            if model_name == 'Users':
-                self.append_import("views", f"from .serializers import Custom{model_name}Serializer")
-            else:
-                self.append_import("views", f"from .serializers import {model_name}Serializer")
-
-
 
         inject_generated_code(outpath, '\n'.join(self.imports["views"]), 'VIEWSET-IMPORTS')
 

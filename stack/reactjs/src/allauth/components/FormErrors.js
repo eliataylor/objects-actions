@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material'
+import { Typography } from '@mui/material';
 
 export function hasError (errors: any, param: string): boolean {
   if (!errors || !Array.isArray(errors)) return false

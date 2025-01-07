@@ -3,7 +3,7 @@ import os
 from .base import myEnv, DEBUG, logger
 
 # how are emails sent: django | gmail | sendgrid | smtp
-OA_ENV_EMAIL = os.getenv("OA_ENV_EMAIL", "django")
+OA_ENV_EMAIL = myEnv("OA_ENV_EMAIL", "django")
 logger.debug(f"[OADJANGO] EMAIL USING: {OA_ENV_EMAIL} ")
 
 API_HOST = os.getenv('REACT_APP_API_HOST', 'https://localapi.oaexample.com:8080')
@@ -26,6 +26,9 @@ EMAIL_USE_TLS = True
 
 if OA_ENV_EMAIL == 'django':
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    # TODO: save email as files for databuilder
+    # EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    # EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'  # Emails will be saved here
 elif OA_ENV_EMAIL == 'sendgrid':
     EMAIL_HOST = 'smtp.sendgrid.net'
     EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'

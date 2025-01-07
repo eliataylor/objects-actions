@@ -1,46 +1,91 @@
-import React from 'react'
-import {Link, useLocation} from 'react-router-dom'
-import {Divider, List, ListItemAvatar, ListItemButton, ListItemText} from '@mui/material'
-import {NAVITEMS} from '../object-actions/types/types'
-import AuthMenu from '../components/AuthMenu'
-import ThemeSwitcher from "../theme/ThemeSwitcher";
-import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Box, Collapse, Divider, List, ListItemButton, ListItemText } from '@mui/material';
+import { NAVITEMS } from '../object-actions/types/types';
+import AuthMenu from '../components/AuthMenu';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import OALogo from '../object-actions/docs/OALogo';
+import OaMenu from '../object-actions/docs/OaMenu';
+import ThemeSwitcher from '../theme/ThemeSwitcher';
 
 const NavMenu = () => {
-    const location = useLocation()
+  const location = useLocation();
+  const [objectsOpen, setObjectsOpen] = React.useState(false);
+  const [oaMenuOpen, setOAMenuOpen] = React.useState(
+    location.pathname.indexOf('/oa/') === 0,
+  );
 
-    return (
-        <List id={"NavMenu"} dense={true}>
-            <AuthMenu/>
+  const handleClick = () => {
+    setObjectsOpen(!objectsOpen);
+  };
 
-            <ListItemButton
-                component={Link} to={'/readme'}
-                selected={location.pathname === '/readme'}
-            >
-                <ListItemAvatar sx={{minWidth:40}}><LocalLibraryIcon fontSize={'small'}/></ListItemAvatar>
-                <ListItemText primary={"Read Me"}/>
-            </ListItemButton>
+  return (
+    <React.Fragment>
+      <List id={'NavMenu'} dense={true}>
+        <AuthMenu />
 
-            <Divider sx={{marginBottom: 1, marginTop: 1, backgroundColor: "primary.dark"}}/>
+        <Divider
+          sx={{
+            marginBottom: 1,
+            marginTop: 1,
+            backgroundColor: 'primary.dark',
+          }}
+        />
 
-            <div id={"ObjectTypesMenu"}>
-                {NAVITEMS.map(item => {
-                    return (
-                        <ListItemButton
-                            key={`navmenu-${item.screen}`} component={Link} to={item.screen}
-                            selected={location.pathname === item.screen}
-                        >
-                            <ListItemText primary={item.plural}/>
-                        </ListItemButton>
-                    )
-                })}
-            </div>
+        <ListItemButton
+          dense={true}
+          style={{ justifyContent: 'space-between' }}
+          onClick={handleClick}
+        >
+          <ListItemText primary="Objects" />
+          {objectsOpen ? (
+            <ExpandLess fontSize={'small'} />
+          ) : (
+            <ExpandMore fontSize={'small'} />
+          )}
+        </ListItemButton>
+        <Collapse in={objectsOpen} timeout="auto" unmountOnExit>
+          <div id={'ObjectTypesMenu'}>
+            {NAVITEMS.map((item) => {
+              return (
+                <ListItemButton
+                  key={`navmenu-${item.segment}`}
+                  component={Link}
+                  to={`/${item.segment}`}
+                  selected={location.pathname === `/${item.segment}`}
+                >
+                  <ListItemText primary={item.plural} />
+                </ListItemButton>
+              );
+            })}
+          </div>
+        </Collapse>
+      </List>
 
-            <Divider sx={{marginBottom: 1, marginTop: 1, backgroundColor: "primary.dark"}}/>
+      <Divider
+        sx={{ marginBottom: 1, marginTop: 1, backgroundColor: 'primary.dark' }}
+      />
 
-            <ThemeSwitcher/>
+      <List dense={true}>
+        <ListItemButton onClick={() => setOAMenuOpen(!oaMenuOpen)}>
+          <OALogo height={24} />
+          <ListItemText sx={{ml:1}} primary={'O/A'} />
+          {oaMenuOpen ? (
+            <ExpandLess fontSize={'small'} />
+          ) : (
+            <ExpandMore fontSize={'small'} />
+          )}
+        </ListItemButton>
 
-        </List>
-    )
-}
-export default NavMenu
+        <Collapse in={oaMenuOpen} timeout="auto" unmountOnExit>
+          <OaMenu handleClick={() => null} />
+        </Collapse>
+      </List>
+
+      <Box p={1} ml={2} style={{ textAlign: 'center' }}>
+        <ThemeSwitcher />
+      </Box>
+    </React.Fragment>
+  );
+};
+export default NavMenu;

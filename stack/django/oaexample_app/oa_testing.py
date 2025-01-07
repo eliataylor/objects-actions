@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from .serializers import CustomUserSerializer
+from .serializers import CustomUsersSerializer
 from .models import Users
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
@@ -21,7 +21,7 @@ class OATesterPagination(PageNumberPagination):
     max_page_size = 300
 
 
-class OATesterSerializer(CustomUserSerializer):
+class OATesterSerializer(CustomUsersSerializer):
     class Meta():
         model = Users
         exclude = ('password',)

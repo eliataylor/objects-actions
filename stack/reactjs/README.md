@@ -1,6 +1,7 @@
 # oaexample reactjs app
 
 #### Start App template
+
 ```sh
 cp .env.public .env # and update your configs
 npm install
@@ -8,6 +9,7 @@ npm start
 ```
 
 #### Deploy
+
 ```sh
 
 # build

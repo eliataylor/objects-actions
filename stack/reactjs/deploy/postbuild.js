@@ -10,7 +10,7 @@ if (!fs.existsSync(destination)) {
   fs.mkdirSync(destination, { recursive: true });
 }
 
-filesToCopy.forEach(file => {
+filesToCopy.forEach((file) => {
   const sourcePath = path.join(sourceDir, file);
   const destinationPath = path.join(destination, file);
 
