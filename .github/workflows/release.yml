@@ -42,6 +42,13 @@ jobs:
           git tag -a ${{ env.tag }} -m "Release ${{ env.tag }}"
           git push origin ${{ env.tag }}
 
+      - name: Push Tag
+        env:
+          PAT: ${{ secrets.PAT_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
+          git push origin ${{ env.tag }}
+          
       - name: Create GitHub Release
         uses: actions/create-release@v1
         with:
