@@ -91,11 +91,12 @@ const Install: React.FC = () => {
             }
           />
         ) :
-        <FormHelperText>
-          Update `REACT_APP_API_HOST` and `REACT_APP_APP_HOST` in these files:
-
+        <FormHelperText style={{marginLeft:20}}>
+          <div><b>Update full URL for `REACT_APP_API_HOST` and `REACT_APP_APP_HOST` in these files:</b></div>
           <div>`stack/django/.env`</div>
           <div>`stack/reactjs/.env.public` and/or `stack/reactjs/.env`</div>
+          <br />
+          <div><b>Just update to http:// for `REACT_APP_API_HOST` and `REACT_APP_APP_HOST` in these files:</b></div>
           <div>`stack/databuilder/.env.public` and/or `stack/reactjs/.env`</div>
           <div>`stack/cypress.public.json` and/or `stack/cypress.env.json`</div>
         </FormHelperText>
