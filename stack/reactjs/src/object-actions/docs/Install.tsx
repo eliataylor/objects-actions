@@ -64,7 +64,7 @@ const Install: React.FC = () => {
 
       <StyledPaper>
         <Command
-          command="git clone git@github.com:eliataylor/object-actions.git"
+          command="git clone git@github.com:eliataylor/object-actions.git --depth 1"
           help={
             <>
               <b>or</b> if you get SSL errors, use
@@ -80,7 +80,7 @@ const Install: React.FC = () => {
 
         <Command command="cd object-actions" />
 
-        {method === 'https://localhost.oaexample.com:3000' && (
+        {method === 'https://localhost.oaexample.com:3000' ? (
           <Command
             command="sudo bash docs/os-hosts-install.sh"
             help={
@@ -90,7 +90,16 @@ const Install: React.FC = () => {
               </>
             }
           />
-        )}
+        ) :
+        <FormHelperText>
+          Update `REACT_APP_API_HOST` and `REACT_APP_APP_HOST` in these files:
+
+          <div>`stack/django/.env`</div>
+          <div>`stack/reactjs/.env.public` and/or `stack/reactjs/.env`</div>
+          <div>`stack/databuilder/.env.public` and/or `stack/reactjs/.env`</div>
+          <div>`stack/cypress.public.json` and/or `stack/cypress.env.json`</div>
+        </FormHelperText>
+        }
 
         <Command command="docker-compose up --build -d" />
       </StyledPaper>

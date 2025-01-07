@@ -22,7 +22,7 @@ const Extend: React.FC = () => {
 
       <StyledPaper>
         <Command
-          command="git clone git@github.com:eliataylor/object-actions.git"
+          command="git clone git@github.com:eliataylor/object-actions.git --depth=1"
           help={
             <>
               <b>or</b> if you get SSL errors, use
