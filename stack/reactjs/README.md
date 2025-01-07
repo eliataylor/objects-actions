@@ -1,5 +1,7 @@
 # oaexample reactjs app
 
+This webapp uses MUI 5. Read more docs [v5.mui.com/material-ui/all-components/](https://v5.mui.com/material-ui/all-components/)
+
 #### Start App template
 
 ```sh
