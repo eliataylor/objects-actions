@@ -1,0 +1,55 @@
+name: Automate Tagging and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Get Current Date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Determine Next Version Tag
+        id: get-tag
+        run: |
+          # Fetch tags from the repo
+          git fetch --tags
+          # Get the latest tag
+          latest_tag=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          echo "Latest tag: $latest_tag"
+          # Increment the patch version (vX.Y.Z -> vX.Y.(Z+1))
+          IFS='.' read -r major minor patch <<<"${latest_tag#v}"
+          next_tag="v$major.$minor.$((patch+1))"
+          echo "Next tag: $next_tag"
+          echo "tag=$next_tag" >> $GITHUB_ENV
+
+      - name: Create New Tag
+        run: |
+          git tag -a ${{ env.tag }} -m "Release ${{ env.tag }}"
+          git push origin ${{ env.tag }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.tag }}
+          release_name: "Release ${{ env.tag }}"
+          body: |
+            ## Changes
+            - Automated release created from the latest changes merged into the `main` branch.
+            - Release date: ${{ env.date }}
+          draft: false
+          prerelease: false
