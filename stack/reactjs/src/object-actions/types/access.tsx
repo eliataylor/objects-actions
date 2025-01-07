@@ -1,5 +1,5 @@
-import { EntityTypes } from './types';
-import permissions from './permissions.json';
+import { EntityTypes } from "./types";
+import permissions from "./permissions.json";
 
 export interface MySession {
   id: number;
@@ -14,38 +14,39 @@ export interface MySession {
 //---OBJECT-ACTIONS-PERMS-VERBS-STARTS---//
 
 export type CRUDVerb =
-  | 'view_list'
-  | 'view_profile'
-  | 'add'
-  | 'edit'
-  | 'delete'
-  | 'block'
-  | ''
-  | 'view'
-  | 'subscribe'
-  | 'meeting'
-  | 'comment'
-  | 'sponsor'
-  | 'apply-to-speak'
-  | 'approve'
-  | 'reject'
-  | 'user'
-  | 'rooms';
+  | "view_list"
+  | "view_profile"
+  | "add"
+  | "edit"
+  | "delete"
+  | "block"
+  | ""
+  | "view"
+  | "subscribe"
+  | "meeting"
+  | "comment"
+  | "sponsor"
+  | "apply-to-speak"
+  | "approve"
+  | "reject"
+  | "user"
+  | "rooms";
 //---OBJECT-ACTIONS-PERMS-VERBS-ENDS---//
 
 //---OBJECT-ACTIONS-PERMS-ROLES-STARTS---//
 
 export type PermRoles =
-  | 'anonymous'
-  | 'authenticated'
-  | 'verified'
-  | 'paid user'
-  | 'admin'
-  | 'rally attendee'
-  | 'city sponsor'
-  | 'city official'
-  | 'rally speaker'
-  | 'rally moderator';
+  | "anonymous"
+  | "authenticated"
+  | "verified"
+  | "paid user"
+  | "admin"
+  | "rally attendee"
+  | "city sponsor"
+  | "city official"
+  | "rally speaker"
+  | "rally moderator";
+
 //---OBJECT-ACTIONS-PERMS-ROLES-ENDS---//
 
 interface AccessPoint {
@@ -61,22 +62,22 @@ interface AccessPoint {
 function getPermsByTypeAndVerb(type: string, verb: string) {
   const matches = (permissions as unknown as AccessPoint[]).find(
     (perms: AccessPoint) => {
-      return perms.context.join('-') === type && perms.verb === verb; // TODO: permissions.json needs built differently
-    },
+      return perms.context.join("-") === type && perms.verb === verb; // TODO: permissions.json needs built differently
+    }
   );
   return matches;
 }
 
 export function getEndpoints(url: string, verb: CRUDVerb): AccessPoint[] {
-  url = url.replace('/api', '');
-  url = url.replace(/^\/|\/$/g, '');
-  const segments = url.split('/');
+  url = url.replace("/api", "");
+  url = url.replace(/^\/|\/$/g, "");
+  const segments = url.split("/");
 
   const endpoint: any = { context: [] };
 
   for (let i = segments.length - 1; i >= 0; i--) {
     const segment = segments[i];
-    const previous = i > 0 ? segments[i - 1] : '';
+    const previous = i > 0 ? segments[i - 1] : "";
 
     if (Number.isInteger(previous)) {
       if (!endpoint.verb) {
@@ -87,19 +88,19 @@ export function getEndpoints(url: string, verb: CRUDVerb): AccessPoint[] {
     }
   }
 
-  if (!endpoint.verb) endpoint.verb = 'view';
+  if (!endpoint.verb) endpoint.verb = "view";
 
-  const targetUrl = endpoint.context.join('/').toLowerCase();
+  const targetUrl = endpoint.context.join("/").toLowerCase();
 
   const matches = (permissions as unknown as AccessPoint[]).filter(
     (perms: AccessPoint) => {
-      if (perms.context.join('/').toLowerCase() === targetUrl) {
+      if (perms.context.join("/").toLowerCase() === targetUrl) {
         if (perms.verb === verb) {
           return true;
         }
       }
       return false;
-    },
+    }
   );
 
   return matches;
@@ -109,7 +110,7 @@ export function can_view(
   verb: CRUDVerb,
   url: string,
   me: MySession | null,
-  obj: EntityTypes,
+  obj: EntityTypes
 ): boolean {
   return true;
 }
@@ -118,7 +119,7 @@ export function can_view(
 export function canDo(
   verb: CRUDVerb,
   obj: EntityTypes,
-  me?: MySession | null,
+  me?: MySession | null
 ): boolean | string {
   const perm = getPermsByTypeAndVerb(obj._type, verb);
   console.log(perm);
@@ -130,13 +131,13 @@ export function canDo(
 
   if (!me) {
     // test what is allowed for anonymous visitors
-    if (verb !== 'add') {
+    if (verb !== "add") {
       // can anonymous users edit / delete content authored by other users
-      const others = perm.ownership === 'others';
+      const others = perm.ownership === "others";
       if (!others) return `anonymous cannot ${verb} this ${obj._type}`;
     }
     // can anonymous users add / edit / delete this content type
-    const hasRole = perm.roles.indexOf('anonymous') > -1;
+    const hasRole = perm.roles.indexOf("anonymous") > -1;
     if (hasRole) {
       return true;
     }
@@ -151,42 +152,45 @@ export function canDo(
   }
   errstr += ` to ${verb}`;
 
-  let isMine = false;
-  if (obj._type === "Users") {
-    isMine = obj.id === me.id
-  } else {
-    isMine = "author" in obj && me.id === obj?.author?.id
+  let isMine = verb === "add";
+  if (!isMine) {
+    if (obj._type === "Users") {
+      isMine = obj.id === me.id;
+    } else {
+      isMine = "author" in obj && me.id === obj?.author?.id;
+    }
   }
+
   const myGroups = new Set(
-    me?.groups && me?.groups.length > 0 ? me.groups : [],
+    me?.groups && me?.groups.length > 0 ? me.groups : []
   );
 
-  if (isMine && perm.ownership === 'own') {
+  if (isMine && perm.ownership === "own") {
     if (perm.roles.some((element) => myGroups.has(element))) {
       return true;
     }
     return `${errstr} your own ${obj._type}`;
-  } else if (!isMine && perm.ownership === 'others') {
+  } else if (!isMine && perm.ownership === "others") {
     if (perm.roles.some((element) => myGroups.has(element))) {
       return true;
     }
     return `${errstr} someone else's ${obj._type}`;
   }
 
-  return `${errstr} ${isMine ? 'your own' : "someone else's"} ${obj._type}`;
+  return `${errstr} ${isMine ? "your own" : "someone else's"} ${obj._type}`;
 }
 
 export function canDoOld(
   verb: CRUDVerb,
   url: string,
   me: MySession | null,
-  obj: EntityTypes,
+  obj: EntityTypes
 ): boolean {
   const byurl = getEndpoints(url, verb);
   console.log(`MATCHING ${url} - ${verb}`, byurl);
 
   if (!me) {
-    const others = byurl.find((endpoint) => endpoint.ownership === 'others');
+    const others = byurl.find((endpoint) => endpoint.ownership === "others");
     if (!others) return false;
     return others.roles.some((element) => myGroups.has(element));
   }
@@ -194,15 +198,15 @@ export function canDoOld(
   const isMine = false; // typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
 
   const myGroups = new Set(
-    me?.groups && me?.groups.length > 0 ? me.groups : ['anonymous'],
+    me?.groups && me?.groups.length > 0 ? me.groups : ["anonymous"]
   );
 
   for (let i = 0; i < byurl.length; i++) {
-    if (isMine && byurl[i].ownership === 'own') {
+    if (isMine && byurl[i].ownership === "own") {
       if (byurl[i].roles.some((element) => myGroups.has(element))) {
         return true;
       }
-    } else if (!isMine && byurl[i].ownership === 'others') {
+    } else if (!isMine && byurl[i].ownership === "others") {
       if (byurl[i].roles.some((element) => myGroups.has(element))) {
         return true;
       }
@@ -241,7 +245,7 @@ export function parseFormURL(url: string): ParsedURL | null {
   }
 
   // Extract the object/id pairs and verb from the URL
-  const segments = url.split('/');
+  const segments = url.split("/");
   const verb = segments.pop() as CRUDVerb; // The last segment is the verb
   segments.shift(); // Remove the empty initial segment (before 'forms')
   segments.shift(); // Remove the 'forms' segment
