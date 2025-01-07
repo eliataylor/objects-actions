@@ -1,5 +1,4 @@
 _Objects/Actions_
-
 **From Spreadsheets to Full Stack**
 
 ## Interactive Documentation and Demo Site is here: 
