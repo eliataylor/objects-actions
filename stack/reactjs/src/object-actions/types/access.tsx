@@ -60,59 +60,12 @@ interface AccessPoint {
 }
 
 function getPermsByTypeAndVerb(type: string, verb: string) {
-  const matches = (permissions as unknown as AccessPoint[]).find(
+  const matches = (permissions as unknown as AccessPoint[]).filter(
     (perms: AccessPoint) => {
       return perms.context.join("-") === type && perms.verb === verb; // TODO: permissions.json needs built differently
     }
   );
   return matches;
-}
-
-export function getEndpoints(url: string, verb: CRUDVerb): AccessPoint[] {
-  url = url.replace("/api", "");
-  url = url.replace(/^\/|\/$/g, "");
-  const segments = url.split("/");
-
-  const endpoint: any = { context: [] };
-
-  for (let i = segments.length - 1; i >= 0; i--) {
-    const segment = segments[i];
-    const previous = i > 0 ? segments[i - 1] : "";
-
-    if (Number.isInteger(previous)) {
-      if (!endpoint.verb) {
-        endpoint.verb = segment;
-      }
-    } else {
-      endpoint.context.unshift(segment);
-    }
-  }
-
-  if (!endpoint.verb) endpoint.verb = "view";
-
-  const targetUrl = endpoint.context.join("/").toLowerCase();
-
-  const matches = (permissions as unknown as AccessPoint[]).filter(
-    (perms: AccessPoint) => {
-      if (perms.context.join("/").toLowerCase() === targetUrl) {
-        if (perms.verb === verb) {
-          return true;
-        }
-      }
-      return false;
-    }
-  );
-
-  return matches;
-}
-
-export function can_view(
-  verb: CRUDVerb,
-  url: string,
-  me: MySession | null,
-  obj: EntityTypes
-): boolean {
-  return true;
 }
 
 // returns error string or true if passes
@@ -121,12 +74,31 @@ export function canDo(
   obj: EntityTypes,
   me?: MySession | null
 ): boolean | string {
-  const perm = getPermsByTypeAndVerb(obj._type, verb);
-  console.log(perm);
+  const perms = getPermsByTypeAndVerb(obj._type, verb);
 
-  if (!perm) {
+  if (!perms || !perms.length) {
+    console.warn(`NO PERM MATCHES FOR ${verb} - ${obj._type}`);
     // TODO: check store.accessor.default
     return true;
+  }
+
+
+  let isMine = verb === "add";
+  if (!isMine && me) {
+    if (obj._type === "Users") {
+      isMine = obj.id === me.id;
+    } else {
+      isMine = "author" in obj && me.id === obj?.author?.id;
+    }
+  }
+
+  let perm = perms.find(p => p.ownership === 'others' && !isMine)
+  if (!perm) {
+    perms.find(p => p.ownership === 'own' && isMine)
+    if (!perm) {
+      perm = perms[0];
+      console.warn(`MISMATCHED OWNERSHIP isMine: ${isMine}`, perms)
+    }
   }
 
   if (!me) {
@@ -148,30 +120,25 @@ export function canDo(
   if (perm.roles.length === 1) {
     errstr += ` be ${perm.roles[0]}`;
   } else {
-    errstr += ` have one of these roles - ${perm.roles[0]} - `;
+    errstr += ` have one of these roles - ${perm.roles.join(', ')} - `;
   }
   errstr += ` to ${verb}`;
-
-  let isMine = verb === "add";
-  if (!isMine) {
-    if (obj._type === "Users") {
-      isMine = obj.id === me.id;
-    } else {
-      isMine = "author" in obj && me.id === obj?.author?.id;
-    }
-  }
 
   const myGroups = new Set(
     me?.groups && me?.groups.length > 0 ? me.groups : []
   );
 
   if (isMine && perm.ownership === "own") {
-    if (perm.roles.some((element) => myGroups.has(element))) {
+    if (perm.roles.some((role) => {
+      return myGroups.has(role) || (role === "authenticated" && me.id) || (role === "anonymous" && !me.id)
+    })) {
       return true;
     }
     return `${errstr} your own ${obj._type}`;
   } else if (!isMine && perm.ownership === "others") {
-    if (perm.roles.some((element) => myGroups.has(element))) {
+    if (perm.roles.some((role) => {
+      return myGroups.has(role) || (role === "authenticated" && me.id) || (role === "anonymous" && !me.id);
+    })) {
       return true;
     }
     return `${errstr} someone else's ${obj._type}`;
@@ -180,41 +147,6 @@ export function canDo(
   return `${errstr} ${isMine ? "your own" : "someone else's"} ${obj._type}`;
 }
 
-export function canDoOld(
-  verb: CRUDVerb,
-  url: string,
-  me: MySession | null,
-  obj: EntityTypes
-): boolean {
-  const byurl = getEndpoints(url, verb);
-  console.log(`MATCHING ${url} - ${verb}`, byurl);
-
-  if (!me) {
-    const others = byurl.find((endpoint) => endpoint.ownership === "others");
-    if (!others) return false;
-    return others.roles.some((element) => myGroups.has(element));
-  }
-
-  const isMine = false; // typeof obj['author'] !== 'undefined' && me.id === obj?.author?.id;
-
-  const myGroups = new Set(
-    me?.groups && me?.groups.length > 0 ? me.groups : ["anonymous"]
-  );
-
-  for (let i = 0; i < byurl.length; i++) {
-    if (isMine && byurl[i].ownership === "own") {
-      if (byurl[i].roles.some((element) => myGroups.has(element))) {
-        return true;
-      }
-    } else if (!isMine && byurl[i].ownership === "others") {
-      if (byurl[i].roles.some((element) => myGroups.has(element))) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
 
 type FormObjectId = `${string}/${number}`;
 type NestedObjectIds<T extends string> =

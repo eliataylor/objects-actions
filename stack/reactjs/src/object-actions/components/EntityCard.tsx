@@ -11,6 +11,8 @@ import RelEntityHead from './RelEntityHead';
 import CardMedia from '@mui/material/CardMedia';
 import { humanize } from '../../utils';
 import { AlternatingList } from '../../theme/StyledFields';
+import { canDo } from "../types/access";
+import { useAuth } from "../../allauth/auth";
 
 interface EntityCardProps {
   entity: EntityTypes;
@@ -22,9 +24,17 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
   const displayed: string[] = [];
   const headerProps: Partial<CardHeaderProps> = {};
   const content: React.ReactNode[] = [];
+  const me = useAuth()?.data?.user;
 
   const hasUrl = NAVITEMS.find((nav) => nav.type === entity['_type']);
-  if (!hasUrl) return <Typography>Unknown Entity Type</Typography>;
+  if (!hasUrl) return <Typography variant={'subtitle1'} color={'error'}>Unknown Entity Type</Typography>;
+
+
+  const canView = canDo("view", entity, me);
+
+  if (typeof canView === "string") {
+    return <Typography variant={'subtitle1'} color={'error'}>{canView}</Typography>
+  }
 
   const defintions = TypeFieldSchema[hasUrl.type];
   const imageField: FieldTypeDefinition | undefined = Object.values(

@@ -11,11 +11,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ApiClient from '../config/ApiClient';
 import EntityList from './EntityList';
 import Snackbar from '@mui/material/Snackbar';
+import { canDo } from "../object-actions/types/access";
+import { useAuth } from "../allauth/auth";
 
 const UserView: React.FC = () => {
   const location = useLocation();
   const [expanded, setExpanded] = React.useState<string | false>(false);
   const { uid } = useParams();
+  const me = useAuth()?.data?.user;
   const [userProfile, updateUserProfile] = React.useState<EntityTypes | null>(
     null,
   );
@@ -86,6 +89,12 @@ const UserView: React.FC = () => {
     };
 
   if (!userProfile) return <Typography>Loading...</Typography>;
+
+  const canView = canDo("view", userProfile, me);
+
+  if (typeof canView === "string") {
+    return <Typography variant={'subtitle1'} color={'error'}>{canView}</Typography>
+  }
 
   return (
     <Box>
