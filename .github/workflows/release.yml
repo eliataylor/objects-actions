@@ -9,29 +9,18 @@ on:
       - main
 
 jobs:
-  branch-protection:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Check direct push to main
-        run: |
-          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            echo "New branch creation detected"
-          else
-            echo "Direct push to main detected"
-            exit 1
-          fi
-
   create-release:
-    needs: branch-protection
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
     steps:
+      # Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
+      # Get the latest tag
       - name: Get latest tag
         id: get-latest-tag
         run: |
@@ -39,28 +28,63 @@ jobs:
           latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
+      # Determine next version using Semantic Versioning
       - name: Generate new version
         id: generate-version
         run: |
           current_version=${LATEST_TAG#v}
           IFS='.' read -ra version_parts <<< "$current_version"
-          new_patch=$((version_parts[2] + 1))
-          new_version="${version_parts[0]}.${version_parts[1]}.$new_patch"
-          echo "NEW_VERSION=v$new_version" >> $GITHUB_ENV
 
+          # Default bump type: patch
+          bump="patch"
+
+          # Check commit message for version bump keywords
+          commit_message=$(git log -1 --pretty=%B)
+          if [[ "$commit_message" == *"#major"* ]]; then
+            bump="major"
+          elif [[ "$commit_message" == *"#minor"* ]]; then
+            bump="minor"
+          fi
+
+          # Calculate the new version
+          case $bump in
+            major)
+              new_version="$((version_parts[0] + 1)).0.0"
+              ;;
+            minor)
+              new_version="${version_parts[0]}.$((version_parts[1] + 1)).0"
+              ;;
+            patch)
+              new_version="${version_parts[0]}.${version_parts[1]}.$((version_parts[2] + 1))"
+              ;;
+          esac
+
+          echo "NEW_VERSION=v$new_version" >> $GITHUB_ENV
+          echo "::set-output name=new_version::v$new_version"
+
+      # Generate changelog
       - name: Generate changelog
         id: changelog
         run: |
           echo "### Changes" > changelog.md
           git log ${LATEST_TAG}..HEAD --pretty=format:"* %s" >> changelog.md
 
+      # Create Git Tag
+      - name: Create Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a ${{ env.NEW_VERSION }} -m "Release ${{ env.NEW_VERSION }}"
+          git push origin ${{ env.NEW_VERSION }}
+
+      # Create GitHub Release
       - name: Create Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.NEW_VERSION }}
-          release_name: Release ${{ env.NEW_VERSION }}
+          release_name: "Release ${{ env.NEW_VERSION }}"
           body_path: changelog.md
           draft: false
           prerelease: false

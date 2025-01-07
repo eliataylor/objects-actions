@@ -82,6 +82,16 @@ const Contribute: React.FC = () => {
           from a prompt.
         </Typography>
         <Typography variant="body1" gutterBottom={true}>
+          Improve Github Workflow for contributions, testing and release management. Start around{' '}
+          <a
+            href="https://github.com/eliataylor/objects-actions/blob/main/.github/workflows/release.yml"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            .github/workflows/release.yml
+          </a>
+        </Typography>
+        <Typography variant="body1" gutterBottom={true}>
           Split Users from other Entity Types. Start around{' '}
           <a
             href="https://github.com/eliataylor/objects-actions/blob/main/src/typescript/TypesBuilder.py#L183"
