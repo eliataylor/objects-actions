@@ -14,8 +14,7 @@ const Install: React.FC = () => {
   return (
     <Box>
       <StyledTypography variant="subtitle1">
-        Once all Docker containers are running, these will be running your
-        computer:
+        Once all Docker containers are running, these will be accessible in your browser:
       </StyledTypography>
 
       {method.indexOf('https:') === 0 && (
@@ -32,7 +31,7 @@ const Install: React.FC = () => {
           style={{ textDecoration: 'none' }}
           href={method}
           action={<img src={'/oa-assets/logo-react.svg'} height={30} />}
-          subheader={'ReactJS Frontend'}
+          subheader={'ReactJS + Material-UI Frontend'}
           title={<u style={{wordBreak:"break-word"}}>{method}</u>}
         />
 
