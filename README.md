@@ -1,8 +1,7 @@
-_Objects/Actions_
-**From Spreadsheets to Full Stack**
+_Objects/Actions_ :: **From Spreadsheets to Full Stack**
 
-## Interactive Documentation and Demo Site is here: 
-# [oaexample.com/oa/readme](https://oaexample.com/oa/readme)
+
+# Interactive Documentation and Demo Site: [oaexample.com/oa/readme](https://oaexample.com/oa/readme)
 
 ![readme.png](docs/images/readme.png)
 
@@ -35,4 +34,6 @@ Follow [oaexample.com/oa/extend](https://oaexample.com/oa/extend)
 # TO CONTRIBUTE:
 Follow [oaexample.com/oa/contribute](https://oaexample.com/oa/contribute)
 
-### TO SPONSOR: [github.com/sponsors/eliataylor](https://github.com/sponsors/eliataylor)
+# TO SPONSOR: 
+
+Donate [github.com/sponsors/eliataylor](https://github.com/sponsors/eliataylor)
