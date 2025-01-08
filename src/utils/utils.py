@@ -116,7 +116,7 @@ def build_permissions_from_csv(csv_path, object_types):
     roles_start_idx = df.columns.get_loc('ROLES')
 
     # Find the position of the "STEPS" column
-    steps_idx = df.columns.get_loc('RULES')
+    steps_idx = df.columns.get_loc('EXPLANATIONS')
 
     # Extract the roles from row 2, between "ROLES" and "STEPS", dynamically
     all_roles = df.iloc[0, roles_start_idx:steps_idx].dropna().tolist()
