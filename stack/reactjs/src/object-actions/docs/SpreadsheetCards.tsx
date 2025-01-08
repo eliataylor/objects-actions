@@ -17,7 +17,7 @@ const SpreadsheetCards: React.FC = () => {
             component={'img'}
             alt={'Object Field Types'}
             src={
-              'https://raw.githubusercontent.com/eliataylor/objects-actions/refs/heads/v3.2/docs/images/object-fields-demo.png'
+              'https://raw.githubusercontent.com/eliataylor/objects-actions/refs/heads/main/docs/images/object-fields-demo.png'
             }
           />
           <Grid sx={{ p: 1 }} container justifyContent={'space-between'}>
@@ -73,7 +73,7 @@ const SpreadsheetCards: React.FC = () => {
             component={'img'}
             alt={'Permission Matrix'}
             src={
-              'https://raw.githubusercontent.com/eliataylor/objects-actions/refs/heads/v3.2/docs/images/permissions-matrix-demo.png'
+              'https://raw.githubusercontent.com/eliataylor/objects-actions/refs/heads/main/docs/images/permissions-matrix-demo.png'
             }
           />
           <Grid sx={{ p: 1 }} container justifyContent={'space-between'}>
