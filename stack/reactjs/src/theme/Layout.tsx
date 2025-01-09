@@ -12,6 +12,7 @@ import { useNavDrawer } from '../NavDrawerProvider';
 import NavMenu from '../components/NavMenu';
 import Snackbar from '@mui/material/Snackbar';
 import OALogo from '../object-actions/docs/OALogo';
+import TrackingConsent from "../components/TrackingConsent";
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -84,7 +85,7 @@ const Layout: React.FC = () => {
         onClose={closeSnackbar}
         message={snack}
       />
-
+      <TrackingConsent />
       <Grid container justifyContent={'space-around'} flexWrap={'nowrap'}>
         {isMounted === true && (
           <Grid

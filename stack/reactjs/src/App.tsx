@@ -3,7 +3,6 @@ import Router from './Router';
 import ObjectActionsProvider from './object-actions/ObjectActionsProvider';
 import { ThemeProvider } from './theme/ThemeContext';
 import { NavDrawerProvider } from './NavDrawerProvider';
-import TrackingConsent from './components/TrackingConsent';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AuthContextProvider } from './allauth/auth';
