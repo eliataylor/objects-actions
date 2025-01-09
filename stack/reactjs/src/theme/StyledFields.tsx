@@ -6,6 +6,7 @@ import { Button, ButtonProps, Drawer } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import Paper from '@mui/material/Paper';
 import BottomNavigation from '@mui/material/BottomNavigation';
+import Grid from "@mui/material/Grid";
 
 export const TextFieldH1 = styled((props) => (
   <TextField variant={'filled'} {...props} />
@@ -187,7 +188,7 @@ export const StyledDrawer = styled(Drawer)(({ theme }) => ({
   },
 }));
 
-export const AlternatingList = styled('div')(({ theme }) => ({
+export const AlternatingList = styled(Grid)(({ theme }) => ({
   '& > *:nth-of-type(odd)': {
     paddingLeft: '1%',
     paddingRight: '1%',

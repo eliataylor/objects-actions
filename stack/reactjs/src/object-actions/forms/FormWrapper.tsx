@@ -14,16 +14,13 @@ import { Typography } from '@mui/material';
 function settingsToProps(field) {
     var obj = {};
     obj.name = field.field_name;
-
     if (field.field_type === 'textarea') {
         obj.multiline = true;
         obj.rows = 2;
     }
-
     if (field.required) {
         obj.required = true;
     }
-
     return obj;
 }
 
@@ -40,8 +37,8 @@ function getDefaultValue(field, entry, index) {
    return moment().format('');
   }
   return '';
- }
- */
+}
+*/
 
 interface FormWrapperProps {
   onSubmit?: (e: FormEvent) => void;

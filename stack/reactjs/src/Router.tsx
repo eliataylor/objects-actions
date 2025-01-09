@@ -313,6 +313,17 @@ function createRouter() {
       path: `/forms/${item.segment}/0/add`,
       element: <EntityForm />,
     });
+
+
+    allRoutes[0].children.push({
+      path: `/forms/parties/:id/edit`,
+      element: <EntityForm />,
+    });
+    allRoutes[0].children.push({
+      path: `/forms/parties/0/add`,
+      element: <EntityForm />,
+    });
+
   });
 
   allRoutes[0].children.push({ path: `/readme`, element: <ReadMe /> }); // legacy route
