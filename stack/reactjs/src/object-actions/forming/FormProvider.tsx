@@ -39,10 +39,7 @@ interface FormContextValue<T extends EntityTypes> {
     index?: number,
     topass?: any
   ) => ReactElement | null;
-  handleSubmit: (
-    tosend: any,
-    apiUrl?: string | null
-  ) => Promise<EntityTypes | Record<string, any>>;
+  handleSubmit: (toPost?: EntityTypes) => Promise<EntityTypes | Record<string, any>>;
   handleDelete: () => Promise<Record<string, any>>;
 }
 
@@ -95,19 +92,14 @@ export const FormProvider = <T extends EntityTypes>({
     });
   };
 
-  const structureToPost = async () => {
+  const structureToPost = () => {
     const tosend: any = { id: eid };
-    let hasImage = false;
     for (const key in entity) {
       let val: any = entity[key as keyof EntityTypes];
       const was: any = original[key as keyof EntityTypes];
       if (JSON.stringify(was) === JSON.stringify(val)) {
         continue;
       }
-      if (val instanceof Blob) {
-        hasImage = true;
-      }
-
       if (isDayJs(val)) {
         const field = fields.find((f) => f.machine === key);
         if (field && field.field_type === "date") {
@@ -122,44 +114,42 @@ export const FormProvider = <T extends EntityTypes>({
       }
       tosend[key as keyof EntityTypes] = val;
     }
-    if (Object.keys(tosend).length === 1) {
-      return alert("You haven't changed anything");
-    }
-
-    const formData: EntityTypes | FormData = tosend;
-    const headers: any = {
-      accept: "application/json"
-    };
-    if (hasImage) {
-      const formData = new FormData();
-      for (const key in tosend) {
-        formData.append(key, tosend[key]);
-      }
-      headers["Content-Type"] = `multipart/form-data`;
-    } else {
-      headers["Content-Type"] = "application/json";
-    }
-    return { headers, formData };
+    return tosend;
   };
 
   const handleSubmit = async (
-    toPost: any = null,
-    apiUrl: string | null = null
-  ): Promise<EntityTypes | Record<string, any>> => {
-    return new Promise<EntityTypes | Record<string, any>>(
+    toPost?: EntityTypes
+  ): Promise<EntityTypes> => {
+    return new Promise<EntityTypes>(
       async (resolve, reject) => {
         const tosend: Record<string, any> = toPost ? toPost : structureToPost();
-        const headers: Record<string, string> = { accept: "application/json" };
-        if (tosend instanceof FormData) {
-          headers["Content-Type"] = "multipart/form-data";
+
+        if (Object.keys(tosend).length === 1) {
+          return reject({ general: ["You haven't changed anything"]});
+        }
+
+        const headers: any = {
+          accept: "application/json"
+        };
+
+        const hasImage = Object.values(tosend).some((val) => val instanceof Blob);
+
+        // const payload: any = restructureAsAllEntities(entity._type, tosend)
+
+        let formData: any = tosend;
+        if (hasImage) {
+          formData = new FormData();
+          for (const key in tosend) {
+            formData.append(key, tosend[key]);
+          }
+          headers["Content-Type"] = `multipart/form-data`;
         } else {
           headers["Content-Type"] = "application/json";
         }
+
         setSyncing(true);
         let response = null;
-        if (apiUrl) {
-          response = await ApiClient.post(apiUrl, tosend, headers);
-        } else if (eid && eid !== 0) {
+        if (eid && eid !== 0) {
           response = await ApiClient.patch(
             `${navItem.api}/${eid}`,
             tosend,
@@ -243,16 +233,14 @@ export const FormProvider = <T extends EntityTypes>({
           />
         );
         break;
-      case "datetime":
-        input = (
-          <DateTimePicker
-            format="MMMM D, YYYY h:mm A"
-            label={field.singular}
-            sx={{ width: "100%" }}
-            value={typeof value === "string" ? dayjs(value).local() : value}
-            onChange={(newVal) => handleChange(field, newVal, index)}
-          />
-        );
+      case "date_time":
+        input = <DateTimePicker
+          format="MMMM D, YYYY h:mm A"
+          label={field.singular}
+          value={typeof value === "string" ? dayjs(value).local() : value}
+          onChange={(newVal) => handleChange(field, newVal, index)}
+          {...topass}
+        />;
         break;
       case "provider_url":
         const id = field.machine === "link_spotify" ? "spotify" : "applemusic";
@@ -260,15 +248,6 @@ export const FormProvider = <T extends EntityTypes>({
           <ProviderButton
             connected={value ? true : false}
             provider={{ name: field.singular, id: id }}
-          />
-        );
-        break;
-      case "date_time":
-        input = (
-          <DateTimePicker
-            label={field.singular}
-            value={value || null}
-            onChange={(newValue) => handleChange(field, newValue, index)}
             {...topass}
           />
         );
@@ -304,6 +283,7 @@ export const FormProvider = <T extends EntityTypes>({
         break;
       default:
         if (field.data_type === "RelEntity") {
+          // TODO: render add button as well, maybe as final option in autocomplete or when "No options" is return
           const subUrl = NAVITEMS.find((nav) => nav.type === field.relationship);
           input =
             field?.cardinality && field?.cardinality > 1 ? (

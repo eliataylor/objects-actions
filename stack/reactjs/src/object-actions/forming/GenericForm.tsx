@@ -330,7 +330,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
           Save
         </Button>
 
-        {eid > 0 && (
+        {eid && eid !== "0" && (
           <Button
             disabled={syncing}
             aria-label={'Delete'}

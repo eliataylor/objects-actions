@@ -1,6 +1,6 @@
 import React from 'react';
 import { SvgIcon } from '@mui/material';
-import { ReactComponent as LOGO } from '../oa-logo.svg';
+import { ReactComponent as LOGO } from './oa-logo.svg';
 
 interface LogoProps {
   height?: number;

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import GenericForm from "../object-actions/forms/GenericForm";
+import GenericForm from "../object-actions/forming/GenericForm";
 import { Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { EntityTypes, NAVITEMS, TypeFieldSchema } from "../object-actions/types/types";
 import { canDo, parseFormURL } from "../object-actions/types/access";
 import { useLocation, useParams } from "react-router-dom";
 import ApiClient from "../config/ApiClient";
 import { useAuth } from "../allauth/auth";
-import { FormProvider } from "../object-actions/forms/FormProvider";
-import OAFormParties from "../object-actions/forms/OAFormParties";
+import { FormProvider } from "../object-actions/forming/FormProvider";
+import * as MyForms from "../object-actions/forming/forms";
+import { MyFormsKeys } from "../object-actions/forming/forms";
 
 const EntityForm = () => {
   const { id } = useParams();
@@ -65,6 +66,8 @@ const EntityForm = () => {
   }
 
   const fields = Object.values(TypeFieldSchema[hasUrl.type]);
+  const formKey = `OAForm${hasUrl.type}` as keyof typeof MyForms;
+  const FormWrapper = formKey as MyFormsKeys in MyForms ? MyForms[formKey] : null;
 
   return (
     <Box sx={{ pt: 4, pl: 3 }}>
@@ -76,13 +79,13 @@ const EntityForm = () => {
         <Grid container justifyContent="center" alignItems="center">
           <CircularProgress />
         </Grid>
-      ) : hasUrl.type === "Parties" ?
+      ) : FormWrapper ?
         <FormProvider fields={fields} original={entity} navItem={hasUrl}>
-          <OAFormParties original={entity} />
+          <FormWrapper original={entity} />
         </FormProvider>
         :
         <GenericForm fields={fields} navItem={hasUrl} original={entity} />
-        }
+      }
     </Box>
   );
 };

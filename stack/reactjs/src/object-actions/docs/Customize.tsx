@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, FormHelperText, Typography } from '@mui/material';
 import { Command, StyledPaper, StyledTypography } from '../components/StyledComponents';
-import { useEnvContext } from '../EnvProvider';
-import EnvBuilder from '../components/EnvBuilder';
+import { useEnvContext } from '../forming/EnvProvider';
+import EnvBuilder from '../forming/EnvBuilder';
 import SpreadsheetCards from './SpreadsheetCards';
 
 const Customize: React.FC = () => {
