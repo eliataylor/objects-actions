@@ -9,6 +9,7 @@ import { useAuth } from "../allauth/auth";
 import { FormProvider } from "../object-actions/forming/FormProvider";
 import * as MyForms from "../object-actions/forming/forms";
 import { MyFormsKeys } from "../object-actions/forming/forms";
+import PermissionError from "../components/PermissionError";
 
 const EntityForm = () => {
   const { id } = useParams();
@@ -62,7 +63,7 @@ const EntityForm = () => {
   }
 
   if (typeof allow === "string") {
-    return <Typography color={"error"}>{allow}</Typography>;
+    return <PermissionError error={allow} />
   }
 
   const fields = Object.values(TypeFieldSchema[hasUrl.type]);

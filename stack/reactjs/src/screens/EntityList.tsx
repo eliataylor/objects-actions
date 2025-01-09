@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 import { canDo } from "../object-actions/types/access";
 import { useAuth } from "../allauth/auth";
+import PermissionError from "../components/PermissionError";
 
 interface EntityListProps {
   model?: string;
@@ -102,7 +103,7 @@ const EntityList: React.FC<EntityListProps> = ({
     // TODO: make this check BOTH own and others since list could contain both!
 
     if (typeof canView === "string") {
-      content = <Typography variant={'subtitle1'} color={'error'}>{canView}</Typography>;
+      content = <PermissionError error={canView} />
     } else {
       content = <React.Fragment>
         <AppBar

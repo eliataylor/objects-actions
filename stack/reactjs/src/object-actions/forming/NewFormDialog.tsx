@@ -7,6 +7,7 @@ import { useAuth } from "../../allauth/auth";
 import { FormProvider } from "./FormProvider";
 import * as MyForms from "./forms";
 import { MyFormsKeys } from "./forms";
+import PermissionError from "../../components/PermissionError";
 
 interface NewFormDialog {
   newentity: RelEntity;
@@ -18,7 +19,7 @@ const NewFormDialog: React.FC<NewFormDialog> = ({ newentity }) => {
   const allow = canDo("add", newentity, me);
 
   if (typeof allow === "string") {
-    return <Typography color={"error"}>{allow}</Typography>;
+    return <PermissionError error={allow} />
   }
 
   const hasUrl = NAVITEMS.find((nav) => nav.segment === newentity._type) as NavItem;
