@@ -5,6 +5,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { Link } from "react-router-dom";
 
 export interface PermissionKeys {
   analytics_storage: string;
@@ -19,7 +20,7 @@ interface PermissionProps {
 }
 
 const permissionsLabels: { [key: string]: string } = {
-  analytics_storage: 'General traffic analysis',
+  analytics_storage: 'Only for functionality',
   ad_user_data: 'Use ad data',
   ad_storage: "Store advertiser's data",
   ad_personalization: 'Personalize ads',
@@ -28,8 +29,7 @@ const permissionsLabels: { [key: string]: string } = {
 const TrackingPermissions: React.FC<PermissionProps> = ({ permissions }) => {
   const [personName, setSelected] = React.useState<string[]>(
     Object.keys(permissions).filter((key) => {
-      // @ts-ignore
-      return permissions[key] === 'granted';
+      return permissions[key as keyof PermissionKeys] === 'granted';
     }),
   );
 
@@ -38,10 +38,7 @@ const TrackingPermissions: React.FC<PermissionProps> = ({ permissions }) => {
       target: { value },
     } = event;
     const updated = typeof value === 'string' ? value.split(',') : value;
-    setSelected(
-      // On autofill we get a stringified value.
-      updated,
-    );
+    setSelected(updated);
 
     const updatedPermissions = { ...permissions };
     updated.forEach((u) => {
@@ -53,25 +50,26 @@ const TrackingPermissions: React.FC<PermissionProps> = ({ permissions }) => {
   };
 
   const sendGTag = (allowed: PermissionKeys) => {
-    console.log('[GTAG] UPDATE', allowed);
     // @ts-ignore
     if (typeof window.gtag === 'function') {
       // @ts-ignore
       window.gtag('consent', 'update', allowed);
+      console.log('[GTAG] UPDATE', allowed);
     } else {
-      console.error('[GTAG] MISSING', allowed);
+      console.warn('[GTAG] MISSING', allowed);
     }
   };
 
   return (
-    <FormControl fullWidth={true}>
+    <FormControl fullWidth={true} size={'small'}>
       <InputLabel id="gtag-permissions-label">Allowed</InputLabel>
       <Select
         labelId="gtag-permissions-label"
         id="gtag-permissions"
+        size={'small'}
         multiple
+        variant={'standard'}
         color={'secondary'}
-        fullWidth={true}
         value={personName}
         onChange={handleChange}
         input={<OutlinedInput label="Tag" />}
@@ -86,7 +84,6 @@ const TrackingPermissions: React.FC<PermissionProps> = ({ permissions }) => {
         }}
       >
         {Object.keys(permissions).map((key) => {
-          // @ts-ignore
           return (
             <MenuItem key={key} value={key}>
               <ListItemText primary={permissionsLabels[key]} />
@@ -95,8 +92,8 @@ const TrackingPermissions: React.FC<PermissionProps> = ({ permissions }) => {
         })}
       </Select>
       <FormHelperText>
-        We only use minimal cookies for functionality and general traffic
-        analysis. No Ads.
+        O/A only uses cookies for authentication and traffic
+        analysis. The select box here is for demo purposes only. <Link to={'/oa/privacy'}>Read our Privacy Policy.</Link>
       </FormHelperText>
     </FormControl>
   );

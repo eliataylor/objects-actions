@@ -1,17 +1,24 @@
-import React, { createContext, ReactElement, ReactNode, useContext, useState } from 'react';
-import { EntityTypes, FieldTypeDefinition, getProp, NavItem } from '../types/types';
-import ApiClient from '../../config/ApiClient';
-import { useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import { FormControlLabel, FormHelperText, MenuItem, TextField } from '@mui/material';
-import ImageUpload from './ImageUpload';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { isDayJs } from '../../utils';
-import Switch from '@mui/material/Switch';
+import React, { createContext, ReactElement, ReactNode, useContext, useState } from "react";
+import { EntityTypes, FieldTypeDefinition, getProp, NavItem, NAVITEMS, RelEntity } from "../types/types";
+import ApiClient, { HttpResponse } from "../../config/ApiClient";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import { FormControlLabel, FormHelperText, MenuItem, TextField } from "@mui/material";
+import ImageUpload from "./ImageUpload";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { isDayJs } from "../../utils";
+import Switch from "@mui/material/Switch";
+import ProviderButton from "../../allauth/socialaccount/ProviderButton";
+import AutocompleteMultipleField from "./AutocompleteMultipleField";
+import AutocompleteField from "./AutocompleteField";
 
 dayjs.extend(utc);
+
+export interface OAFormProps {
+  onSuccess?: (newEntity:EntityTypes) => void;
+  onError?: (response: HttpResponse) => void;
+}
 
 interface FormProviderProps<T extends EntityTypes> {
   children: ReactNode;
@@ -23,6 +30,7 @@ interface FormProviderProps<T extends EntityTypes> {
 interface FormContextValue<T extends EntityTypes> {
   entity: T;
   syncing: boolean;
+  navItem: NavItem;
   hasChanges: () => boolean;
   errors: { [key: string]: string[] };
   handleFieldChange: (name: string, value: any) => void;
@@ -30,26 +38,22 @@ interface FormContextValue<T extends EntityTypes> {
   renderField: (
     field: FieldTypeDefinition,
     index?: number,
-    topass?: any,
+    topass?: any
   ) => ReactElement | null;
-  handleSubmit: (
-    tosend: any,
-    apiUrl?: string | null,
-  ) => Promise<EntityTypes | Record<string, any>>;
+  handleSubmit: (toPost?: EntityTypes) => Promise<EntityTypes>;
   handleDelete: () => Promise<Record<string, any>>;
 }
 
 const FormContext = createContext<FormContextValue<EntityTypes> | undefined>(
-  undefined,
+  undefined
 );
 
 export const FormProvider = <T extends EntityTypes>({
-  children,
-  fields,
-  original,
-  navItem,
-}: FormProviderProps<T>) => {
-  const navigate = useNavigate();
+                                                      children,
+                                                      fields,
+                                                      original,
+                                                      navItem
+                                                    }: FormProviderProps<T>) => {
   const eid: string | number = original.id || 0;
   const [entity, setEntity] = useState<EntityTypes>(original);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
@@ -88,82 +92,73 @@ export const FormProvider = <T extends EntityTypes>({
     });
   };
 
-  const structureToPost = async () => {
+  const structureToPost = () => {
     const tosend: any = { id: eid };
-    let hasImage = false;
     for (const key in entity) {
       let val: any = entity[key as keyof EntityTypes];
       const was: any = original[key as keyof EntityTypes];
       if (JSON.stringify(was) === JSON.stringify(val)) {
         continue;
       }
-      if (val instanceof Blob) {
-        hasImage = true;
-      }
-
       if (isDayJs(val)) {
         const field = fields.find((f) => f.machine === key);
-        if (field && field.field_type === 'date') {
-          val = val.format('YYYY-MM-DD');
+        if (field && field.field_type === "date") {
+          val = val.format("YYYY-MM-DD");
         } else {
           val = val.format();
         }
       } else if (Array.isArray(val)) {
         val = val.map((v) => v.id);
-      } else if (val && typeof val === 'object' && val.id) {
+      } else if (val && typeof val === "object" && val.id) {
         val = val.id;
       }
       tosend[key as keyof EntityTypes] = val;
     }
-    if (Object.keys(tosend).length === 1) {
-      return alert("You haven't changed anything");
-    }
-
-    const formData: EntityTypes | FormData = tosend;
-    const headers: any = {
-      accept: 'application/json',
-    };
-    if (hasImage) {
-      const formData = new FormData();
-      for (const key in tosend) {
-        formData.append(key, tosend[key]);
-      }
-      headers['Content-Type'] = `multipart/form-data`;
-    } else {
-      headers['Content-Type'] = 'application/json';
-    }
-    return { headers, formData };
+    return tosend;
   };
 
   const handleSubmit = async (
-    toPost: any = null,
-    apiUrl: string | null = null,
-  ): Promise<EntityTypes | Record<string, any>> => {
-    return new Promise<EntityTypes | Record<string, any>>(
+    toPost?: EntityTypes
+  ): Promise<EntityTypes> => {
+    return new Promise<EntityTypes>(
       async (resolve, reject) => {
         const tosend: Record<string, any> = toPost ? toPost : structureToPost();
-        const headers: Record<string, string> = { accept: 'application/json' };
-        if (tosend instanceof FormData) {
-          headers['Content-Type'] = 'multipart/form-data';
-        } else {
-          headers['Content-Type'] = 'application/json';
+
+        if (Object.keys(tosend).length === 1) {
+          return reject({ general: ["You haven't changed anything"] });
         }
+
+        const headers: any = {
+          accept: "application/json"
+        };
+
+        const hasImage = Object.values(tosend).some((val) => val instanceof Blob);
+
+        let formData: any = tosend;
+        if (hasImage) {
+          formData = new FormData();
+          for (const key in tosend) {
+            formData.append(key, tosend[key]);
+          }
+          headers["Content-Type"] = `multipart/form-data`;
+        } else {
+          headers["Content-Type"] = "application/json";
+        }
+
         setSyncing(true);
         let response = null;
-        if (apiUrl) {
-          response = await ApiClient.post(apiUrl, tosend, headers);
-        } else if (eid && eid !== 0) {
+        if (eid && eid !== 0) {
           response = await ApiClient.patch(
             `${navItem.api}/${eid}`,
             tosend,
-            headers,
+            headers
           );
         } else {
           response = await ApiClient.post(navItem.api, tosend, headers);
         }
         setSyncing(false);
         const id = response.data
-          ? getProp(response.data as EntityTypes, 'id')
+          ? getProp(response.data as EntityTypes, "id")
           : null;
         if (response.success && id) {
           const newEntity = response.data as EntityTypes;
@@ -173,26 +168,25 @@ export const FormProvider = <T extends EntityTypes>({
           setErrors(response.errors || { general: [response.error] });
           reject(response.errors || { general: [response.error] });
         }
-      },
+      }
     );
   };
 
   const handleDelete = async (): Promise<Record<string, any>> => {
     return new Promise<Record<string, any>>(async (resolve, reject) => {
-      if (window.confirm('Are you sure you want to delete this?')) {
+      if (window.confirm("Are you sure you want to delete this?")) {
         setSyncing(true);
         const response = await ApiClient.delete(`${navItem.api}/${eid}`);
         setSyncing(false);
 
         if (response.success) {
           resolve(response);
-          navigate(`/${navItem.segment}`);
         } else {
           setErrors(response.errors || { general: [response.error] });
           reject(response);
         }
       } else {
-        reject({ error: 'Not deleted' });
+        reject({ error: "Not deleted" });
       }
     });
   };
@@ -200,20 +194,20 @@ export const FormProvider = <T extends EntityTypes>({
   const renderField = (
     field: FieldTypeDefinition,
     index = 0,
-    topass: any = {},
+    topass: any = {}
   ) => {
     const value: any = entity[field.machine as keyof EntityTypes];
     let input: ReactElement | null = null;
     const error = errors[field.machine as keyof EntityTypes];
 
     switch (field.field_type) {
-      case 'enum':
+      case "enum":
         input = (
           <TextField
             select
             name={field.machine}
             label={field.singular}
-            value={value || ''}
+            value={value || ""}
             onChange={(e) => handleChange(field, e.target.value, index)}
             error={!!error}
             {...topass}
@@ -226,7 +220,7 @@ export const FormProvider = <T extends EntityTypes>({
           </TextField>
         );
         break;
-      case 'date':
+      case "date":
         input = (
           <DatePicker
             label={field.singular}
@@ -236,17 +230,26 @@ export const FormProvider = <T extends EntityTypes>({
           />
         );
         break;
-      case 'date_time':
+      case "date_time":
+        input = <DateTimePicker
+          format="MMMM D, YYYY h:mm A"
+          label={field.singular}
+          value={typeof value === "string" ? dayjs(value).local() : value}
+          onChange={(newVal) => handleChange(field, newVal, index)}
+          {...topass}
+        />;
+        break;
+      case "provider_url":
+        const id = field.machine === "link_spotify" ? "spotify" : "applemusic";
         input = (
-          <DateTimePicker
-            label={field.singular}
-            value={value || null}
-            onChange={(newValue) => handleChange(field, newValue, index)}
+          <ProviderButton
+            connected={value ? true : false}
+            provider={{ name: field.singular, id: id }}
             {...topass}
           />
         );
         break;
-      case 'image':
+      case "image":
         input = (
           <ImageUpload
             index={index}
@@ -257,7 +260,7 @@ export const FormProvider = <T extends EntityTypes>({
           />
         );
         break;
-      case 'boolean':
+      case "boolean":
         input = (
           <FormControlLabel
             value="bottom"
@@ -276,26 +279,53 @@ export const FormProvider = <T extends EntityTypes>({
         );
         break;
       default:
-        if (field.field_type === 'textarea') {
-          topass.multiline = true;
-          topass.rows = 3;
+        if (field.data_type === "RelEntity") {
+          // TODO: render add button as well, maybe as final option in autocomplete or when "No options" is return
+          const subUrl = NAVITEMS.find((nav) => nav.type === field.relationship);
+          input =
+            field?.cardinality && field?.cardinality > 1 ? (
+              <AutocompleteMultipleField
+                type={field.relationship || ""}
+                search_fields={subUrl?.search_fields || []}
+                onSelect={(selected) => handleChange(field, selected, index)}
+                field_name={field.machine}
+                field_label={field.plural}
+                selected={
+                  !value ? [] : Array.isArray(value) ? value : [value]
+                }
+              />
+            ) : (
+              <AutocompleteField
+                type={field.relationship || ""}
+                search_fields={subUrl?.search_fields || []}
+                onSelect={(selected) => handleChange(field, selected, index)}
+                field_name={field.machine}
+                field_label={field.singular}
+                selected={value}
+              />
+            );
+        } else {
+          if (field.field_type === "textarea") {
+            topass.multiline = true;
+            topass.rows = 3;
+          }
+          input = (
+            <TextField
+              name={field.machine}
+              label={field.singular}
+              value={value || ""}
+              onChange={(e) => handleChange(field, e.target.value, index)}
+              error={!!error}
+              {...topass}
+            />
+          );
         }
-        input = (
-          <TextField
-            name={field.machine}
-            label={field.singular}
-            value={value || ''}
-            onChange={(e) => handleChange(field, e.target.value, index)}
-            error={!!error}
-            {...topass}
-          />
-        );
     }
 
     return (
       <React.Fragment>
         {input}
-        {error && <FormHelperText error>{error.join(', ')}</FormHelperText>}
+        {error && <FormHelperText error>{error.join(", ")}</FormHelperText>}
       </React.Fragment>
     );
   };
@@ -304,6 +334,7 @@ export const FormProvider = <T extends EntityTypes>({
     <FormContext.Provider
       value={{
         entity,
+        navItem,
         syncing,
         errors,
         hasChanges,
@@ -311,7 +342,7 @@ export const FormProvider = <T extends EntityTypes>({
         handleFieldChange,
         renderField,
         handleSubmit,
-        handleDelete,
+        handleDelete
       }}
     >
       {children}
@@ -322,7 +353,7 @@ export const FormProvider = <T extends EntityTypes>({
 export const useForm = <T extends EntityTypes>(): FormContextValue<T> => {
   const context = useContext(FormContext);
   if (!context) {
-    throw new Error('useForm must be used within a FormProvider');
+    throw new Error("useForm must be used within a FormProvider");
   }
   return context as FormContextValue<T>;
 };

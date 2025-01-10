@@ -82,7 +82,7 @@ const Contribute: React.FC = () => {
           from a prompt.
         </Typography>
         <Typography variant="body1" gutterBottom={true}>
-          Improve Github Workflow for contributions, testing and release management. Start around{' '}
+          Improve CD pipeline for improving changelog and testing before releases. Start around{' '}
           <a
             href="https://github.com/eliataylor/objects-actions/blob/main/.github/workflows/release.yml"
             target="_blank"

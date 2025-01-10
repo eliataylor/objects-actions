@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { Command, StyledPaper, StyledTypography } from '../components/StyledComponents';
-import EnvBuilder from '../components/EnvBuilder';
-import { useEnvContext } from '../EnvProvider';
+import EnvBuilder from '../forming/EnvBuilder';
+import { useEnvContext } from '../forming/EnvProvider';
 
 interface Task {
   description: string;

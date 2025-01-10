@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 import { canDo } from "../object-actions/types/access";
 import { useAuth } from "../allauth/auth";
+import PermissionError from "../components/PermissionError";
 
 interface EntityListProps {
   model?: string;
@@ -35,7 +36,7 @@ const EntityList: React.FC<EntityListProps> = ({
     }
   });
 
-  const fetchData = async (page = 0, pageSize = 0) => {
+  const fetchData = async (offset = 0, limit = 10) => {
     if (!hasUrl) {
       console.error("NO URL " + model, location.pathname);
       return;
@@ -50,11 +51,11 @@ const EntityList: React.FC<EntityListProps> = ({
 
     const params = new URLSearchParams();
 
-    if (page > 0) {
-      params.set("page", page.toString());
+    if (offset > 0) {
+      params.set("offset", offset.toString());
     }
-    if (pageSize > 0) {
-      params.set("page_size", pageSize.toString());
+    if (limit > 0) {
+      params.set("limit", limit.toString());
     }
 
     apiUrl += `/?${params.toString()}`;
@@ -66,26 +67,24 @@ const EntityList: React.FC<EntityListProps> = ({
     updateData(response.data as ApiListResponse);
   };
 
-  function handlePagination(page: number, pageSize: number) {
+  function handlePagination(limit: number, offset: number) {
     if (!model) {
       // a view page so we can change query params
       const params = new URLSearchParams(location.search);
-      params.set("page", page.toString());
-      params.set("page_size", pageSize.toString());
+      params.set("offset", offset.toString());
+      params.set("limit", limit.toString());
       navigate({ search: params.toString() });
       return;
     } else {
-      fetchData(page, pageSize);
+      fetchData(offset, limit);
     }
   }
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const page = params.has("page") ? parseInt(params.get("page") || "0") : 0;
-    const page_size = params.has("page_size")
-      ? parseInt(params.get("page_size") || "0")
-      : 0;
-    fetchData(page, page_size);
+    const offset = params.has("offset") ? parseInt(params.get("offset") || "0") : 0;
+    const limit = params.has("limit") ? parseInt(params.get("limit") || "10") : 10;
+    fetchData(offset, limit);
   }, [model, location.pathname, location.search]);
 
   if (!hasUrl) return <div>Invalid URL...</div>;
@@ -102,7 +101,7 @@ const EntityList: React.FC<EntityListProps> = ({
     // TODO: make this check BOTH own and others since list could contain both!
 
     if (typeof canView === "string") {
-      content = <Typography variant={'subtitle1'} color={'error'}>{canView}</Typography>;
+      content = <PermissionError error={canView} />
     } else {
       content = <React.Fragment>
         <AppBar

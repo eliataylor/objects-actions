@@ -13,6 +13,7 @@ import EntityList from './EntityList';
 import Snackbar from '@mui/material/Snackbar';
 import { canDo } from "../object-actions/types/access";
 import { useAuth } from "../allauth/auth";
+import PermissionError from "../components/PermissionError";
 
 const UserView: React.FC = () => {
   const location = useLocation();
@@ -93,7 +94,7 @@ const UserView: React.FC = () => {
   const canView = canDo("view", userProfile, me);
 
   if (typeof canView === "string") {
-    return <Typography variant={'subtitle1'} color={'error'}>{canView}</Typography>
+    return <PermissionError error={canView} />
   }
 
   return (

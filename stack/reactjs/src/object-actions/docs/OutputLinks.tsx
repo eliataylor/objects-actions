@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import CardHeader from '@mui/material/CardHeader';
 import LightDarkImg from '../../components/LightDarkImg';
 import { StyledTypography } from '../components/StyledComponents';
-import { useEnvContext } from '../EnvProvider';
+import { useEnvContext } from '../forming/EnvProvider';
 
 const Install: React.FC = () => {
   const { envConfig } = useEnvContext();

@@ -13,6 +13,7 @@ import { humanize } from '../../utils';
 import { AlternatingList } from '../../theme/StyledFields';
 import { canDo } from "../types/access";
 import { useAuth } from "../../allauth/auth";
+import PermissionError from "../../components/PermissionError";
 
 interface EntityCardProps {
   entity: EntityTypes;
@@ -33,7 +34,7 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
   const canView = canDo("view", entity, me);
 
   if (typeof canView === "string") {
-    return <Typography variant={'subtitle1'} color={'error'}>{canView}</Typography>
+    return <PermissionError error={canView} />
   }
 
   const defintions = TypeFieldSchema[hasUrl.type];

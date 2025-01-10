@@ -29,6 +29,9 @@ SUPERUSER_EMAIL = myEnv('DJANGO_SUPERUSER_EMAIL', 'info@oaexample.com')
 
 ALLOWED_HOSTS = [get_tld(API_HOST_PARTS.hostname), f".{get_tld(API_HOST_PARTS.hostname)}"]
 
+# experimenting by adding the APP_HOST as and ALLOWED_HOST (per https://github.com/pennersr/django-allauth/issues/4041)
+ALLOWED_HOSTS += [f"{get_tld(APP_HOST_PARTS.hostname)}", f".{get_tld(APP_HOST_PARTS.hostname)}"]
+
 CORS_ALLOWED_ORIGINS = [APP_HOST, API_HOST]
 DEV_PORT = '3000' if not APP_HOST_PARTS.port else APP_HOST_PARTS.port
 
