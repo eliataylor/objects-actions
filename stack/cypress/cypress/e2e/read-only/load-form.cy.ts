@@ -1,4 +1,5 @@
 import {FieldTypeDefinition, NAVITEMS, TypeFieldSchema} from "../../support/types";
+import {fakeFieldData} from "../../support/faker";
 
 const typeToHTMLType = {
     "string": "input",
@@ -14,6 +15,7 @@ describe("oaexample load and populate add forms", async () => {
         cy.loginBackground(Cypress.env("email"), Cypress.env("password")).then(e => {
             console.log(e);
             cy.clickIf('[aria-label="Dismiss EULA Notice"]')
+            cy.clickIf('#FirstVisitBtn');
         });
     })
 
@@ -30,8 +32,10 @@ describe("oaexample load and populate add forms", async () => {
                 cy.clickIf('[aria-label="Open Drawer"]')
             }
 
+            cy.grab(`#OAMenuButton`).showClick();
+
             cy.intercept('GET', `${navItem.api}*`).as(`Get${navItem.type}`) // wildcard for query params
-            cy.grab(`#ObjectTypesMenu a[href="${navItem.screen}" i]`).showClick();
+            cy.grab(`#OAMenu a[href="/${navItem.segment}" i]`).showClick();
             cy.wait(`@Get${navItem.type}`).then((interception) => {
                 expect(interception.response).to.exist;
                 expect(interception.response.statusCode).to.eq(200);
@@ -42,8 +46,8 @@ describe("oaexample load and populate add forms", async () => {
             }
 
 
-            cy.intercept('GET', `/forms${navItem.screen}/0/add*`).as(`GetForm${navItem.type}`) // wildcard for query params
-            cy.grab(`[data-href="/forms${navItem.screen}/0/add" i]`).showClick();
+            cy.intercept('GET', `/forms/${navItem.segment}/0/add*`).as(`GetForm${navItem.type}`) // wildcard for query params
+            cy.grab(`[data-href="/forms/${navItem.segment}/0/add" i]`).showClick();
 
 //            cy.wait(`@GetForm${navItem.type}`).its('response.status').should('eq', 200)
 
@@ -58,16 +62,22 @@ describe("oaexample load and populate add forms", async () => {
             for (let f in fields) {
                 let field = fields[f];
 
+                /*
                 const inputTag = typeToHTMLType[field.field_type];
                 if (!inputTag) {
                     console.warn('skipping ' + field.field_type, field);
                     continue;
                 }
-
                 const selector = `${inputTag}[name="${field.machine}"]`;
+                 */
 
-                if (field.field_type === 'textarea' || field.field_type === 'text') {
-                    cy.grab(selector).type(`Testing ${new Date().getTime()}`);
+                const selector = `[name="${field.machine}"]`;
+
+                const input = fakeFieldData(field.field_type, field.machine, field.options, navItem.plural)
+                if (field.field_type === 'image' || field.field_type === 'media' || field.field_type === 'video') {
+                    console.warn('TODO: handle media types ' + field.field_type, field);
+                } else {
+                    cy.grab(selector).type(input);
                 }
             }
 

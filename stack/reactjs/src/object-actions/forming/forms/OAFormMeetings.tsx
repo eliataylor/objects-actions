@@ -36,29 +36,29 @@ export const OAFormMeetings: React.FC<OAFormProps> = ({ onSuccess }) => {
   }
 
   return (
-    <AlternatingList container gap={4}>
+    <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
       <Grid item xs={12}>
-        {renderField(TypeFieldSchema["Meetings"]["title"])}
+        {renderField(TypeFieldSchema["Meetings"]["title"], 0, {fullWidth:true})}
       </Grid>
 
       <Grid item xs={12}>
-        {renderField(TypeFieldSchema["Meetings"]["address"])}
+        {renderField(TypeFieldSchema["Meetings"]["address"], 0, {fullWidth:true})}
       </Grid>
 
-      <Grid item xs={12}>
-        {renderField(TypeFieldSchema["Meetings"]["start"])}
+      <Grid item xs={6}>
+        {renderField(TypeFieldSchema["Meetings"]["start"], 0, {fullWidth:true})}
       </Grid>
 
-      <Grid item xs={12}>
-        {renderField(TypeFieldSchema["Meetings"]["end"])}
+      <Grid item xs={6}>
+        {renderField(TypeFieldSchema["Meetings"]["end"], 0, {fullWidth:true})}
       </Grid>
 
-      <Grid item xs={12}>
-        {renderField(TypeFieldSchema["Meetings"]["meeting_type"])}
+      <Grid item xs={12} sm={6}>
+        {renderField(TypeFieldSchema["Meetings"]["meeting_type"], 0, {fullWidth:true})}
       </Grid>
 
-      <Grid item xs={12}>
-        {renderField(TypeFieldSchema["Meetings"]["rally"])}
+      <Grid item xs={12} sm={6}>
+        {renderField(TypeFieldSchema["Meetings"]["rally"], 0, {fullWidth:true})}
       </Grid>
 
       <Grid item xs={12}>
@@ -70,6 +70,7 @@ export const OAFormMeetings: React.FC<OAFormProps> = ({ onSuccess }) => {
       <Grid container item xs={12} justifyContent="space-between">
         <Button startIcon={syncing ? <CircularProgress color={"inherit"} size={18} /> : null}
                 disabled={syncing}
+                aria-label={"Submit"}
                 variant="contained" color="primary" onClick={saveEntity}>
           Save
         </Button>

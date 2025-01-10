@@ -33,6 +33,7 @@ const NavMenu = () => {
 
         <ListItemButton
           dense={true}
+          id={'OAMenuButton'}
           style={{ justifyContent: "space-between" }}
           onClick={handleClick}
         >
@@ -45,7 +46,7 @@ const NavMenu = () => {
         </ListItemButton>
 
         <Collapse in={objectsOpen} timeout="auto" unmountOnExit>
-          <div id={"ObjectTypesMenu"}>
+          <div id={"OAMenu"}>
             {NAVITEMS.map((item) => {
 //               if (item.model_type === 'vocabulary') return null
               return (

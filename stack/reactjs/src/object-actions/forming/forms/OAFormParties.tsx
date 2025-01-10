@@ -63,6 +63,7 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
       <Grid container item xs={12} justifyContent="space-between">
         <Button startIcon={syncing ? <CircularProgress color={"inherit"} size={18} /> : null}
                 disabled={syncing}
+                aria-label={"Submit"}
                 variant="contained" color="primary" onClick={saveEntity}>
           Save
         </Button>

@@ -36,8 +36,8 @@ const FirstVisit: React.FC = () => {
       aria-describedby="first-visit-modal-description"
     >
       <Box sx={modalStyle}>
-        <Typography variant={"body1"} style={{ lineHeight: 1.6 }}>
-          All contents, structure, and styles of this site are meant to be
+        <Typography variant={"subtitle1"} style={{ lineHeight: 1.6 }}>
+          All contents and styles of this site are meant to be
           rebuilt using Objects/Actions with your own customized{" "}
           <Link onClick={() => handleClose("/oa/readme")} to={"/"}>
             Spreadsheets
@@ -46,7 +46,7 @@ const FirstVisit: React.FC = () => {
         </Typography>
 
         <Box mt={2}>
-          <Typography variant={"body2"} style={{ lineHeight: 1.6 }}>
+          <Typography variant={"body1"} style={{ lineHeight: 1.6 }}>
             The sample data and menus preloaded here were built from demo
             spreadsheets describing an example platform for organizing rallies
             and meetings for collaborating on civic engagement action plans.
@@ -56,6 +56,7 @@ const FirstVisit: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
+          id={"FirstVisitBtn"}
           onClick={() => handleClose("/oa/readme")}
           sx={{ mt: 3 }}
         >

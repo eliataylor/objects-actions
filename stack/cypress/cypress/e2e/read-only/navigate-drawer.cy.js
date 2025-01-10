@@ -16,7 +16,7 @@ describe("oaexample navigate drawer", async () => {
 
         NAVITEMS.forEach(navItem => {
             cy.intercept('GET', `${navItem.api}*`).as(`Get${navItem.type}`) // wildcard for query params
-            cy.grab(`#ObjectTypesMenu a[href="${navItem.screen}" i]`).showClick();
+            cy.grab(`#OAMenu a[href="/${navItem.segment}" i]`).showClick();
             // cy.get('#EntityList', {timeout: 10000}).should('exist');
             cy.wait(`@Get${navItem.type}`).then((interception) => {
                 expect(interception.response).to.exist;

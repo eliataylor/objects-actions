@@ -184,7 +184,7 @@ class ApiClient {
 
         } catch (error: any) {
             resp = this.returnErrors(error)
-            console.error(`${method} failed:`, resp.data);
+            console.error(`${method} failed: ${url}`, resp.data);
         }
         resp.ended = new Date().getTime();
 
@@ -205,7 +205,7 @@ class ApiClient {
             }
         } catch (error: any) {
             resp = this.returnErrors(error)
-            console.error('Post failed:', error.message);
+            console.error(`Get failed: ${url}`, error.message);
         }
         resp.ended = new Date().getTime();
 
@@ -226,7 +226,7 @@ class ApiClient {
             }
         } catch (error: any) {
             resp = this.returnErrors(error)
-            console.error('Delete failed:', error.message);
+            console.error(`Delete failed: ${url}`, error.message);
         }
         resp.ended = new Date().getTime();
 

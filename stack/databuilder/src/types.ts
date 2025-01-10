@@ -115,7 +115,7 @@ export const NAVITEMS: NavItem[] = [
   },
   {
     "singular": "Party",
-    "plural": "Partys",
+    "plural": "Parties",
     "type": "Parties",
     "segment": "parties",
     "api": "/api/parties",
@@ -158,7 +158,7 @@ export const NAVITEMS: NavItem[] = [
   },
   {
     "singular": "City",
-    "plural": "Citys",
+    "plural": "Cities",
     "type": "Cities",
     "segment": "cities",
     "api": "/api/cities",
@@ -178,7 +178,7 @@ export const NAVITEMS: NavItem[] = [
   },
   {
     "singular": "Rally",
-    "plural": "Rallys",
+    "plural": "Rallies",
     "type": "Rallies",
     "segment": "rallies",
     "api": "/api/rallies",
@@ -474,7 +474,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "postal_address": {
       "machine": "postal_address",
-      "singular": "Postal Addres",
+      "singular": "Postal Address",
       "plural": "Postal Addresses",
       "field_type": "text",
       "data_type": "string",
@@ -487,7 +487,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "price_ccoin": {
       "machine": "price_ccoin",
       "singular": "Price (citizencoin)",
-      "plural": "Price (citizencoin)s",
+      "plural": "Prices (citizencoins)",
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
@@ -659,7 +659,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "sponsors": {
       "machine": "sponsors",
       "singular": "Sponsor",
-      "plural": "Sponsorss",
+      "plural": "Sponsors",
       "field_type": "user_profile",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -731,7 +731,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "officials": {
       "machine": "officials",
       "singular": "Official",
-      "plural": "Officialss",
+      "plural": "Officials",
       "field_type": "user_profile",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -779,7 +779,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "density": {
       "machine": "density",
       "singular": "Density",
-      "plural": "Densitys",
+      "plural": "Density",
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
@@ -903,7 +903,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "media": {
       "machine": "media",
       "singular": "Media",
-      "plural": "Medias",
+      "plural": "Media",
       "field_type": "media",
       "data_type": "string",
       "cardinality": Infinity,
@@ -915,7 +915,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "topics": {
       "machine": "topics",
       "singular": "Topic",
-      "plural": "Topicss",
+      "plural": "Topics",
       "field_type": "vocabulary_reference",
       "data_type": "RelEntity",
       "cardinality": 3,
@@ -927,7 +927,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "comments": {
       "machine": "comments",
       "singular": "Comment",
-      "plural": "Commentss",
+      "plural": "Comments",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": Infinity,
@@ -965,7 +965,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "exe_summary": {
       "machine": "exe_summary",
       "singular": "Executive Summary",
-      "plural": "Executive Summarys",
+      "plural": "Executive Summaries",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
@@ -1001,7 +1001,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "coauthors": {
       "machine": "coauthors",
       "singular": "CoAuthor",
-      "plural": "CoAuthorss",
+      "plural": "CoAuthors",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -1037,7 +1037,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "prerequisites": {
       "machine": "prerequisites",
       "singular": "Prerequisite",
-      "plural": "Prerequisiteses",
+      "plural": "Prerequisites",
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
@@ -1061,7 +1061,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "rally": {
       "machine": "rally",
       "singular": "Rally",
-      "plural": "Rallys",
+      "plural": "Rallies",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
@@ -1087,7 +1087,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "rally": {
       "machine": "rally",
       "singular": "Rally",
-      "plural": "Rallys",
+      "plural": "Rallies",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
@@ -1111,7 +1111,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "speakers": {
       "machine": "speakers",
       "singular": "Speaker",
-      "plural": "Speakerss",
+      "plural": "Speakers",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 7,
@@ -1123,7 +1123,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "moderators": {
       "machine": "moderators",
       "singular": "Moderator",
-      "plural": "Moderatorss",
+      "plural": "Moderators",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 2,
@@ -1135,7 +1135,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "sponsors": {
       "machine": "sponsors",
       "singular": "Sponsor",
-      "plural": "Sponsorss",
+      "plural": "Sponsors",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": Infinity,
@@ -1146,7 +1146,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     },
     "address": {
       "machine": "address",
-      "singular": "Postal Addres",
+      "singular": "Postal Address",
       "plural": "Postal Addresses",
       "field_type": "address",
       "data_type": "string",
@@ -1183,7 +1183,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "agenda_json": {
       "machine": "agenda_json",
       "singular": "Agenda JSON",
-      "plural": "Agenda JSONS",
+      "plural": "Agenda JSON",
       "field_type": "json",
       "data_type": "object",
       "cardinality": 1,
@@ -1207,7 +1207,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
     "privacy": {
       "machine": "privacy",
       "singular": "Privacy",
-      "plural": "Privacys",
+      "plural": "Privacy",
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
@@ -1648,7 +1648,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
 export interface SuperModel {
-    readonly id: number | string; 
+    readonly id: number | string;
     author: RelEntity;
     created_at: string;
     modified_at: string;

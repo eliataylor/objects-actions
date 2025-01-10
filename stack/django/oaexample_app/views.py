@@ -11,6 +11,8 @@ from django.apps import apps
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils import timezone
+from tutorial.quickstart.serializers import UserSerializer
+
 from .services import send_sms
 import random
 import re
@@ -331,6 +333,7 @@ class UserStatsView(APIView):
         # Return the count as JSON
         return JsonResponse({'model': model_name, 'count': count})
 
+from rest_framework.exceptions import NotFound
 @extend_schema(
     parameters=[
         OpenApiParameter(name='search', description='Search term', required=False, type=str),
@@ -342,6 +345,19 @@ class UserModelListView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
+
+    def get_serializer_class(self):
+        # Determine the serializer dynamically based on the model
+        model_name = self.kwargs.get('model_name')
+        try:
+            model_class = apps.get_model("oaexample_app", model_name)
+            serializer_class = SERIALZE_MODEL_MAP.get(model_class.__name__)
+            if not serializer_class:
+                raise LookupError("Serializer not found.")
+            return serializer_class
+        except LookupError:
+            raise NotFound(f"Model or serializer not found for '{model_name}'.")
+
     def get(self, request, user_id, model_name):
         # Check if the model exists
         try:
@@ -358,28 +374,21 @@ class UserModelListView(generics.GenericAPIView):
         if search_query:
             queryset = self.filter_queryset(queryset)
 
-        serializer_class = self.get_serializer_classname(model_class)
-
-        if not serializer_class:
-            return JsonResponse({'detail': 'Serializer not found for this model.'}, status=404)
-
         # Apply pagination
         paginator = self.pagination_class()
         paginated_queryset = paginator.paginate_queryset(queryset, request)
-        serializer = serializer_class(paginated_queryset, many=True)
+        serializer = self.get_serializer(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
-
-    def get_serializer_classname(self, model_class):
-        # Dynamically determine the serializer class based on the model
-        return SERIALZE_MODEL_MAP.get(model_class.__name__)
 
     def filter_queryset(self, queryset):
         search_filter = filters.SearchFilter()
         return search_filter.filter_queryset(self.request, queryset, self)
 
 
-
+from rest_framework.renderers import TemplateHTMLRenderer
 class RenderFrontendIndex(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+
     def get(self, request, *args, **kwargs):
         file_path = os.getenv("FRONTEND_INDEX_HTML", "index.html")
         if not os.path.isfile(file_path):

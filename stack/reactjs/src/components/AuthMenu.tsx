@@ -1,4 +1,4 @@
-import { useAuth, useConfig, useUser } from "../allauth/auth";
+import { useAuth, useConfig } from "../allauth/auth";
 import { Link, useLocation } from "react-router-dom";
 import React from "react";
 import { AlternateEmail, AccountCircle, AppRegistration, DevicesOther, ExpandLess, ExpandMore, Login, Logout, Password, SwitchAccount, VpnKey } from "@mui/icons-material";
