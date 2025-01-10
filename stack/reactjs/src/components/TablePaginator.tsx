@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { TablePagination } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { TablePagination } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -8,52 +8,54 @@ const useQuery = () => {
 
 interface PaginatorProps {
   totalItems: number;
-  onPageChange: (page: number, pageSize: number) => void;
+  onPageChange: (limit: number, offset: number) => void;
 }
 
 const TablePaginator: React.FC<PaginatorProps> = ({
-  onPageChange,
-  totalItems,
-}) => {
-  const navigate = useNavigate();
+                                                    onPageChange,
+                                                    totalItems
+                                                  }) => {
+
+  // TODO: pass defaults in rather than use search location
   const query = useQuery();
 
-  const [page, setPage] = useState<number>(() => {
-    const pageParam = query.get('page');
-    return pageParam ? parseInt(pageParam, 10) : 1;
+  const [offset, setOffset] = useState<number>(() => {
+    const pageParam = query.get("offset");
+    return pageParam ? parseInt(pageParam) : 0;
   });
 
-  const [pageSize, setPageSize] = useState<number>(() => {
-    const pageSizeParam = query.get('page_size');
-    return pageSizeParam ? parseInt(pageSizeParam, 10) : 10;
+  const [limit, setLimit] = useState<number>(() => {
+    const pageSizeParam = query.get("limit");
+    return pageSizeParam ? parseInt(pageSizeParam) : 10;
   });
 
   useEffect(() => {
-    onPageChange(page, pageSize);
-  }, [page, pageSize]);
+    onPageChange(limit, offset);
+  }, [offset, limit]);
 
   const handlePageChange = (
     event: React.MouseEvent<HTMLButtonElement> | null,
-    value: number,
+    pageNum: number
   ) => {
-    setPage(value);
+    const offset = pageNum * limit
+    setOffset(offset); // Increment value to match 1-based offset index
   };
 
   const handlePageSizeChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const newPageSize = parseInt(event.target.value, 10);
-    setPageSize(newPageSize);
-    setPage(1); // Reset to the first page whenever page size changes
+    setLimit(newPageSize);
+    setOffset(0); // reset to first item
   };
 
   return (
     <TablePagination
       component="div"
       count={totalItems}
-      page={page - 1}
-      onPageChange={(event, newPage) => handlePageChange(event, newPage + 1)}
-      rowsPerPage={pageSize}
+      page={Math.floor(offset / limit)} // Adjust to zero-based index for MUI
+      onPageChange={(event, newPage) => handlePageChange(event, newPage)}
+      rowsPerPage={limit}
       onRowsPerPageChange={handlePageSizeChange}
       rowsPerPageOptions={[5, 15, 25, 50]}
     />

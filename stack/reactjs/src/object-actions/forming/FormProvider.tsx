@@ -1,7 +1,6 @@
 import React, { createContext, ReactElement, ReactNode, useContext, useState } from "react";
 import { EntityTypes, FieldTypeDefinition, getProp, NavItem, NAVITEMS, RelEntity } from "../types/types";
-import ApiClient from "../../config/ApiClient";
-import { useNavigate } from "react-router-dom";
+import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { FormControlLabel, FormHelperText, MenuItem, TextField } from "@mui/material";
@@ -17,7 +16,8 @@ import AutocompleteField from "./AutocompleteField";
 dayjs.extend(utc);
 
 export interface OAFormProps {
-  original?: EntityTypes;
+  onSuccess?: (newEntity:EntityTypes) => void;
+  onError?: (response: HttpResponse) => void;
 }
 
 interface FormProviderProps<T extends EntityTypes> {
@@ -30,6 +30,7 @@ interface FormProviderProps<T extends EntityTypes> {
 interface FormContextValue<T extends EntityTypes> {
   entity: T;
   syncing: boolean;
+  navItem: NavItem;
   hasChanges: () => boolean;
   errors: { [key: string]: string[] };
   handleFieldChange: (name: string, value: any) => void;
@@ -39,7 +40,7 @@ interface FormContextValue<T extends EntityTypes> {
     index?: number,
     topass?: any
   ) => ReactElement | null;
-  handleSubmit: (toPost?: EntityTypes) => Promise<EntityTypes | Record<string, any>>;
+  handleSubmit: (toPost?: EntityTypes) => Promise<EntityTypes>;
   handleDelete: () => Promise<Record<string, any>>;
 }
 
@@ -53,7 +54,6 @@ export const FormProvider = <T extends EntityTypes>({
                                                       original,
                                                       navItem
                                                     }: FormProviderProps<T>) => {
-  const navigate = useNavigate();
   const eid: string | number = original.id || 0;
   const [entity, setEntity] = useState<EntityTypes>(original);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
@@ -125,7 +125,7 @@ export const FormProvider = <T extends EntityTypes>({
         const tosend: Record<string, any> = toPost ? toPost : structureToPost();
 
         if (Object.keys(tosend).length === 1) {
-          return reject({ general: ["You haven't changed anything"]});
+          return reject({ general: ["You haven't changed anything"] });
         }
 
         const headers: any = {
@@ -133,8 +133,6 @@ export const FormProvider = <T extends EntityTypes>({
         };
 
         const hasImage = Object.values(tosend).some((val) => val instanceof Blob);
-
-        // const payload: any = restructureAsAllEntities(entity._type, tosend)
 
         let formData: any = tosend;
         if (hasImage) {
@@ -183,7 +181,6 @@ export const FormProvider = <T extends EntityTypes>({
 
         if (response.success) {
           resolve(response);
-          navigate(`/${navItem.segment}`);
         } else {
           setErrors(response.errors || { general: [response.error] });
           reject(response);
@@ -337,6 +334,7 @@ export const FormProvider = <T extends EntityTypes>({
     <FormContext.Provider
       value={{
         entity,
+        navItem,
         syncing,
         errors,
         hasChanges,

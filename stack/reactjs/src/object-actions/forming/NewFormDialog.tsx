@@ -1,7 +1,7 @@
 import React from "react";
 import GenericForm from ".//GenericForm";
-import { Box, Typography } from "@mui/material";
-import { NavItem, NAVITEMS, RelEntity, TypeFieldSchema } from "../types/types";
+import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { EntityTypes, NavItem, NAVITEMS, TypeFieldSchema } from "../types/types";
 import { canDo } from "../types/access";
 import { useAuth } from "../../allauth/auth";
 import { FormProvider } from "./FormProvider";
@@ -10,34 +10,57 @@ import { MyFormsKeys } from "./forms";
 import PermissionError from "../../components/PermissionError";
 
 interface NewFormDialog {
-  newentity: RelEntity;
+  entity: EntityTypes;
+  onClose: () => void;
+  onCreated: (newentity: EntityTypes) => void;
 }
 
-const NewFormDialog: React.FC<NewFormDialog> = ({ newentity }) => {
+const NewFormDialog: React.FC<NewFormDialog> = ({ entity, onClose, onCreated }) => {
   const me = useAuth()?.data?.user;
 
-  const allow = canDo("add", newentity, me);
-
-  if (typeof allow === "string") {
-    return <PermissionError error={allow} />
+  const onSuccess =  (entity: EntityTypes) => {
+    onCreated(entity);
+    onClose();
   }
 
-  const hasUrl = NAVITEMS.find((nav) => nav.segment === newentity._type) as NavItem;
-  const fields = Object.values(TypeFieldSchema[newentity._type]);
+  const allow = canDo("add", entity, me);
+
+  if (typeof allow === "string") {
+    return <PermissionError error={allow} />;
+  }
+
+  const hasUrl = NAVITEMS.find((nav) => nav.type === entity._type) as NavItem;
+  const fields = Object.values(TypeFieldSchema[entity._type]);
 
   const formKey = `OAForm${hasUrl.type}` as keyof typeof MyForms;
   const FormWrapper = formKey as MyFormsKeys in MyForms ? MyForms[formKey] : null;
 
   return (
-    <Box sx={{ pt: 4, pl: 3 }}>
-      {FormWrapper ?
-        <FormProvider fields={fields} original={newentity} navItem={hasUrl}>
-          <FormWrapper original={newentity} />
-        </FormProvider>
-        :
-        <GenericForm fields={fields} navItem={hasUrl} original={newentity} />
-      }
-    </Box>
+    <Dialog open={true} onClose={onClose} maxWidth="lg" fullWidth>
+      <DialogTitle>
+        Add a {hasUrl.singular}
+        <Button
+          onClick={onClose}
+          sx={{ position: "absolute", top: 8, right: 8 }}
+        >
+          Close
+        </Button>
+      </DialogTitle>
+      <DialogContent>
+        {FormWrapper ? (
+          <FormProvider fields={fields} original={entity} navItem={hasUrl}>
+            <FormWrapper onSuccess={onSuccess} />
+          </FormProvider>
+        ) : (
+          <GenericForm
+            onSuccess={onSuccess}
+            fields={fields}
+            navItem={hasUrl}
+            original={entity}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 

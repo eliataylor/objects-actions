@@ -82,7 +82,7 @@ const EntityForm = () => {
         </Grid>
       ) : FormWrapper ?
         <FormProvider fields={fields} original={entity} navItem={hasUrl}>
-          <FormWrapper original={entity} />
+          <FormWrapper />
         </FormProvider>
         :
         <GenericForm fields={fields} navItem={hasUrl} original={entity} />
