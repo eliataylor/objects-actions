@@ -48,7 +48,7 @@ export default function AuthMenu() {
   const location = useLocation();
   const config = useConfig();
 
-  const [open, setOpen] = React.useState(location.pathname === `/users/${me.id}` || location.pathname.startsWith('/allauth'));
+  const [open, setOpen] = React.useState(location.pathname === `/users/${me?.id}` || location.pathname.startsWith('/allauth'));
 
   const handleClick = () => {
     setOpen(!open);
@@ -59,7 +59,7 @@ export default function AuthMenu() {
       {process.env.REACT_APP_DEBUG ? (
         <NavBarItem to="http://localhost:1080" icon="✉️" name="MailCatcher" />
       ) : null}
-      {me && me.id ? <React.Fragment>
+      {me && me?.id ? <React.Fragment>
         <ListItemButton
           dense={true}
           style={{ justifyContent: "space-between" }}

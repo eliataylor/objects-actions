@@ -47,6 +47,7 @@ const NavMenu = () => {
         <Collapse in={objectsOpen} timeout="auto" unmountOnExit>
           <div id={"ObjectTypesMenu"}>
             {NAVITEMS.map((item) => {
+//               if (item.model_type === 'vocabulary') return null
               return (
                 <ListItemButton
                   key={`navmenu-${item.segment}`}
