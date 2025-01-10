@@ -1,0 +1,25 @@
+[
+  {
+    "email": false,
+    "groups": []
+  },
+  {
+    "email": "matt.lakin-zulauf@gmail.com",
+    "groups": [
+      "oa-tester"
+    ]
+  },
+  {
+    "email": "Jovany.Grimes-Harber@gmail.com",
+    "groups": [
+      "oa-tester",
+      "verified"
+    ]
+  },
+  {
+    "email": "info@oaexample.com",
+    "groups": [
+      "admin"
+    ]
+  }
+]
