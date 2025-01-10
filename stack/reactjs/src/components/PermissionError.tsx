@@ -7,7 +7,7 @@ interface PermissionErrorProps {
 
 const PermissionError: React.FC<PermissionErrorProps> = ({ error }) => {
   return (
-    <Typography variant="subtitle1" color="error" style={{textAlign: 'center', marginTop:20, marginBottom:20}}>
+    <Typography aria-label={'Permission Error'} variant="subtitle1" color="error" style={{textAlign: 'center', maxWidth:500, margin:'20px auto'}}>
       {error}
     </Typography>
   );

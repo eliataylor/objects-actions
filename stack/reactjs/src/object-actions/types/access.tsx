@@ -106,17 +106,22 @@ export function canDo(
     if (verb !== "add") {
       // can anonymous users edit / delete content authored by other users
       const others = perm.ownership === "others";
-      if (!others) return `anonymous cannot ${verb} this ${obj._type}`;
+      if (!others) return `Anonymous cannot ${verb} ${obj._type}. You need one of these: ${perm.roles.join(', ')}`;
     }
     // can anonymous users add / edit / delete this content type
     const hasRole = perm.roles.indexOf("anonymous") > -1;
     if (hasRole) {
       return true;
     }
-    return `Anonymous cannot ${verb} this ${obj._type}`;
+    return `Anonymous cannot ${verb} ${obj._type}. You need one of these: ${perm.roles.join(', ')}`;
   }
 
-  let errstr = `You must `;
+  const myGroups = new Set(
+    me?.groups && me?.groups.length > 0 ? me.groups : []
+  );
+  myGroups.add('authenticated')
+
+  let errstr = `You have ${Array.from(myGroups).join(', ')}, but must `;
   if (perm.roles.length === 1) {
     errstr += ` be ${perm.roles[0]}`;
   } else {
@@ -124,9 +129,6 @@ export function canDo(
   }
   errstr += ` to ${verb}`;
 
-  const myGroups = new Set(
-    me?.groups && me?.groups.length > 0 ? me.groups : []
-  );
 
   if (isMine && perm.ownership === "own") {
     if (perm.roles.some((role) => {

@@ -61,6 +61,28 @@ export const OAFormMeetings: React.FC<OAFormProps> = ({ onSuccess }) => {
         {renderField(TypeFieldSchema["Meetings"]["rally"], 0, {fullWidth:true})}
       </Grid>
 
+      <Grid item xs={12} sm={6}>
+        {renderField(TypeFieldSchema["Meetings"]["speakers"], 0, {fullWidth:true})}
+      </Grid>
+
+      <Grid item xs={12} sm={6}>
+        {renderField(TypeFieldSchema["Meetings"]["moderators"], 0, {fullWidth:true})}
+      </Grid>
+
+      <Grid item xs={12} sm={6}>
+        {renderField(TypeFieldSchema["Meetings"]["sponsors"], 0, {fullWidth:true})}
+      </Grid>
+
+      <Grid item xs={12} sm={6}>
+        {renderField(TypeFieldSchema["Meetings"]["duration"], 0, {fullWidth:true})}
+      </Grid>
+
+      <Grid item xs={12} sm={6}>
+        {renderField(TypeFieldSchema["Meetings"]["agenda_json"], 0, {fullWidth:true})}
+      </Grid>
+
+
+
       <Grid item xs={12}>
         {renderField(TypeFieldSchema["Meetings"]["privacy"])}
       </Grid>
