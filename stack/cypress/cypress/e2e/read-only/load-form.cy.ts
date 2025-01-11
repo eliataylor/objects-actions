@@ -29,6 +29,7 @@ describe("oaexample load and populate add forms by user - role", async () => {
 
         if (user.email) {
           cy.loginBackground(user.email, user.pass ?? Cypress.env('password'))
+          cy.wait('@waitForLoad');
         }
 
       });

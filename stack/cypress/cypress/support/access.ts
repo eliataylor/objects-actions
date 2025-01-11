@@ -19,7 +19,6 @@ export type CRUDVerb =
   | "edit"
   | "delete"
   | "block"
-  | ""
   | "view"
   | "subscribe"
   | "meeting"
@@ -67,6 +66,7 @@ function getPermsByTypeAndVerb(type: string, verb: string) {
   return matches;
 }
 
+
 // returns error string or true if passes
 export function canDo(
   verb: CRUDVerb,
@@ -77,10 +77,11 @@ export function canDo(
 
   if (!perms || !perms.length) {
     console.warn(`NO PERM MATCHES FOR ${verb} - ${obj._type}`);
-    // TODO: check store.accessor.default
+    if (!me || !me.id) {
+      return 'Default permission Is Authenticated or Read Only';
+    }
     return true;
   }
-
 
   let isMine = verb === "add";
   if (!isMine && me) {
@@ -100,25 +101,18 @@ export function canDo(
     }
   }
 
-  if (!me) {
-    // test what is allowed for anonymous visitors
-    if (verb !== "add") {
-      // can anonymous users edit / delete content authored by other users
-      const others = perm.ownership === "others";
-      if (!others) return `Anonymous cannot ${verb} ${obj._type}. You need one of these: ${perm.roles.join(", ")}`;
-    }
-    // can anonymous users add / edit / delete this content type
+  const myGroups = new Set(
+    me?.groups && me?.groups.length > 0 ? me.groups : ["anonymous"]
+  );
+
+  if (!me || !me.id) {
     const hasRole = perm.roles.indexOf("anonymous") > -1;
     if (hasRole) {
       return true;
     }
-    return `Anonymous cannot ${verb} ${obj._type}. You need one of these: ${perm.roles.join(", ")}`;
+  } else {
+    myGroups.add("authenticated");
   }
-
-  const myGroups = new Set(
-    me?.groups && me?.groups.length > 0 ? me.groups : []
-  );
-  myGroups.add("authenticated");
 
   let errstr = `You have ${Array.from(myGroups).join(", ")}, but must `;
   if (perm.roles.length === 1) {
@@ -193,605 +187,391 @@ export function parseFormURL(url: string): ParsedURL | null {
 
 const permissions = [
   {
-    "context": [
-      "Users"
-    ],
+    "context": ["Users"],
     "endpoint": "users",
     "verb": "view_list",
     "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
+    "roles": ["authenticated"]
   },
   {
-    "context": [
-      "Users"
-    ],
+    "context": ["Users"],
     "endpoint": "users",
     "verb": "view_list",
     "ownership": "others",
-    "roles": [
-      "authenticated"
-    ]
+    "roles": ["authenticated"]
   },
   {
-    "context": [
-      "Users"
-    ],
+    "context": ["Users"],
     "endpoint": "user/:id",
     "id_index": 1,
     "verb": "view_profile",
     "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
+    "roles": ["authenticated"]
   },
   {
-    "context": [
-      "Users"
-    ],
+    "context": ["Users"],
     "endpoint": "user/:id",
     "id_index": 1,
     "verb": "view_profile",
     "ownership": "others",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Users"
-    ],
+    "context": ["Users"],
     "endpoint": "user/add",
     "verb": "add",
     "ownership": "own",
-    "roles": [
-      "anonymous"
-    ],
+    "roles": ["anonymous"],
     "alias": "/register"
   },
   {
-    "context": [
-      "Users"
-    ],
+    "context": ["Users"],
     "endpoint": "user/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
+    "roles": ["authenticated"]
   },
   {
-    "context": [
-      "Users"
-    ],
+    "context": ["Users"],
     "endpoint": "user/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
+    "roles": ["authenticated"]
   },
   {
-    "context": [
-      "Users"
-    ],
+    "context": ["Users"],
     "endpoint": "user/:id/block",
     "verb": "block",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/add",
     "verb": "add",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/add",
     "verb": "add",
     "ownership": "others",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "admin"
-    ]
+    "roles": ["admin"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "admin"
-    ]
+    "roles": ["admin"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/comment/add",
     "verb": "add",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/comment/:id/edit",
     "verb": "edit",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/comment/:id/delete",
     "verb": "delete",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/sponsor/add",
     "verb": "add",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "authenticated"
-    ]
+    "roles": ["authenticated"]
   },
   {
-    "context": [
-      "Cities"
-    ],
+    "context": ["Cities"],
     "endpoint": "city/:id/sponsor/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "authenticated"
-    ]
+    "roles": ["authenticated"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/add",
     "verb": "add",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "admin",
-      "rally moderator"
-    ]
+    "roles": ["admin", "rally moderator"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "admin"
-    ]
+    "roles": ["admin"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/subscribe",
     "verb": "subscribe",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Subscriptions"
-    ],
+    "context": ["Rallies", "Subscriptions"],
     "endpoint": "rally/:id/subscription/:id/edit",
     "verb": "edit",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Subscriptions"
-    ],
+    "context": ["Rallies", "Subscriptions"],
     "endpoint": "rally/:id/subscription/:id/delete",
     "verb": "delete",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies", "Comment"],
     "endpoint": "rally/:id/comment/:id/add",
     "verb": "add",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "rally attendee"
-    ]
+    "roles": ["rally attendee"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/comment/:id/edit",
     "verb": "edit",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "rally attendee"
-    ]
+    "roles": ["rally attendee"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies", "Comment"],
     "endpoint": "rally/:id/comment/:id/delete",
     "verb": "delete",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "rally attendee"
-    ]
+    "roles": ["rally attendee"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies", "Comment"],
     "endpoint": "rally/:id/comment/:id/delete",
     "verb": "delete",
     "id_index": 3,
     "ownership": "others",
-    "roles": [
-      "admin",
-      "rally moderator"
-    ]
+    "roles": ["admin", "rally moderator"]
   },
   {
-    "context": [
-      "Officials"
-    ],
+    "context": ["Officials"],
     "endpoint": "official/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Officials"
-    ],
+    "context": ["Officials"],
     "endpoint": "official/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Officials"
-    ],
+    "context": ["Officials"],
     "endpoint": "official/add",
     "verb": "add",
     "ownership": "own",
-    "roles": [
-      "admin",
-      "city sponsor"
-    ]
+    "roles": ["admin", "city sponsor"]
   },
   {
-    "context": [
-      "Officials"
-    ],
+    "context": ["Officials"],
     "endpoint": "official/add",
     "verb": "add",
     "ownership": "others",
-    "roles": [
-      "admin",
-      "city sponsor"
-    ]
+    "roles": ["admin", "city sponsor"]
   },
   {
-    "context": [
-      "Officials"
-    ],
+    "context": ["Officials"],
     "endpoint": "official/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "admin",
-      "city sponsor"
-    ]
+    "roles": ["admin", "city sponsor"]
   },
   {
-    "context": [
-      "Officials"
-    ],
+    "context": ["Officials"],
     "endpoint": "official/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "admin",
-      "city sponsor"
-    ]
+    "roles": ["admin", "city sponsor"]
   },
   {
-    "context": [
-      "Officials"
-    ],
+    "context": ["Officials"],
     "endpoint": "official/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "admin",
-      "city sponsor"
-    ]
+    "roles": ["admin", "city sponsor"]
   },
   {
-    "context": [
-      "Officials"
-    ],
+    "context": ["Officials"],
     "endpoint": "official/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "others",
-    "roles": [
-      "admin",
-      "city sponsor"
-    ]
+    "roles": ["admin", "city sponsor"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/add",
     "verb": "add",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "others",
-    "roles": []
+    "roles": ["admin"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id/delete",
     "verb": "delete",
     "id_index": 1,
@@ -799,111 +579,71 @@ const permissions = [
     "roles": []
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id/comment/:id/add",
     "verb": "add",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id/comment/:id/edit",
     "verb": "edit",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id/comment/:id/delete",
     "verb": "delete",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "ActionPlans"
-    ],
+    "context": ["ActionPlans"],
     "endpoint": "action-plan/:id/comment/:id/delete",
     "verb": "delete",
     "id_index": 3,
     "ownership": "others",
-    "roles": [
-      "admin"
-    ]
+    "roles": ["admin"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/meeting/:id",
     "id_index": 3,
     "verb": "meeting",
     "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/meeting/:id",
     "id_index": 3,
     "verb": "meeting",
     "ownership": "others",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Rallies"
-    ],
+    "context": ["Rallies"],
     "endpoint": "rally/:id/meeting",
     "verb": "meeting",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "rally attendee",
-      "rally speaker",
-      "rally moderator"
-    ]
+    "roles": ["rally attendee", "rally speaker", "rally moderator"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/edit",
     "verb": "edit",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/edit",
     "verb": "edit",
     "id_index": 3,
@@ -911,327 +651,205 @@ const permissions = [
     "roles": []
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/delete",
     "verb": "delete",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/delete",
     "verb": "delete",
     "id_index": 3,
     "ownership": "others",
-    "roles": [
-      "admin",
-      "rally moderator"
-    ]
+    "roles": ["admin", "rally moderator"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/comment",
     "verb": "comment",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "rally attendee"
-    ]
+    "roles": ["rally attendee"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/comment/:id/edit",
     "verb": "edit",
     "id_index": 5,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
     "verb": "delete",
     "id_index": 5,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/comment/:id/delete",
     "verb": "delete",
     "id_index": 5,
     "ownership": "others",
-    "roles": [
-      "rally moderator"
-    ]
+    "roles": ["rally moderator"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/sponsor",
     "verb": "sponsor",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/sponsor/:id/delete",
     "verb": "delete",
     "id_index": 5,
     "ownership": "others",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/apply-to-speak",
     "verb": "apply-to-speak",
     "id_index": 3,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/delete",
     "verb": "delete",
     "id_index": 5,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/approve",
     "verb": "approve",
     "id_index": 5,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rallies",
-      "Meetings"
-    ],
+    "context": ["Rallies", "Meetings"],
     "endpoint": "rally/:id/meeting/:id/apply-to-speak/:id/reject",
     "verb": "reject",
     "id_index": 5,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Invites"
-    ],
+    "context": ["Invites"],
     "endpoint": "invites/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Invites"
-    ],
+    "context": ["Invites"],
     "endpoint": "invites",
     "verb": "add",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Invites"
-    ],
+    "context": ["Invites"],
     "endpoint": "invites/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Invites"
-    ],
+    "context": ["Invites"],
     "endpoint": "invites/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Meetings"
-    ],
+    "context": ["Meetings"],
     "endpoint": "meeting/:id/user/:id",
     "id_index": 3,
     "verb": "user",
     "ownership": "own",
-    "roles": [
-      "verified",
-      "admin",
-      "rally attendee"
-    ]
+    "roles": ["verified", "admin", "rally attendee"]
   },
   {
-    "context": [
-      "Meetings"
-    ],
+    "context": ["Meetings"],
     "endpoint": "meeting/:id/user/:id",
     "id_index": 3,
     "verb": "user",
     "ownership": "others",
-    "roles": [
-      "admin",
-      "rally attendee"
-    ]
+    "roles": ["admin", "rally attendee"]
   },
   {
-    "context": [
-      "Meetings"
-    ],
+    "context": ["Meetings"],
     "endpoint": "meeting/:id/user/:id",
     "id_index": 3,
     "verb": "user",
     "ownership": "own",
-    "roles": [
-      "verified",
-      "rally attendee"
-    ]
+    "roles": ["verified", "rally attendee"]
   },
   {
-    "context": [
-      "Meetings"
-    ],
+    "context": ["Meetings"],
     "endpoint": "meeting/:id/user/:id",
     "id_index": 3,
     "verb": "user",
     "ownership": "own",
-    "roles": [
-      "verified",
-      "rally attendee"
-    ]
+    "roles": ["verified", "rally attendee"]
   },
   {
-    "context": [
-      "Meetings"
-    ],
+    "context": ["Meetings"],
     "endpoint": "meeting/:id/user/:id",
     "id_index": 3,
     "verb": "user",
     "ownership": "own",
-    "roles": [
-      "verified",
-      "rally attendee"
-    ]
+    "roles": ["verified", "rally attendee"]
   },
   {
-    "context": [
-      "Invites"
-    ],
+    "context": ["Invites"],
     "endpoint": "invites/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "anonymous",
-      "authenticated"
-    ]
+    "roles": ["anonymous", "authenticated"]
   },
   {
-    "context": [
-      "Invites"
-    ],
+    "context": ["Invites"],
     "endpoint": "invites",
     "verb": "add",
     "ownership": "own",
-    "roles": [
-      "admin"
-    ]
+    "roles": ["admin"]
   },
   {
-    "context": [
-      "Invites"
-    ],
+    "context": ["Invites"],
     "endpoint": "invites/:id/edit",
     "verb": "edit",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "admin"
-    ]
+    "roles": ["admin"]
   },
   {
-    "context": [
-      "Invites"
-    ],
+    "context": ["Invites"],
     "endpoint": "invites/:id/delete",
     "verb": "delete",
     "id_index": 1,
     "ownership": "own",
-    "roles": [
-      "admin"
-    ]
+    "roles": ["admin"]
   },
   {
-    "context": [
-      "Meetings"
-    ],
+    "context": ["Meetings"],
     "endpoint": "meeting/:id/rooms",
     "verb": "rooms",
     "id_index": 1,
@@ -1246,21 +864,15 @@ const permissions = [
     ]
   },
   {
-    "context": [
-      "Rooms"
-    ],
+    "context": ["Rooms"],
     "endpoint": "rooms/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rooms"
-    ],
+    "context": ["Rooms"],
     "endpoint": "rooms/:id",
     "id_index": 1,
     "verb": "view",
@@ -1275,9 +887,7 @@ const permissions = [
     ]
   },
   {
-    "context": [
-      "Rooms"
-    ],
+    "context": ["Rooms"],
     "endpoint": "rooms/:id",
     "id_index": 1,
     "verb": "add",
@@ -1292,137 +902,87 @@ const permissions = [
     ]
   },
   {
-    "context": [
-      "Rooms"
-    ],
+    "context": ["Rooms"],
     "endpoint": "rooms/:id",
     "id_index": 1,
     "verb": "edit",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Rooms"
-    ],
+    "context": ["Rooms"],
     "endpoint": "rooms/:id",
     "id_index": 1,
     "verb": "delete",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Subscriptions"
-    ],
+    "context": ["Subscriptions"],
     "endpoint": "subscriptions/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "verified",
-      "admin",
-      "rally attendee",
-      "rally moderator"
-    ]
+    "roles": ["verified", "admin", "rally attendee", "rally moderator"]
   },
   {
-    "context": [
-      "Subscriptions"
-    ],
+    "context": ["Subscriptions"],
     "endpoint": "subscriptions/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
-    "roles": [
-      "admin",
-      "rally attendee",
-      "rally moderator"
-    ]
+    "roles": ["admin", "rally attendee", "rally moderator"]
   },
   {
-    "context": [
-      "Subscriptions"
-    ],
+    "context": ["Subscriptions"],
     "endpoint": "subscriptions/:id",
     "id_index": 1,
     "verb": "add",
     "ownership": "own",
-    "roles": [
-      "verified",
-      "rally attendee"
-    ]
+    "roles": ["verified", "rally attendee"]
   },
   {
-    "context": [
-      "Subscriptions"
-    ],
+    "context": ["Subscriptions"],
     "endpoint": "subscriptions/:id",
     "id_index": 1,
     "verb": "edit",
     "ownership": "own",
-    "roles": [
-      "verified",
-      "rally attendee"
-    ]
+    "roles": ["verified", "rally attendee"]
   },
   {
-    "context": [
-      "Subscriptions"
-    ],
+    "context": ["Subscriptions"],
     "endpoint": "subscriptions/:id",
     "id_index": 1,
     "verb": "delete",
     "ownership": "own",
-    "roles": [
-      "verified",
-      "rally attendee"
-    ]
+    "roles": ["verified", "rally attendee"]
   },
   {
-    "context": [
-      "Resources"
-    ],
+    "context": ["Resources"],
     "endpoint": "resources/:id",
     "id_index": 1,
     "verb": "view_list",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Resources"
-    ],
+    "context": ["Resources"],
     "endpoint": "resources/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "own",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Resources"
-    ],
+    "context": ["Resources"],
     "endpoint": "resources/:id",
     "id_index": 1,
     "verb": "view",
     "ownership": "others",
-    "roles": [
-      "verified"
-    ]
+    "roles": ["verified"]
   },
   {
-    "context": [
-      "Resources"
-    ],
+    "context": ["Resources"],
     "endpoint": "resources/:id",
     "id_index": 1,
     "verb": "add",
@@ -1437,9 +997,7 @@ const permissions = [
     ]
   },
   {
-    "context": [
-      "Resources"
-    ],
+    "context": ["Resources"],
     "endpoint": "resources/:id",
     "id_index": 1,
     "verb": "edit",
@@ -1454,9 +1012,7 @@ const permissions = [
     ]
   },
   {
-    "context": [
-      "Resources"
-    ],
+    "context": ["Resources"],
     "endpoint": "resources/:id",
     "id_index": 1,
     "verb": "delete",
