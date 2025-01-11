@@ -17,8 +17,7 @@ describe("oaexample load and populate add forms by user - role", async () => {
         cy.log("APP Host:", Cypress.env("REACT_APP_APP_HOST"));
         cy.viewport(Cypress.env("viewportWidth"), Cypress.env("viewportHeight"));
 
-        cy.intercept("GET", "**/_allauth/**/session**").as("waitForLoad");
-        cy.intercept("GET", "**/_allauth/**/config**").as("waitForLoad");
+        cy.intercept("GET", "**/_allauth/**").as("waitForLoad");
 
         cy.visit("/");
         cy.addHand("dark");
@@ -28,25 +27,26 @@ describe("oaexample load and populate add forms by user - role", async () => {
 
         cy.wait("@waitForLoad");
 
-        cy.loginBackground(user.email, user.pass ?? Cypress.env('password'))
+        if (user.email) {
+          cy.loginBackground(user.email, user.pass ?? Cypress.env('password'))
+        }
 
       });
 
       it("oaexample load and populate add forms", () => {
 
         // cy.grab(".MuiSwitch-root").showClick(); // do it in light mode for the video
-
-        if (user.email) {
-          // cy.showLogin(user.email, user.pass ?? Cypress.env("password"));
+        if (Cypress.env("viewportWidth") > 600) {
+          cy.grab(`#OAMenuButton`).showClick();
         }
 
         NAVITEMS.forEach(navItem => {
 
           if (Cypress.env("viewportWidth") <= 600) {
             cy.clickIf("[aria-label=\"Open Drawer\"]");
+            cy.grab(`#OAMenuButton`).showClick();
           }
 
-          cy.grab(`#OAMenuButton`).showClick();
 
           cy.intercept("GET", `${navItem.api}*`).as(`Get${navItem.type}`); // wildcard for query params
           cy.grab(`#OAMenu a[href="/${navItem.segment}" i]`).showClick();
