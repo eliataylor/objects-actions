@@ -2,6 +2,9 @@ import { FieldTypeDefinition, NAVITEMS, TypeFieldSchema } from "../../support/ty
 import { fakeFieldData } from "../../support/faker";
 import { canDo } from "../../support/access";
 
+
+
+
 describe("oaexample load and populate add forms by user - role", async () => {
   let users = require("../../fixtures/oa-testers.json");
 
@@ -10,25 +13,32 @@ describe("oaexample load and populate add forms by user - role", async () => {
     describe(`Tests for user: ${user.email}`, () => {
 
       beforeEach(() => {
-        if (user.email) {
-          cy.loginBackground(user.email, user.password ?? Cypress.env("password")).then(e => {
-            console.log(`LOGIN COMPLETE ${user.email} - ${user.password}`, e);
-            cy.clickIf("#FirstVisitBtn");
-            cy.clickIf("[aria-label=\"Dismiss EULA Notice\"]");
-          });
-        }
+        cy.log("API Host:", Cypress.env("REACT_APP_API_HOST"));
+        cy.log("APP Host:", Cypress.env("REACT_APP_APP_HOST"));
+        cy.viewport(Cypress.env("viewportWidth"), Cypress.env("viewportHeight"));
+
+        cy.intercept("GET", "**/_allauth/**/session**").as("waitForLoad");
+        cy.intercept("GET", "**/_allauth/**/config**").as("waitForLoad");
+
+        cy.visit("/");
+        cy.addHand("dark");
+        cy.assertMenuReady();
+        cy.grab("#FirstVisitBtn").showClick();
+        cy.grab("[aria-label=\"Dismiss EULA Notice\"]").showClick();
+
+        cy.wait("@waitForLoad");
+
+        cy.loginBackground(user.email, user.pass ?? Cypress.env('password'))
+
       });
 
       it("oaexample load and populate add forms", () => {
 
-        cy.viewport(Cypress.env("viewportWidth"), Cypress.env("viewportHeight"));
-        cy.visit(Cypress.env("REACT_APP_APP_HOST"));
-        cy.assertMenuReady();
-        if (!user.email) {
-          cy.grab("#FirstVisitBtn").showClick();
-          cy.grab("[aria-label=\"Dismiss EULA Notice\"]").showClick();
+        // cy.grab(".MuiSwitch-root").showClick(); // do it in light mode for the video
+
+        if (user.email) {
+          cy.showLogin(user.email, user.pass ?? Cypress.env("password"));
         }
-        cy.grab(".MuiSwitch-root").showClick(); // do it in light mode for the video
 
         NAVITEMS.forEach(navItem => {
 
@@ -49,20 +59,14 @@ describe("oaexample load and populate add forms by user - role", async () => {
             cy.clickIf("[aria-label=\"Close Drawer\"]");
           }
 
-
           cy.intercept("GET", `/forms/${navItem.segment}/0/add*`).as(`GetForm${navItem.type}`); // wildcard for query params
           cy.grab(`[data-href="/forms/${navItem.segment}/0/add" i]`).showClick();
-
 
           const allow = canDo("add", { _type: navItem.type, id: 0 }, user);
           if (typeof allow === "string") {
             cy.clickIf("[aria-label=\"Permission Error\"]");
           } else {
             cy.log(`Populate Form ${navItem.type}`);
-//            cy.wait(`@GetForm${navItem.type}`).its('response.status').should('eq', 200)
-//            cy.wait(`@GetForm${navItem.type}`).then((interception) => {
-//                expect(interception.response).to.exist;
-//                expect(interception.response.statusCode).to.eq(200);
 
             const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[navItem.type]);
 

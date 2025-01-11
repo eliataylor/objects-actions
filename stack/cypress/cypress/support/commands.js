@@ -8,67 +8,68 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 //
+const extractCookieValue = (response, cookieName) => {
+  const setCookieHeader = response.headers['set-cookie'];
+
+  const cookie = setCookieHeader.find((cookie) => cookie.startsWith(`${cookieName}=`));
+  if (!cookie) {
+    cy.log(response);
+    throw new Error("CSRF token cookie not found in server response");
+  }
+  const cookieVal = cookie.split(";")[0].split("=")[1];
+  return cookieVal
+};
 
 // cypress/support/commands.js
 Cypress.Commands.add(
   "loginBackground",
   (email, pass) => {
-    cy.session(email, () => {
+    cy.request({
+      method: "GET",
+      failOnStatusCode: false,
+      url: Cypress.env("REACT_APP_API_HOST") + "/_allauth/browser/v1/config"
+    }).then((configres) => {
+      cy.log("CONFIG REQ", configres);
+
+      const csrfToken = extractCookieValue(configres, "csrftoken");
+      cy.log(`Background logging ${email} with CSRF token ${csrfToken}`);
+      cy.setCookie("csrftoken", csrfToken);
 
       cy.request({
-        method: "GET",
-        url: Cypress.env("REACT_APP_API_HOST") + "/_allauth/browser/v1/config"
-      }).then((response) => {
-
-        let csrfToken;
-        cy.getCookie("csrftoken")
-          .should("exist")
-          .then((c) => {
-            csrfToken = c;
-          });
-
-        /*
-        const setCookieHeader = response.headers['set-cookie'];
-        const csrfCookie = setCookieHeader.find((cookie) => cookie.startsWith('csrftoken='));
-        if (!csrfCookie) {
-            throw new Error('CSRF token cookie not found in server response');
+        withCredentials: true,
+        failOnStatusCode: false,
+        httpsAgent: new (require("https").Agent)({ rejectUnauthorized: false }), // Handle HTTPS requests
+        method: "POST",
+        url: `${Cypress.env("REACT_APP_API_HOST")}/_allauth/browser/v1/auth/login`,
+        headers: {
+          "Referer": new URL(Cypress.env("REACT_APP_APP_HOST") || "").host,  // Adding Referer header to simulate request origin
+          "Origin": Cypress.env("REACT_APP_APP_HOST"),    // Adding Origin header to simulate request origin
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken
+        },
+        body: {
+          email: email,
+          password: pass
         }
-        const csrfToken = csrfCookie.split(';')[0].split('=')[1];
+      }).then((sessionres) => {
+        cy.log("SESSION REQ", sessionres);
 
-        // Set the cookie in Cypress
-        cy.setCookie('csrftoken', csrfToken);
-         */
-
-        console.log(`Background logging in as ${email} with CSRF token`, csrfToken);
-
-        cy.intercept("GET", `${Cypress.env("REACT_APP_API_HOST")}/_allauth/browser/v1/auth/login`).as("waitForLogin");
-
-        cy.wait("@waitForLogin");
-
-        cy.request({
-          withCredentials: true,
-          httpsAgent: new (require("https").Agent)({ rejectUnauthorized: false }), // Handle HTTPS requests
-          method: "POST",
-          url: `${Cypress.env("REACT_APP_API_HOST")}/_allauth/browser/v1/auth/login`,
-          headers: {
-            "Referer": new URL(Cypress.env("REACT_APP_APP_HOST") || "").host,  // Adding Referer header to simulate request origin
-            "Origin": Cypress.env("REACT_APP_APP_HOST"),    // Adding Origin header to simulate request origin
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken
-          },
-          body: {
-            email: email,
-            password: pass
-          }
-        }).then(({ body }) => {
-          console.log("RECEIVED LOGIN: ", body);
-          cy.visit(Cypress.env("REACT_APP_APP_HOST"));
-          cy.addHand("dark");
-        });
-
-        cy.getCookie("sessionid").should("exist");
+        const sessionId = extractCookieValue(sessionres, "sessionid");
+        cy.log(`Background logging ${email} with Session ID: ${sessionId}`);
+        cy.setCookie("sessionid", sessionId);
       });
     });
+  });
+
+Cypress.Commands.add(
+  "showLogin",
+  (email, pass) => {
+    cy.grab(`a[href="/account/login" i]`).showClick();
+    cy.grab(`[type="email"]`).type(email);
+    cy.grab(`[type="password"]`).type(pass);
+    cy.intercept(`**/_allauth/**`).as("waitForLogin");
+    cy.grab("button[type=\"submit\" i]").showClick();
+    cy.wait("@waitForLogin");
   });
 
 Cypress.Commands.add("showClick",

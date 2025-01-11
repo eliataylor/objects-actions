@@ -56,18 +56,20 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 logger.warning(f"Allowing Hosts: {", ".join(ALLOWED_HOSTS)}")
 
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
-CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
+
+CSRF_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
 # In order to use databuilder inside docker against django also in your django-service container, you'll have to set `CSRF_COOKIE_DOMAIN = None`
 if DJANGO_ENV != 'production':
     CSRF_COOKIE_DOMAIN = None
+    CSRF_COOKIE_SAMESITE = None
+else:
+    CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
+    CSRF_COOKIE_SAMESITE = 'Lax'
 
 logger.warning(f"Allowed Origins: {CSRF_COOKIE_DOMAIN}")
 logger.warning(f"Allowed Trusted/CSRF Domains: {", ".join(CSRF_TRUSTED_ORIGINS)}")
-
-CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
-CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
 # same for session cookies
 SESSION_COOKIE_DOMAIN = CSRF_COOKIE_DOMAIN

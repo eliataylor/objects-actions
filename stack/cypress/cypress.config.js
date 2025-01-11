@@ -6,6 +6,8 @@ module.exports = defineConfig({
   videoCompression: true,
   e2e: {
     baseUrl: 'https://localhost.oaexample.com:3000',
+    chromeWebSecurity: false,
+    experimentalSessionAndOrigin: true,
     excludeSpecPattern: 'cypress/e2e/examples',
     setupNodeEvents(on, config) {
       // implement node event listeners here

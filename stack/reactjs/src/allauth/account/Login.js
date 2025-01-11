@@ -86,6 +86,7 @@ export default function Login() {
       <Grid item container justifyContent={'space-between'} gap={2}>
         <Grid>
           <Button
+            type="submit"
             disabled={
               email.indexOf('@') < 1 ||
               password.length === 0 ||
