@@ -57,6 +57,7 @@ Cypress.Commands.add(
         const sessionId = extractCookieValue(sessionres, "sessionid");
         cy.log(`Background logging ${email} with Session ID: ${sessionId}`);
         cy.setCookie("sessionid", sessionId);
+        cy.visit('/');
       });
     });
   });
@@ -70,6 +71,7 @@ Cypress.Commands.add(
     cy.intercept(`**/_allauth/**`).as("waitForLogin");
     cy.grab("button[type=\"submit\" i]").showClick();
     cy.wait("@waitForLogin");
+    cy.visit('/');
   });
 
 Cypress.Commands.add("showClick",

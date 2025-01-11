@@ -3,7 +3,7 @@ import { fakeFieldData } from "../../support/faker";
 import { canDo } from "../../support/access";
 
 
-
+Cypress.Cookies.debug(true)
 
 describe("oaexample load and populate add forms by user - role", async () => {
   let users = require("../../fixtures/oa-testers.json");
@@ -37,7 +37,7 @@ describe("oaexample load and populate add forms by user - role", async () => {
         // cy.grab(".MuiSwitch-root").showClick(); // do it in light mode for the video
 
         if (user.email) {
-          cy.showLogin(user.email, user.pass ?? Cypress.env("password"));
+          // cy.showLogin(user.email, user.pass ?? Cypress.env("password"));
         }
 
         NAVITEMS.forEach(navItem => {
