@@ -9,11 +9,10 @@ from .UserBuilder import UserBuilder
 
 
 class DjangoBuilder:
-    def __init__(self, types_path, matrix_path, output_dir):
-        self.output_dir = output_dir
+    def __init__(self, output_dir):
+        self.output_dir = output_dir if output_dir.endswith('/') else f"{output_dir}/"
         self.app_name = os.path.basename(output_dir)
-
-        self.templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django/'
+        self.templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/django'
 
         self.global_function = {"models": [], "serializers": [], "views": [], "urls": []}
         self.imports = {"admin": ["from django.contrib import admin",
@@ -69,21 +68,15 @@ class DjangoBuilder:
         # TODO: generate CRUD query methods based on Permissions Matrix
         # TODO: personalize the CustomPagination class
 
+    def build_django(self, types_path, default_perm):
         if types_path or not os.path.exists(types_path):
             self.json = build_types_from_csv(types_path)
             self.build_models()
             self.build_serializers()
-            self.build_viewsets()
+            self.build_viewsets(default_perm)
             self.build_urls()
         else:
             logger.warning(f'Cannot find Object Types {types_path}')
-            sys.exit(0)
-
-        if matrix_path and os.path.exists(matrix_path):
-            self.matrix_path = matrix_path
-            self.build_permissions()
-        else:
-            logger.warning(f'Cannot find Permissions Matrix {matrix_path}')
             sys.exit(0)
 
     def append_import(self, key, val):
@@ -199,11 +192,13 @@ urlpatterns += [
         inject_generated_code(outpath, '\n'.join(self.imports["serializers"]), 'SERIALIZER-IMPORTS')
         inject_generated_code(outpath, serializers_helpers + "\n" + "\n".join(parts), 'SERIALIZERS')
 
-    def build_viewsets(self):
+    def build_viewsets(self, default_perm):
         outpath = os.path.join(self.output_dir, 'views.py')
 
         with open(self.templates_dir + '/view.py', 'r') as fm:
             tpl = fm.read().strip()
+
+        tpl = tpl.replace('IsAuthenticatedOrReadOnly', default_perm)
 
         serialModelMap = []
         searchFieldMap = {}
@@ -250,8 +245,11 @@ urlpatterns += [
 
         inject_generated_code(outpath, "\n".join(parts), 'VIEWSETS')
 
-    def build_permissions(self):
-        matrix = build_permissions_from_csv(self.matrix_path, self.json)
+    def build_permissions(self, matrix_path, default_perm):
+
+        return; # TODO: implement
+
+        matrix = build_permissions_from_csv(matrix_path, self.json)
         if matrix is None or 'permissions' not in matrix:
             return None
 

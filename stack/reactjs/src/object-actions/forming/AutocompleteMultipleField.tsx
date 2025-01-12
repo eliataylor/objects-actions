@@ -134,6 +134,7 @@ const AutocompleteField: React.FC<MultiAcFieldProps> = ({
           label={
             selectedOptions.length > 0 ? field_label : `Search ${field_label}`
           }
+          name={field_name}
           variant="outlined"
           InputProps={{
             ...params.InputProps,

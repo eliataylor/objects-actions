@@ -51,6 +51,15 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
         response = super().create(request, *args, **kwargs)
         user = Users.objects.get(id=response.data['id'])
         user.groups.add(group)
+
+        # conditional add verified group
+        if request.query_params.get('autoverify', True):
+            vgroup = Group.objects.filter(name='verified').first()
+            if not vgroup:
+                logger.error("Group 'verified' does not exist.")
+            else:
+                user.groups.add(vgroup)
+
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -76,8 +85,16 @@ class OATesterUserViewSet(viewsets.ModelViewSet):
         group = Group.objects.filter(name=OA_TESTER_GROUP).first()
         if not group:
             return Response({"error": f"Group '{OA_TESTER_GROUP}' does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-
         user.groups.add(group)
+
+        if request.query_params.get('autoverify', True):
+            vgroup = Group.objects.filter(name='verified').first()
+            if not vgroup:
+                logger.error("Group 'verified' does not exist.")
+            else:
+                logger.error("Group 'verified' added to user.")
+                user.groups.add(vgroup)
+
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

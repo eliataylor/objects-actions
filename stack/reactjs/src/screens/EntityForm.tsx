@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import GenericForm from "../object-actions/forming/GenericForm";
 import { Box, CircularProgress, Grid, Typography } from "@mui/material";
-import { EntityTypes, NAVITEMS, TypeFieldSchema } from "../object-actions/types/types";
-import { canDo, parseFormURL } from "../object-actions/types/access";
+import { EntityTypes, NAVITEMS, NewEntity, TypeFieldSchema } from "../object-actions/types/types";
+import { canDo } from "../object-actions/types/access";
 import { useLocation, useParams } from "react-router-dom";
 import ApiClient from "../config/ApiClient";
 import { useAuth } from "../allauth/auth";
@@ -12,83 +12,76 @@ import { MyFormsKeys } from "../object-actions/forming/forms";
 import PermissionError from "../components/PermissionError";
 
 const EntityForm = () => {
-  const { id } = useParams();
-  // @ts-ignore
-  const [entity, setEntity] = useState<EntityTypes>({ id: 0 });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const location = useLocation();
-  const me = useAuth()?.data?.user;
+    const { id, model } = useParams();
+    const [entity, setEntity] = useState<EntityTypes | NewEntity | null>(null);
+    const [error, setError] = useState("");
+    const location = useLocation();
+    const me = useAuth()?.data?.user;
 
-  const target = parseFormURL(location.pathname);
+    const hasUrl = NAVITEMS.find((nav) => nav.segment === model);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      if (target) {
-        const result = await ApiClient.get(
-          `/api/${target.object}/${target.id}${location.search}`
-        );
+    useEffect(() => {
+      const fetchData = async () => {
+        const result = await ApiClient.get(`/api/${model}/${id}${location.search}`);
         if (result.success && result.data) {
           setEntity(result.data as EntityTypes);
-          setLoading(false);
         } else {
           setError(result.error || "Unknown Error");
-          setLoading(false);
         }
+      };
+
+      if (!hasUrl) {
+        setError(`Invalid form URL pattern for ${model}`);
+      } else if (id) {
+        fetchData();
       } else {
-        setError("Invalid form URL pattern: " + JSON.stringify(target));
-        setLoading(false);
+        setEntity({ id: id ? id : 0, type: hasUrl.type } as NewEntity);
       }
-    };
+    }, [id, model]);
 
-    if (target && target.verb === "edit") {
-      fetchData();
-    } else {
-      setLoading(false);
+    if (!hasUrl) {
+      return <Typography variant={"h6"}>Invalid URL pattern for {model}</Typography>;
     }
-  }, [id, location.pathname, location.search]);
 
-  if (!target) {
-    return <Typography variant={"h6"}>Invalid URL pattern</Typography>;
+    if (error.length > 0) {
+      return <Grid container justifyContent="center" alignItems="center">
+        <Typography variant="subtitle1">{error}</Typography>
+      </Grid>;
+    }
+
+    if (!entity) {
+      return <Grid container justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Grid>;
+    }
+
+    let allow: boolean | string;
+    if (entity.id && entity.id !== "0") {
+      allow = canDo("edit", entity as EntityTypes, me);
+    } else {
+      allow = canDo("add", Object.assign({}, entity, { _type: hasUrl.type }), me);
+    }
+
+    if (typeof allow === "string") {
+      return <PermissionError error={allow} />;
+    }
+
+    const fields = Object.values(TypeFieldSchema[hasUrl.type]);
+    const formKey = `OAForm${hasUrl.type}` as keyof typeof MyForms;
+    const FormWrapper = formKey as MyFormsKeys in MyForms ? MyForms[formKey] : null;
+
+    return (
+      <Box sx={{ pt: 4, pl: 3 }}>
+        {FormWrapper ?
+          <FormProvider fields={fields} original={entity as EntityTypes} navItem={hasUrl}>
+            <FormWrapper />
+          </FormProvider>
+          :
+          <GenericForm fields={fields} navItem={hasUrl} original={entity as EntityTypes} />
+        }
+      </Box>
+    );
   }
-  const hasUrl = NAVITEMS.find((nav) => nav.segment === target.object);
-  if (!hasUrl) return <Typography>Unknown Type</Typography>;
-
-  let allow: boolean | string = true;
-  if (id && parseInt(id) > 0) {
-    allow = canDo("edit", entity, me);
-  } else {
-    allow = canDo("add", Object.assign({}, entity, { _type: hasUrl.type }), me);
-  }
-
-  if (typeof allow === "string") {
-    return <PermissionError error={allow} />
-  }
-
-  const fields = Object.values(TypeFieldSchema[hasUrl.type]);
-  const formKey = `OAForm${hasUrl.type}` as keyof typeof MyForms;
-  const FormWrapper = formKey as MyFormsKeys in MyForms ? MyForms[formKey] : null;
-
-  return (
-    <Box sx={{ pt: 4, pl: 3 }}>
-      {error.length > 0 ? (
-        <Grid container justifyContent="center" alignItems="center">
-          <Typography variant="subtitle1">{error}</Typography>
-        </Grid>
-      ) : loading ? (
-        <Grid container justifyContent="center" alignItems="center">
-          <CircularProgress />
-        </Grid>
-      ) : FormWrapper ?
-        <FormProvider fields={fields} original={entity} navItem={hasUrl}>
-          <FormWrapper />
-        </FormProvider>
-        :
-        <GenericForm fields={fields} navItem={hasUrl} original={entity} />
-      }
-    </Box>
-  );
-};
+;
 
 export default EntityForm;

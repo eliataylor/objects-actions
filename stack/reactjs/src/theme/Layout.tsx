@@ -95,11 +95,7 @@ const Layout: React.FC = () => {
             sx={{ ml: 2, mt: 3 }}
             style={{ maxWidth: 240, minWidth: 140 }}
           >
-            {location.pathname.length > 1 && (
-              <Box sx={{ pl: 2 }}>
-                <Logo height={45} />
-              </Box>
-            )}
+            {location.pathname.length > 1 && <Logo height={45} />}
             <NavMenu />
           </Grid>
         )}
@@ -139,9 +135,7 @@ const Layout: React.FC = () => {
             <ChevronRightIcon />
           </IconButton>
         </DrawerHeader>
-        <Box sx={{ padding: 1 }}>
           <NavMenu />
-        </Box>
       </StyledDrawer>
     </React.Fragment>
   );

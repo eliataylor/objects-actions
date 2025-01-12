@@ -47,7 +47,7 @@ const Extend: React.FC = () => {
         <StyledTypography variant="subtitle2" sx={{ mb: 3 }}>
           Edit your .env.myproject
         </StyledTypography>
-        <EnvBuilder />
+        <EnvBuilder displayProperties={['PROJECT_NAME', 'STACK_PATH', 'TYPES_PATH', 'PERMISSIONS_PATH']} />
       </StyledPaper>
 
       <StyledPaper>

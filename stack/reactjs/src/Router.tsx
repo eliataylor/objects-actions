@@ -1,55 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Home from './screens/Home';
-import Layout from './theme/Layout';
+import React, { useEffect, useState } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Home from "./screens/Home";
+import Layout from "./theme/Layout";
 
-import { NAVITEMS } from './object-actions/types/types';
-import EntityView from './screens/EntityView';
-import EntityList from './screens/EntityList';
-import EntityForm from './screens/EntityForm';
-import { AnonymousRoute, AuthChangeRedirector, AuthenticatedRoute } from './allauth/auth';
-import Login from './allauth/account/Login';
-import RequestLoginCode from './allauth/account/RequestLoginCode';
-import ConfirmLoginCode from './allauth/account/ConfirmLoginCode';
-import Logout from './allauth/account/Logout';
-import Signup from './allauth/account/Signup';
-import ProviderSignup from './allauth/socialaccount/ProviderSignup';
-import ProviderCallback from './allauth/socialaccount/ProviderCallback';
-import ChangeEmail from './allauth/account/ChangeEmail';
-import ManageProviders from './allauth/socialaccount/ManageProviders';
-import VerifyEmail, { loader as verifyEmailLoader } from './allauth/account/VerifyEmail';
-import VerificationEmailSent from './allauth/account/VerificationEmailSent';
-import RequestPasswordReset from './allauth/account/RequestPasswordReset';
-import ChangePassword from './allauth/account/ChangePassword';
-import MFAOverview, { loader as mfaOverviewLoader } from './allauth/mfa/MFAOverview';
-import ActivateTOTP, { loader as activateTOTPLoader } from './allauth/mfa/ActivateTOTP';
-import DeactivateTOTP from './allauth/mfa/DeactivateTOTP';
-import RecoveryCodes, { loader as recoveryCodesLoader } from './allauth/mfa/RecoveryCodes';
-import AddWebAuthn from './allauth/mfa/AddWebAuthn';
-import ReauthenticateWebAuthn from './allauth/mfa/ReauthenticateWebAuthn';
-import ListWebAuthn, { loader as listWebAuthnLoader } from './allauth/mfa/ListWebAuthn';
-import GenerateRecoveryCodes, { loader as generateRecoveryCodesLoader } from './allauth/mfa/GenerateRecoveryCodes';
-import ResetPassword, { loader as resetPasswordLoader } from './allauth/account/ResetPassword';
-import AuthenticateTOTP from './allauth/mfa/AuthenticateTOTP';
-import AuthenticateRecoveryCodes from './allauth/mfa/AuthenticateRecoveryCodes';
-import AuthenticateWebAuthn from './allauth/mfa/AuthenticateWebAuthn';
-import ReauthenticateRecoveryCodes from './allauth/mfa/ReauthenticateRecoveryCodes';
-import ReauthenticateTOTP from './allauth/mfa/ReauthenticateTOTP';
-import Reauthenticate from './allauth/account/Reauthenticate';
-import Sessions from './allauth/usersessions/Sessions';
-import SmsSigninOrUp from './allauth/SmsSigninOrUp';
-import UserView from './screens/UserView';
-import ReadMe from './object-actions/docs/ReadMe';
-import Privacy from './screens/Privacy';
-import Install from './object-actions/docs/Install';
-import Contribute from './object-actions/docs/Contribute';
-import Extend from './object-actions/docs/Extend';
-import Customize from './object-actions/docs/Customize';
+import { NAVITEMS } from "./object-actions/types/types";
+import EntityView from "./screens/EntityView";
+import EntityList from "./screens/EntityList";
+import EntityForm from "./screens/EntityForm";
+import { AnonymousRoute, AuthChangeRedirector, AuthenticatedRoute } from "./allauth/auth";
+import Login from "./allauth/account/Login";
+import RequestLoginCode from "./allauth/account/RequestLoginCode";
+import ConfirmLoginCode from "./allauth/account/ConfirmLoginCode";
+import Logout from "./allauth/account/Logout";
+import Signup from "./allauth/account/Signup";
+import ProviderSignup from "./allauth/socialaccount/ProviderSignup";
+import ProviderCallback from "./allauth/socialaccount/ProviderCallback";
+import ChangeEmail from "./allauth/account/ChangeEmail";
+import ManageProviders from "./allauth/socialaccount/ManageProviders";
+import VerifyEmail, { loader as verifyEmailLoader } from "./allauth/account/VerifyEmail";
+import VerificationEmailSent from "./allauth/account/VerificationEmailSent";
+import RequestPasswordReset from "./allauth/account/RequestPasswordReset";
+import ChangePassword from "./allauth/account/ChangePassword";
+import MFAOverview, { loader as mfaOverviewLoader } from "./allauth/mfa/MFAOverview";
+import ActivateTOTP, { loader as activateTOTPLoader } from "./allauth/mfa/ActivateTOTP";
+import DeactivateTOTP from "./allauth/mfa/DeactivateTOTP";
+import RecoveryCodes, { loader as recoveryCodesLoader } from "./allauth/mfa/RecoveryCodes";
+import AddWebAuthn from "./allauth/mfa/AddWebAuthn";
+import ReauthenticateWebAuthn from "./allauth/mfa/ReauthenticateWebAuthn";
+import ListWebAuthn, { loader as listWebAuthnLoader } from "./allauth/mfa/ListWebAuthn";
+import GenerateRecoveryCodes, { loader as generateRecoveryCodesLoader } from "./allauth/mfa/GenerateRecoveryCodes";
+import ResetPassword, { loader as resetPasswordLoader } from "./allauth/account/ResetPassword";
+import AuthenticateTOTP from "./allauth/mfa/AuthenticateTOTP";
+import AuthenticateRecoveryCodes from "./allauth/mfa/AuthenticateRecoveryCodes";
+import AuthenticateWebAuthn from "./allauth/mfa/AuthenticateWebAuthn";
+import ReauthenticateRecoveryCodes from "./allauth/mfa/ReauthenticateRecoveryCodes";
+import ReauthenticateTOTP from "./allauth/mfa/ReauthenticateTOTP";
+import Reauthenticate from "./allauth/account/Reauthenticate";
+import Sessions from "./allauth/usersessions/Sessions";
+import SmsSigninOrUp from "./allauth/SmsSigninOrUp";
+import UserView from "./screens/UserView";
+import ReadMe from "./object-actions/docs/ReadMe";
+import Privacy from "./screens/Privacy";
+import Install from "./object-actions/docs/Install";
+import Contribute from "./object-actions/docs/Contribute";
+import Extend from "./object-actions/docs/Extend";
+import Customize from "./object-actions/docs/Customize";
 
 function createRouter() {
   const allRoutes = [
     {
-      path: '/',
+      path: "/",
       element: (
         <AuthChangeRedirector>
           <Layout />
@@ -57,262 +57,263 @@ function createRouter() {
       ),
       children: [
         {
-          path: '/',
-          element: <Home />,
+          path: "/",
+          element: <Home />
         },
         {
-          path: '/account/sms',
+          path: "/account/sms",
           element: (
             <AnonymousRoute>
               <SmsSigninOrUp />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/login',
+          path: "/account/login",
           element: (
             <AnonymousRoute>
               <Login />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/login/code',
+          path: "/account/login/code",
           element: (
             <AnonymousRoute>
               <RequestLoginCode />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/login/code/confirm',
+          path: "/account/login/code/confirm",
           element: (
             <AnonymousRoute>
               <ConfirmLoginCode />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/email',
+          path: "/account/email",
           element: (
             <AuthenticatedRoute>
               <ChangeEmail />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/logout',
-          element: <Logout />,
+          path: "/account/logout",
+          element: <Logout />
         },
         {
-          path: '/account/:provider/callback',
-          element: <ProviderCallback />,
+          path: "/account/:provider/callback",
+          element: <ProviderCallback />
         },
         {
-          path: '/account/provider/signup',
+          path: "/account/provider/signup",
           element: (
             <AnonymousRoute>
               <ProviderSignup />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/providers',
+          path: "/account/providers",
           element: (
             <AuthenticatedRoute>
               <ManageProviders />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/signup',
+          path: "/account/signup",
           element: (
             <AnonymousRoute>
               <Signup />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/verify-email',
-          element: <VerificationEmailSent />,
+          path: "/account/verify-email",
+          element: <VerificationEmailSent />
         },
         {
-          path: '/account/verify-email/:key',
+          path: "/account/verify-email/:key",
           element: <VerifyEmail />,
-          loader: verifyEmailLoader,
+          loader: verifyEmailLoader
         },
         {
-          path: '/account/password/reset',
+          path: "/account/password/reset",
           element: (
             <AnonymousRoute>
               <RequestPasswordReset />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/password/reset/key/:key',
+          path: "/account/password/reset/key/:key",
           element: (
             <AnonymousRoute>
               <ResetPassword />
             </AnonymousRoute>
           ),
-          loader: resetPasswordLoader,
+          loader: resetPasswordLoader
         },
         {
-          path: '/account/password/change',
+          path: "/account/password/change",
           element: (
             <AuthenticatedRoute>
               <ChangePassword />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/2fa',
+          path: "/account/2fa",
           element: (
             <AuthenticatedRoute>
               <MFAOverview />
             </AuthenticatedRoute>
           ),
-          loader: mfaOverviewLoader,
+          loader: mfaOverviewLoader
         },
         {
-          path: '/account/reauthenticate',
+          path: "/account/reauthenticate",
           element: (
             <AuthenticatedRoute>
               <Reauthenticate />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/reauthenticate/totp',
+          path: "/account/reauthenticate/totp",
           element: (
             <AuthenticatedRoute>
               <ReauthenticateTOTP />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/reauthenticate/recovery-codes',
+          path: "/account/reauthenticate/recovery-codes",
           element: (
             <AuthenticatedRoute>
               <ReauthenticateRecoveryCodes />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/reauthenticate/webauthn',
+          path: "/account/reauthenticate/webauthn",
           element: (
             <AuthenticatedRoute>
               <ReauthenticateWebAuthn />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/authenticate/totp',
+          path: "/account/authenticate/totp",
           element: (
             <AnonymousRoute>
               <AuthenticateTOTP />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/authenticate/recovery-codes',
+          path: "/account/authenticate/recovery-codes",
           element: (
             <AnonymousRoute>
               <AuthenticateRecoveryCodes />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/authenticate/webauthn',
+          path: "/account/authenticate/webauthn",
           element: (
             <AnonymousRoute>
               <AuthenticateWebAuthn />
             </AnonymousRoute>
-          ),
+          )
         },
         {
-          path: '/account/2fa/totp/activate',
+          path: "/account/2fa/totp/activate",
           element: (
             <AuthenticatedRoute>
               <ActivateTOTP />
             </AuthenticatedRoute>
           ),
-          loader: activateTOTPLoader,
+          loader: activateTOTPLoader
         },
         {
-          path: '/account/2fa/totp/deactivate',
+          path: "/account/2fa/totp/deactivate",
           element: (
             <AuthenticatedRoute>
               <DeactivateTOTP />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/2fa/recovery-codes',
+          path: "/account/2fa/recovery-codes",
           element: (
             <AuthenticatedRoute>
               <RecoveryCodes />
             </AuthenticatedRoute>
           ),
-          loader: recoveryCodesLoader,
+          loader: recoveryCodesLoader
         },
         {
-          path: '/account/2fa/recovery-codes/generate',
+          path: "/account/2fa/recovery-codes/generate",
           element: (
             <AuthenticatedRoute>
               <GenerateRecoveryCodes />
             </AuthenticatedRoute>
           ),
-          loader: generateRecoveryCodesLoader,
+          loader: generateRecoveryCodesLoader
         },
         {
-          path: '/account/2fa/webauthn',
+          path: "/account/2fa/webauthn",
           element: (
             <AuthenticatedRoute>
               <ListWebAuthn />
             </AuthenticatedRoute>
           ),
-          loader: listWebAuthnLoader,
+          loader: listWebAuthnLoader
         },
         {
-          path: '/account/2fa/webauthn/add',
+          path: "/account/2fa/webauthn/add",
           element: (
             <AuthenticatedRoute>
               <AddWebAuthn />
             </AuthenticatedRoute>
-          ),
+          )
         },
         {
-          path: '/account/sessions',
+          path: "/account/sessions",
           element: (
             <AuthenticatedRoute>
               <Sessions />
             </AuthenticatedRoute>
-          ),
-        },
-      ],
-    },
+          )
+        }
+      ]
+    }
   ];
 
   allRoutes[0].children.push({ path: `/users/:uid`, element: <UserView /> });
   NAVITEMS.forEach((item) => {
     allRoutes[0].children.push({
       path: `/${item.segment}`,
-      element: <EntityList showFab={true} />,
+      element: <EntityList showFab={true} />
     });
     allRoutes[0].children.push({
       path: `/${item.segment}/:id`,
-      element: <EntityView />,
+      element: <EntityView />
     });
-    allRoutes[0].children.push({
-      path: `/forms/${item.segment}/:id/edit`,
-      element: <EntityForm />,
-    });
-    allRoutes[0].children.push({
-      path: `/forms/${item.segment}/0/add`,
-      element: <EntityForm />,
-    });
+  });
+  
+  allRoutes[0].children.push({
+    path: `/forms/:model/:id/edit`,
+    element: <EntityForm />
+  });
+  allRoutes[0].children.push({
+    path: `/forms/:model/0/add`,
+    element: <EntityForm />
   });
 
   allRoutes[0].children.push({ path: `/readme`, element: <ReadMe /> }); // legacy route
@@ -322,7 +323,7 @@ function createRouter() {
   allRoutes[0].children.push({ path: `/oa/extend`, element: <Extend /> });
   allRoutes[0].children.push({
     path: `/oa/contribute`,
-    element: <Contribute />,
+    element: <Contribute />
   });
   allRoutes[0].children.push({ path: `/oa/sponsor`, element: <ReadMe /> });
   allRoutes[0].children.push({ path: `/oa/privacy`, element: <Privacy /> });

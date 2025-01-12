@@ -2,11 +2,11 @@
 
 #### Generate your Django models, views, serializers and urls:
 
-`python -m django/generate admin --types=examples/object-fields-nod.csv --output_dir=examples/django/oaexample_app`
+`python -m generate admin --types=examples/object-fields-demo.csv --output_dir=examples/django/oaexample_app`
 
 #### Generate your TypeScript types, interfaces and URL patterns:
 
-`python -m django/generate typescript --types=examples/object-fields-nod.csv --output_dir=examples/reactjs/src/object-actions/types/types.ts`
+`python -m generate typescript --types=examples/object-fields-demo.csv --output_dir=examples/reactjs/src/object-actions/`
 
 #### Test API and Generate fake data for API
 
@@ -21,7 +21,7 @@ All Select options under Fields Types (Column D) in the Object Fields sheet come
 If you have special field types, add them here. The checkboxes roughly describe what Fields are support by the different
 CMS config builders in this repository.
 
-  <a href="docs/images/field-types.png" target="_blank">
-      <img src="docs/images/field-types.png" alt="Field Types" height="200" />
-    </a>
+<a href="docs/images/field-types.png" target="_blank">
+    <img src="docs/images/field-types.png" alt="Field Types" height="200" />
+</a>
 

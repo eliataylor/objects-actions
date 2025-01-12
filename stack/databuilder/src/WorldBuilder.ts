@@ -65,7 +65,7 @@ export class WorldBuilder {
                 }
             }
 
-            const parts = url.split('/');
+            const parts = url.replace('?', '/').split('/');
             const name: string[] = [verb];
             let hasId = false
             parts.forEach(part => {
@@ -118,7 +118,7 @@ export class WorldBuilder {
     public async updateUserProfile(user: any) {
         const entity = await this.populateEntity(user, NAVITEMS.find(nav => nav.type === "Users") as NavItem)
         const {formData, headers} = await this.serializePayload(entity);
-        const apiUrl = `/api/users/${user.id}`
+        const apiUrl = `/api/users/${user.id}?autoverify=true`
         const profile = await this.apiClient.post(apiUrl, formData, headers);
         if (profile && profile.data) {
             this.saveFixture('edit', apiUrl, entity, profile, profile.data)

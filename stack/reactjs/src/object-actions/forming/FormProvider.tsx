@@ -224,6 +224,7 @@ export const FormProvider = <T extends EntityTypes>({
         input = (
           <DatePicker
             label={field.singular}
+            name={field.machine}
             value={value || null}
             onChange={(newValue) => handleChange(field, newValue, index)}
             {...topass}
@@ -233,6 +234,7 @@ export const FormProvider = <T extends EntityTypes>({
       case "date_time":
         input = <DateTimePicker
           format="MMMM D, YYYY h:mm A"
+          name={field.machine}
           label={field.singular}
           value={typeof value === "string" ? dayjs(value).local() : value}
           onChange={(newVal) => handleChange(field, newVal, index)}
@@ -267,6 +269,7 @@ export const FormProvider = <T extends EntityTypes>({
             control={
               <Switch
                 checked={value}
+                name={field.machine}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                   handleChange(field, event.target.checked, index)
                 }

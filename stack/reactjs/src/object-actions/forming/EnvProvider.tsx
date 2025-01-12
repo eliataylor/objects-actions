@@ -9,6 +9,7 @@ export interface EnvConfig {
   REACT_APP_APP_HOST: string;
   REACT_APP_LOGIN_EMAIL: string;
   REACT_APP_LOGIN_PASS: string;
+  DEFAULT_PERMS: string;
   OA_ENV_DB: string;
   OA_ENV_EMAIL: string;
   OA_ENV_STORAGE: string;
@@ -17,12 +18,13 @@ export interface EnvConfig {
 const defaultEnvConfig: EnvConfig = {
   PROJECT_NAME: 'OAexample',
   STACK_PATH: '.',
-  TYPES_PATH: 'src/examples/democrasee-objects.csv',
-  PERMISSIONS_PATH: 'src/examples/democrasee-permissions.csv',
+  TYPES_PATH: 'src/examples/object-fields-demo.csv',
+  PERMISSIONS_PATH: 'src/examples/permissions-matrix-demo.csv',
   REACT_APP_API_HOST: 'https://localapi.oaexample.com:8080',
   REACT_APP_APP_HOST: 'https://localhost.oaexample.com:3000',
   REACT_APP_LOGIN_EMAIL: 'info@oaexample.com',
   REACT_APP_LOGIN_PASS: 'APasswordYouShouldChange',
+  DEFAULT_PERMS: 'IsAuthenticatedOrReadOnly',
   OA_ENV_DB: 'docker',
   OA_ENV_EMAIL: 'console',
   OA_ENV_STORAGE: 'local',

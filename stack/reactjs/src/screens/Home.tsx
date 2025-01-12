@@ -49,14 +49,14 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
         justifyContent={"space-between"}
         alignItems={"center"}
         alignContent={"center"}
-        gap={2}
+        gap={4}
       >
         <Grid item>
           <OALogo height={80} />
         </Grid>
-        <Grid item style={{ textAlign: "left" }}>
-          <Typography variant="h3">Objects / Actions</Typography>
-          <Typography variant="h1">From Spreadsheets to Full Stack</Typography>
+        <Grid item style={{ textAlign: "left" }} flexGrow={1}>
+          <Typography variant="h3" style={{fontStyle:'italic'}}>Objects / Actions</Typography>
+          <Typography variant="h1">Spreadsheets to Full Stack</Typography>
           <Link to={"/oa/readme"}>
             <TightButton
               style={{ marginTop: 20 }}
@@ -67,6 +67,7 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
             >
               Documentation
             </TightButton>
+
           </Link>
         </Grid>
       </Grid>

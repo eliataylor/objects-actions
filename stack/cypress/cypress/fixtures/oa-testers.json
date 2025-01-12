@@ -1,0 +1,29 @@
+[
+  {
+    "username": false,
+    "email": false,
+    "groups": []
+  },
+  {
+    "id": 8,
+    "email": "Tre.Leannon@gmail.com",
+    "groups": [
+      "oa-tester"
+    ]
+  },
+  {
+    "id": 9,
+    "email": "Jovany.Grimes-Harber@gmail.com",
+    "groups": [
+      "oa-tester",
+      "verified"
+    ]
+  },
+  {
+    "id": 1,
+    "email": "info@oaexample.com",
+    "groups": [
+      "admin"
+    ]
+  }
+]

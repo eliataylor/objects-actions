@@ -8,25 +8,67 @@ import os
 class TypesBuilder:
     def __init__(self, field_csv, matrix_csv, output_dir):
         self.pluralizer = inflect.engine()
-        self.output_dir = output_dir
+        self.output_dir = output_dir if output_dir.endswith('/') else f"{output_dir}/"
+        self.templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/reactjs/'
         self.types_filepath = os.path.join(self.output_dir, 'types.ts')
         self.field_csv = field_csv
         self.matrix_csv = matrix_csv
         self.json = build_types_from_csv(field_csv)
 
-    def build_permissions(self):
+    def build_permissions(self, default_perm):
+        access_path = os.path.join(self.output_dir, 'access.ts')
+        if not os.path.exists(access_path):
+            with open(self.templates_dir + '/access.ts', 'r') as fm:
+                tpl = fm.read().strip()
+                with open(access_path, 'w') as file:
+                    file.write(tpl)
+
         matrix = build_permissions_from_csv(self.matrix_csv, self.json) if self.matrix_csv is not None else None
         if matrix is None or 'permissions' not in matrix:
-            return None
+            matrix = {'all_verbs':['view', 'add', 'edit', 'delete'],
+                      'all_roles':['anonymous', 'authenticated', 'verified'],
+                      'permissions':[]} # reset to default
 
-        perms_path = os.path.join(self.output_dir, 'access.tsx')
-        inject_generated_code(perms_path, f"\n export type CRUDVerb = '{("' | '").join(matrix['all_verbs'])}';", 'PERMS-VERBS')
-        inject_generated_code(perms_path, f"\n export type PermRoles = '{("' | '").join(matrix['all_roles'])}';", 'PERMS-ROLES')
+        inject_generated_code(access_path, f"\nexport type CRUDVerb = '{("' | '").join(matrix['all_verbs'])}';", 'PERMS-VERBS')
+        inject_generated_code(access_path, f"\nexport const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = '{default_perm}';\n\nexport type PermRoles = '{("' | '").join(matrix['all_roles'])}';", 'PERMS-ROLES')
 
         perms_path = os.path.join(self.output_dir, 'permissions.json')
         with open(perms_path, 'w') as file:
             file.write(json.dumps(matrix['permissions'], indent=2))
 
+    def build_forms(self):
+
+        with open(self.templates_dir + '/form.tsx', 'r') as fm:
+            tpl = fm.read().strip()
+
+        imports = []
+
+        for class_name in self.json:
+            fields = []
+            model_name = create_object_name(class_name)
+            code = tpl.replace('__CLASSNAME__', model_name)
+
+            for field in self.json[class_name]:
+                field_type = create_machine_name(field['Field Type'], True)
+                field_name = field['Field Name']
+
+                if field_type == 'id_auto_increment' or field_name == 'created_at' or field_name == 'modified_at':
+                    logger.debug(f"never render ID, created or modified dates")
+                    continue
+
+                # TODO: make Grid size and props dyamic
+                fields.append(f"""\t\t\t<Grid item xs={{12}} >
+\t\t\t\t{{renderField(TypeFieldSchema["{model_name}"]["{field_name}"], 0, {{fullWidth:true}})}}
+\t\t\t</Grid>""")
+
+            imports.append(f"export {{ default as OAForm{model_name} }} from './OAForm{model_name}';")
+
+            code = code.replace('__ALLFIELDS__', "\n".join(fields))
+            inject_generated_code(self.output_dir + f'OAForm{model_name}.tsx', code, 'OAFORM')
+
+        imports.append("export type MyFormsKeys = `OAForm${string}`;")
+
+        inject_generated_code(self.output_dir + f'index.tsx', "\n".join(imports), 'OAFORM')
 
     def build_types(self):
 
@@ -69,14 +111,13 @@ class TypesBuilder:
 
             constant = {}
 
-
             singular = self.pluralizer.singular_noun(class_name)
             if not singular:
                 singular = class_name
                 logger.info(f"Singularizing failed on {class_name}")
 
             navItem = {"singular":singular}
-            navItem['plural'] = self.pluralizer.plural_noun(navItem['singular'])
+            navItem['plural'] = class_name # we recommend to list all models as Plural because it's easier to make singular
             navItem = {**navItem,
                        "type":type_name,
                        "segment": path_segment,

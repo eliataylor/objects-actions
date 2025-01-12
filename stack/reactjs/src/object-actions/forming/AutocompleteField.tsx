@@ -159,6 +159,7 @@ const AutocompleteField: React.FC<AcFieldProps> = ({
         const canAdd = <IconButton size={"small"} onClick={setNestedEntity}><Add /></IconButton>;
         return <TextField
           {...params}
+          name={field_name}
           placeholder={`Search ${field_label}`}
           variant="standard"
           InputProps={{

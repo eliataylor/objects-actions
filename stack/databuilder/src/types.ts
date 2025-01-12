@@ -115,7 +115,7 @@ export const NAVITEMS: NavItem[] = [
   },
   {
     "singular": "Party",
-    "plural": "Partys",
+    "plural": "Parties",
     "type": "Parties",
     "segment": "parties",
     "api": "/api/parties",
@@ -158,7 +158,7 @@ export const NAVITEMS: NavItem[] = [
   },
   {
     "singular": "City",
-    "plural": "Citys",
+    "plural": "Cities",
     "type": "Cities",
     "segment": "cities",
     "api": "/api/cities",
@@ -178,7 +178,7 @@ export const NAVITEMS: NavItem[] = [
   },
   {
     "singular": "Rally",
-    "plural": "Rallys",
+    "plural": "Rallies",
     "type": "Rallies",
     "segment": "rallies",
     "api": "/api/rallies",

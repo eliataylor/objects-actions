@@ -1,5 +1,5 @@
 import React, { ChangeEvent, ReactElement, useState } from "react";
-import { Button, CircularProgress, FormHelperText, Grid, MenuItem, TextField, Typography } from "@mui/material";
+import { Button, CircularProgress, FormControlLabel, FormHelperText, Grid, MenuItem, TextField, Typography } from "@mui/material";
 import { EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, RelEntity } from "../types/types";
 import AutocompleteField from "./AutocompleteField";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import ListItemText from "@mui/material/ListItemText";
 import { isDayJs } from "../../utils";
 import ProviderButton from "../../allauth/socialaccount/ProviderButton";
+import Switch from "@mui/material/Switch";
 
 dayjs.extend(utc);
 
@@ -20,8 +21,8 @@ interface GenericFormProps {
   fields: FieldTypeDefinition[];
   original: EntityTypes;
   navItem: NavItem;
-  onSuccess?: (newEntity:EntityTypes) => void;
-  onError?: (response:HttpResponse) => void;
+  onSuccess?: (newEntity: EntityTypes) => void;
+  onError?: (response: HttpResponse) => void;
 }
 
 const GenericForm: React.FC<GenericFormProps> = ({
@@ -74,7 +75,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
       setSyncing(false);
       if (response.success) {
         if (onSuccess) {
-          onSuccess(response.data as EntityTypes)
+          onSuccess(response.data as EntityTypes);
         } else if (navItem.type === "Users") {
           window.location.href = "/";
         } else {
@@ -151,7 +152,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
     if (response.success && response.data) {
       const newEntity = response.data as EntityTypes;
       if (onSuccess) {
-        onSuccess(newEntity)
+        onSuccess(newEntity);
       } else {
         navigate(`/${navItem.segment}/${newEntity.id}`);
         // navigate(`/forms/${navItem.segment}/${newEntity.id}/edit`)
@@ -212,6 +213,23 @@ const GenericForm: React.FC<GenericFormProps> = ({
           sx={{ width: "100%" }}
           value={typeof baseVal === "string" ? dayjs(baseVal).local() : baseVal}
           onChange={(newVal) => handleTimeChange(newVal, field.machine)}
+        />
+      );
+    } else if (field.field_type === "boolean") {
+      input = (
+        <FormControlLabel
+          value="bottom"
+          control={
+            <Switch
+              checked={baseVal}
+              name={field.machine}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange(field.machine, event.target.checked)
+              }
+            />
+          }
+          label={field.singular}
+          labelPlacement="top"
         />
       );
     } else if (field.field_type === "provider_url") {

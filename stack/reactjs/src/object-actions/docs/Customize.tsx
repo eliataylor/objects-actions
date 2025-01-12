@@ -36,7 +36,7 @@ const Customize: React.FC = () => {
           The permissions matrix is optional. The server's default permission is
           `Is Authenticated or Read only`
         </FormHelperText>
-        <EnvBuilder />
+        <EnvBuilder  displayProperties={['TYPES_PATH', 'PERMISSIONS_PATH']} />
       </StyledPaper>
 
       <StyledPaper>
