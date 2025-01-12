@@ -17,8 +17,8 @@ export interface EnvConfig {
 const defaultEnvConfig: EnvConfig = {
   PROJECT_NAME: 'OAexample',
   STACK_PATH: '.',
-  TYPES_PATH: 'src/examples/democrasee-objects.csv',
-  PERMISSIONS_PATH: 'src/examples/democrasee-permissions.csv',
+  TYPES_PATH: 'src/examples/object-fields-demo.csv',
+  PERMISSIONS_PATH: 'src/examples/permissions-matrix-demo.csv',
   REACT_APP_API_HOST: 'https://localapi.oaexample.com:8080',
   REACT_APP_APP_HOST: 'https://localhost.oaexample.com:3000',
   REACT_APP_LOGIN_EMAIL: 'info@oaexample.com',

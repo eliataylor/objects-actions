@@ -10,7 +10,7 @@ logger.add(sys.stdout, level="INFO")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate project files based on field types CSV.")
-    parser.add_argument('command', choices=['django', 'typescript', 'worksheets'],
+    parser.add_argument('command', choices=['django', 'typescript', 'forms', 'worksheets'],
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--permissions', required=False, help="Path to the Permissions Matrix CSV file.")
@@ -43,6 +43,11 @@ if __name__ == "__main__":
         builder = DjangoBuilder(types_path, matrix_path, output_dir)
         if matrix_path:
             builder.build_permissions()
+    elif command == 'forms':
+        reactor = TypesBuilder(types_path, matrix_path, output_dir)
+        reactor.build_forms()
+        if matrix_path:
+            reactor.build_permissions()
     elif command == 'typescript':
         reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_types()
