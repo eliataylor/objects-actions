@@ -308,7 +308,7 @@ def inject_generated_code(output_file_path, code, prefix):
     with open(output_file_path, 'w') as file:
         file.write(html.strip())
 
-    logger.info(f"{prefix} built. ")
+    logger.info(f"{prefix} built to {output_file_path}. ")
 
 
 def addArgs(target, new_args):

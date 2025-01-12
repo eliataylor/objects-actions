@@ -102,10 +102,11 @@ export function canDo(
   }
 
   const myGroups = new Set(
-    me?.groups && me?.groups.length > 0 ? me.groups : ["anonymous"]
+    me?.groups && me?.groups.length > 0 ? me.groups : []
   );
 
   if (!me || !me.id) {
+    myGroups.add("anonymous");
     const hasRole = perm.roles.indexOf("anonymous") > -1;
     if (hasRole) {
       return true;

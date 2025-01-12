@@ -7,7 +7,7 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
+export const OAFormRallies: React.FC<OAFormProps> = ({ onSuccess }) => {
 
   const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<EntityTypes>();
   const { enqueueSnackbar } = useSnackbar();
@@ -39,13 +39,19 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
   return (
     <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
       			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["name"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rallies"]["title"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["logo"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rallies"]["description"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["website"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rallies"]["media"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Rallies"]["topics"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Rallies"]["comments"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -70,5 +76,5 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
 
 };
 
-export default OAFormParties;
+export default OAFormRallies;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

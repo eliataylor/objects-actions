@@ -7,7 +7,7 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
+export const OAFormCities: React.FC<OAFormProps> = ({ onSuccess }) => {
 
   const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<EntityTypes>();
   const { enqueueSnackbar } = useSnackbar();
@@ -39,13 +39,55 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
   return (
     <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
       			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["name"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Cities"]["name"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["logo"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Cities"]["description"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["website"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Cities"]["postal_address"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["picture"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["cover_photo"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["sponsors"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["website"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["population"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["altitude"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["county"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["state_id"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["officials"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["land_area"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["water_area"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["total_area"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["density"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Cities"]["timezone"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -70,5 +112,5 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
 
 };
 
-export default OAFormParties;
+export default OAFormCities;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

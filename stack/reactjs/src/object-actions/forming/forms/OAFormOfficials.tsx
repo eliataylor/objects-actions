@@ -7,7 +7,7 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
+export const OAFormOfficials: React.FC<OAFormProps> = ({ onSuccess }) => {
 
   const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<EntityTypes>();
   const { enqueueSnackbar } = useSnackbar();
@@ -39,13 +39,22 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
   return (
     <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
       			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["name"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Officials"]["title"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["logo"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Officials"]["office_phone"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["website"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Officials"]["office_email"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Officials"]["social_links"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Officials"]["party_affiliation"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				{renderField(TypeFieldSchema["Officials"]["city"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -70,5 +79,5 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
 
 };
 
-export default OAFormParties;
+export default OAFormOfficials;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

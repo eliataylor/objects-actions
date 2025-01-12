@@ -1,4 +1,3 @@
-//---OBJECT-ACTIONS-OAFORM-STARTS---//
 import React from "react";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
 import { EntityTypes, TypeFieldSchema } from "../../types/types";
@@ -7,7 +6,7 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
+export const OAForm__CLASSNAME__: React.FC<OAFormProps> = ({ onSuccess }) => {
 
   const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<EntityTypes>();
   const { enqueueSnackbar } = useSnackbar();
@@ -38,15 +37,7 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
 
   return (
     <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
-      			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["name"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["logo"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} sm={6}>
-				{renderField(TypeFieldSchema["Parties"]["website"], 0, {fullWidth:true})}
-			</Grid>
+      __ALLFIELDS__
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
 
@@ -70,5 +61,4 @@ export const OAFormParties: React.FC<OAFormProps> = ({ onSuccess }) => {
 
 };
 
-export default OAFormParties;
-//---OBJECT-ACTIONS-OAFORM-ENDS---//
+export default OAForm__CLASSNAME__;

@@ -46,6 +46,7 @@ if __name__ == "__main__":
     elif command == 'typescript':
         reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_types()
+        reactor.build_forms()
         if matrix_path:
             reactor.build_permissions()
 
