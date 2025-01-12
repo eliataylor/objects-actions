@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Box, Collapse, Grid, MenuItem, TextField } from "@mui/material";
 import { EnvConfig, useEnvContext } from "./EnvProvider";
 import { TightButton } from "../../theme/StyledFields";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CopyToClipboard from "../../components/CopyToClipboard";
 
 interface EnvEditorProps {
   displayProperties?: (keyof EnvConfig)[];
@@ -150,6 +152,32 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       !displayProperties.includes(field.key as keyof EnvConfig)
   );
 
+  function makeEnvFile() {
+    return fields
+      .map((field) => {
+        const key = field.key as keyof EnvConfig;
+        const value = envConfig[key] || "";
+        const comments: string[] = [];
+
+        // Add the help text as a comment
+        if (field.helperText) {
+          comments.push(`# ${field.helperText}`);
+        }
+
+        // Add the options as comments (if applicable)
+        if (field.select && field.options) {
+          const optionsComment = field.options
+            .map((option) => `${option.value}`)
+            .join(", ");
+          comments.push(`# Possible values: ${optionsComment}`);
+        }
+
+        // Combine comments and the key-value pair
+        return `${comments.join("\n")}\n${key}=${value}`;
+      })
+      .join("\n\n");
+  }
+
   return (
     <Grid container justifyContent={"space-between"} spacing={2}>
       {visibleFields.map((field) =>
@@ -172,6 +200,17 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
 
       {advancedFields.length > 0 && (
         <Grid item xs={12}>
+
+          <CopyToClipboard textToCopy={makeEnvFile()}>
+            <TightButton
+              size={"small"}
+              variant="outlined"
+              startIcon={<ContentCopyIcon color={"warning"} />}
+            >
+              {"Copy .env config"}
+            </TightButton>
+          </CopyToClipboard>
+
           <TightButton
             size={"small"}
             onClick={() => setShowAdvanced(!showAdvanced)}
@@ -179,6 +218,7 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
           >
             {showAdvanced ? "Hide Advanced Options" : "Show Advanced Options"}
           </TightButton>
+
           <Collapse in={showAdvanced}>
             <Box mt={2}>
               <Grid container spacing={2}>

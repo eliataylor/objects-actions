@@ -6,9 +6,7 @@ import EnvBuilder from '../forming/EnvBuilder';
 import SpreadsheetCards from './SpreadsheetCards';
 
 const Customize: React.FC = () => {
-  const { envConfig, setConfigItem } = useEnvContext();
 
-  const method = envConfig.REACT_APP_APP_HOST;
   return (
     <Box>
       <StyledTypography variant="h1"> Customize </StyledTypography>
@@ -18,11 +16,11 @@ const Customize: React.FC = () => {
 
       <StyledPaper>
         <Typography variant="h6">
-          Copy and customize your spreadsheets:
+          1. Copy and customize your spreadsheets:
         </Typography>
         <FormHelperText>
           You do not to need to finish them before continuing. You can rebuild
-          you stack as you refine your idea.
+          you stack at any time as you refine your idea.
         </FormHelperText>
 
         <SpreadsheetCards />
@@ -30,8 +28,16 @@ const Customize: React.FC = () => {
 
       <StyledPaper>
         <Typography variant="h6" >
-          Set the CSV paths in your .env below:
+          2. Set the CSV paths in your .env below:
         </Typography>
+        <Command
+          command="cp .env.public .env"
+          help={
+            <span>
+              Copy the default config file and adjust your own settings using the form below
+            </span>
+          }
+        />
         <FormHelperText sx={{ mb: 3 }}>
           The permissions matrix is optional. The server's default permission is
           `Is Authenticated or Read only`
@@ -42,7 +48,7 @@ const Customize: React.FC = () => {
       <StyledPaper>
         <Typography variant="h6">3. Run the load script:</Typography>
         <Command
-          command="./load-sheets.sh --env .env.myproject"
+          command="bash load-sheets.sh --env .env"
           help={
             <span>
               Reference your <code>.env</code> file for setup.
