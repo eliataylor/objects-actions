@@ -24,10 +24,10 @@ export const GradientButton = styled(Button)(({ theme }) => ({
   borderRadius: 4,
   textTransform: "none",
   transition: "all 1s",
-  background: `linear-gradient(150deg, ${theme.palette.secondary.main}, ${theme.palette.primary.main})`,
+  background: `linear-gradient(150deg, ${theme.palette.secondary.main}80, ${theme.palette.background.default}, ${theme.palette.background.default}, ${theme.palette.primary.main}80)`,
   color: theme.palette.common.white,
   "&:hover": {
-    background: `linear-gradient(90deg, ${theme.palette.secondary.dark}, ${theme.palette.primary.dark})`
+    background: `linear-gradient(150deg, ${theme.palette.secondary.main}, ${theme.palette.background.default}, ${theme.palette.primary.main})`,
   }
 }));
 
