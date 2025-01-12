@@ -24,8 +24,8 @@ export const GradientButton = styled(Button)(({ theme }) => ({
   borderRadius: 4,
   textTransform: "none",
   transition: "all 1s",
-  background: `linear-gradient(150deg, ${theme.palette.secondary.main}80, ${theme.palette.background.default}, ${theme.palette.background.default}, ${theme.palette.primary.main}80)`,
-  color: theme.palette.common.white,
+  background: `linear-gradient(165deg, ${theme.palette.secondary.main}80, ${theme.palette.background.default}, ${theme.palette.background.default}, ${theme.palette.primary.main}80)`,
+  color: theme.palette.text.primary,
   "&:hover": {
     background: `linear-gradient(150deg, ${theme.palette.secondary.main}, ${theme.palette.background.default}, ${theme.palette.primary.main})`,
   }
@@ -59,16 +59,14 @@ export const StyledDrawer = styled(Drawer)(({ theme }) => ({
 
 export const AlternatingList = styled(Grid)(({ theme }) => ({
   "& > *:nth-of-type(odd)": {
-    paddingLeft: "1%",
-    paddingRight: "1%",
+    padding: "1%",
     backgroundColor:
       theme.palette.mode === "dark"
         ? alpha(theme.palette.background.paper, 0.08)
         : darken(theme.palette.background.paper, 0.025)
   },
   "& > *:nth-of-type(even)": {
-    paddingLeft: "1%",
-    paddingRight: "1%",
+    padding: "1%",
     backgroundColor: "inherit"
   }
 }));

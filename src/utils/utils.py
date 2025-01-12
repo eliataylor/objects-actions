@@ -118,7 +118,7 @@ def build_permissions_from_csv(csv_path, object_types):
     # Find the position of the "STEPS" column
     steps_idx = df.columns.get_loc('EXPLANATIONS')
 
-    # Extract the roles from row 2, between "ROLES" and "STEPS", dynamically
+    # Extract the roles from row 2, between "ROLES" and "EXPLANATIONS", dynamically
     all_roles = df.iloc[0, roles_start_idx:steps_idx].dropna().tolist()
 
     # Initialize the final permissions dictionary
@@ -143,10 +143,6 @@ def build_permissions_from_csv(csv_path, object_types):
             capturing_permissions = True
             continue  # Skip the object type row itself
 
-        # Stop capturing permissions when the next object type appears
-#        if pd.notna(row.iloc[0]) and object_type and row.iloc[0] not in object_types:
-#            capturing_permissions = False
-
         # If we are capturing permissions, process the relevant data
         if capturing_permissions:
             # Extract CRUD verb (e.g., "Read", "Create", "Update")
@@ -155,9 +151,9 @@ def build_permissions_from_csv(csv_path, object_types):
             # Extract the context (own/any)
             ownership = row.iloc[2].strip() if pd.notna(row.iloc[2]) else ""
 
-            # Extract the endpoint from the "STEPS" column
-            endpoint = row.iloc[steps_idx] if pd.notna(row.iloc[steps_idx]) else f"/{object_type}"
-            alias = row.iloc[steps_idx+1] if pd.notna(row.iloc[steps_idx+1]) else ""
+            # Extract the endpoint from the "EXPLANATIONS" column
+            endpoint = row.iloc[steps_idx-1] if pd.notna(row.iloc[steps_idx-1]) else f"/{object_type}"
+            helpText = row.iloc[steps_idx] if pd.notna(row.iloc[steps_idx]) else ""
 
             segments = parse_relative_url(endpoint, object_types)
 
@@ -177,8 +173,8 @@ def build_permissions_from_csv(csv_path, object_types):
                 "ownership": ownership,
                 "roles": allowed_roles,
             }
-            if alias:
-                permission_dict["alias"] = alias
+            if helpText:
+                permission_dict["help"] = helpText
 
             if permission_dict['verb'] is not None and permission_dict['verb'] != '':
                 permissions.append(permission_dict)

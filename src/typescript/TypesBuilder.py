@@ -8,28 +8,35 @@ import os
 class TypesBuilder:
     def __init__(self, field_csv, matrix_csv, output_dir):
         self.pluralizer = inflect.engine()
-        self.output_dir = output_dir
+        self.output_dir = output_dir if output_dir.endswith('/') else f"{output_dir}/"
         self.templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/templates/reactjs/'
-        self.types_filepath = os.path.join(self.output_dir, 'types/types.ts')
+        self.types_filepath = os.path.join(self.output_dir, 'types.ts')
         self.field_csv = field_csv
         self.matrix_csv = matrix_csv
         self.json = build_types_from_csv(field_csv)
 
-    def build_permissions(self):
+    def build_permissions(self, default_perm):
+        access_path = os.path.join(self.output_dir, 'access.ts')
+        if not os.path.exists(access_path):
+            with open(self.templates_dir + '/access.ts', 'r') as fm:
+                tpl = fm.read().strip()
+                with open(access_path, 'w') as file:
+                    file.write(tpl)
+
         matrix = build_permissions_from_csv(self.matrix_csv, self.json) if self.matrix_csv is not None else None
         if matrix is None or 'permissions' not in matrix:
-            return None
+            matrix = {'all_verbs':['view', 'add', 'edit', 'delete'],
+                      'all_roles':['anonymous', 'authenticated', 'verified'],
+                      'permissions':[]} # reset to default
 
-        perms_path = os.path.join(self.output_dir, 'types/access.tsx')
-        inject_generated_code(perms_path, f"\nexport type CRUDVerb = '{("' | '").join(matrix['all_verbs'])}';", 'PERMS-VERBS')
-        inject_generated_code(perms_path, f"\nexport type PermRoles = '{("' | '").join(matrix['all_roles'])}';", 'PERMS-ROLES')
+        inject_generated_code(access_path, f"\nexport type CRUDVerb = '{("' | '").join(matrix['all_verbs'])}';", 'PERMS-VERBS')
+        inject_generated_code(access_path, f"\nexport const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = '{default_perm}';\n\nexport type PermRoles = '{("' | '").join(matrix['all_roles'])}';", 'PERMS-ROLES')
 
-        perms_path = os.path.join(self.output_dir, 'types/permissions.json')
+        perms_path = os.path.join(self.output_dir, 'permissions.json')
         with open(perms_path, 'w') as file:
             file.write(json.dumps(matrix['permissions'], indent=2))
 
     def build_forms(self):
-        outpath = os.path.join(self.output_dir, 'forming/forms/')
 
         with open(self.templates_dir + '/form.tsx', 'r') as fm:
             tpl = fm.read().strip()
@@ -50,18 +57,18 @@ class TypesBuilder:
                     continue
 
                 # TODO: make Grid size and props dyamic
-                fields.append(f"""\t\t\t<Grid item xs={{12}} sm={{6}}>
+                fields.append(f"""\t\t\t<Grid item xs={{12}} >
 \t\t\t\t{{renderField(TypeFieldSchema["{model_name}"]["{field_name}"], 0, {{fullWidth:true}})}}
 \t\t\t</Grid>""")
 
             imports.append(f"export {{ default as OAForm{model_name} }} from './OAForm{model_name}';")
 
             code = code.replace('__ALLFIELDS__', "\n".join(fields))
-            inject_generated_code(outpath + f'OAForm{model_name}.tsx', code, 'OAFORM')
+            inject_generated_code(self.output_dir + f'OAForm{model_name}.tsx', code, 'OAFORM')
 
         imports.append("export type MyFormsKeys = `OAForm${string}`;")
 
-        inject_generated_code(outpath + f'index.tsx', "\n".join(imports), 'OAFORM')
+        inject_generated_code(self.output_dir + f'index.tsx', "\n".join(imports), 'OAFORM')
 
     def build_types(self):
 

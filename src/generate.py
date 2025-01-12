@@ -10,10 +10,11 @@ logger.add(sys.stdout, level="INFO")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate project files based on field types CSV.")
-    parser.add_argument('command', choices=['django', 'typescript', 'forms', 'worksheets'],
+    parser.add_argument('command', choices=['django', 'typescript', 'permissions-ts', 'forms'],
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--permissions', required=False, help="Path to the Permissions Matrix CSV file.")
+    parser.add_argument('--default_perm', required=False, choices=['AllowAll', 'IsAuthenticated', 'IsAuthenticatedOrReadOnly'], default='IsAuthenticatedOrReadOnly', help="Default permission when matches are not found in permissions matrix")
     parser.add_argument('--output_dir', required=True, help="Path to the output directory.")
 
     args = parser.parse_args()
@@ -22,6 +23,7 @@ if __name__ == "__main__":
     types_path = args.types
     matrix_path = args.permissions
     output_dir = args.output_dir
+    default_perm = args.default_perm
 
     # TODO: Check if a Google Spreadsheet URL and download programmatically
 
@@ -34,26 +36,21 @@ if __name__ == "__main__":
         logger.info(f"Creating output directory: '{output_dir}'")
 
     logger.info(f"Running command: {command}")
-    logger.info(f"Input file: {types_path}")
     logger.info(f"Output directory: {output_dir}")
 
-    if command == 'worksheets':
-        pass # clone and build empty worksheets with provided Object Types and basic CRUD URL patterns populated
     if command == 'django':
-        builder = DjangoBuilder(types_path, matrix_path, output_dir)
-        if matrix_path:
-            builder.build_permissions()
+        builder = DjangoBuilder(output_dir)
+        builder.build_django(types_path, default_perm)
+        # builder.build_permissions(matrix_path, default_perm)
+    elif command == 'permissions-ts':
+        reactor = TypesBuilder(types_path, matrix_path, output_dir)
+        reactor.build_permissions(default_perm)
     elif command == 'forms':
         reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_forms()
-        if matrix_path:
-            reactor.build_permissions()
     elif command == 'typescript':
         reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_types()
-        reactor.build_forms()
-        if matrix_path:
-            reactor.build_permissions()
 
 
     else:

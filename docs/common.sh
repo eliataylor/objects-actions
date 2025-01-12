@@ -101,11 +101,15 @@ get_machinename() {
 MACHINE_NAME=$(get_machinename "$PROJECT_NAME")
 
 # Ensure stack directory exists
-STACK_PATH=$(resolve_absolute_path "$SCRIPT_DIR" "$STACK_PATH")
-
-if [[ ! -d "$STACK_PATH" ]]; then
-    mkdir -p "$STACK_PATH"
-    echo "Created STACK_PATH: $STACK_PATH"
+if [[ "$STACK_PATH" == '.' ]]; then
+    STACK_PATH=$(pwd)
+    echo "STACK_PATH set to current directory: $STACK_PATH"
+else
+    STACK_PATH=$(resolve_absolute_path "$SCRIPT_DIR" "$STACK_PATH")
+    if [[ ! -d "$STACK_PATH" ]]; then
+      mkdir -p "$STACK_PATH"
+      echo "Created STACK_PATH: $STACK_PATH"
+    fi
 fi
 
 # Make absolute if relative

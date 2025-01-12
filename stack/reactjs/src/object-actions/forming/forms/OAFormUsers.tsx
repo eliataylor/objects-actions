@@ -37,26 +37,26 @@ export const OAFormUsers: React.FC<OAFormProps> = ({ onSuccess }) => {
   }
 
   return (
-    <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
-      			<Grid item xs={12} sm={6}>
+    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
+      			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Users"]["email"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Users"]["phone"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Users"]["website"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Users"]["bio"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Users"]["picture"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Users"]["cover_photo"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Users"]["resources"], 0, {fullWidth:true})}
 			</Grid>
 

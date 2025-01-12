@@ -36,7 +36,7 @@ export const OAForm__CLASSNAME__: React.FC<OAFormProps> = ({ onSuccess }) => {
   }
 
   return (
-    <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
+    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       __ALLFIELDS__
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}

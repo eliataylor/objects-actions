@@ -25,20 +25,29 @@ if [[ ! -f "$TYPES_PATH" ]]; then
     exit 1
 fi
 
-# Check if permissionspath is a valid file path
+# Check if permissions path is a valid file path
 permissions_arg=""
 if [[ -f "$PERMISSIONS_PATH" ]]; then
-    permissions_arg="--permissions=\"$PERMISSIONS_PATH\""
+    permissions_arg="--permissions=$PERMISSIONS_PATH"
+else
+    permissions_arg="--default_perm=IsAuthenticatedOrReadOnly"
 fi
 
-# Run the Python scripts to generate files
+
 echo "Building Django with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
-python -m generate django --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/django/${MACHINE_NAME}_app"
+python -m generate django --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/django/${MACHINE_NAME}_app"
 
-# echo "Building TypeScript with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
-python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/types"
-python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/databuilder/src/"
-python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/cypress/cypress/support/"
-python -m generate typescript --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/k6/"
+echo "Building forms with types $TYPES_PATH"
+python -m generate forms --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/forming/forms"
 
-python -m generate forms --types="$TYPES_PATH" $permissions_arg --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/forming/forms"
+echo "creating types.ts with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
+python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/types"
+python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/databuilder/src/"
+python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/cypress/cypress/support/"
+python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/k6/"
+
+echo "creating access.ts and permissions.json with $permissions_arg"
+python -m generate permissions-ts $permissions_arg --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/types"
+python -m generate permissions-ts $permissions_arg --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/databuilder/src/"
+python -m generate permissions-ts $permissions_arg --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/cypress/cypress/support/"
+python -m generate permissions-ts $permissions_arg --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/k6/"

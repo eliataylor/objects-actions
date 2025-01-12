@@ -37,17 +37,17 @@ export const OAFormSubscriptions: React.FC<OAFormProps> = ({ onSuccess }) => {
   }
 
   return (
-    <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
-      			<Grid item xs={12} sm={6}>
+    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
+      			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Subscriptions"]["subscriber"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Subscriptions"]["rally"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Subscriptions"]["meeting"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Subscriptions"]["status"], 0, {fullWidth:true})}
 			</Grid>
 

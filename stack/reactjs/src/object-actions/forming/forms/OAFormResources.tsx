@@ -37,23 +37,23 @@ export const OAFormResources: React.FC<OAFormProps> = ({ onSuccess }) => {
   }
 
   return (
-    <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
-      			<Grid item xs={12} sm={6}>
+    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
+      			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Resources"]["title"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Resources"]["description_html"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Resources"]["image"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Resources"]["postal_address"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Resources"]["price_ccoin"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Resources"]["resource_type"], 0, {fullWidth:true})}
 			</Grid>
 

@@ -37,32 +37,32 @@ export const OAFormRooms: React.FC<OAFormProps> = ({ onSuccess }) => {
   }
 
   return (
-    <AlternatingList container spacing={4} wrap={'wrap'} p={1}>
-      			<Grid item xs={12} sm={6}>
+    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
+      			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["author"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["start"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["end"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["rally"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["meeting"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["privacy"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["status"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["chat_thread"], 0, {fullWidth:true})}
 			</Grid>
-			<Grid item xs={12} sm={6}>
+			<Grid item xs={12} >
 				{renderField(TypeFieldSchema["Rooms"]["recording"], 0, {fullWidth:true})}
 			</Grid>
 

@@ -12,36 +12,15 @@ export interface MySession {
 }
 
 //---OBJECT-ACTIONS-PERMS-VERBS-STARTS---//
-export type CRUDVerb = "view_list"
-  | "view_profile"
-  | "add"
-  | "edit"
-  | "delete"
-  | "block"
-  | "view"
-  | "subscribe"
-  | "meeting"
-  | "comment"
-  | "sponsor"
-  | "apply-to-speak"
-  | "approve"
-  | "reject"
-  | "user"
-  | "rooms";
+
+export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | '' | 'view' | 'subscribe' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject' | 'user' | 'rooms';
 //---OBJECT-ACTIONS-PERMS-VERBS-ENDS---//
 
 //---OBJECT-ACTIONS-PERMS-ROLES-STARTS---//
-export type PermRoles = "anonymous"
-  | "authenticated"
-  | "verified"
-  | "paid user"
-  | "admin"
-  | "rally attendee"
-  | "city sponsor"
-  | "city official"
-  | "rally speaker"
-  | "rally moderator";
 
+export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'IsAuthenticatedOrReadOnly';
+
+export type PermRoles = 'anonymous' | 'authenticated' | 'verified' | 'paid user' | 'admin' | 'rally attendee' | 'city sponsor' | 'city official' | 'rally speaker' | 'rally moderator';
 //---OBJECT-ACTIONS-PERMS-ROLES-ENDS---//
 
 
@@ -50,7 +29,7 @@ interface AccessPoint {
   context: string[]; // a string of EntityType names
   ownership: string; // "own" / "any"
   id_index?: number;
-  roles: string[];
+  roles: PermRoles[];
   endpoint: string;
   alias?: string;
 }
@@ -73,11 +52,13 @@ export function canDo(
   const perms = getPermsByTypeAndVerb(obj._type, verb);
 
   if (!perms || !perms.length) {
-    console.warn(`NO PERM MATCHES FOR ${verb} - ${obj._type}`);
-    if (!me || !me.id) {
-      return "Default permission Is Authenticated or Read Only";
+    console.warn(`[PERMS] NO MATCHES FOR ${verb} - ${obj._type}`);
+    if (DEFAULT_PERM === "AllowAny") return true;
+    if (me && me?.id > 0) {
+      if (DEFAULT_PERM === "IsAuthenticated") return true;
+      if ((verb.indexOf("view") > -1 || verb.indexOf("read") > -1) && DEFAULT_PERM === "IsAuthenticatedOrReadOnly") return true;
     }
-    return true;
+    return `Default permission Is ${DEFAULT_PERM}`;
   }
 
   let isMine = verb === "add";
@@ -94,7 +75,7 @@ export function canDo(
     perms.find(p => p.ownership === "own" && isMine);
     if (!perm) {
       perm = perms[0];
-      console.warn(`MISMATCHED OWNERSHIP isMine: ${isMine}`, perms);
+      console.warn(`[PERMS] MISMATCHED OWNERSHIP isMine: ${isMine}`, perms);
     }
   }
 

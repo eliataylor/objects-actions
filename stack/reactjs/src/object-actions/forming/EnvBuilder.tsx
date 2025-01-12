@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Grid,
-  MenuItem,
-  TextField,
-  Collapse,
-  Button,
-  Box,
-} from "@mui/material";
+import { Box, Collapse, Grid, MenuItem, TextField } from "@mui/material";
 import { EnvConfig, useEnvContext } from "./EnvProvider";
 import { TightButton } from "../../theme/StyledFields";
 
@@ -48,44 +41,61 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       key: "PROJECT_NAME",
       label: "Project Name",
       helperText: "A machine name will be derived from this",
-      required: true,
+      required: true
     },
     {
       key: "STACK_PATH",
       label: "Stack Path",
       helperText:
         "Directory path to put the code. A period (.) will overwrite this project",
-      required: true,
+      required: true
     },
     {
       key: "TYPES_PATH",
       label: "Object Types CSV",
-      helperText: "File path to your Object Fields .csv",
+      helperText: "File path to your Object Fields .csv"
     },
     {
       key: "PERMISSIONS_PATH",
       label: "Permission Matrix CSV",
-      helperText: "File path to your Permissions Matrix .csv",
+      helperText: "File path to your Permissions Matrix .csv"
     },
     {
       key: "REACT_APP_API_HOST",
       label: "Your API Server",
-      helperText: "Your API WebServer URL",
+      helperText: "Your API WebServer URL"
     },
     {
       key: "REACT_APP_APP_HOST",
       label: "Your WebApp URL",
-      helperText: "Your WebApp URL",
+      helperText: "Your WebApp URL"
     },
     {
       key: "REACT_APP_LOGIN_EMAIL",
       label: "Admin Email",
-      helperText: "",
+      helperText: ""
     },
     {
       key: "REACT_APP_LOGIN_PASS",
       label: "Admin Password",
-      helperText: "",
+      helperText: ""
+    },
+    {
+      key: "DEFAULT_PERMS",
+      label: "Default Permission",
+      helperText: "used when no matches are found from permissions matrix",
+      select: true,
+      options: [
+        { value: "IsAuthenticatedOrReadOnly", label: "Is Authenticated Or Read-Only" },
+        {
+          value: "IsAuthenticated",
+          label: "Is Authenticated"
+        },
+        {
+          value: "AllowAll",
+          label: "Allow All"
+        }
+      ]
     },
     {
       key: "OA_ENV_DB",
@@ -96,13 +106,13 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
         { value: "docker", label: "Inside Docker" },
         {
           value: "local",
-          label: "Locally (first run `sudo docs/os-mysql-install.sh`)",
+          label: "Locally (first run `sudo docs/os-mysql-install.sh`)"
         },
         {
           value: "gcp",
-          label: "Google Cloud Platform (first follow django/deploy/README.md)",
-        },
-      ],
+          label: "Google Cloud Platform (first follow django/deploy/README.md)"
+        }
+      ]
     },
     {
       key: "OA_ENV_EMAIL",
@@ -113,8 +123,8 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
         { value: "console", label: "console" },
         { value: "files", label: "files" },
         { value: "gmail", label: "gmail" },
-        { value: "sendgrid", label: "sendgrid" },
-      ],
+        { value: "sendgrid", label: "sendgrid" }
+      ]
     },
     {
       key: "OA_ENV_STORAGE",
@@ -123,9 +133,9 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       select: true,
       options: [
         { value: "gcp", label: "gcp" },
-        { value: "local", label: "local" },
-      ],
-    },
+        { value: "local", label: "local" }
+      ]
+    }
   ];
 
   const visibleFields = fields.filter(
@@ -149,13 +159,13 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
           field.helperText,
           field.select
             ? {
-                select: true,
-                children: field.options?.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                )),
-              }
+              select: true,
+              children: field.options?.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))
+            }
             : {}
         )
       )}
@@ -163,7 +173,7 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       {advancedFields.length > 0 && (
         <Grid item xs={12}>
           <TightButton
-            size={'small'}
+            size={"small"}
             onClick={() => setShowAdvanced(!showAdvanced)}
             variant="outlined"
           >
@@ -179,13 +189,13 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
                     field.helperText,
                     field.select
                       ? {
-                          select: true,
-                          children: field.options?.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          )),
-                        }
+                        select: true,
+                        children: field.options?.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))
+                      }
                       : {}
                   )
                 )}
