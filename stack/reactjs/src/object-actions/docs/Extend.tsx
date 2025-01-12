@@ -51,7 +51,7 @@ const Extend: React.FC = () => {
       </StyledPaper>
 
       <StyledPaper>
-        <Command command="./clone.sh --env .env.myproject" />
+        <Command command="bash clone.sh --env .env.myproject" />
       </StyledPaper>
 
       {envConfig.STACK_PATH != '.' && (

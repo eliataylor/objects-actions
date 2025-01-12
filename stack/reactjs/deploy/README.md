@@ -16,7 +16,7 @@ bash ../django/deploy/create-service-account.sh .env.gcp
 # then update your .env.gcp with GCP_SA_KEY_PATH=[output path]
 
 # setup DNS, routing, ssl, load balancer, (front + backend)
-sh deploy/create-bucket-lb-webapp.sh ../django/.env.gcp
+bash deploy/create-bucket-lb-webapp.sh ../django/.env.gcp
 
 # deploy to cloud ru
 bash deploy/upload-app.sh ../django/.env.gcp
