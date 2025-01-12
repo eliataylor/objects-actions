@@ -29,8 +29,7 @@ const Install: React.FC = () => {
     <Box>
       <StyledTypography variant="h1">Install</StyledTypography>
       <StyledTypography variant="subtitle1">
-        This will check out the source code, build site website, and your full
-        stack based on an example application.
+        This will build the full stack based on an example application.
       </StyledTypography>
 
       <FormControl
