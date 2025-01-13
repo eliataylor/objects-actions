@@ -22,7 +22,7 @@ describe("oaexample load and populate add forms by user - role", async () => {
         cy.visit("/");
         cy.addHand("dark");
         cy.assertMenuReady();
-        cy.grab("#FirstVisitBtn").showClick();
+        // cy.grab("#FirstVisitBtn").showClick();
         cy.grab("[aria-label=\"Dismiss EULA Notice\"]").showClick();
 
         cy.wait("@waitForLoad");

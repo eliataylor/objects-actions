@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, FormHelperText, Typography } from '@mui/material';
 import { Command, StyledPaper, StyledTypography } from '../components/StyledComponents';
-import { useEnvContext } from '../forming/EnvProvider';
 import EnvBuilder from '../forming/EnvBuilder';
 import SpreadsheetCards from './SpreadsheetCards';
 
@@ -16,7 +15,7 @@ const Customize: React.FC = () => {
 
       <StyledPaper>
         <Typography variant="h6">
-          1. Copy and customize your spreadsheets:
+          1. Document your data structures and user permissions
         </Typography>
         <FormHelperText>
           You do not to need to finish them before continuing. You can rebuild
@@ -27,55 +26,17 @@ const Customize: React.FC = () => {
       </StyledPaper>
 
       <StyledPaper>
-        <Typography variant="h6" >
-          2. Set the CSV paths in your .env below:
+        <Typography variant="h6" sx={{marginBottom:2}} >
+          2. Adjust the settings below, then click "Copy Settings"
         </Typography>
-        <Command
-          command="cp .env.public .env"
-          help={
-            <span>
-              Copy the default config file and adjust your own settings using the form below
-            </span>
-          }
-        />
-        <FormHelperText sx={{ mb: 3 }}>
-          The permissions matrix is optional. The server's default permission is
-          `Is Authenticated or Read only`
-        </FormHelperText>
         <EnvBuilder  displayProperties={['TYPES_PATH', 'PERMISSIONS_PATH']} />
       </StyledPaper>
 
       <StyledPaper>
-        <Typography variant="h6">3. Run the load script:</Typography>
+        <Typography variant="h6">3. Rebuild the whole stack with your models and access rules:</Typography>
         <Command
           command="bash load-sheets.sh --env .env"
-          help={
-            <span>
-              Reference your <code>.env</code> file for setup.
-            </span>
-          }
         />
-
-        <Typography variant="h6">Additional Notes:</Typography>
-        <FormHelperText>
-          If you want to build from source, see{' '}
-          <a
-            href="https://github.com/eliataylor/objects-actions/blob/main/docs/FROMSOURCE.md"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            FROMSOURCE.md
-          </a>
-          . If you only want to generate code, visit{' '}
-          <a
-            href="https://github.com/eliataylor/objects-actions/blob/main/docs/COMMANDS.md"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            COMMANDS.md
-          </a>
-          .
-        </FormHelperText>
       </StyledPaper>
     </Box>
   );

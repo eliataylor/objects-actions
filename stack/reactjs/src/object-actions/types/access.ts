@@ -55,9 +55,11 @@ export function canDo(
     console.warn(`[PERMS] NO MATCHES FOR ${verb} - ${obj._type}`);
     if (DEFAULT_PERM === "AllowAny") return true;
     if (me && me?.id > 0) {
-      if (DEFAULT_PERM === "IsAuthenticated") return true;
+      if (DEFAULT_PERM === "IsAuthenticated" || DEFAULT_PERM === "IsAuthenticatedOrReadOnly") return true;
+    } else {
       if ((verb.indexOf("view") > -1 || verb.indexOf("read") > -1) && DEFAULT_PERM === "IsAuthenticatedOrReadOnly") return true;
     }
+
     return `Default permission Is ${DEFAULT_PERM}`;
   }
 

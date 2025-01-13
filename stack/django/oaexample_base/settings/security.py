@@ -60,16 +60,12 @@ CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 CSRF_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
-# In order to use databuilder inside docker against django also in your django-service container, you'll have to set `CSRF_COOKIE_DOMAIN = None`
-if DJANGO_ENV == 'testing-cypress':
-    CSRF_COOKIE_DOMAIN = None
-    CSRF_COOKIE_SAMESITE = None
-elif DJANGO_ENV != 'production':
-    CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
-    CSRF_COOKIE_SAMESITE = 'Lax'
-else:
-    CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
-    CSRF_COOKIE_SAMESITE = 'Lax'
+# use `none` for both when testing with cypress or databuilder inside docker
+# CSRF_COOKIE_DOMAIN = None
+# CSRF_COOKIE_SAMESITE = None
+
+CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
+CSRF_COOKIE_SAMESITE = 'Lax'
 
 logger.warning(f"Allowed Origins: {CSRF_COOKIE_DOMAIN}")
 logger.warning(f"Allowed Trusted/CSRF Domains: {", ".join(CSRF_TRUSTED_ORIGINS)}")

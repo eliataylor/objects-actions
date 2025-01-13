@@ -16,42 +16,21 @@ const Extend: React.FC = () => {
     <Box>
       <StyledTypography variant="h1">Extend</StyledTypography>
       <StyledTypography variant="subtitle1">
-        This will check out the source, clone the entire stack, and renaming
-        everything according to your .env settings below
+        This will clones and renames everything according to your project name and settings below
       </StyledTypography>
 
       <StyledPaper>
-        <Command
-          command="git clone git@github.com:eliataylor/object-actions.git --depth=1"
-          help={
-            <>
-              <b>or</b> if you get SSL errors, use
-              <code>
-                {' '}
-                <em>
-                  git clone https://github.com/eliataylor/object-actions.git
-                </em>
-              </code>
-            </>
-          }
-        />
-
-        <Command command="cd object-actions" />
-      </StyledPaper>
-
-      <StyledPaper>
-        <Command command="cp .env .env.myproject" />
-      </StyledPaper>
-
-      <StyledPaper>
         <StyledTypography variant="subtitle2" sx={{ mb: 3 }}>
-          Edit your .env.myproject
+          1. Name your project and any settings below, then click "Copy Settings"
         </StyledTypography>
         <EnvBuilder displayProperties={['PROJECT_NAME', 'STACK_PATH', 'TYPES_PATH', 'PERMISSIONS_PATH']} />
       </StyledPaper>
 
       <StyledPaper>
-        <Command command="bash clone.sh --env .env.myproject" />
+        <StyledTypography variant="subtitle2" sx={{ mb: 3 }}>
+          2. Clone and rename "oaexample.com" as your own stack
+        </StyledTypography>
+        <Command command="bash clone.sh --env .env" />
       </StyledPaper>
 
       {envConfig.STACK_PATH != '.' && (
@@ -61,6 +40,17 @@ const Extend: React.FC = () => {
       )}
 
       <StyledPaper>
+        <StyledTypography variant="subtitle2" sx={{ mb: 3 }}>
+          3. Version control from the beginning to track your changes
+        </StyledTypography>
+        <Command command="git init" />
+        <Command command="git commit -am 'initial objects/actions out-of-the-box'" />
+      </StyledPaper>
+
+      <StyledPaper>
+        <StyledTypography variant="subtitle2" sx={{ mb: 3 }}>
+          4. Start your stack
+        </StyledTypography>
         <Command command="docker-compose up --build -d" />
       </StyledPaper>
     </Box>
