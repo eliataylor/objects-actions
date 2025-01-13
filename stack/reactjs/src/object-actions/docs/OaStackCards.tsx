@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect, useRef }  from 'react';
 import { Box, Card, CardHeader, CardMedia, Grid } from '@mui/material';
 import { TightButton } from '../../theme/StyledFields';
 import LightDarkImg from '../../components/LightDarkImg';
 
 const OaStackCards: React.FC = () => {
   const mediaHeight = 250;
+
+    // Create a ref for the video element
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Set the playbackRate when the component mounts
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.5;
+    }
+  }, []);
 
   return (
     <Grid
@@ -30,7 +40,9 @@ const OaStackCards: React.FC = () => {
           />
           <CardMedia sx={{ height: mediaHeight, position: 'relative' }}>
             <video
+              ref={videoRef} // Attach the ref to the video element
               autoPlay
+              playsInline={true}
               muted
               loop={true}
               style={{ width: '100%' }}
@@ -73,14 +85,21 @@ const OaStackCards: React.FC = () => {
             title={'This Web App'}
             subheader={'React.JS'}
           />
-          <CardMedia
-            height={mediaHeight}
-            component={'img'}
-            alt={'Frontend WebApp'}
-            src={
-              'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png'
-            }
-          />
+
+          <CardMedia sx={{ height: mediaHeight, position: 'relative' }} >
+            <video
+              autoPlay
+              muted
+              playsInline={true}
+              loop={true}
+              poster={'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png'}
+              style={{ width: '100%' }}
+              controls={true}
+            >
+              <source src={'/oa-assets/walkthrough.mp4'} type="video/mp4" />
+            </video>
+          </CardMedia>
+
           <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
             <a
               href={

@@ -58,14 +58,16 @@ class CustomSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request', None)
         if request and hasattr(request, 'user') and request.user.is_authenticated:
-            if 'author' in self.Meta.model._meta.get_fields():
+            field_names = [field.name for field in self.Meta.model._meta.get_fields()]
+            if 'author' in field_names:
                 validated_data['author'] = request.user
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
         request = self.context.get('request', None)
         if request and hasattr(request, 'user') and request.user.is_authenticated:
-            if 'author' in self.Meta.model._meta.get_fields():
+            field_names = [field.name for field in self.Meta.model._meta.get_fields()]
+            if 'author' in field_names:
                 validated_data['author'] = request.user
         return super().update(instance, validated_data)
 

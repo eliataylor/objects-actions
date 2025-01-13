@@ -86,7 +86,6 @@ const Layout: React.FC = () => {
         message={snack}
       />
       <TrackingConsent />
-      <FirstVisit />
 
       <Grid container justifyContent={"space-around"} flexWrap={"nowrap"}>
         {isMounted === true && (

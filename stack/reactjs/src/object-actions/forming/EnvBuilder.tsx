@@ -201,24 +201,30 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       {advancedFields.length > 0 && (
         <Grid item xs={12}>
 
-          <CopyToClipboard textToCopy={makeEnvFile()}>
-            <TightButton
-              size={"small"}
-              variant="outlined"
-              startIcon={<ContentCopyIcon color={"warning"} />}
-            >
-              {"Copy .env config"}
-            </TightButton>
-          </CopyToClipboard>
+          <Grid container justifyContent={"space-between"}>
+            <Grid item>
+              <CopyToClipboard textToCopy={makeEnvFile()} copiedMessage={"Copied. Now paste this into a new .env file at the root of this repository"}>
+                <TightButton
+                  size={"small"}
+                  variant="outlined"
+                  startIcon={<ContentCopyIcon color={"warning"} />}
+                >
+                  {"Copy settings"}
+                </TightButton>
+              </CopyToClipboard>
+            </Grid>
+            <Grid item>
 
-          <TightButton
-            size={"small"}
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            variant="outlined"
-          >
-            {showAdvanced ? "Hide Advanced Options" : "Show Advanced Options"}
-          </TightButton>
+              <TightButton
+                size={"small"}
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                variant="outlined"
+              >
+                {showAdvanced ? "Hide Advanced Options" : "Show Advanced Options"}
+              </TightButton>
+            </Grid>
 
+          </Grid>
           <Collapse in={showAdvanced}>
             <Box mt={2}>
               <Grid container spacing={2}>

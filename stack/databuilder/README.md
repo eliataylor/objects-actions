@@ -1,6 +1,11 @@
 # Fake User & Data generator
 
 # IN DOCKER
+For the time being you'll have to manually edit this file: https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_base/settings/security.py#L65 by setting
+```aiignore
+CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_SAMESITE = None
+```
 
 Register test Users with password from .env
 ```aiignore

@@ -4,12 +4,14 @@ import { useSnackbar } from 'notistack';
 
 interface CopyToClipboardProps {
   textToCopy: string;
+  copiedMessage?: string;
   children: React.ReactNode;
 }
 
 const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
   textToCopy,
   children,
+  copiedMessage = 'Copied to clipboard'
 }) => {
   const { enqueueSnackbar } = useSnackbar();
 
@@ -17,7 +19,7 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
     if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(textToCopy);
-        enqueueSnackbar('Link copied to clipboard', { variant: 'success' });
+        enqueueSnackbar(copiedMessage, { variant: 'success' });
       } catch (error) {
         console.error('Failed to copy text: ', error);
         enqueueSnackbar('Failed to copy text', { variant: 'error' });
