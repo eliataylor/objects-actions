@@ -185,7 +185,7 @@ class TypesBuilder:
 
                 constant[field_name] = field_js
 
-                if field['HowMany'] == 'unlimited' or (isinstance(field['HowMany'], int) and field['HowMany'] > 1):
+                if field['HowMany'] > 1:
                     field_def += '[]'
 
                 if not field['Required'] and field_type != 'id_auto_increment':

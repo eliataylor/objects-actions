@@ -223,7 +223,7 @@ def build_types_from_csv(csv_file):
 
             if row['HowMany'] == '' or row['HowMany'] == '1':
                 row['HowMany'] = 1
-            elif row['HowMany'] == 'unlimited':
+            elif row['HowMany'].strip() == 'unlimited':
                 row['HowMany'] = float('inf')
             else:
                 row['HowMany'] = int(row['HowMany'])
