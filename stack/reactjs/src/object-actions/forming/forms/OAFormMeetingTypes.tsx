@@ -1,15 +1,15 @@
 //---OBJECT-ACTIONS-OAFORM-STARTS---//
 import React from "react";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { EntityTypes, TypeFieldSchema } from "../../types/types";
+import { MeetingTypes, TypeFieldSchema } from "../../types/types";
 import { OAFormProps, useForm } from "../FormProvider";
 import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormMeetingTypes: React.FC<OAFormProps> = ({ onSuccess }) => {
+export const OAFormMeetingTypes: React.FC<OAFormProps<MeetingTypes>> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<EntityTypes>();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<MeetingTypes>();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 

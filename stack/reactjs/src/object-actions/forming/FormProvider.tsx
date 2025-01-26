@@ -15,15 +15,15 @@ import AutocompleteField from "./AutocompleteField";
 
 dayjs.extend(utc);
 
-export interface OAFormProps {
-  onSuccess?: (newEntity:EntityTypes) => void;
-  onError?: (response: HttpResponse) => void;
+export interface OAFormProps<T extends EntityTypes> {
+  onSuccess?: (newEntity:T) => void;
+  onError?: (response: HttpResponse<T>) => void;
 }
 
 interface FormProviderProps<T extends EntityTypes> {
   children: ReactNode;
   fields: FieldTypeDefinition[];
-  original: EntityTypes;
+  original: T;
   navItem: NavItem;
 }
 
@@ -40,7 +40,7 @@ interface FormContextValue<T extends EntityTypes> {
     index?: number,
     topass?: any
   ) => ReactElement | null;
-  handleSubmit: (toPost?: EntityTypes) => Promise<EntityTypes>;
+  handleSubmit: (toPost?: T) => Promise<T>;
   handleDelete: () => Promise<Record<string, any>>;
 }
 
@@ -353,10 +353,11 @@ export const FormProvider = <T extends EntityTypes>({
   );
 };
 
+
 export const useForm = <T extends EntityTypes>(): FormContextValue<T> => {
   const context = useContext(FormContext);
   if (!context) {
     throw new Error("useForm must be used within a FormProvider");
   }
-  return context as FormContextValue<T>;
+  return context as unknown as FormContextValue<T>;
 };

@@ -1686,7 +1686,7 @@ export interface Resources extends SuperModel {
 	image: string;
 	postal_address?: string | null;
 	price_ccoin: number;
-	resource_type: RelEntity;
+	resource_type: RelEntity[];
 }
 export interface Users {
 	readonly id: number | string
@@ -1705,7 +1705,7 @@ export interface Users {
 	bio?: string | null;
 	picture?: string | null;
 	cover_photo?: string | null;
-	resources?: RelEntity | null;
+	resources?: RelEntity[] | null;
 }
 export interface Cities extends SuperModel {
 	name: string;
@@ -1713,13 +1713,13 @@ export interface Cities extends SuperModel {
 	postal_address?: string | null;
 	picture?: string | null;
 	cover_photo?: string | null;
-	sponsors?: RelEntity | null;
+	sponsors?: RelEntity[] | null;
 	website?: string[] | null;
 	population?: number | null;
 	altitude?: number | null;
 	county?: string | null;
 	state_id?: RelEntity | null;
-	officials?: RelEntity | null;
+	officials?: RelEntity[] | null;
 	land_area?: number | null;
 	water_area?: number | null;
 	total_area?: number | null;
@@ -1730,16 +1730,16 @@ export interface Officials extends SuperModel {
 	title: string;
 	office_phone?: string | null;
 	office_email?: string | null;
-	social_links?: string | null;
+	social_links?: string[] | null;
 	party_affiliation?: RelEntity | null;
-	city: RelEntity;
+	city: RelEntity[];
 }
 export interface Rallies extends SuperModel {
 	title: string;
 	description: string;
-	media?: string | null;
+	media?: string[] | null;
 	topics: RelEntity[];
-	comments?: string | null;
+	comments?: string[] | null;
 }
 export interface ActionPlans extends SuperModel {
 	title?: string | null;
@@ -1747,7 +1747,7 @@ export interface ActionPlans extends SuperModel {
 	exe_summary?: string | null;
 	analysis?: string | null;
 	background?: string | null;
-	coauthors?: RelEntity | null;
+	coauthors?: RelEntity[] | null;
 	pro_argument?: string | null;
 	con_argument?: string | null;
 	prerequisites: string;
@@ -1760,7 +1760,7 @@ export interface Meetings extends SuperModel {
 	meeting_type: RelEntity;
 	speakers: RelEntity[];
 	moderators: RelEntity[];
-	sponsors?: RelEntity | null;
+	sponsors?: RelEntity[] | null;
 	address?: string | null;
 	start: string;
 	end: string;
@@ -1788,7 +1788,7 @@ export interface Rooms extends SuperModel {
 	meeting?: RelEntity | null;
 	privacy?: string | null;
 	status?: string | null;
-	chat_thread?: string | null;
+	chat_thread?: string[] | null;
 	recording?: string | null;
 }
 export interface Attendees extends SuperModel {
