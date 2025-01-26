@@ -10,7 +10,6 @@ import { FormProvider } from "../object-actions/forming/FormProvider";
 import * as MyForms from "../object-actions/forming/forms";
 import { MyFormsKeys } from "../object-actions/forming/forms";
 import PermissionError from "../components/PermissionError";
-
 const EntityForm = () => {
     const { id, model } = useParams();
     const [entity, setEntity] = useState<EntityTypes | NewEntity | null>(null);
@@ -42,13 +41,11 @@ const EntityForm = () => {
     if (!hasUrl) {
       return <Typography variant={"h6"}>Invalid URL pattern for {model}</Typography>;
     }
-
     if (error.length > 0) {
       return <Grid container justifyContent="center" alignItems="center">
         <Typography variant="subtitle1">{error}</Typography>
       </Grid>;
     }
-
     if (!entity) {
       return <Grid container justifyContent="center" alignItems="center">
         <CircularProgress />
@@ -61,7 +58,6 @@ const EntityForm = () => {
     } else {
       allow = canDo("add", Object.assign({}, entity, { _type: hasUrl.type }), me);
     }
-
     if (typeof allow === "string") {
       return <PermissionError error={allow} />;
     }

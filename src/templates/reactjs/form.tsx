@@ -1,14 +1,14 @@
 import React from "react";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { EntityTypes, TypeFieldSchema } from "../../types/types";
+import { __CLASSNAME__, TypeFieldSchema } from "../../types/types";
 import { OAFormProps, useForm } from "../FormProvider";
 import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAForm__CLASSNAME__: React.FC<OAFormProps> = ({ onSuccess }) => {
+export const OAForm__CLASSNAME__: React.FC<OAFormProps<__CLASSNAME__>> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<EntityTypes>();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<__CLASSNAME__>();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 

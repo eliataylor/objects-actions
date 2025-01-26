@@ -29,7 +29,7 @@ docker exec -it cypress-service npx cypress run --spec cypress/e2e/read-only/loa
 ```
 
 
-### Troubleshoting
+### Troubleshooting
 Check if Xvfb is running inside the container:
 ```
 docker exec -it cypress-service ps aux | grep Xvfb

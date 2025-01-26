@@ -1,4 +1,6 @@
 # Fake User & Data generator
+__**This project generates infinite users and rwos of data using the `faker` library. It is especially useful for quickly testing permissions and pagination.**__
+
 
 # IN DOCKER
 For the time being you'll have to manually edit this file: https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_base/settings/security.py#L65 by setting
@@ -7,17 +9,30 @@ CSRF_COOKIE_DOMAIN = None
 CSRF_COOKIE_SAMESITE = None
 ```
 
-Register test Users with password from .env
+### Register test Users with password from .env
 ```aiignore
 docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=users-add --count=1
 ```
 
-or
+
+### Create content types
+```aiignore
+docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=objects-add --count=5
+```
+
+
+### Delete all test users and data
+```aiignore
+docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=delete-all
+```
+
+you can also sh into the docker container and execute just the npx command:
 
 ```aiignore
 docker exec -it databuilder-service /bin/sh
 npx tsx src/main.ts --env-file=.env --action=users-add --count=1
 ```
+
 
 
 # LOCALLY

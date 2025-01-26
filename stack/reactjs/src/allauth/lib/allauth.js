@@ -7,9 +7,7 @@ const Client = Object.freeze({
 
 const CLIENT = Client.BROWSER;
 
-const BASE_HOST = process.env.REACT_APP_DOCKER_API_HOST
-  ? process.env.REACT_APP_DOCKER_API_HOST
-  : process.env.REACT_APP_API_HOST;
+const BASE_HOST = process.env.REACT_APP_API_HOST;
 const BASE_URL = `${BASE_HOST}/_allauth/${CLIENT}/v1`;
 const ACCEPT_JSON = {
   accept: 'application/json',
