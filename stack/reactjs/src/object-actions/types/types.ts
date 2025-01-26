@@ -11,7 +11,6 @@ export interface NewEntity {
     id: number | string
 }
 
-export type ObjectTypes = Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders | Resources | Cities | Officials | Rallies | ActionPlans | Meetings | Invites | Subscriptions | Rooms | Attendees;
 export type EntityTypes = Users | Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders | Resources | Cities | Officials | Rallies | ActionPlans | Meetings | Invites | Subscriptions | Rooms | Attendees;
 
 export interface ApiListResponse<T = EntityTypes> {
@@ -1648,7 +1647,7 @@ export const TypeFieldSchema: ObjectOfObjects = {
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
 export interface SuperModel {
-    readonly id: number | string; 
+    readonly id: number | string;
     author: RelEntity;
     created_at: string;
     modified_at: string;

@@ -60,12 +60,12 @@ CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 CSRF_COOKIE_SECURE = APP_HOST_PARTS.scheme == 'https'
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the CSRF cookie
 
+CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
+CSRF_COOKIE_SAMESITE = 'Lax'
+
 # use `none` for both when testing with cypress or databuilder inside docker
 # CSRF_COOKIE_DOMAIN = None
 # CSRF_COOKIE_SAMESITE = None
-
-CSRF_COOKIE_DOMAIN = f".{get_tld(APP_HOST_PARTS.hostname)}"
-CSRF_COOKIE_SAMESITE = 'Lax'
 
 logger.warning(f"Allowed Origins: {CSRF_COOKIE_DOMAIN}")
 logger.warning(f"Allowed Trusted/CSRF Domains: {", ".join(CSRF_TRUSTED_ORIGINS)}")

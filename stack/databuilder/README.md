@@ -1,5 +1,5 @@
 # Fake User & Data generator
-**__This project generates infinite users and rwos of data using the `faker` library. It is especially useful for quickly testing permissions and pagination. __**
+__**This project generates infinite users and rwos of data using the `faker` library. It is especially useful for quickly testing permissions and pagination.**__
 
 
 # IN DOCKER
@@ -9,17 +9,30 @@ CSRF_COOKIE_DOMAIN = None
 CSRF_COOKIE_SAMESITE = None
 ```
 
-Register test Users with password from .env
+### Register test Users with password from .env
 ```aiignore
 docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=users-add --count=1
 ```
 
-or
+
+### Create content types
+```aiignore
+docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=objects-add --count=5
+```
+
+
+### Delete all test users and data
+```aiignore
+docker exec databuilder-service npx tsx src/main.ts --env-file=.env --action=delete-all
+```
+
+you can also sh into the docker container and execute just the npx command:
 
 ```aiignore
 docker exec -it databuilder-service /bin/sh
 npx tsx src/main.ts --env-file=.env --action=users-add --count=1
 ```
+
 
 
 # LOCALLY
