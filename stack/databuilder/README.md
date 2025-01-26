@@ -1,4 +1,6 @@
 # Fake User & Data generator
+**__This project generates infinite users and rwos of data using the `faker` library. It is especially useful for quickly testing permissions and pagination. __**
+
 
 # IN DOCKER
 For the time being you'll have to manually edit this file: https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_base/settings/security.py#L65 by setting

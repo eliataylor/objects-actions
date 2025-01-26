@@ -1,7 +1,13 @@
 # oaExample.com reactjs web app
 
-#### Run
+#### Run in Docker
+```sh
+cp .env.public .env # and update your configs
+cd ../.. # go to root of this repository
+docker-compose up --build # start docker
+```
 
+#### Run Locally
 ```sh
 cp .env.public .env # and update your configs
 npm install
