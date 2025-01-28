@@ -1,4 +1,4 @@
-import { EntityTypes } from "./types";
+import { EntityTypes, NewEntity } from "./types";
 import permissions from "./permissions.json";
 
 export interface MySession {
@@ -46,7 +46,7 @@ function getPermsByTypeAndVerb(type: string, verb: string) {
 // returns error string or true if passes
 export function canDo(
   verb: CRUDVerb,
-  obj: EntityTypes,
+  obj: EntityTypes | NewEntity,
   me?: MySession | null
 ): boolean | string {
   const perms = getPermsByTypeAndVerb(obj._type, verb);

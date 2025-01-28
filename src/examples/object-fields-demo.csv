@@ -1,4 +1,4 @@
-TYPES,Field Label,Field Name,Field Type,HowMany,Required,Relationship,Default,Example
+Types,Field Label,Field Name,Field Type,HowMany,Required,Relationship,Default,Example
 Topics,,,vocabulary,,,,,"(technology, agriculture, health care, ...)"
 ,Name,,text,,,,,
 ,Icon,,image,1,0,,,

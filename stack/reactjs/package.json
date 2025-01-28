@@ -1,7 +1,7 @@
 {
   "name": "oaexample",
   "homepage": "https://oaexample.com",
-  "version": "0.1.0",
+  "version": "3.3.1",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -34,8 +34,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start-ssl": "HTTPS=true SSL_CRT_FILE=~/.ssl/certificate.crt HOST=localhost.oaexample.com react-scripts start",
-    "start-ssl-in-docker": "HTTPS=true SSL_CRT_FILE=~/.ssl/certificate.crt HOST=0.0.0.0 react-scripts start",
+    "start-ssl": "HTTPS=true SSL_CRT_FILE=~/.ssl/certificate.crt HOST=localhost.oaexample.com PORT=3000 react-scripts start",
+    "start-ssl-in-docker": "HTTPS=true SSL_CRT_FILE=~/.ssl/certificate.crt HOST=0.0.0.0 PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

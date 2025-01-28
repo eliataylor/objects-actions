@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Autocomplete, Avatar, CircularProgress, ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
 import ApiClient from "../../config/ApiClient";
-import { EntityTypes, NavItem, NAVITEMS, RelEntity } from "../types/types";
+import {EntityTypes, NavItem, NAVITEMS, NewEntity, RelEntity} from "../types/types";
 import { AcOption } from "./AutocompleteField";
 import NewFormDialog from "./NewFormDialog";
 import IconButton from "@mui/material/IconButton";
@@ -73,14 +73,14 @@ const AutocompleteField: React.FC<MultiAcFieldProps> = ({
   );
 
   const setNestedEntity = () => {
-    const entity: EntityTypes = { id: 0, _type: hasUrl.type };
+    const entity: NewEntity = { id: 0, _type: hasUrl.type };
     /*
     if (hasUrl.search_fields && hasUrl.search_fields.length > 0 && inputValue.length > 0) {
       // TODO: this will result in  "You haven't changed anything" errors or not submitting the data at all
       entity[hasUrl.search_fields[0] as keyof EntityTypes] = inputValue;
     }
      */
-    setNestedForm(entity);
+    setNestedForm(entity as EntityTypes);
   };
 
   const onNestedCreated = (entity:EntityTypes) => {

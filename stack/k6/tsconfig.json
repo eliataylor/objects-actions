@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",          // Required for Object.entries support
+    "module": "CommonJS",        // Required for k6 compatibility
+    "strict": true,              // Enforce strict typing
+    "lib": ["ES2017"],           // Include ES2017 standard library
+    "esModuleInterop": false     // Not needed without external modules
+  },
+  "include": ["./*.ts"],         // Only include .ts files in the current directory
+  "exclude": []                  // No need to exclude anything explicitly
+}
