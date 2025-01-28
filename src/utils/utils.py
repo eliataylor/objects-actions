@@ -14,7 +14,7 @@ def find_model_details(csv_file, model_name):
     with open(csv_file, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            obj_type = row['TYPES']
+            obj_type = row['Types'] # TODO: lighten case sensitivity
             if obj_type == model_name:
                 if row['Field Type'].lower() == 'vocabulary':
                     return {'model_type': 'vocabulary', 'example': row['Example']}
@@ -197,7 +197,7 @@ def build_types_from_csv(csv_file):
         # Iterate over each row in the CSV
         for row in reader:
             # Extract the type from the row
-            obj_type = row['TYPES']
+            obj_type = row['Types']
             if obj_type is not None and obj_type != '':
                 if row['Field Name'].lower() == 'user':
                     logger.info(f'making {obj_type} the internal auth user model')
@@ -219,7 +219,7 @@ def build_types_from_csv(csv_file):
             row['Default'] = row['Default'].strip()
 
             # Remove 'Type' from the row since we don't need it in the JSON object
-            del row['TYPES']
+            del row['Types']
 
             if row['HowMany'] == '' or row['HowMany'] == '1':
                 row['HowMany'] = 1
