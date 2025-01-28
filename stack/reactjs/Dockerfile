@@ -1,5 +1,5 @@
 # Use Node.js 20 alpine image as base
-FROM node:20-alpine
+FROM node:18-alpine
 
 # Set working directory specific to ReactJS
 WORKDIR /app/reactjs
