@@ -32,7 +32,7 @@ mkdir -p "$STACK_PATH/stack"
 # Copy directories into stack folder and clean generated files
 for dir in "${STACK_DIRS[@]}"; do
     if [ -d "$SCRIPT_DIR/stack/$dir" ]; then
-        cp -R "$SCRIPT_DIR/stack/$dir" "$STACK_PATH/stack/$dir"
+        cp -R "$SCRIPT_DIR/stack/$dir" "$STACK_PATH/stack/"
         echo "Copied $dir to $STACK_PATH/stack/$dir"
 
         # Remove generated files

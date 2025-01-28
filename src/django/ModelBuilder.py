@@ -1,4 +1,5 @@
-from utils.utils import create_machine_name, find_object_by_key_value, create_object_name, addArgs, capitalize, str_to_bool
+from utils.utils import create_machine_name, find_object_by_key_value, create_object_name, addArgs, capitalize, \
+    str_to_bool
 from loguru import logger
 import os
 import ast
@@ -64,7 +65,7 @@ class ModelBuilder:
 \t\tif obj.{has_image['Field Name']}:
 \t\t\treturn format_html('<div style="width: 100px; height: 100px; background-image: url({{}}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.{has_image['Field Name']}.url)
 \t\treturn "No Image"
-    
+
 \tlist_display = ('id', 'image_tag')            
 """
 
@@ -99,7 +100,7 @@ class ModelBuilder:
                     logger.debug(
                         f"author is handled by SuperModel, but might want to change the label to {field['Field Label']}")
                 else:
-                    field_name = 'author'   # overwrides SuperModal but keeps verbose_name
+                    field_name = 'author'  # overwrides SuperModal but keeps verbose_name
 
             field_code = self.infer_field_type(field_type, field_name, field)
 
@@ -117,33 +118,36 @@ class ModelBuilder:
 
     def build_choices(self, field_name, field):
         list = field['Example'].strip()
+        max_length = 1
         if list == '':
             logger.warning(
                 f"Field {field['Field Label']} has no list of structure of choices. Please list them as a flat json array.")
-            return ""
+            return ("", 0)
 
         try:
             if list[0] == '[':
                 list = ast.literal_eval(list)
             else:
                 list = list.split(',')
-            code = f"\n\tclass {field_name}Choices(models.TextChoices):"
+            code = f"\n\tclass {capitalize(field_name)}Choices(models.TextChoices):"
             for name in list:
                 name = re.sub("[\"\']", "", name)
                 if name is None or name == '':
                     continue
-                code += f'\n\t\t{create_machine_name(name, True)} = ("{create_machine_name(name, True)}", "{capitalize(name)}")'
+                machine_name = create_machine_name(name, True)
+                code += f'\n\t\t{machine_name} = ("{machine_name}", "{capitalize(name)}")'
+                max_length = len(machine_name) if max_length < len(machine_name) else max_length
         except Exception as e:
             logger.warning(
                 f"{field['Field Label']} has invalid structure of choices: {field['Example'].strip()}  \nPlease list them as a flat json array. {str(e)}")
-            return ""
+            return ("", 0)
 
-        return code
+        return (code, max_length)
 
     def apply_default(self, field_code, default_value, field_type):
         if default_value != '':
             if field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
-                pass # TODO: maybe have some syntax to allow setting default reference ID?
+                pass  # TODO: maybe have some syntax to allow setting default reference ID?
             elif field_type == "boolean":
                 field_code = addArgs(field_code, [f"default={str_to_bool(default_value)}"])
             elif field_type == "integer" or field_type == 'decimal':
@@ -163,7 +167,7 @@ class ModelBuilder:
     def infer_field_type(self, field_type, field_name, field):
         if field_type == "id_auto_increment":
             return "models.AutoField(primary_key=True)"
-        elif  field_type == 'user_profile' or field_type == 'user_account':
+        elif field_type == 'user_profile' or field_type == 'user_account':
             if field['HowMany'] == 1:
                 return f"models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
             else:
@@ -320,9 +324,10 @@ class ModelBuilder:
             return "models.JSONField()"  # Store both as JSON array
         elif field_type == "enum":
             capitalized = capitalize(field_name)
-            self.methods.append(self.build_choices(capitalized, field))
-
-            field_code = f"{field_name} = models.CharField(max_length=20, choices={capitalized}Choices.choices, verbose_name='{field['Field Label']}')"
+            choices = self.build_choices(field_name, field)
+            self.methods.append(choices[0])
+            max_length = choices[1]
+            field_code = f"{field_name} = models.CharField(max_length={max_length}, choices={capitalized}Choices.choices, verbose_name='{field['Field Label']}')"
             field_code = self.apply_default(field_code, field['Default'], field_type)
             field_code = self.apply_required(field_code, field['Required'])
 
