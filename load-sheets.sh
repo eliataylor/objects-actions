@@ -36,7 +36,10 @@ fi
 
 echo "Building Django with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
 python -m generate django --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/django/${MACHINE_NAME}_app"
+# TODO: if not first run, sh into docker and run migrations (follow stack/django/readme.md)
 
++echo "Resetting forms folder: $STACK_PATH/stack/reactjs/src/object-actions/forming/forms/*"
++rm -f "$STACK_PATH/stack/reactjs/src/object-actions/forming/forms/*"
 echo "Building forms with types $TYPES_PATH"
 python -m generate forms --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/forming/forms"
 

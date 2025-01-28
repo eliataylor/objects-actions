@@ -34,7 +34,7 @@ const EntityForm = () => {
       } else if (id) {
         fetchData();
       } else {
-        setEntity({ id: id ? id : 0, type: hasUrl.type } as NewEntity);
+        setEntity({id: id ? id : 0, type: hasUrl.type} as unknown as NewEntity);
       }
     }, [id, model]);
 

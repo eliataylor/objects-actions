@@ -1,4 +1,4 @@
-# Use Node.js 20 alpine image as base
+# Use Node.js 18 alpine image as base
 FROM node:18-alpine
 
 # Set working directory specific to ReactJS

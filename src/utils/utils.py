@@ -347,6 +347,8 @@ def infer_field_datatype(field_type):
         return "number"
     elif field_type == "price":
         return "number"
+    elif field_type == 'percent':
+        return "number"
     elif field_type == "decimal":
         return "number"
     elif field_type == "date":

@@ -142,7 +142,9 @@ class ModelBuilder:
 
     def apply_default(self, field_code, default_value, field_type):
         if default_value != '':
-            if field_type == "boolean":
+            if field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
+                pass # TODO: maybe have some syntax to allow setting default reference ID?
+            elif field_type == "boolean":
                 field_code = addArgs(field_code, [f"default={str_to_bool(default_value)}"])
             elif field_type == "integer" or field_type == 'decimal':
                 field_code = addArgs(field_code, [f"default={default_value}"])
@@ -189,6 +191,8 @@ class ModelBuilder:
             return f"MoneyField(decimal_places=2, default_currency='USD', max_digits=11, verbose_name='{field['Field Label']}')"
         elif field_type == "decimal":
             return "models.DecimalField(max_digits=10, decimal_places=2)"  # Adjust precision as needed
+        elif field_type == "percent":
+            return "models.DecimalField(max_digits=10, decimal_places=2)"  # TODO: apply django.core.validators import MinValueValidator, MaxValueValidator
         elif field_type == "date":
             # TODO: auto_now=True ?
             return "models.DateField()"

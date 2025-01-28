@@ -213,6 +213,7 @@ class TypesBuilder:
 
 export interface NewEntity {{
     id: number | string
+    _type: string;
 }}
 
 export type ObjectTypes = {" | ".join(types)};
