@@ -106,7 +106,7 @@ export LC_ALL=C # Avoid issues with non-UTF-8 characters
 for replacement in "${REPLACEMENTS[@]}"; do
     echo "Replacing $find with $replace in $STACK_PATH"
     IFS="|" read -r find replace <<< "$replacement"
-    find "$STACK_PATH" -type f | while read -r file; do
+    find "$STACK_PATH" -type f -not -path '*/.git/*' | while read -r file; do
         awk -v find="$find" -v replace="$replace" '{gsub(find, replace)} 1' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
     done
 done
