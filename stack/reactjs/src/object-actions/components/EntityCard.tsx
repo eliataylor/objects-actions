@@ -104,7 +104,9 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
         field.field_type === 'integer'
           ? field.plural.toLowerCase()
           : field.singular.toLowerCase();
-      if (val && typeof val === 'object') {
+      if (field.field_type === 'json') {
+        atts.secondary = JSON.stringify(val, null, 2);
+      } else if (val && typeof val === 'object') {
         atts.secondary = JSON.stringify(val, null, 2);
         if (Array.isArray(val)) {
           const list = val.map((v) => {
@@ -171,7 +173,9 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
       atts.primary = humanize(atts.primary);
     }
 
-    if (field && field.field_type === 'image') {
+    if (val === '') {
+      // do nothing
+    } else if (field && field.field_type === 'image') {
       if (typeof atts.secondary === 'string') {
         atts.secondary = (
           <Typography sx={{ wordBreak: 'break-word' }} variant={'body2'}>
@@ -208,6 +212,24 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity }) => {
             >
               <source src={val} type="video/mp4" />
             </video>
+          </CardMedia>
+          <CardContent>
+            <Typography>{atts.title}</Typography>
+          </CardContent>
+        </Card>,
+      );
+    }else if (field && field.field_type === 'audio') {
+      content.push(
+        <Card
+          key={`prop${key}-${i}`}
+          sx={{ flexGrow: 1, position: 'relative' }}
+        >
+          <CardMedia>
+            <audio
+              controls={true}
+            >
+              <source src={val} type="video/mp4" />
+            </audio>
           </CardMedia>
           <CardContent>
             <Typography>{atts.title}</Typography>

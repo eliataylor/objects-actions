@@ -381,6 +381,8 @@ def infer_field_datatype(field_type):
         return "string"
     elif field_type == "video":
         return "string"
+    elif field_type == "audio":
+        return "string"
     elif field_type == "media":
         return "string"
     elif field_type == "flat list":

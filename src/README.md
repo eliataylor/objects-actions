@@ -24,7 +24,7 @@ python -m generate <command> --types=<csv_path> [options]
 
 - `--permissions` - Path to CSV file defining access control matrix
 - `--default_perm` - Default permission level when no matches found:
-  - `AllowAll`
+  - `AllowAny`
   - `IsAuthenticated` 
   - `IsAuthenticatedOrReadOnly` (default)
 

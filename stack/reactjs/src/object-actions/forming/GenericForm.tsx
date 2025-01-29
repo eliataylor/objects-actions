@@ -240,9 +240,10 @@ const GenericForm: React.FC<GenericFormProps> = ({
           provider={{ name: field.singular, id: id }}
         />
       );
-    } else if (field.field_type === "image") {
+    } else if (field.field_type === "image" || field.field_type === "audio" || field.field_type === "video") {
       input = (
         <ImageUpload
+          mime_type={field.field_type}
           onSelect={handleImage}
           index={0}
           field_name={field.machine}

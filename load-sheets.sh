@@ -9,6 +9,7 @@ source "$(pwd)/docs/common.sh"
 
 cd "$SCRIPT_DIR/src"
 
+
 if [ ! -d .venv ]; then
     python -m venv .venv
     echo "First run. Creating new virtual environment."
@@ -30,7 +31,7 @@ permissions_arg=""
 if [[ -f "$PERMISSIONS_PATH" ]]; then
     permissions_arg="--permissions=$PERMISSIONS_PATH"
 else
-    permissions_arg="--default_perm=IsAuthenticatedOrReadOnly"
+    permissions_arg="--default_perm=$DEFAULT_PERMS"
 fi
 
 

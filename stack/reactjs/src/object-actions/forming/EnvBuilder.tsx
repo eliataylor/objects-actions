@@ -94,8 +94,8 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
           label: "Is Authenticated"
         },
         {
-          value: "AllowAll",
-          label: "Allow All"
+          value: "AllowAny",
+          label: "Allow Any"
         }
       ]
     },
