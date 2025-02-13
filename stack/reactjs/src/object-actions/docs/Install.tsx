@@ -66,7 +66,7 @@ const Install: React.FC = () => {
           command="git clone git@github.com:eliataylor/object-actions.git --depth 1"
           help={
             <>
-              <b>or</b> if you get SSL errors, use
+              <b>or</b> if you get SSL errors, try
               <code>
                 {" "}
                 <em>
