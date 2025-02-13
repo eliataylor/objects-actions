@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { Box } from '@mui/material';
-import { EntityTypes, NAVITEMS } from '../object-actions/types/types';
+import { ModelType, NAVITEMS } from '../object-actions/types/types';
 import EntityCard from '../object-actions/components/EntityCard';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -20,7 +20,7 @@ const UserView: React.FC = () => {
   const [expanded, setExpanded] = React.useState<string | false>(false);
   const { uid } = useParams();
   const me = useAuth()?.data?.user;
-  const [userProfile, updateUserProfile] = React.useState<EntityTypes | null>(
+  const [userProfile, updateUserProfile] = React.useState<ModelType<"Users"> | null>(
     null,
   );
   const [stats, updateStats] = React.useState<{ [key: string]: number }>({});
@@ -45,7 +45,7 @@ const UserView: React.FC = () => {
         return showSnackBar(response.error);
       }
       if (response.success && response.data) {
-        updateUserProfile(response.data as EntityTypes);
+        updateUserProfile(response.data as ModelType<"Users">);
       }
     };
     fetchUserProfile();

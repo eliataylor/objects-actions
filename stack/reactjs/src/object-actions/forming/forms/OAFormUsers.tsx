@@ -1,15 +1,15 @@
 //---OBJECT-ACTIONS-OAFORM-STARTS---//
 import React from "react";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { Users, TypeFieldSchema } from "../../types/types";
+import { TypeFieldSchema } from "../../types/types";
 import { OAFormProps, useForm } from "../FormProvider";
 import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormUsers: React.FC<OAFormProps<Users>> = ({ onSuccess }) => {
+export const OAFormUsers: React.FC<OAFormProps<"Users">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<Users>();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Users">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 

@@ -9,6 +9,7 @@ export interface RelEntity {
 
 export interface NewEntity {
     id: number | string
+    _type: string;
 }
 
 export type ObjectTypes = Topics | ResourceTypes | MeetingTypes | States | Parties | Stakeholders | Resources | Cities | Officials | Rallies | ActionPlans | Meetings | Invites | Subscriptions | Rooms | Attendees;

@@ -30,7 +30,7 @@ class TopicsAdmin(admin.ModelAdmin):
 		if obj.icon:
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.icon.url)
 		return "No Image"
-    
+
 	list_display = ('id', 'image_tag')            
 
 
@@ -52,7 +52,7 @@ class StatesAdmin(admin.ModelAdmin):
 		if obj.icon:
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.icon.url)
 		return "No Image"
-    
+
 	list_display = ('id', 'image_tag')            
 
 
@@ -64,7 +64,7 @@ class PartiesAdmin(admin.ModelAdmin):
 		if obj.logo:
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.logo.url)
 		return "No Image"
-    
+
 	list_display = ('id', 'image_tag')            
 
 
@@ -76,7 +76,7 @@ class StakeholdersAdmin(admin.ModelAdmin):
 		if obj.image:
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.image.url)
 		return "No Image"
-    
+
 	list_display = ('id', 'image_tag')            
 
 
@@ -119,7 +119,7 @@ class CitiesAdmin(admin.ModelAdmin):
 		if obj.picture:
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.picture.url)
 		return "No Image"
-    
+
 	list_display = ('id', 'image_tag')            
 
 
@@ -166,7 +166,7 @@ class AttendeesAdmin(admin.ModelAdmin):
 		if obj.display_bg:
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.display_bg.url)
 		return "No Image"
-    
+
 	list_display = ('id', 'image_tag')            
 
 

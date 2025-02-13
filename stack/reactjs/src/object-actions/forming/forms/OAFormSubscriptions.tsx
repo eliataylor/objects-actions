@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormSubscriptions: React.FC<OAFormProps<Subscriptions>> = ({ onSuccess }) => {
+export const OAFormSubscriptions: React.FC<OAFormProps<"Subscriptions">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<Subscriptions>();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Subscriptions">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 

@@ -1,7 +1,7 @@
 import React from "react";
 import GenericForm from ".//GenericForm";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
-import { EntityTypes, NavItem, NAVITEMS, TypeFieldSchema } from "../types/types";
+import { FieldTypeDefinition, ModelName, ModelType, NavItem, NAVITEMS, TypeFieldSchema } from "../types/types";
 import { canDo } from "../types/access";
 import { useAuth } from "../../allauth/auth";
 import { FormProvider } from "./FormProvider";
@@ -9,19 +9,19 @@ import * as MyForms from "./forms";
 import { MyFormsKeys } from "./forms";
 import PermissionError from "../../components/PermissionError";
 
-interface NewFormDialog {
-  entity: EntityTypes;
+interface NewFormDialog<T extends ModelName> {
+  entity: ModelType<T>;
   onClose: () => void;
-  onCreated: (newentity: EntityTypes) => void;
+  onCreated: (newentity: ModelType<T>) => void;
 }
 
-const NewFormDialog: React.FC<NewFormDialog> = ({ entity, onClose, onCreated }) => {
+const NewFormDialog = <T extends ModelName>({ entity, onClose, onCreated }: NewFormDialog<T>) => {
   const me = useAuth()?.data?.user;
 
-  const onSuccess =  (entity: EntityTypes) => {
+  const onSuccess = (entity: ModelType<T>) => {
     onCreated(entity);
     onClose();
-  }
+  };
 
   const allow = canDo("add", entity, me);
 
@@ -29,8 +29,8 @@ const NewFormDialog: React.FC<NewFormDialog> = ({ entity, onClose, onCreated }) 
     return <PermissionError error={allow} />;
   }
 
-  const hasUrl = NAVITEMS.find((nav) => nav.type === entity._type) as NavItem;
-  const fields = Object.values(TypeFieldSchema[entity._type]);
+  const hasUrl = NAVITEMS.find((nav) => nav.type === entity._type) as NavItem<T>;
+  const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[entity._type]);
 
   const formKey = `OAForm${hasUrl.type}` as keyof typeof MyForms;
   const FormWrapper = formKey as MyFormsKeys in MyForms ? MyForms[formKey] : null;
@@ -49,6 +49,7 @@ const NewFormDialog: React.FC<NewFormDialog> = ({ entity, onClose, onCreated }) 
       <DialogContent>
         {FormWrapper ? (
           <FormProvider fields={fields} original={entity} navItem={hasUrl}>
+            {/* @ts-ignore */}
             <FormWrapper onSuccess={onSuccess} />
           </FormProvider>
         ) : (

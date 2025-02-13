@@ -1,5 +1,5 @@
-import { EntityTypes } from "./types";
 import permissions from "./permissions.json";
+import { ModelName, ModelType } from "./types";
 
 export interface MySession {
   id: number;
@@ -18,7 +18,7 @@ export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' 
 
 //---OBJECT-ACTIONS-PERMS-ROLES-STARTS---//
 
-export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'IsAuthenticatedOrReadOnly';
+export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'AllowAny';
 
 export type PermRoles = 'anonymous' | 'authenticated' | 'verified' | 'paid user' | 'admin' | 'rally attendee' | 'city sponsor' | 'city official' | 'rally speaker' | 'rally moderator';
 //---OBJECT-ACTIONS-PERMS-ROLES-ENDS---//
@@ -46,7 +46,7 @@ function getPermsByTypeAndVerb(type: string, verb: string) {
 // returns error string or true if passes
 export function canDo(
   verb: CRUDVerb,
-  obj: EntityTypes,
+  obj: ModelType<ModelName>,
   me?: MySession | null
 ): boolean | string {
   const perms = getPermsByTypeAndVerb(obj._type, verb);

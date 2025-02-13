@@ -20,6 +20,7 @@ class TypesBuilder:
         if not os.path.exists(access_path):
             with open(self.templates_dir + '/access.ts', 'r') as fm:
                 tpl = fm.read().strip()
+                tpl = tpl.replace('__DEFAULT_PERM__', default_perm)
                 with open(access_path, 'w') as file:
                     file.write(tpl)
 
@@ -76,10 +77,10 @@ class TypesBuilder:
         constants = {}
         supermodel = f"""\nexport interface SuperModel {{
     readonly id: number | string; 
-    author: RelEntity;
+    author: RelEntity<'Users'>;
     created_at: string;
     modified_at: string;
-    _type: string;
+    _type: ModelName;
 }}\n"""
         interfaces = [supermodel]
         urlItems = []
@@ -203,20 +204,14 @@ class TypesBuilder:
             code.append("}")
             interfaces.append("\n".join(code))
 
-        type_defintions = f"""export interface RelEntity {{
-    id: string | number;
-    str: string;
-    _type: string;
-    img?: string;
-    entity?: EntityTypes
+        type_defintions = f"""export interface RelEntity<T extends ModelName = ModelName> {{
+  id: string | number;
+  str: string;
+  _type: T;
+  img?: string;
+  entity?: ModelType<T>;
 }}
 
-export interface NewEntity {{
-    id: number | string
-    _type: string;
-}}
-
-export type ObjectTypes = {" | ".join(types)};
 export type EntityTypes = Users | {" | ".join(types)};
 
 export interface ApiListResponse<T = EntityTypes> {{
@@ -263,17 +258,17 @@ export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema
 
         inject_generated_code(self.types_filepath, type_defintions.strip(), 'API-RESP')
 
-        navItems = f"""export interface NavItem {{
-        singular: string;
-        plural: string;
-        segment: string;
-        api: string;
-        icon?: string;
-        type: string;
-        model_type?: string;
-        search_fields: string[];
-
+        navItems = f"""export interface NavItem<T extends ModelName = ModelName> {{
+  singular: string;
+  plural: string;
+  segment: string;
+  api: string;
+  icon?: string;
+  type: T;
+  model_type?: 'vocabulary' | string;
+  search_fields: Array<keyof ModelType<T> & string>;
 }}
+
 export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
         inject_generated_code(self.types_filepath, navItems, 'NAV-ITEMS')
 
@@ -281,18 +276,23 @@ export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
     machine: string;
     singular: string;
     plural: string;
-    data_type: string;
+    data_type: 'string' | 'number' | 'boolean' | 'object' | 'RelEntity';
     field_type: string;
-    cardinality?: number;
-    relationship?: string;
-    required?: boolean;
-    default?: string;
-    example?: string;
-    options?: {{ label: string; id: string; }}[];
+    cardinality: number | typeof Infinity;
+    relationship?: ModelName;
+    required: boolean;
+    default: string;
+    example: string;
+    options?: Array<{{ label: string; id: string; }}>;
 }}
-interface ObjectOfObjects {{
-    [key: string]: {{ [key: string]: FieldTypeDefinition }};
+
+// Type for the schema mapping
+export interface TypeFieldSchema {{
+  [K in ModelName]: {{
+    [fieldName: string]: FieldTypeDefinition;
+  }};
 }}
+
 export const TypeFieldSchema: ObjectOfObjects = {json.dumps(constants, indent=2).strip()}""", 'TYPE-CONSTANTS')
 
         inject_generated_code(self.types_filepath, "\n".join(interfaces).strip(), 'TYPE-SCHEMA')

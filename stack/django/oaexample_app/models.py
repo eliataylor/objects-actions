@@ -271,7 +271,7 @@ class Invites(SuperModel):
 	meeting = models.ForeignKey('Meetings', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Meeting')
 	user = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='User')
 	invited_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Invited By')
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status')
+	status = models.CharField(max_length=9, choices=StatusChoices.choices, verbose_name='Status')
 
 class Subscriptions(SuperModel):
 	class Meta:
@@ -287,7 +287,7 @@ class Subscriptions(SuperModel):
 	subscriber = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Subscriber')
 	rally = models.ForeignKey('Rallies', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Rally')
 	meeting = models.ForeignKey('Meetings', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Meeting')
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status')
+	status = models.CharField(max_length=8, choices=StatusChoices.choices, verbose_name='Status')
 
 class Rooms(SuperModel):
 	class Meta:
@@ -309,8 +309,8 @@ class Rooms(SuperModel):
 	end = models.DateTimeField(verbose_name='End')
 	rally = models.ForeignKey('Rallies', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Rally')
 	meeting = models.ForeignKey('Meetings', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='Meeting')
-	privacy = models.CharField(max_length=20, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True)
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, verbose_name='Status', blank=True, null=True)
+	privacy = models.CharField(max_length=10, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True)
+	status = models.CharField(max_length=9, choices=StatusChoices.choices, verbose_name='Status', blank=True, null=True)
 	chat_thread = models.CharField(max_length=255, blank=True, null=True, verbose_name='Chat Thread')
 	recording = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Recording')
 
@@ -328,7 +328,7 @@ class Attendees(SuperModel):
 	room_id = models.ForeignKey('Rooms', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Room ID')
 	display_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Display Name')
 	display_bg = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Display Bg')
-	role = models.CharField(max_length=20, choices=RoleChoices.choices, verbose_name='Role')
+	role = models.CharField(max_length=14, choices=RoleChoices.choices, verbose_name='Role')
 	stream = models.CharField(max_length=255, blank=True, null=True, verbose_name='Stream')
 	is_muted = models.BooleanField(blank=True, null=True, verbose_name='Is Muted')
 	sharing_video = models.BooleanField(blank=True, null=True, verbose_name='Sharing Video')
