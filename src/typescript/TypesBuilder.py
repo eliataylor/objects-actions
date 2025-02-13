@@ -165,7 +165,11 @@ class TypesBuilder:
                 else:
                     field_def += field_name
 
+                if len(field['Relationship']) > 0:
+                    field_js['relationship'] = capitalize(create_object_name(field['Relationship']))
+
                 data_type = infer_field_datatype(field_type)
+
 
                 if not field['Required'] and field_type != 'id_auto_increment':
                     field_def += "?: "
@@ -173,13 +177,18 @@ class TypesBuilder:
                     field_def += ": "
 
                 field_js['field_type'] = field_type
-                field_def += data_type
                 field_js['data_type'] = data_type
                 field_js['cardinality'] = field['HowMany']
-                field_js['relationship'] = capitalize(create_object_name(field['Relationship']))
                 field_js['default'] = field['Default']
                 field_js['required'] = True if field['Required'] else False
                 field_js['example'] = field['Example'].strip()
+
+                field_def += data_type
+                if data_type == 'RelEntity':
+                    if "relationship" in field_js:
+                        field_def += f'<"{field_js['relationship']}">'
+                    else:
+                        field_def += f'<ModelName>'
 
                 if field_type == 'enum':
                     field_js = create_options(field_js)
@@ -204,55 +213,78 @@ class TypesBuilder:
             code.append("}")
             interfaces.append("\n".join(code))
 
-        type_defintions = f"""export interface RelEntity<T extends ModelName = ModelName> {{
+        modelTypes = "export type ModelType<T extends ModelName> = T extends 'Users' ? Users : "
+        for itype in types:
+            modelTypes += f"\nT extends '{itype}' ? {itype} :"
+
+        type_defintions = f"""
+
+export type ModelName = "Users" | "{'" | "'.join(types)}";
+
+{modelTypes} never
+
+export interface RelEntity<T extends ModelName = ModelName> {{
   id: string | number;
   str: string;
   _type: T;
   img?: string;
-  entity?: ModelType<T>;
+  entity?: Partial<ModelType<T>>;
 }}
 
-export type EntityTypes = Users | {" | ".join(types)};
+export type ITypeFieldSchema = {{
+  [K in ModelName]: {{
+    [fieldName: string]: FieldTypeDefinition;
+  }};
+}}
 
-export interface ApiListResponse<T = EntityTypes> {{
+export interface ApiListResponse<T extends ModelName> {{
     count: number;
     offset: number;
     limit: number;
     meta: any;
     error: string | null;
-    results: T[]
+    results: Array<ModelType<T>>
 }}
 
-export function getProp<T extends EntityTypes, K extends keyof T>(entity: T, key: K): T[K] | null {{
+export function getProp<T extends ModelName, K extends keyof ModelType<T>>(
+  entity: ModelType<T>,
+  key: K
+): ModelType<T>[K] | null {{
   if (key in entity) return entity[key];
   return null;
 }}
 
-export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema, entity: any): any {{
-    const schema = TypeFieldSchema[modelName];
-    const result: any = {{id: entity.id || 0}};
+export function restructureAsAllEntities<T extends ModelName>(
+  modelName: T,
+  entity: Partial<ModelType<T>>
+): ModelType<T> {{
+  const schema = TypeFieldSchema[modelName];
+  const result: any = {{ id: entity.id || 0, _type: modelName }};
 
-    Object.entries(schema).forEach(([key, field]) => {{
-        const value = entity[key];
+  Object.entries(schema).forEach(([key, field]) => {{
+    const value = (entity as any)[key];
 
-        if (field.data_type === 'RelEntity') {{
-            if (!value) {{
-                // don't add at all
-            }} else if (Array.isArray(value)) {{
-                // Transform an array of RelEntities
-                result[key] = value.map((item) => (item.entity ? restructureAsAllEntities(item._type, item.entity) : item));
-            }} else if (value.entity) {{
-                // Transform a single RelEntity
-                result[key] = value?.entity ? restructureAsAllEntities(value._type, value.entity) : value;
-            }} else {{
-                result[key] = {{"id": value.id}};
-            }}
-        }} else if (value) {{
-            result[key] = value;
-        }}
-    }});
-
-    return result;
+    if (field.data_type === 'RelEntity') {{
+      if (!value) {{
+        // Skip undefined values
+      }} else if (Array.isArray(value)) {{
+        // Transform array of RelEntities
+        result[key] = value.map((item) =>
+          item.entity ? restructureAsAllEntities(item._type as ModelName, item.entity) : item
+        );
+      }} else if (value.entity) {{
+        // Transform single RelEntity
+        result[key] = value.entity ?
+          restructureAsAllEntities(value._type as ModelName, value.entity) :
+          value;
+      }} else {{
+        result[key] = {{ id: value.id }};
+      }}
+    }} else if (value !== undefined) {{
+      result[key] = value;
+    }}
+  }});
+  return result as ModelType<T>;
 }}
 """
 
@@ -266,10 +298,10 @@ export function restructureAsAllEntities(modelName: keyof typeof TypeFieldSchema
   icon?: string;
   type: T;
   model_type?: 'vocabulary' | string;
-  search_fields: Array<keyof ModelType<T> & string>;
+  search_fields: string[];
 }}
 
-export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
+export const NAVITEMS: {{ [K in ModelName]: NavItem<K> }}[ModelName][] = {json.dumps(urlItems, indent=2).strip()}"""
         inject_generated_code(self.types_filepath, navItems, 'NAV-ITEMS')
 
         inject_generated_code(self.types_filepath, f"""export interface FieldTypeDefinition {{
@@ -286,14 +318,7 @@ export const NAVITEMS: NavItem[] = {json.dumps(urlItems, indent=2).strip()}"""
     options?: Array<{{ label: string; id: string; }}>;
 }}
 
-// Type for the schema mapping
-export interface TypeFieldSchema {{
-  [K in ModelName]: {{
-    [fieldName: string]: FieldTypeDefinition;
-  }};
-}}
-
-export const TypeFieldSchema: ObjectOfObjects = {json.dumps(constants, indent=2).strip()}""", 'TYPE-CONSTANTS')
+export const TypeFieldSchema: ITypeFieldSchema = {json.dumps(constants, indent=2).strip()}""", 'TYPE-CONSTANTS')
 
         inject_generated_code(self.types_filepath, "\n".join(interfaces).strip(), 'TYPE-SCHEMA')
 

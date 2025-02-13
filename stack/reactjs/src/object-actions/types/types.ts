@@ -1,32 +1,24 @@
 //---OBJECT-ACTIONS-API-RESP-STARTS---//
+export type ModelName = "Users" | "Topics" | "ResourceTypes" | "MeetingTypes" | "States" | "Parties" | "Stakeholders" | "Resources" | "Cities" | "Officials" | "Rallies" | "ActionPlans" | "Meetings" | "Invites" | "Subscriptions" | "Rooms" | "Attendees";
 
-// Base type for all possible model names
-export type ModelName = 'Users' | 'Topics' | 'ResourceTypes' | 'MeetingTypes' |
-  'States' | 'Parties' | 'Stakeholders' | 'Resources' | 'Cities' | 'Officials' |
-  'Rallies' | 'ActionPlans' | 'Meetings' | 'Invites' | 'Subscriptions' | 'Rooms' | 'Attendees';
+export type ModelType<T extends ModelName> = T extends 'Users' ? Users : 
+T extends 'Topics' ? Topics :
+T extends 'ResourceTypes' ? ResourceTypes :
+T extends 'MeetingTypes' ? MeetingTypes :
+T extends 'States' ? States :
+T extends 'Parties' ? Parties :
+T extends 'Stakeholders' ? Stakeholders :
+T extends 'Resources' ? Resources :
+T extends 'Cities' ? Cities :
+T extends 'Officials' ? Officials :
+T extends 'Rallies' ? Rallies :
+T extends 'ActionPlans' ? ActionPlans :
+T extends 'Meetings' ? Meetings :
+T extends 'Invites' ? Invites :
+T extends 'Subscriptions' ? Subscriptions :
+T extends 'Rooms' ? Rooms :
+T extends 'Attendees' ? Attendees : never
 
-// Helper type to extract the actual interface type from ModelName
-export type ModelType<T extends ModelName> =
-  T extends 'Users' ? Users :
-  T extends 'Topics' ? Topics :
-  T extends 'ResourceTypes' ? ResourceTypes :
-  T extends 'MeetingTypes' ? MeetingTypes :
-  T extends 'States' ? States :
-  T extends 'Parties' ? Parties :
-  T extends 'Stakeholders' ? Stakeholders :
-  T extends 'Resources' ? Resources :
-  T extends 'Cities' ? Cities :
-  T extends 'Officials' ? Officials :
-  T extends 'Rallies' ? Rallies :
-  T extends 'ActionPlans' ? ActionPlans :
-  T extends 'Meetings' ? Meetings :
-  T extends 'Invites' ? Invites :
-  T extends 'Subscriptions' ? Subscriptions :
-  T extends 'Rooms' ? Rooms :
-  T extends 'Attendees' ? Attendees :
-  never;
-
-// Improved RelEntity type with generic parameter
 export interface RelEntity<T extends ModelName = ModelName> {
   id: string | number;
   str: string;
@@ -35,24 +27,21 @@ export interface RelEntity<T extends ModelName = ModelName> {
   entity?: Partial<ModelType<T>>;
 }
 
-// Type for the schema mapping
 export type ITypeFieldSchema = {
   [K in ModelName]: {
     [fieldName: string]: FieldTypeDefinition;
   };
 }
 
-// API Response with proper typing
 export interface ApiListResponse<T extends ModelName> {
-  count: number;
-  offset: number;
-  limit: number;
-  meta: any;
-  error: string | null;
-  results: Array<ModelType<T>>;
+    count: number;
+    offset: number;
+    limit: number;
+    meta: any;
+    error: string | null;
+    results: Array<ModelType<T>>
 }
 
-// Utility function to get property with type safety
 export function getProp<T extends ModelName, K extends keyof ModelType<T>>(
   entity: ModelType<T>,
   key: K
@@ -61,7 +50,6 @@ export function getProp<T extends ModelName, K extends keyof ModelType<T>>(
   return null;
 }
 
-// Base model that most entities extend
 export function restructureAsAllEntities<T extends ModelName>(
   modelName: T,
   entity: Partial<ModelType<T>>
@@ -92,26 +80,24 @@ export function restructureAsAllEntities<T extends ModelName>(
       result[key] = value;
     }
   });
-
   return result as ModelType<T>;
 }
 //---OBJECT-ACTIONS-API-RESP-ENDS---//
 
 
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-STARTS---//
-// Base interface for field definitions
 export interface FieldTypeDefinition {
-  machine: string;
-  singular: string;
-  plural: string;
-  data_type: 'string' | 'number' | 'boolean' | 'object' | 'RelEntity';
-  field_type: string;
-  cardinality: number | typeof Infinity;
-  relationship?: ModelName;
-  required: boolean;
-  default: string;
-  example: string;
-  options?: Array<{ label: string; id: string; }>;
+    machine: string;
+    singular: string;
+    plural: string;
+    data_type: 'string' | 'number' | 'boolean' | 'object' | 'RelEntity';
+    field_type: string;
+    cardinality: number | typeof Infinity;
+    relationship?: ModelName;
+    required: boolean;
+    default: string;
+    example: string;
+    options?: Array<{ label: string; id: string; }>;
 }
 
 export const TypeFieldSchema: ITypeFieldSchema = {
@@ -123,7 +109,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -135,7 +120,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -147,7 +131,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -161,7 +144,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -175,7 +157,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -189,7 +170,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -201,7 +181,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "url",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -213,7 +192,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -227,7 +205,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -239,7 +216,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -251,7 +227,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "url",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -265,7 +240,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -277,7 +251,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -291,7 +264,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -303,7 +275,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -315,7 +286,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -327,7 +297,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -339,7 +308,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -348,10 +316,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "resource_type",
       "singular": "Resource Type",
       "plural": "Resource Types",
+      "relationship": "ResourceTypes",
       "field_type": "vocabulary_reference",
       "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "ResourceTypes",
       "default": "",
       "required": true,
       "example": ""
@@ -365,7 +333,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "email",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -377,7 +344,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "phone",
       "data_type": "string",
       "cardinality": 0,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -389,7 +355,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "url",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -401,7 +366,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -413,7 +377,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -425,7 +388,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -434,10 +396,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "resources",
       "singular": "Resource",
       "plural": "Resourceses",
+      "relationship": "Resources",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Resources",
       "default": "",
       "required": false,
       "example": ""
@@ -451,7 +413,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -463,7 +424,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -475,7 +435,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "address",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -487,7 +446,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -499,7 +457,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -508,10 +465,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "sponsors",
       "singular": "Sponsor",
       "plural": "Sponsorss",
+      "relationship": "Users",
       "field_type": "user_profile",
       "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Users",
       "default": "",
       "required": false,
       "example": ""
@@ -523,7 +480,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "url",
       "data_type": "string",
       "cardinality": 3,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -535,7 +491,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -547,7 +502,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -559,7 +513,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -568,10 +521,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "state_id",
       "singular": "State",
       "plural": "States",
+      "relationship": "States",
       "field_type": "vocabulary_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "States",
       "default": "",
       "required": false,
       "example": ""
@@ -580,10 +533,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "officials",
       "singular": "Official",
       "plural": "Officialss",
+      "relationship": "Users",
       "field_type": "user_profile",
       "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Users",
       "default": "",
       "required": false,
       "example": ""
@@ -595,7 +548,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -607,7 +559,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -619,7 +570,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -631,7 +581,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -643,7 +592,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -657,7 +605,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -669,7 +616,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "phone",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -681,7 +627,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "email",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -693,7 +638,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "url",
       "data_type": "string",
       "cardinality": Infinity,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -702,10 +646,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "party_affiliation",
       "singular": "Party",
       "plural": "Partys",
+      "relationship": "Parties",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Parties",
       "default": "",
       "required": false,
       "example": ""
@@ -714,10 +658,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "city",
       "singular": "City",
       "plural": "Citys",
+      "relationship": "Cities",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Cities",
       "default": "",
       "required": true,
       "example": ""
@@ -731,7 +675,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -743,7 +686,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -755,7 +697,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "media",
       "data_type": "string",
       "cardinality": Infinity,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -764,10 +705,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "topics",
       "singular": "Topic",
       "plural": "Topicss",
+      "relationship": "Topics",
       "field_type": "vocabulary_reference",
       "data_type": "RelEntity",
       "cardinality": 3,
-      "relationship": "Topics",
       "default": "",
       "required": true,
       "example": ""
@@ -779,7 +720,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": Infinity,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -793,7 +733,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -805,7 +744,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -817,7 +755,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -829,7 +766,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -841,7 +777,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -850,10 +785,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "coauthors",
       "singular": "CoAuthor",
       "plural": "CoAuthorss",
+      "relationship": "Users",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Users",
       "default": "",
       "required": false,
       "example": ""
@@ -865,7 +800,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -877,7 +811,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -889,7 +822,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -901,7 +833,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "textarea",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -910,10 +841,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "rally",
       "singular": "Rally",
       "plural": "Rallys",
+      "relationship": "Rallies",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Rallies",
       "default": "",
       "required": false,
       "example": ""
@@ -927,7 +858,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -936,10 +866,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "rally",
       "singular": "Rally",
       "plural": "Rallys",
+      "relationship": "Rallies",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Rallies",
       "default": "",
       "required": false,
       "example": ""
@@ -948,10 +878,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "meeting_type",
       "singular": "Meeting Type",
       "plural": "Meeting Types",
+      "relationship": "MeetingTypes",
       "field_type": "vocabulary_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "MeetingTypes",
       "default": "",
       "required": true,
       "example": ""
@@ -960,10 +890,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "speakers",
       "singular": "Speaker",
       "plural": "Speakerss",
+      "relationship": "Users",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 7,
-      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -972,10 +902,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "moderators",
       "singular": "Moderator",
       "plural": "Moderatorss",
+      "relationship": "Users",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 2,
-      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -984,10 +914,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "sponsors",
       "singular": "Sponsor",
       "plural": "Sponsorss",
+      "relationship": "Users",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": Infinity,
-      "relationship": "Users",
       "default": "",
       "required": false,
       "example": ""
@@ -999,7 +929,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "address",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1011,7 +940,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "date_time",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -1023,7 +951,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "date_time",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -1035,7 +962,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "json",
       "data_type": "object",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1047,7 +973,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1059,7 +984,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "integer",
       "data_type": "number",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1070,10 +994,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "meeting",
       "singular": "Meeting",
       "plural": "Meetings",
+      "relationship": "Meetings",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Meetings",
       "default": "",
       "required": true,
       "example": ""
@@ -1082,10 +1006,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "user",
       "singular": "User",
       "plural": "Users",
+      "relationship": "Users",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1094,10 +1018,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "invited_by",
       "singular": "Invited By",
       "plural": "Invited Bys",
+      "relationship": "Users",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1109,7 +1033,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": "invited, rsvpd, attending, attended",
@@ -1138,10 +1061,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "subscriber",
       "singular": "Subscriber",
       "plural": "Subscribers",
+      "relationship": "Users",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1150,10 +1073,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "rally",
       "singular": "Rally",
       "plural": "Rallys",
+      "relationship": "Rallies",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Rallies",
       "default": "",
       "required": true,
       "example": ""
@@ -1162,10 +1085,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "meeting",
       "singular": "Meeting",
       "plural": "Meetings",
+      "relationship": "Meetings",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Meetings",
       "default": "",
       "required": false,
       "example": ""
@@ -1177,7 +1100,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": "\"approved\", \"denied\", \"active\", \"seen\"",
@@ -1206,10 +1128,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "author",
       "singular": "Owner",
       "plural": "Owners",
+      "relationship": "Users",
       "field_type": "user_account",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Users",
       "default": "",
       "required": true,
       "example": ""
@@ -1221,7 +1143,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "date_time",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -1233,7 +1154,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "date_time",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": ""
@@ -1242,10 +1162,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "rally",
       "singular": "Rally",
       "plural": "Rallys",
+      "relationship": "Rallies",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Rallies",
       "default": "",
       "required": false,
       "example": ""
@@ -1254,10 +1174,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "meeting",
       "singular": "Meeting",
       "plural": "Meetings",
+      "relationship": "Meetings",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Meetings",
       "default": "",
       "required": false,
       "example": ""
@@ -1269,7 +1189,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": "public, invite-only, requests",
@@ -1295,7 +1214,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": "live, scheduled, ended",
@@ -1321,7 +1239,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": Infinity,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1333,7 +1250,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "video",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1344,10 +1260,10 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "machine": "room_id",
       "singular": "Room ID",
       "plural": "Room IDS",
+      "relationship": "Rooms",
       "field_type": "type_reference",
       "data_type": "RelEntity",
       "cardinality": 1,
-      "relationship": "Rooms",
       "default": "",
       "required": true,
       "example": ""
@@ -1359,7 +1275,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1371,7 +1286,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "image",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1383,7 +1297,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "enum",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": true,
       "example": "viewer, presenter, admin, chat moderator",
@@ -1413,7 +1326,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "text",
       "data_type": "string",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1425,7 +1337,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "boolean",
       "data_type": "boolean",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1437,7 +1348,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "boolean",
       "data_type": "boolean",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1449,7 +1359,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "boolean",
       "data_type": "boolean",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1461,7 +1370,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "boolean",
       "data_type": "boolean",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1473,7 +1381,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "boolean",
       "data_type": "boolean",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1485,7 +1392,6 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "field_type": "boolean",
       "data_type": "boolean",
       "cardinality": 1,
-      "relationship": undefined,
       "default": "",
       "required": false,
       "example": ""
@@ -1496,184 +1402,168 @@ export const TypeFieldSchema: ITypeFieldSchema = {
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
 export interface SuperModel {
-  id: number | string;
-  author: RelEntity<'Users'>;
-  created_at: string;
-  modified_at: string;
-  _type: ModelName;
+    readonly id: number | string; 
+    author: RelEntity<'Users'>;
+    created_at: string;
+    modified_at: string;
+    _type: ModelName;
 }
 
 export interface Topics extends SuperModel {
-  name?: string | null;
-  icon?: string | null;
-  photo?: string | null;
+	name?: string | null;
+	icon?: string | null;
+	photo?: string | null;
 }
-
 export interface ResourceTypes extends SuperModel {
-  name?: string | null;
+	name?: string | null;
 }
-
 export interface MeetingTypes extends SuperModel {
-  name?: string | null;
+	name?: string | null;
 }
-
 export interface States extends SuperModel {
-  name?: string | null;
-  website?: string | null;
-  icon?: string | null;
+	name?: string | null;
+	website?: string | null;
+	icon?: string | null;
 }
-
 export interface Parties extends SuperModel {
-  name?: string | null;
-  logo?: string | null;
-  website?: string | null;
+	name?: string | null;
+	logo?: string | null;
+	website?: string | null;
 }
-
 export interface Stakeholders extends SuperModel {
-  name?: string | null;
-  image?: string | null;
+	name?: string | null;
+	image?: string | null;
 }
-
 export interface Resources extends SuperModel {
-  title: string;
-  description_html: string;
-  image: string;
-  postal_address?: string | null;
-  price_ccoin: number;
-  resource_type: RelEntity<'ResourceTypes'>[];
+	title: string;
+	description_html: string;
+	image: string;
+	postal_address?: string | null;
+	price_ccoin: number;
+	resource_type: RelEntity<"ResourceTypes">[];
 }
-
 export interface Users {
-  readonly id: number | string;
-  _type: 'Users';
-  is_active?: boolean;
-  is_staff?: boolean;
-  last_login?: string;
-  date_joined?: string;
-  username?: string;
-  first_name?: string;
-  last_name?: string;
-  groups?: string[];
-  email?: string | null;
-  phone?: string | null;
-  website?: string | null;
-  bio?: string | null;
-  picture?: string | null;
-  cover_photo?: string | null;
-  resources?: RelEntity<'Resources'>[] | null;
+	readonly id: number | string
+	_type: string
+	is_active?: boolean
+	is_staff?: boolean
+	last_login?: string
+	date_joined?: string
+	username?: string
+	first_name?: string
+	last_name?: string
+	groups?: string[]
+	email?: string | null;
+	phone?: string | null;
+	website?: string | null;
+	bio?: string | null;
+	picture?: string | null;
+	cover_photo?: string | null;
+	resources?: RelEntity<"Resources">[] | null;
 }
-
 export interface Cities extends SuperModel {
-  name: string;
-  description?: string | null;
-  postal_address?: string | null;
-  picture?: string | null;
-  cover_photo?: string | null;
-  sponsors?: RelEntity<'Users'>[] | null;
-  website?: string[] | null;
-  population?: number | null;
-  altitude?: number | null;
-  county?: string | null;
-  state_id?: RelEntity<'States'> | null;
-  officials?: RelEntity<'Users'>[] | null;
-  land_area?: number | null;
-  water_area?: number | null;
-  total_area?: number | null;
-  density?: number | null;
-  timezone?: string | null;
+	name: string;
+	description?: string | null;
+	postal_address?: string | null;
+	picture?: string | null;
+	cover_photo?: string | null;
+	sponsors?: RelEntity<"Users">[] | null;
+	website?: string[] | null;
+	population?: number | null;
+	altitude?: number | null;
+	county?: string | null;
+	state_id?: RelEntity<"States"> | null;
+	officials?: RelEntity<"Users">[] | null;
+	land_area?: number | null;
+	water_area?: number | null;
+	total_area?: number | null;
+	density?: number | null;
+	timezone?: string | null;
 }
-
 export interface Officials extends SuperModel {
-  title: string;
-  office_phone?: string | null;
-  office_email?: string | null;
-  social_links?: string[] | null;
-  party_affiliation?: RelEntity<'Parties'> | null;
-  city: RelEntity<'Cities'>[];
+	title: string;
+	office_phone?: string | null;
+	office_email?: string | null;
+	social_links?: string[] | null;
+	party_affiliation?: RelEntity<"Parties"> | null;
+	city: RelEntity<"Cities">[];
 }
-
 export interface Rallies extends SuperModel {
-  title: string;
-  description: string;
-  media?: string[] | null;
-  topics: RelEntity<'Topics'>[];
-  comments?: string[] | null;
+	title: string;
+	description: string;
+	media?: string[] | null;
+	topics: RelEntity<"Topics">[];
+	comments?: string[] | null;
 }
-
 export interface ActionPlans extends SuperModel {
-  title?: string | null;
-  recommendation?: string | null;
-  exe_summary?: string | null;
-  analysis?: string | null;
-  background?: string | null;
-  coauthors?: RelEntity<'Users'>[] | null;
-  pro_argument?: string | null;
-  con_argument?: string | null;
-  prerequisites: string;
-  timeline?: string | null;
-  rally?: RelEntity<'Rallies'> | null;
+	title?: string | null;
+	recommendation?: string | null;
+	exe_summary?: string | null;
+	analysis?: string | null;
+	background?: string | null;
+	coauthors?: RelEntity<"Users">[] | null;
+	pro_argument?: string | null;
+	con_argument?: string | null;
+	prerequisites: string;
+	timeline?: string | null;
+	rally?: RelEntity<"Rallies"> | null;
 }
-
 export interface Meetings extends SuperModel {
-  title?: string | null;
-  rally?: RelEntity<'Rallies'> | null;
-  meeting_type: RelEntity<'MeetingTypes'>;
-  speakers: RelEntity<'Users'>[];
-  moderators: RelEntity<'Users'>[];
-  sponsors?: RelEntity<'Users'>[] | null;
-  address?: string | null;
-  start: string;
-  end: string;
-  agenda_json?: object | null;
-  duration?: number | null;
-  privacy?: number | null;
+	title?: string | null;
+	rally?: RelEntity<"Rallies"> | null;
+	meeting_type: RelEntity<"MeetingTypes">;
+	speakers: RelEntity<"Users">[];
+	moderators: RelEntity<"Users">[];
+	sponsors?: RelEntity<"Users">[] | null;
+	address?: string | null;
+	start: string;
+	end: string;
+	agenda_json?: object | null;
+	duration?: number | null;
+	privacy?: number | null;
 }
-
 export interface Invites extends SuperModel {
-  meeting: RelEntity<'Meetings'>;
-  user: RelEntity<'Users'>;
-  invited_by: RelEntity<'Users'>;
-  status: string;
+	meeting: RelEntity<"Meetings">;
+	user: RelEntity<"Users">;
+	invited_by: RelEntity<"Users">;
+	status: string;
 }
-
 export interface Subscriptions extends SuperModel {
-  subscriber: RelEntity<'Users'>;
-  rally: RelEntity<'Rallies'>;
-  meeting?: RelEntity<'Meetings'> | null;
-  status: string;
+	subscriber: RelEntity<"Users">;
+	rally: RelEntity<"Rallies">;
+	meeting?: RelEntity<"Meetings"> | null;
+	status: string;
 }
-
 export interface Rooms extends SuperModel {
-  author: RelEntity<'Users'>;
-  start: string;
-  end: string;
-  rally?: RelEntity<'Rallies'> | null;
-  meeting?: RelEntity<'Meetings'> | null;
-  privacy?: string | null;
-  status?: string | null;
-  chat_thread?: string[] | null;
-  recording?: string | null;
+	author: RelEntity<"Users">;
+	start: string;
+	end: string;
+	rally?: RelEntity<"Rallies"> | null;
+	meeting?: RelEntity<"Meetings"> | null;
+	privacy?: string | null;
+	status?: string | null;
+	chat_thread?: string[] | null;
+	recording?: string | null;
 }
-
 export interface Attendees extends SuperModel {
-  room_id: RelEntity<'Rooms'>;
-  display_name?: string | null;
-  display_bg?: string | null;
-  role: string;
-  stream?: string | null;
-  is_muted?: boolean | null;
-  sharing_video?: boolean | null;
-  sharing_audio?: boolean | null;
-  sharing_screen?: boolean | null;
-  hand_raised?: boolean | null;
-  is_typing?: boolean | null;
+	room_id: RelEntity<"Rooms">;
+	display_name?: string | null;
+	display_bg?: string | null;
+	role: string;
+	stream?: string | null;
+	is_muted?: boolean | null;
+	sharing_video?: boolean | null;
+	sharing_audio?: boolean | null;
+	sharing_screen?: boolean | null;
+	hand_raised?: boolean | null;
+	is_typing?: boolean | null;
 }
 //---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
 
 
 
 //---OBJECT-ACTIONS-NAV-ITEMS-STARTS---//
-export interface  NavItem<T extends ModelName = ModelName> {
+export interface NavItem<T extends ModelName = ModelName> {
   singular: string;
   plural: string;
   segment: string;

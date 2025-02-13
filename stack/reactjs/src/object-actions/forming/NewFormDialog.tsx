@@ -1,7 +1,7 @@
 import React from "react";
 import GenericForm from ".//GenericForm";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
-import { FieldTypeDefinition, ModelName, ModelType, NavItem, NAVITEMS, TypeFieldSchema } from "../types/types";
+import { FieldTypeDefinition, ITypeFieldSchema, ModelName, ModelType, NavItem, NAVITEMS, TypeFieldSchema } from "../types/types";
 import { canDo } from "../types/access";
 import { useAuth } from "../../allauth/auth";
 import { FormProvider } from "./FormProvider";
@@ -30,7 +30,7 @@ const NewFormDialog = <T extends ModelName>({ entity, onClose, onCreated }: NewF
   }
 
   const hasUrl = NAVITEMS.find((nav) => nav.type === entity._type) as NavItem<T>;
-  const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[entity._type]);
+  const fields: FieldTypeDefinition[] = Object.values(TypeFieldSchema[entity._type as keyof ITypeFieldSchema]);
 
   const formKey = `OAForm${hasUrl.type}` as keyof typeof MyForms;
   const FormWrapper = formKey as MyFormsKeys in MyForms ? MyForms[formKey] : null;

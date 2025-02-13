@@ -9,7 +9,6 @@ import inflect
 import ast
 import re
 
-
 def find_model_details(csv_file, model_name):
     with open(csv_file, 'r') as csvfile:
         reader = csv.DictReader(csvfile)

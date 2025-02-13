@@ -1,14 +1,14 @@
 import React from "react";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { __CLASSNAME__, TypeFieldSchema } from "../../types/types";
+import { TypeFieldSchema } from "../../types/types";
 import { OAFormProps, useForm } from "../FormProvider";
 import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAForm__CLASSNAME__: React.FC<OAFormProps<__CLASSNAME__>> = ({ onSuccess }) => {
+export const OAForm__CLASSNAME__: React.FC<OAFormProps<"__CLASSNAME__">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<__CLASSNAME__>();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"__CLASSNAME__">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ export const OAForm__CLASSNAME__: React.FC<OAFormProps<__CLASSNAME__>> = ({ onSu
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`__CLASSNAME__ saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -28,7 +28,7 @@ export const OAForm__CLASSNAME__: React.FC<OAFormProps<__CLASSNAME__>> = ({ onSu
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`__CLASSNAME__ saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");

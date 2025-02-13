@@ -6,15 +6,12 @@ import { OAFormProps, useForm } from "../FormProvider";
 import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import { Add } from "@mui/icons-material";
 
 export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
 
-  const { renderField, addFieldValue, removeFieldValue, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Rooms">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Rooms">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const formModel = TypeFieldSchema["Rooms"]
 
   async function saveEntity() {
     handleSubmit().then((newentity) => {
@@ -23,7 +20,7 @@ export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`Rooms saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -32,7 +29,7 @@ export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`Rooms saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -42,32 +39,31 @@ export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(formModel["author"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rooms"]["author"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(formModel["start"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rooms"]["start"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(formModel["end"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rooms"]["end"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(formModel["rally"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rooms"]["rally"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(formModel["meeting"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rooms"]["meeting"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(formModel["privacy"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rooms"]["privacy"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(formModel["status"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rooms"]["status"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(formModel["chat_thread"], 0, {fullWidth:true})}
-        <IconButton onClick={() => addFieldValue("chat_thread")}><Add/></IconButton>
+				{renderField(TypeFieldSchema["Rooms"]["chat_thread"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(formModel["recording"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Rooms"]["recording"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}

@@ -20,7 +20,7 @@ export const OAFormUsers: React.FC<OAFormProps<"Users">> = ({ onSuccess }) => {
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`Users saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormUsers: React.FC<OAFormProps<"Users">> = ({ onSuccess }) => {
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`Users saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
