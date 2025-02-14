@@ -14,7 +14,7 @@ if __name__ == "__main__":
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--permissions', required=False, help="Path to the Permissions Matrix CSV file.")
-    parser.add_argument('--default_perm', required=False, choices=['AllowAll', 'IsAuthenticated', 'IsAuthenticatedOrReadOnly'], default='IsAuthenticatedOrReadOnly', help="Default permission when matches are not found in permissions matrix")
+    parser.add_argument('--default_perm', required=False, choices=['AllowAny', 'IsAuthenticated', 'IsAuthenticatedOrReadOnly'], default='IsAuthenticatedOrReadOnly', help="Default permission when matches are not found in permissions matrix")
     parser.add_argument('--output_dir', required=True, help="Path to the output directory.")
 
     args = parser.parse_args()

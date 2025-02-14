@@ -6,12 +6,14 @@ interface CopyToClipboardProps {
   textToCopy: string;
   copiedMessage?: string;
   children: React.ReactNode;
+  onCopied?: () => void;
 }
 
 const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
   textToCopy,
   children,
-  copiedMessage = 'Copied to clipboard'
+  copiedMessage = 'Copied to clipboard',
+  onCopied
 }) => {
   const { enqueueSnackbar } = useSnackbar();
 
@@ -20,6 +22,9 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
       try {
         await navigator.clipboard.writeText(textToCopy);
         enqueueSnackbar(copiedMessage, { variant: 'success' });
+        if (onCopied) {
+          onCopied()
+        }
       } catch (error) {
         console.error('Failed to copy text: ', error);
         enqueueSnackbar('Failed to copy text', { variant: 'error' });

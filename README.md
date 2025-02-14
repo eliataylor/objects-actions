@@ -23,7 +23,7 @@ Offer Sign-in / Sign-up from any of these [AllAuth Providers](https://docs.allau
 
 
 # TO RUN:
-Follow [oaexample.com/oa/install](https://oaexample.com/oa/install)  
+Follow [oaexample.com/oa/install](https://oaexample.com/oa/install)
 
 # TO CUSTOMIZE:
 Follow [oaexample.com/oa/customize](https://oaexample.com/oa/customize)
@@ -34,6 +34,5 @@ Follow [oaexample.com/oa/extend](https://oaexample.com/oa/extend)
 # TO CONTRIBUTE:
 Follow [oaexample.com/oa/contribute](https://oaexample.com/oa/contribute)
 
-# TO SPONSOR: 
-
+# TO SPONSOR:
 Donate [github.com/sponsors/eliataylor](https://github.com/sponsors/eliataylor)

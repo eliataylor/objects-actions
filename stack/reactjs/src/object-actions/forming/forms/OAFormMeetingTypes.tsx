@@ -1,15 +1,15 @@
 //---OBJECT-ACTIONS-OAFORM-STARTS---//
 import React from "react";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { MeetingTypes, TypeFieldSchema } from "../../types/types";
+import { TypeFieldSchema } from "../../types/types";
 import { OAFormProps, useForm } from "../FormProvider";
 import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormMeetingTypes: React.FC<OAFormProps<MeetingTypes>> = ({ onSuccess }) => {
+export const OAFormMeetingTypes: React.FC<OAFormProps<"MeetingTypes">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<MeetingTypes>();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"MeetingTypes">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormMeetingTypes: React.FC<OAFormProps<MeetingTypes>> = ({ onSucc
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`MeetingTypes saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormMeetingTypes: React.FC<OAFormProps<MeetingTypes>> = ({ onSucc
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`MeetingTypes saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");

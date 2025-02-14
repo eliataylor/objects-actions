@@ -9,15 +9,13 @@ import { useEnvContext } from '../forming/EnvProvider';
 const Install: React.FC = () => {
   const { envConfig } = useEnvContext();
 
-  const method = envConfig.REACT_APP_APP_HOST;
-
   return (
     <Box>
       <StyledTypography variant="subtitle1">
         Once all Docker containers are running, these will be accessible in your browser:
       </StyledTypography>
 
-      {method.indexOf('https:') === 0 && (
+      {envConfig.REACT_APP_APP_HOST.indexOf('https:') === 0 && (
         <StyledTypography variant="subtitle2">
           You will have to accept your browser's warnings about self-signed
           certificates
@@ -29,28 +27,22 @@ const Install: React.FC = () => {
           component={'a'}
           target={'_blank'}
           style={{ textDecoration: 'none' }}
-          href={method}
+          href={envConfig.REACT_APP_APP_HOST}
           action={<img src={'/oa-assets/logo-react.svg'} height={30} />}
           subheader={'ReactJS + Material-UI Frontend'}
-          title={<u style={{wordBreak:"break-word"}}>{method}</u>}
+          title={<u style={{wordBreak:"break-word"}}>{envConfig.REACT_APP_APP_HOST}</u>}
         />
 
         <CardHeader
           component={'a'}
           target={'_blank'}
           style={{ textDecoration: 'none' }}
-          href={
-            method.indexOf('https:') === 0
-              ? 'https://localapi.oaexample.com:8080/admin/login'
-              : 'http://localhost:8080/admin/login'
-          }
+          href={`${envConfig.REACT_APP_API_HOST}/admin/login`}
           action={<img src={'/oa-assets/logo-django.svg'} height={15} />}
           subheader={'Backend Content Manager'}
           title={
             <u style={{wordBreak:"break-word"}}>
-              {method.indexOf('https:') === 0
-                ? 'https://localapi.oaexample.com:8080/admin/login'
-                : 'http://localhost:8080/admin/login'}
+              {`${envConfig.REACT_APP_API_HOST}/admin/login`}
             </u>
           }
         />
@@ -59,18 +51,12 @@ const Install: React.FC = () => {
           component={'a'}
           target={'_blank'}
           style={{ textDecoration: 'none' }}
-          href={
-            method.indexOf('https:') === 0
-              ? 'https://localapi.oaexample.com:8080/api/schema/swagger'
-              : 'http://localhost:8080/api/schema/swagger'
-          }
+          href={`${envConfig.REACT_APP_API_HOST}/api/schema/swagger`}
           action={<img src={'/oa-assets/logo-drf.png'} height={20} />}
           subheader={'Backend API'}
           title={
             <u style={{wordBreak:"break-word"}}>
-              {method.indexOf('https:') === 0
-                ? 'https://localapi.oaexample.com:8080/api/schema/swagger'
-                : 'http://localhost:8080/api/schema/swagger'}
+              {`${envConfig.REACT_APP_API_HOST}/api/schema/swagger`}
             </u>
           }
         />

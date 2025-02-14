@@ -35,7 +35,7 @@ services:
       mysqlv8:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "8081:8081"
     extra_hosts:
       - "localapi.oaexample.com:127.0.0.1"
 
@@ -52,7 +52,7 @@ services:
       django:
         condition: service_started
     ports:
-      - "3000:3000"
+      - "3001:3001"
     extra_hosts:
       - "localhost.oaexample.com:127.0.0.1"
 

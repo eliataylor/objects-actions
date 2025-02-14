@@ -4,6 +4,7 @@ import { EnvConfig, useEnvContext } from "./EnvProvider";
 import { TightButton } from "../../theme/StyledFields";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CopyToClipboard from "../../components/CopyToClipboard";
+import { Command } from "../components/StyledComponents";
 
 interface EnvEditorProps {
   displayProperties?: (keyof EnvConfig)[];
@@ -12,6 +13,7 @@ interface EnvEditorProps {
 const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
   const { envConfig, setEnvConfig } = useEnvContext();
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [didCopy, setDidCopy] = useState(false);
 
   const handleChange = (key: keyof EnvConfig, value: string) => {
     setEnvConfig({ ...envConfig, [key]: value });
@@ -94,8 +96,8 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
           label: "Is Authenticated"
         },
         {
-          value: "AllowAll",
-          label: "Allow All"
+          value: "AllowAny",
+          label: "Allow Any"
         }
       ]
     },
@@ -178,6 +180,28 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       .join("\n\n");
   }
 
+  function getClipboardToEnvCommand() {
+    // @ts-ignore
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    if (/windows/i.test(userAgent)) {
+      // Windows PowerShell command
+      return "powershell Get-Clipboard | Out-File -Encoding utf8 .env";
+    } else if (/macintosh|mac os x/i.test(userAgent)) {
+      // macOS command
+      return "pbpaste > .env";
+    } else if (/linux/i.test(userAgent)) {
+      // Check if Wayland, otherwise fallback to X11
+      if (navigator.userAgent.includes("Wayland")) {
+        return "wl-paste > .env";
+      }
+      return "xclip -selection clipboard -o > .env";
+    }
+
+    // Default (unknown OS)
+    return "echo \"Unsupported OS\"";
+  }
+
   return (
     <Grid container justifyContent={"space-between"} spacing={2}>
       {visibleFields.map((field) =>
@@ -203,7 +227,9 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
 
           <Grid container justifyContent={"space-between"}>
             <Grid item>
-              <CopyToClipboard textToCopy={makeEnvFile()} copiedMessage={"Copied. Now paste this into a new .env file at the root of this repository"}>
+              <CopyToClipboard
+                onCopied={() => setDidCopy(true)}
+                textToCopy={makeEnvFile()} copiedMessage={"Copied. Now paste this into a new .env file at the root of this repository"}>
                 <TightButton
                   size={"small"}
                   variant="outlined"
@@ -225,6 +251,9 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
             </Grid>
 
           </Grid>
+
+          {didCopy && <Command command={getClipboardToEnvCommand()} />}
+
           <Collapse in={showAdvanced}>
             <Box mt={2}>
               <Grid container spacing={2}>
@@ -249,9 +278,11 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
             </Box>
           </Collapse>
         </Grid>
-      )}
+      )
+      }
     </Grid>
   );
 };
+
 
 export default EnvEditor;

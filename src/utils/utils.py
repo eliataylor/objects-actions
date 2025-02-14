@@ -9,7 +9,6 @@ import inflect
 import ast
 import re
 
-
 def find_model_details(csv_file, model_name):
     with open(csv_file, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -380,6 +379,8 @@ def infer_field_datatype(field_type):
     elif field_type == "image":
         return "string"
     elif field_type == "video":
+        return "string"
+    elif field_type == "audio":
         return "string"
     elif field_type == "media":
         return "string"

@@ -1,15 +1,15 @@
 //---OBJECT-ACTIONS-OAFORM-STARTS---//
 import React from "react";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { ActionPlans, TypeFieldSchema } from "../../types/types";
+import { TypeFieldSchema } from "../../types/types";
 import { OAFormProps, useForm } from "../FormProvider";
 import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormActionPlans: React.FC<OAFormProps<ActionPlans>> = ({ onSuccess }) => {
+export const OAFormActionPlans: React.FC<OAFormProps<"ActionPlans">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<ActionPlans>();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"ActionPlans">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormActionPlans: React.FC<OAFormProps<ActionPlans>> = ({ onSucces
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`ActionPlans saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormActionPlans: React.FC<OAFormProps<ActionPlans>> = ({ onSucces
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`ActionPlans saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");

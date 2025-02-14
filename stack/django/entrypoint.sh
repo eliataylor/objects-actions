@@ -48,13 +48,23 @@ output=$(python manage.py collectstatic --noinput 2>&1) || {
     echo "[OADJANGO] static files output: $output";
 }
 
+PORT=$(echo "$REACT_APP_API_HOST" | sed -E 's|^https?://[^:/]+:?([0-9]*)/?|\1|')
+
+# Default to 8080 if no port is extracted
+if [[ -z "$PORT" ]]; then
+    PORT=8080
+fi
+
+echo "[OADJANGO] Using PORT: $PORT"
+
+
 if [ "$DJANGO_ENV" = "testing" ] || [ "$DJANGO_ENV" = "development" ] || { [ "$DJANGO_ENV" = "docker" ] && [ "$DJANGO_DEBUG" = "True" ]; }; then
     echo "[OADJANGO] Running in development mode with runserver_plus..."
-    python manage.py runserver_plus 0.0.0.0:8080 --cert-file "$ssl_cert_path"
+    python manage.py runserver_plus 0.0.0.0:$PORT --cert-file "$ssl_cert_path"
 else
     echo "[OADJANGO] Running in production mode with gunicorn"
     exec gunicorn oaexample_base.wsgi:application \
-        --bind 0.0.0.0:8080 \
+        --bind 0.0.0.0:$PORT \
         --workers 3 \
         --capture-output \
         --log-level debug \

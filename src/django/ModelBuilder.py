@@ -290,7 +290,7 @@ class ModelBuilder:
                 return "models.SlugField(unique=True)"
         elif field_type == "boolean":
             return "models.BooleanField()"
-        elif field_type == "image" or field_type == 'video' or field_type == 'media':
+        elif field_type == "image" or field_type == 'video' or field_type == 'audio' or field_type == 'media':
 
             self.append_import("from django.utils import timezone")
             self.append_import("import os")

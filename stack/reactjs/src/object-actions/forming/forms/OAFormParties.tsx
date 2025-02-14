@@ -1,15 +1,15 @@
 //---OBJECT-ACTIONS-OAFORM-STARTS---//
 import React from "react";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { Parties, TypeFieldSchema } from "../../types/types";
+import { TypeFieldSchema } from "../../types/types";
 import { OAFormProps, useForm } from "../FormProvider";
 import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormParties: React.FC<OAFormProps<Parties>> = ({ onSuccess }) => {
+export const OAFormParties: React.FC<OAFormProps<"Parties">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<Parties>();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Parties">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormParties: React.FC<OAFormProps<Parties>> = ({ onSuccess }) => 
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`Parties saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormParties: React.FC<OAFormProps<Parties>> = ({ onSuccess }) => 
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`${entity._type} saved`);
+      enqueueSnackbar(`Parties saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");

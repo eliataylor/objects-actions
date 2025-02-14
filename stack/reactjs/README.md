@@ -9,9 +9,7 @@ docker-compose up --build # start docker
 
 #### Run Locally
 ```sh
-cp .env.public .env # and update your configs
-npm install
-npm start
+sh start.sh
 ```
 
 #### Deploy

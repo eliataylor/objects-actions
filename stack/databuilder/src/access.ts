@@ -18,7 +18,7 @@ export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' 
 
 //---OBJECT-ACTIONS-PERMS-ROLES-STARTS---//
 
-export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'IsAuthenticatedOrReadOnly';
+export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'AllowAny';
 
 export type PermRoles = 'anonymous' | 'authenticated' | 'verified' | 'paid user' | 'admin' | 'rally attendee' | 'city sponsor' | 'city official' | 'rally speaker' | 'rally moderator';
 //---OBJECT-ACTIONS-PERMS-ROLES-ENDS---//

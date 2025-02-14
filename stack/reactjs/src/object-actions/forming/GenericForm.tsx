@@ -1,6 +1,6 @@
 import React, { ChangeEvent, ReactElement, useState } from "react";
 import { Button, CircularProgress, FormControlLabel, FormHelperText, Grid, MenuItem, TextField, Typography } from "@mui/material";
-import { EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, RelEntity } from "../types/types";
+import { ModelType, ModelName, NavItem, NAVITEMS, RelEntity, FieldTypeDefinition } from "../types/types";
 import AutocompleteField from "./AutocompleteField";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import AutocompleteMultipleField from "./AutocompleteMultipleField";
@@ -17,32 +17,29 @@ import Switch from "@mui/material/Switch";
 
 dayjs.extend(utc);
 
-interface GenericFormProps {
+interface GenericFormProps<T extends ModelName> {
   fields: FieldTypeDefinition[];
-  original: EntityTypes;
-  navItem: NavItem;
-  onSuccess?: (newEntity: EntityTypes) => void;
+  original: ModelType<T>;
+  navItem: NavItem<T>;
+  onSuccess?: (newEntity: ModelType<T>) => void;
   onError?: (response: HttpResponse) => void;
 }
 
-const GenericForm: React.FC<GenericFormProps> = ({
-                                                   fields,
-                                                   navItem,
-                                                   original,
-                                                   onSuccess
-                                                 }) => {
-  const eid =
-    typeof original["id" as keyof EntityTypes] !== "undefined"
-      ? original["id" as keyof EntityTypes]
-      : "0";
-  const [entity, setEntity] = useState<EntityTypes>(original);
+const GenericForm = <T extends ModelName>({
+  fields,
+  navItem,
+  original,
+  onSuccess
+}: GenericFormProps<T>) => {
+  const eid = typeof original.id !== "undefined" ? original.id : "0";
+  const [entity, setEntity] = useState<ModelType<T>>(original);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
   const [syncing, setSyncing] = useState<boolean>(false);
 
   const handleChange = (name: string, value: any) => {
     const newEntity = { ...entity };
-    // @ts-ignore
+    // @ts-ignore - Using string index signature for dynamic property access
     newEntity[name] = value;
     setEntity(newEntity);
   };
@@ -75,7 +72,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
       setSyncing(false);
       if (response.success) {
         if (onSuccess) {
-          onSuccess(response.data as EntityTypes);
+          onSuccess(response.data as ModelType<T>);
         } else if (navItem.type === "Users") {
           window.location.href = "/";
         } else {
@@ -85,8 +82,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
       } else if (response.errors) {
         setErrors(response.errors);
       } else if (response.error) {
-        // @ts-ignore
-        setErrors(response.error);
+        setErrors({'error': [response.error]});
       }
     }
   };
@@ -96,9 +92,10 @@ const GenericForm: React.FC<GenericFormProps> = ({
 
     const tosend: any = { id: eid };
     let hasImage = false;
+
     for (const key in entity) {
-      let val: any = entity[key as keyof EntityTypes];
-      const was: any = original[key as keyof EntityTypes];
+      let val: any = (entity as any)[key];
+      const was: any = (original as any)[key];
       if (JSON.stringify(was) === JSON.stringify(val)) {
         continue;
       }
@@ -118,16 +115,18 @@ const GenericForm: React.FC<GenericFormProps> = ({
       } else if (val && typeof val === "object" && val.id) {
         val = val.id;
       }
-      tosend[key as keyof EntityTypes] = val;
+      tosend[key] = val;
     }
+
     if (Object.keys(tosend).length === 1) {
       return alert("You haven't changed anything");
     }
 
-    const formData: EntityTypes | FormData = tosend;
+    const formData: ModelType<T> | FormData = tosend;
     const headers: any = {
       accept: "application/json"
     };
+
     if (hasImage) {
       const formData = new FormData();
       for (const key in tosend) {
@@ -149,22 +148,22 @@ const GenericForm: React.FC<GenericFormProps> = ({
       response = await ApiClient.post(navItem.api, formData, headers);
     }
     setSyncing(false);
+
     if (response.success && response.data) {
-      const newEntity = response.data as EntityTypes;
+      const newEntity = response.data as ModelType<T>;
       if (onSuccess) {
         onSuccess(newEntity);
       } else {
         navigate(`/${navItem.segment}/${newEntity.id}`);
-        // navigate(`/forms/${navItem.segment}/${newEntity.id}/edit`)
       }
       setErrors({});
       return;
     }
+
     if (response.errors) {
       setErrors(response.errors);
     } else if (response.error) {
-      // @ts-ignore
-      setErrors(response.error);
+      setErrors({'error': [response.error]});
     }
   };
 
@@ -172,7 +171,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
     field: FieldTypeDefinition,
     error: string[] | undefined
   ) {
-    const baseVal: any = entity[field.machine as keyof EntityTypes];
+    const baseVal: any = (entity as any)[field.machine];
 
     let input: ReactElement | null = null;
     if (field.field_type === "enum") {
@@ -240,9 +239,10 @@ const GenericForm: React.FC<GenericFormProps> = ({
           provider={{ name: field.singular, id: id }}
         />
       );
-    } else if (field.field_type === "image") {
+    } else if (field.field_type === "image" || field.field_type === "audio" || field.field_type === "video") {
       input = (
         <ImageUpload
+          mime_type={field.field_type}
           onSelect={handleImage}
           index={0}
           field_name={field.machine}
@@ -254,7 +254,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
       input =
         field?.cardinality && field?.cardinality > 1 ? (
           <AutocompleteMultipleField
-            type={field.relationship || ""}
+            type={field.relationship as ModelName}
             search_fields={subUrl?.search_fields || []}
             onSelect={handleSelect}
             field_name={field.machine}
@@ -265,7 +265,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
           />
         ) : (
           <AutocompleteField
-            type={field.relationship || ""}
+            type={field.relationship as ModelName}
             search_fields={subUrl?.search_fields || []}
             onSelect={handleSelect}
             field_name={field.machine}
@@ -356,21 +356,22 @@ const GenericForm: React.FC<GenericFormProps> = ({
           Save
         </Button>
 
-        {eid && eid !== "0" ? <Button
-          disabled={syncing}
-          aria-label={"Delete"}
-          startIcon={
-            syncing ? (
-              <CircularProgress size={"small"} color={"primary"} />
-            ) : undefined
-          }
-          onClick={handleDelete}
-          variant="outlined"
-          color="inherit"
-        >
-          Delete
-        </Button> : null
-        }
+        {eid && eid !== "0" ? (
+          <Button
+            disabled={syncing}
+            aria-label={"Delete"}
+            startIcon={
+              syncing ? (
+                <CircularProgress size={"small"} color={"primary"} />
+              ) : undefined
+            }
+            onClick={handleDelete}
+            variant="outlined"
+            color="inherit"
+          >
+            Delete
+          </Button>
+        ) : null}
       </Grid>
     </Grid>
   );

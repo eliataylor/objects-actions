@@ -1,11 +1,13 @@
 #!/bin/bash
 
+source "$(pwd)/docs/common.sh"
 
-# parse from .env
+API_HOST=$(echo "$REACT_APP_API_HOST" | sed -E 's|^https?://([^:/]+).*|\1|')
+APP_HOST=$(echo "$REACT_APP_APP_HOST" | sed -E 's|^https?://([^:/]+).*|\1|')
 
 desired_entries=(
-  "127.0.0.1  localhost.oaexample.com"
-  "127.0.0.1  localapi.oaexample.com"
+  "127.0.0.1  $APP_HOST"
+  "127.0.0.1  $API_HOST"
 )
 
 # Check and inject entries
