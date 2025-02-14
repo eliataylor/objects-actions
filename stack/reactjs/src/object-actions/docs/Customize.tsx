@@ -10,7 +10,7 @@ const Customize: React.FC = () => {
     <Box>
       <StyledTypography variant="h1"> Customize </StyledTypography>
       <StyledTypography variant="subtitle1">
-        Follow these steps to customize your setup:
+        Follow these steps replace the demo data structure and permissions with your app idea
       </StyledTypography>
 
       <StyledPaper>

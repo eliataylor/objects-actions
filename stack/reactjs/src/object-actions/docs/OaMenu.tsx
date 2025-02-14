@@ -20,7 +20,7 @@ const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick }) => {
       <NavBarItem
         to={"/oa/install"}
         icon={<InstallIcon fontSize={"small"} />}
-        name={"Install"}
+        name={"Run Demo"}
       />
       <NavBarItem
         to={"/oa/customize"}
