@@ -144,4 +144,65 @@ echo "$MAPPING" | while IFS=: read -r FILE VAR ROOT_KEY; do
   esac
 done
 
-echo "Environment variable setup complete."
+# Function to update ports in docker-compose.yml based on REACT_APP_API_HOST and REACT_APP_APP_HOST
+update_docker_compose_ports() {
+  [ ! -f "$DOCKER_COMPOSE_FILE" ] && return
+
+  # Extract host and port from REACT_APP_API_HOST (for Django)
+  API_HOST=$(echo "$ROOT_REACT_APP_API_HOST" | awk -F[/:] '{print $4}')
+  API_PORT=$(echo "$ROOT_REACT_APP_API_HOST" | awk -F[/:] '{print $5}')
+  [ -z "$API_PORT" ] && API_PORT="80"  # Default port if not specified
+
+  # Extract host and port from REACT_APP_APP_HOST (for ReactJS)
+  APP_HOST=$(echo "$ROOT_REACT_APP_APP_HOST" | awk -F[/:] '{print $4}')
+  APP_PORT=$(echo "$ROOT_REACT_APP_APP_HOST" | awk -F[/:] '{print $5}')
+  [ -z "$APP_PORT" ] && APP_PORT="80"  # Default port if not specified
+
+  TMP_FILE=$(mktemp)
+  while IFS= read -r LINE || [ -n "$LINE" ]; do
+    case "$LINE" in
+      *"django:"*)
+        IN_DJANGO=1
+        echo "$LINE" >> "$TMP_FILE"
+        ;;
+      *"reactjs:"*)
+        IN_DJANGO=0
+        IN_REACTJS=1
+        echo "$LINE" >> "$TMP_FILE"
+        ;;
+      "    ports:"*)
+        echo "$LINE" >> "$TMP_FILE"
+        ;;
+      *"- \"8080:8080\""*)
+        if [ "$IN_DJANGO" -eq 1 ]; then
+          echo "      - \"$API_PORT:$API_PORT\"" >> "$TMP_FILE"
+          echo "Updated Django container to use port $API_PORT"
+        else
+          echo "$LINE" >> "$TMP_FILE"
+        fi
+        ;;
+      *"- \"3000:3000\""*)
+        if [ "$IN_REACTJS" -eq 1 ]; then
+          echo "      - \"$APP_PORT:$APP_PORT\"" >> "$TMP_FILE"
+          echo "Updated ReactJS container to use port $APP_PORT"
+        else
+          echo "$LINE" >> "$TMP_FILE"
+        fi
+        ;;
+      *)
+        echo "$LINE" >> "$TMP_FILE"
+        ;;
+    esac
+  done < "$DOCKER_COMPOSE_FILE"
+
+  mv "$TMP_FILE" "$DOCKER_COMPOSE_FILE"
+}
+
+# Ensure docker-compose.yml exists
+if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
+  echo "Warning: $DOCKER_COMPOSE_FILE not found. Skipping port updates."
+else
+  update_docker_compose_ports
+fi
+
+echo "Environment variable and Docker Compose setup complete."
