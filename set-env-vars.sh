@@ -43,6 +43,7 @@ stack/reactjs/.env:REACT_APP_APP_HOST:REACT_APP_APP_HOST
 stack/reactjs/.env:REACT_APP_TITLE:PROJECT_NAME
 stack/reactjs/.env:REACT_APP_LOGIN_EMAIL:REACT_APP_LOGIN_EMAIL
 stack/reactjs/.env:REACT_APP_LOGIN_PASS:REACT_APP_LOGIN_PASS
+stack/reactjs/.env:DEFAULT_PERMS:DEFAULT_PERMS
 
 stack/cypress/cypress.env.json:email:REACT_APP_LOGIN_EMAIL
 stack/cypress/cypress.env.json:password:REACT_APP_LOGIN_PASS

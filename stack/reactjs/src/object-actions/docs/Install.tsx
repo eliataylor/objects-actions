@@ -8,6 +8,11 @@ import EnvBuilder from "../forming/EnvBuilder";
 const Install: React.FC = () => {
   const { envConfig } = useEnvContext();
 
+  function hasCustomDomain() {
+      return (envConfig.REACT_APP_APP_HOST.indexOf("://localhost") < 0 && envConfig.REACT_APP_APP_HOST.indexOf("://127.0.0.1") < 0) ||
+          (envConfig.REACT_APP_API_HOST.indexOf("://localhost") < 0 && envConfig.REACT_APP_API_HOST.indexOf("://127.0.0.1") < 0)
+  }
+
   return (
     <Box>
       <StyledTypography variant="h1">Install</StyledTypography>
@@ -44,11 +49,11 @@ const Install: React.FC = () => {
       </StyledPaper>
 
 
-      {envConfig.REACT_APP_APP_HOST.indexOf("https://") === 0 && <Command
+      {hasCustomDomain() && <Command
         command="sudo bash docs/os-hosts-install.sh"
         help={
           <>
-            This will add a entry to your computers `/etc/hosts` so that localhost.oaexample.com and localapi.oaexample.com resolve to your local development environment.
+            This will add a entry to your computers `/etc/hosts` so that {envConfig.REACT_APP_APP_HOST} and {envConfig.REACT_APP_API_HOST} resolve to your local development environment.
             It will also backup the original as `/etc/hosts.bak.timestamp`
           </>
         }
