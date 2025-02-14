@@ -6,6 +6,7 @@ set -e
 ROOT_ENV_FILE=".env"
 PUBLIC_ENV_FILE=".env.public"
 PUBLIC_JSON_FILE="stack/cypress/cypress.public.json"
+DOCKER_COMPOSE_FILE="docker-compose.yml"
 
 # Ensure root .env file exists
 if [ ! -f "$ROOT_ENV_FILE" ]; then
