@@ -223,13 +223,12 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       )}
 
       {advancedFields.length > 0 && (
-        <Grid item xs={12}>
-
-          <Grid container justifyContent={"space-between"}>
+        <Grid item xs={12} style={{paddingTop:0}}>
+          <Grid container justifyContent={"space-between"} alignItems={'center'}>
             <Grid item>
               <CopyToClipboard
                 onCopied={() => setDidCopy(true)}
-                textToCopy={makeEnvFile()} copiedMessage={"Copied. Now paste this into a new .env file at the root of this repository"}>
+                textToCopy={makeEnvFile()} copiedMessage={"Copied. Now paste this into a .env file at the root of your project"}>
                 <TightButton
                   size={"small"}
                   variant="outlined"
@@ -240,7 +239,6 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
               </CopyToClipboard>
             </Grid>
             <Grid item>
-
               <TightButton
                 size={"small"}
                 onClick={() => setShowAdvanced(!showAdvanced)}
