@@ -65,14 +65,14 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       helperText: "File path to your Permissions Matrix .csv"
     },
     {
-      key: "REACT_APP_API_HOST",
-      label: "Your API Server",
-      helperText: "Your API WebServer URL"
-    },
-    {
       key: "REACT_APP_APP_HOST",
       label: "Your WebApp URL",
       helperText: "Your WebApp URL"
+    },
+    {
+      key: "REACT_APP_API_HOST",
+      label: "Your API Server",
+      helperText: "Your API WebServer URL"
     },
     {
       key: "REACT_APP_LOGIN_EMAIL",

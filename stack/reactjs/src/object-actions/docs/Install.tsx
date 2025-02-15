@@ -15,7 +15,7 @@ const Install: React.FC = () => {
 
   return (
     <Box>
-      <StyledTypography variant="h1">Install</StyledTypography>
+      <StyledTypography variant="h1">Run Demo</StyledTypography>
       <StyledTypography variant="subtitle1">
         This will build the full stack based on an example application.
       </StyledTypography>
