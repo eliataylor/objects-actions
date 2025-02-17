@@ -22,6 +22,11 @@ if [[ -n "$REACT_APP_APP_HOST" ]]; then
     export PORT="${PORT:-3000}"
 fi
 
+# populates EnvProvider.tsx with necessary prefixes for react-scripts
+export REACT_APP_DEFAULT_PERMS=$DEFAULT_PERMS
+
+echo "DEFAULT_PERMS: $DEFAULT_PERMS vs $REACT_APP_DEFAULT_PERMS"
+
 # Set SSL certificate paths
 DEFAULT_SSL_DIR="$HOME/.ssl"
 mkdir -p "$DEFAULT_SSL_DIR"

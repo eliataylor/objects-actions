@@ -34,7 +34,7 @@
   },
   "scripts": {
     "start": "bash start.sh",
-    "react-start": "cp -n .env.public .env && react-scripts start",
+    "react-start": "cp -n .env.public .env || true && react-scripts start",
     "start-ssl-in-docker": "HTTPS=true SSL_CRT_FILE=~/.ssl/certificate.crt HOST=0.0.0.0 PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
