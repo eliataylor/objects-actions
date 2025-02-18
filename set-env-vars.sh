@@ -2,16 +2,28 @@
 
 set -e
 
-# Define root .env file and public templates
-ROOT_ENV_FILE=".env"
-PUBLIC_ENV_FILE=".env.public"
-PUBLIC_JSON_FILE="stack/cypress/cypress.public.json"
+# Define the file reference map
+FILES="
+.env:.env.public
+stack/reactjs/.env:stack/reactjs/.env.public
+stack/django/.env:stack/django/.env.public
+stack/databuilder/.env:stack/databuilder/.env.public
+stack/cypress/cypress.env.json:stack/cypress/cypress.public.json
+"
 
-# Ensure root .env file exists
-if [ ! -f "$ROOT_ENV_FILE" ]; then
-  cp "$PUBLIC_ENV_FILE" "$ROOT_ENV_FILE"
-  echo "Created $ROOT_ENV_FILE from $PUBLIC_ENV_FILE"
-fi
+# Loop through each file mapping
+echo "$FILES" | while IFS=: read -r target source; do
+  if [ ! -f "$target" ]; then
+    if [ -f "$source" ]; then
+      cp "$source" "$target"
+      echo "Created $target from $source"
+    else
+      echo "Warning: Source file $source does not exist. Skipping $target."
+    fi
+  else
+    echo "Skipping $target, already exists."
+  fi
+done
 
 # Load root .env variables into memory
 load_env() {
@@ -20,7 +32,7 @@ load_env() {
       ""|\#*) continue ;;  # Ignore empty lines and comments
     esac
     eval "ROOT_$KEY=\"$VALUE\""
-  done < "$ROOT_ENV_FILE"
+  done < ".env"
 }
 
 # Mapping of target files and variables to update
@@ -50,24 +62,6 @@ stack/cypress/cypress.env.json:password:REACT_APP_LOGIN_PASS
 stack/cypress/cypress.env.json:REACT_APP_APP_HOST:REACT_APP_APP_HOST
 stack/cypress/cypress.env.json:REACT_APP_API_HOST:REACT_APP_API_HOST
 "
-
-# Ensure missing .env files are created from .env.public
-ensure_env_file() {
-  FILE="$1"
-  if [ ! -f "$FILE" ]; then
-    cp "$PUBLIC_ENV_FILE" "$FILE"
-    echo "Created $FILE from $PUBLIC_ENV_FILE"
-  fi
-}
-
-# Ensure missing .json files are created from cypress.public.json
-ensure_json_file() {
-  FILE="$1"
-  if [ ! -f "$FILE" ]; then
-    cp "$PUBLIC_JSON_FILE" "$FILE"
-    echo "Created $FILE from $PUBLIC_JSON_FILE"
-  fi
-}
 
 # Function to update .env files
 update_env_file() {
@@ -135,17 +129,17 @@ load_env
 echo "$MAPPING" | while IFS=: read -r FILE VAR ROOT_KEY; do
   case "$FILE" in
     *.json)
-      ensure_json_file "$FILE"
       update_json_file "$FILE" "$VAR" "$ROOT_KEY"
       ;;
     *.env)
-      ensure_env_file "$FILE"
       update_env_file "$FILE" "$VAR" "$ROOT_KEY"
       ;;
   esac
 done
 
 # Function to update ports in docker-compose.yml based on REACT_APP_API_HOST and REACT_APP_APP_HOST
+DOCKER_COMPOSE_FILE="docker-compose.yml"
+
 update_docker_compose_ports() {
   [ ! -f "$DOCKER_COMPOSE_FILE" ] && return
 
