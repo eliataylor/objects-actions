@@ -1,70 +1,93 @@
 {
-  "prompt": "My app is a Task List tool that includes deadline dates and priorities and prerequisites.",
+  "prompt": "My app is a pickup sports community organizer where users can organize and join pick games in any sport.",
   "schema": {
     "content_types": [
       {
-        "model_name": "Task",
+        "model_name": "User",
         "fields": [
           {
-            "label": "Task ID",
-            "machine_name": "task_id",
-            "field_type": "Auto Increment ID",
+            "label": "User ID",
+            "machine_name": "user_id",
+            "field_type": "ID",
             "cardinality": 1,
-            "required": true,
-            "default": null,
-            "example": "1"
+            "required": true
           },
           {
-            "label": "Task Name",
-            "machine_name": "task_name",
+            "label": "Username",
+            "machine_name": "username",
             "field_type": "Text",
             "cardinality": 1,
-            "required": true,
-            "default": null,
-            "example": "Finish project report"
+            "required": true
           },
           {
-            "label": "Description",
-            "machine_name": "description",
-            "field_type": "TextArea",
+            "label": "Email",
+            "machine_name": "email",
+            "field_type": "Email",
             "cardinality": 1,
-            "required": false,
-            "default": null,
-            "example": "Complete the final report for the project"
+            "required": true
           },
           {
-            "label": "Priority",
-            "machine_name": "priority",
+            "label": "Password",
+            "machine_name": "password",
+            "field_type": "Password",
+            "cardinality": 1,
+            "required": true
+          }
+        ]
+      },
+      {
+        "model_name": "Game",
+        "fields": [
+          {
+            "label": "Game ID",
+            "machine_name": "game_id",
+            "field_type": "ID",
+            "cardinality": 1,
+            "required": true
+          },
+          {
+            "label": "Sport",
+            "machine_name": "sport",
             "field_type": "Enum",
             "cardinality": 1,
             "required": true,
-            "default": "Medium",
-            "example": "High, Medium, Low"
+            "example": "Football, Basketball, Baseball, Soccer"
           },
           {
-            "label": "Deadline",
-            "machine_name": "deadline",
-            "field_type": "Date",
+            "label": "Location",
+            "machine_name": "location",
+            "field_type": "Coordinates",
+            "cardinality": 1,
+            "required": true
+          },
+          {
+            "label": "Time",
+            "machine_name": "time",
+            "field_type": "Date Time",
+            "cardinality": 1,
+            "required": true
+          },
+          {
+            "label": "Organizer",
+            "machine_name": "organizer",
+            "field_type": "Foreign Key",
             "cardinality": 1,
             "required": true,
-            "default": null,
-            "example": "2023-12-31"
+            "relationship": "User"
           },
           {
-            "label": "Prerequisites",
-            "machine_name": "prerequisites",
+            "label": "Players",
+            "machine_name": "players",
             "field_type": "Foreign Key",
             "cardinality": 9999,
             "required": false,
-            "relationship": "Task",
-            "default": null,
-            "example": "Task ID 2, Task ID 3"
+            "relationship": "User"
           }
         ]
       }
     ]
   },
-  "response": "{\n    \"content_types\": [\n        {\n            \"model_name\": \"Task\",\n            \"fields\": [\n                {\n                    \"label\": \"Task ID\",\n                    \"machine_name\": \"task_id\",\n                    \"field_type\": \"Auto Increment ID\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"default\": null,\n                    \"example\": \"1\"\n                },\n                {\n                    \"label\": \"Task Name\",\n                    \"machine_name\": \"task_name\",\n                    \"field_type\": \"Text\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"default\": null,\n                    \"example\": \"Finish project report\"\n                },\n                {\n                    \"label\": \"Description\",\n                    \"machine_name\": \"description\",\n                    \"field_type\": \"TextArea\",\n                    \"cardinality\": 1,\n                    \"required\": false,\n                    \"default\": null,\n                    \"example\": \"Complete the final report for the project\"\n                },\n                {\n                    \"label\": \"Priority\",\n                    \"machine_name\": \"priority\",\n                    \"field_type\": \"Enum\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"default\": \"Medium\",\n                    \"example\": \"High, Medium, Low\"\n                },\n                {\n                    \"label\": \"Deadline\",\n                    \"machine_name\": \"deadline\",\n                    \"field_type\": \"Date\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"default\": null,\n                    \"example\": \"2023-12-31\"\n                },\n                {\n                    \"label\": \"Prerequisites\",\n                    \"machine_name\": \"prerequisites\",\n                    \"field_type\": \"Foreign Key\",\n                    \"cardinality\": Infinity,\n                    \"required\": false,\n                    \"relationship\": \"Task\",\n                    \"default\": null,\n                    \"example\": \"Task ID 2, Task ID 3\"\n                }\n            ]\n        }\n    ]\n}",
-  "created_at": "2025-02-19T19:16:35.537278Z",
-  "modified_at": "2025-02-19T19:16:35.537321Z"
+  "response": "{\n    \"content_types\": [\n        {\n            \"model_name\": \"User\",\n            \"fields\": [\n                {\n                    \"label\": \"User ID\",\n                    \"machine_name\": \"user_id\",\n                    \"field_type\": \"ID\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Username\",\n                    \"machine_name\": \"username\",\n                    \"field_type\": \"Text\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Email\",\n                    \"machine_name\": \"email\",\n                    \"field_type\": \"Email\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Password\",\n                    \"machine_name\": \"password\",\n                    \"field_type\": \"Password\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                }\n            ]\n        },\n        {\n            \"model_name\": \"Game\",\n            \"fields\": [\n                {\n                    \"label\": \"Game ID\",\n                    \"machine_name\": \"game_id\",\n                    \"field_type\": \"ID\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Sport\",\n                    \"machine_name\": \"sport\",\n                    \"field_type\": \"Enum\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"example\": \"Football, Basketball, Baseball, Soccer\"\n                },\n                {\n                    \"label\": \"Location\",\n                    \"machine_name\": \"location\",\n                    \"field_type\": \"Coordinates\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Time\",\n                    \"machine_name\": \"time\",\n                    \"field_type\": \"Date Time\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Organizer\",\n                    \"machine_name\": \"organizer\",\n                    \"field_type\": \"Foreign Key\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"relationship\": \"User\"\n                },\n                {\n                    \"label\": \"Players\",\n                    \"machine_name\": \"players\",\n                    \"field_type\": \"Foreign Key\",\n                    \"cardinality\": Infinity,\n                    \"required\": false,\n                    \"relationship\": \"User\"\n                }\n            ]\n        }\n    ]\n}",
+  "created_at": "2025-02-19T20:05:54.362346Z",
+  "modified_at": "2025-02-19T20:05:54.362431Z"
 }

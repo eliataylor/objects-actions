@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "allauth.usersessions",
 
     'oaexample_app',
+    'oasheets_app',
     'drf_spectacular',
 ]
 

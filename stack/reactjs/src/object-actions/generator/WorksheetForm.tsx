@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Alert, Box, Button, CircularProgress, Paper, TextField, Typography } from "@mui/material";
 import { ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
-import ApiClient from "../../config/ApiClient";
+import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import { WorksheetApiResponse } from "./WorksheetType";
 import WorksheetDetail from "./WorksheetDetail";
 import Grid from "@mui/material/Grid";
@@ -32,12 +32,12 @@ const GenerateFields: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await ApiClient.post("api/worksheet/generate", {
+      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post("api/worksheet/generate", {
         prompt: promptInput
       });
 
       if (response.success && response.data) {
-        setAiResponse(response.data as WorksheetApiResponse);
+        setAiResponse(response.data);
         enqueueSnackbar("Fields generated successfully", { variant: "success" });
       } else {
         setError(response.error || "Failed to generate fields");
