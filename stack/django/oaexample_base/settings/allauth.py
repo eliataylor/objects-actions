@@ -26,12 +26,14 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_DISPLAY = lambda user: user.get_full_name()
-# ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_LOGIN_METHODS = {'email'}
+
+OPENAI_API_KEY = myEnv('OPENAI_API_KEY', 'NoKeySet')
 
 if DJANGO_ENV != 'production':
     EMAIL_USE_SSL = False  # True if using SSL
-    # ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # allow both for the sake of databuilder
+    ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # allow both for the sake of databuilder
     ACCOUNT_LOGIN_METHODS = {'email', 'username'} # allow both for the sake of databuilder
     ACCOUNT_RATE_LIMITS = False
 

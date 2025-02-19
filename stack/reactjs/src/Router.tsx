@@ -45,6 +45,7 @@ import Install from "./object-actions/docs/Install";
 import Contribute from "./object-actions/docs/Contribute";
 import Extend from "./object-actions/docs/Extend";
 import Customize from "./object-actions/docs/Customize";
+import WorksheetForm from "./object-actions/generator/WorksheetForm";
 
 function createRouter() {
   const allRoutes = [
@@ -306,7 +307,7 @@ function createRouter() {
       element: <EntityView />
     });
   });
-  
+
   allRoutes[0].children.push({
     path: `/forms/:model/:id/edit`,
     element: <EntityForm />
@@ -318,9 +319,11 @@ function createRouter() {
 
   allRoutes[0].children.push({ path: `/readme`, element: <ReadMe /> }); // legacy route
   allRoutes[0].children.push({ path: `/oa/readme`, element: <ReadMe /> });
-  allRoutes[0].children.push({ path: `/oa/install`, element: <Install /> });
+  allRoutes[0].children.push({ path: `/oa/install`, element: <Install /> }); // legacy route
+  allRoutes[0].children.push({ path: `/oa/run`, element: <Install /> });
   allRoutes[0].children.push({ path: `/oa/customize`, element: <Customize /> });
   allRoutes[0].children.push({ path: `/oa/extend`, element: <Extend /> });
+  allRoutes[0].children.push({ path: `/oa/generate`, element: <WorksheetForm /> }); // legacy route
   allRoutes[0].children.push({
     path: `/oa/contribute`,
     element: <Contribute />
