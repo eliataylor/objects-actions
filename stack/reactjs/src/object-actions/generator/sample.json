@@ -1,0 +1,70 @@
+{
+  "prompt": "My app is a Task List tool that includes deadline dates and priorities and prerequisites.",
+  "schema": {
+    "content_types": [
+      {
+        "model_name": "Task",
+        "fields": [
+          {
+            "label": "Task ID",
+            "machine_name": "task_id",
+            "field_type": "Auto Increment ID",
+            "cardinality": 1,
+            "required": true,
+            "default": null,
+            "example": "1"
+          },
+          {
+            "label": "Task Name",
+            "machine_name": "task_name",
+            "field_type": "Text",
+            "cardinality": 1,
+            "required": true,
+            "default": null,
+            "example": "Finish project report"
+          },
+          {
+            "label": "Description",
+            "machine_name": "description",
+            "field_type": "TextArea",
+            "cardinality": 1,
+            "required": false,
+            "default": null,
+            "example": "Complete the final report for the project"
+          },
+          {
+            "label": "Priority",
+            "machine_name": "priority",
+            "field_type": "Enum",
+            "cardinality": 1,
+            "required": true,
+            "default": "Medium",
+            "example": "High, Medium, Low"
+          },
+          {
+            "label": "Deadline",
+            "machine_name": "deadline",
+            "field_type": "Date",
+            "cardinality": 1,
+            "required": true,
+            "default": null,
+            "example": "2023-12-31"
+          },
+          {
+            "label": "Prerequisites",
+            "machine_name": "prerequisites",
+            "field_type": "Foreign Key",
+            "cardinality": 9999,
+            "required": false,
+            "relationship": "Task",
+            "default": null,
+            "example": "Task ID 2, Task ID 3"
+          }
+        ]
+      }
+    ]
+  },
+  "response": "{\n    \"content_types\": [\n        {\n            \"model_name\": \"Task\",\n            \"fields\": [\n                {\n                    \"label\": \"Task ID\",\n                    \"machine_name\": \"task_id\",\n                    \"field_type\": \"Auto Increment ID\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"default\": null,\n                    \"example\": \"1\"\n                },\n                {\n                    \"label\": \"Task Name\",\n                    \"machine_name\": \"task_name\",\n                    \"field_type\": \"Text\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"default\": null,\n                    \"example\": \"Finish project report\"\n                },\n                {\n                    \"label\": \"Description\",\n                    \"machine_name\": \"description\",\n                    \"field_type\": \"TextArea\",\n                    \"cardinality\": 1,\n                    \"required\": false,\n                    \"default\": null,\n                    \"example\": \"Complete the final report for the project\"\n                },\n                {\n                    \"label\": \"Priority\",\n                    \"machine_name\": \"priority\",\n                    \"field_type\": \"Enum\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"default\": \"Medium\",\n                    \"example\": \"High, Medium, Low\"\n                },\n                {\n                    \"label\": \"Deadline\",\n                    \"machine_name\": \"deadline\",\n                    \"field_type\": \"Date\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"default\": null,\n                    \"example\": \"2023-12-31\"\n                },\n                {\n                    \"label\": \"Prerequisites\",\n                    \"machine_name\": \"prerequisites\",\n                    \"field_type\": \"Foreign Key\",\n                    \"cardinality\": Infinity,\n                    \"required\": false,\n                    \"relationship\": \"Task\",\n                    \"default\": null,\n                    \"example\": \"Task ID 2, Task ID 3\"\n                }\n            ]\n        }\n    ]\n}",
+  "created_at": "2025-02-19T19:16:35.537278Z",
+  "modified_at": "2025-02-19T19:16:35.537321Z"
+}

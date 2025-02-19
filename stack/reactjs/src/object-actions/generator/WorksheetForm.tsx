@@ -1,16 +1,21 @@
 // src/components/worksheets/GenerateFields.tsx
 import React, { useState } from "react";
 import { Alert, Box, Button, CircularProgress, Paper, TextField, Typography } from "@mui/material";
-import { Science as GenerateIcon } from "@mui/icons-material";
+import { ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import ApiClient from "../../config/ApiClient";
+import { WorksheetApiResponse } from "./WorksheetType";
+import WorksheetDetail from "./WorksheetDetail";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
 
+import Sample from "./sample.json"
 
 const GenerateFields: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [promptInput, setPromptInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [generatedFields, setGeneratedFields] = useState<string | null>(null);
+  const [aiResponse, setAiResponse] = useState<WorksheetApiResponse | null>(Sample as WorksheetApiResponse);
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async () => {
@@ -32,7 +37,7 @@ const GenerateFields: React.FC = () => {
       });
 
       if (response.success && response.data) {
-        setGeneratedFields(response.data as string);
+        setAiResponse(response.data as WorksheetApiResponse);
         enqueueSnackbar("Fields generated successfully", { variant: "success" });
       } else {
         setError(response.error || "Failed to generate fields");
@@ -48,9 +53,16 @@ const GenerateFields: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Generate Object Fields
-      </Typography>
+      <Grid container justifyContent={"space-between"} wrap={"nowrap"}>
+        <Grid item>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Generate Object Fields
+          </Typography>
+        </Grid>
+        <Grid item>
+          <IconButton><ListAlt /></IconButton>
+        </Grid>
+      </Grid>
 
       <Paper sx={{ p: 3, mb: 4 }}>
         <Typography variant="body1" paragraph>
@@ -59,6 +71,7 @@ const GenerateFields: React.FC = () => {
 
         <TextField
           fullWidth
+          name={'app_idea'}
           label="What is your app meant to do?"
           placeholder="e.x., My app is a Task List tool that includes deadline dates and priorities and prerequisites"
           value={promptInput}
@@ -86,14 +99,8 @@ const GenerateFields: React.FC = () => {
         </Box>
       </Paper>
 
-      {generatedFields && (
-        <Box>
-          <Typography variant="h5" component="h2" gutterBottom>
-            Generated Fields
-          </Typography>
-
-          {JSON.stringify(generatedFields)}
-        </Box>
+      {aiResponse && (
+        <WorksheetDetail worksheet={aiResponse} />
       )}
     </Box>
   );

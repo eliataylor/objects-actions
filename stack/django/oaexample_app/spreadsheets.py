@@ -1,4 +1,5 @@
 import json
+
 import openai
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -12,6 +13,7 @@ from rest_framework.response import Response
 from .models import SuperModel
 
 User = get_user_model()
+
 
 def find_json(string):
     start_index = min(string.find('{'), string.find('['))
@@ -67,6 +69,7 @@ class SchemaDefinition(SuperModel):
 
         super().save(*args, **kwargs)
 
+
 class SchemaPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
 
@@ -106,26 +109,27 @@ class SchemaGeneratorViewSet(viewsets.ModelViewSet):
             2. Define each field as one of these types:  
                 2A: ID: Auto Increment ID, UUID, Slug (unique) 
                 2B. Data field: Text, TextArea, Integer, Decimal, Percent, Price, Boolean, Email, Phone, Address, Password, URL, Date, Date Time, Time, Date Range, Image, Audio, Video, Media, Enum, Flat List, JSON, Base64 String, Coordinates
-                2C: Foreign Key: (set "relationship" with related model Name and set data_type with "RelEntity")
-            3. Include field constraints: Required, How Many (cardinality), Default value, or relationship name for foreign keys
+                2C: Foreign Key: (set "relationship" with related model Name)
+            3. Include field constraints: Required, How Many (cardinality), Default value, Example (list choices), or relationship name for foreign keys
             4. Return the schema a JSON object described this TypeScript:
-            type ITypeFieldSchema = {
-              [K in ModelName]: {
-                [fieldName: string]: FieldTypeDefinition;
-              };
-            }
-            interface FieldTypeDefinition {
-                machine: string;
-                singular: string;
-                plural: string;
-                data_type: 'string' | 'number' | 'boolean' | 'object' | 'RelEntity';
-                field_type: string;
-                cardinality: number | typeof Infinity;
-                relationship?: ModelName;
-                required: boolean;
-                default: string;
-                example: string;
-                options?: Array<{ label: string; id: string; }>;
+            {
+                "content_types": [
+                    {
+                        "model_name": "string",
+                        "fields": [
+                            {
+                                label: string;
+                                machine_name: string;
+                                field_type: string;
+                                cardinality: number | typeof Infinity;
+                                required: boolean;
+                                relationship?: ModelName;
+                                default: string;
+                                example: string;
+                            }
+                        ]
+                    }
+                ]
             }
             """
 
@@ -134,7 +138,8 @@ class SchemaGeneratorViewSet(viewsets.ModelViewSet):
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": system_message},
-                    {"role": "user", "content": f"Create a database schema based on this application idea: {prompt_data['prompt']}"}
+                    {"role": "user",
+                     "content": f"Create a database schema based on this application idea: {prompt_data['prompt']}"}
                 ],
                 temperature=0.7
             )
