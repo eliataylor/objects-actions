@@ -58,15 +58,15 @@ class OasheetsSchemaValidator:
                     errors.append(f"Field must be a dictionary in content type: {content_type.get('name', 'Unknown')}")
                     continue
 
-                field_keys = ["Field Label", "Field Name", "Field Type"]
+                field_keys = ["label", "field_type", "cardinality"]
                 for key in field_keys:
                     if key not in field:
-                        errors.append(f"Missing key '{key}' in field: {field.get('Field Name', 'Unknown')}")
+                        errors.append(f"Missing key '{key}' in field: {field.get('label', 'Unknown')}")
 
-                if field.get("Field Type") not in self.valid_field_types:
+                if field.get("field_type") not in self.valid_field_types:
                     errors.append(
-                        f"Invalid Field Type '{field.get('Field Type')}' in field '{field.get('Field Name')}'.")
-                    field["Field Type"] = "text"  # Defaulting to "text" if invalid
+                        f"Invalid Field Type '{field.get('field_type')}' in field '{field.get('label')}'.")
+                    field["field_type"] = "text"  # Defaulting to "text" if invalid
 
                 validated_fields.append(field)
 

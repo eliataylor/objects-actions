@@ -1,21 +1,21 @@
 [
   {
-    "label": "User Profile",
+    "label": "User Profile (foreign key)",
     "help_text": "your apps custom User profile",
     "name": "user_profile"
   },
   {
-    "label": "User Account",
+    "label": "User Account (foreign key)",
     "help_text": "built in authentication User for CMS",
     "name": "user_account"
   },
   {
-    "label": "Type Reference",
+    "label": "Type Reference (foreign key)",
     "help_text": "foreign key reference to another model",
     "name": "type_reference"
   },
   {
-    "label": "Vocabulary Reference",
+    "label": "Vocabulary Reference (foreign key)",
     "help_text": "foreign key reference to another model not usually exposed to interface navigation",
     "name": "vocabulary_reference"
   },

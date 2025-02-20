@@ -100,11 +100,13 @@ const GenerateFields: React.FC = () => {
 
       {loading &&
         <Box>
+          {!aiResponse &&
           <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
             <FormatQuote fontSize={"small"} />
             {promptInput}
             <FormatQuote fontSize={"small"} />
           </Typography>
+          }
 
           <LinearProgress />
         </Box>

@@ -13,6 +13,7 @@ class AssistantConfig(models.Model):
     run_id = models.CharField(max_length=100, null=True, blank=True)  # openai id
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=True)
     openai_model = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
