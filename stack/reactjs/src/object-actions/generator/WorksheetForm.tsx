@@ -1,21 +1,19 @@
 // src/components/worksheets/GenerateFields.tsx
 import React, { useState } from "react";
-import { Alert, Box, Button, CircularProgress, Paper, TextField, Typography } from "@mui/material";
-import { ListAlt, Science as GenerateIcon } from "@mui/icons-material";
+import { Alert, Box, Button, CircularProgress, LinearProgress, Paper, TextField, Typography } from "@mui/material";
+import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { WorksheetApiResponse } from "./WorksheetType";
+import { WorksheetApiResponse, WorksheetModel } from "./WorksheetType";
 import WorksheetDetail from "./WorksheetDetail";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
-
-import Sample from "./sample.json"
 
 const GenerateFields: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [promptInput, setPromptInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [aiResponse, setAiResponse] = useState<WorksheetApiResponse | null>(Sample as WorksheetApiResponse);
+  const [aiResponse, setAiResponse] = useState<WorksheetModel | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async () => {
@@ -37,12 +35,13 @@ const GenerateFields: React.FC = () => {
       });
 
       if (response.success && response.data) {
-        setAiResponse(response.data);
-        enqueueSnackbar("Fields generated successfully", { variant: "success" });
-      } else {
-        setError(response.error || "Failed to generate fields");
-        enqueueSnackbar("Error generating fields", { variant: "error" });
+        if (response.data.success) {
+          setAiResponse(response.data.data as WorksheetModel);
+          return enqueueSnackbar("Fields generated successfully", { variant: "success" });
+        }
       }
+      setError(response.error || "Failed to generate fields");
+      enqueueSnackbar("Error generating fields", { variant: "error" });
     } catch (err) {
       setError("An unexpected error occurred");
       enqueueSnackbar("Error connecting to the server", { variant: "error" });
@@ -71,7 +70,7 @@ const GenerateFields: React.FC = () => {
 
         <TextField
           fullWidth
-          name={'app_idea'}
+          name={"app_idea"}
           label="What is your app meant to do?"
           placeholder="e.x., My app is a Task List tool that includes deadline dates and priorities and prerequisites"
           value={promptInput}
@@ -99,9 +98,19 @@ const GenerateFields: React.FC = () => {
         </Box>
       </Paper>
 
-      {aiResponse && (
-        <WorksheetDetail worksheet={aiResponse} />
-      )}
+      {loading &&
+        <Box>
+          <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
+            <FormatQuote fontSize={"small"} />
+            {promptInput}
+            <FormatQuote fontSize={"small"} />
+          </Typography>
+
+          <LinearProgress />
+        </Box>
+      }
+
+      {aiResponse && <WorksheetDetail worksheet={aiResponse} />}
     </Box>
   );
 };

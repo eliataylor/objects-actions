@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
 interface AIFieldDefinition {
   label?: string;
@@ -18,18 +18,33 @@ export interface AiSchemaResponse {
 
 export interface SchemaContentType {
   model_name: string;
+  name: string;
   fields: AIFieldDefinition[];
 }
 
 export interface WorksheetApiResponse {
-  prompt: string;
-  response: string;
-  schema?: AiSchemaResponse;
-  created_at: string;
-  modified_at: string;
+  data:WorksheetModel;
+  success:boolean;
+  errors?: string[]
 }
 
-const WorksheetType: React.FC<SchemaContentType> = ({ model_name, fields }) => {
+export interface WorksheetModel {
+  id: number;
+  prompt: string;
+  response: string;
+  schema: AiSchemaResponse;
+  created_at: string;
+  modified_at: string;
+
+  // Version tracking fields
+  parent: number | null;
+  version: number;
+  version_notes: string | null;
+  is_latest: boolean;
+  versions_count: number;
+}
+
+const WorksheetType: React.FC<SchemaContentType> = ({ model_name, name, fields }) => {
   const getCardinalityDisplay = (cardinality: number | typeof Infinity | undefined) => {
     if (cardinality === undefined) return "-";
     if (cardinality === Infinity || cardinality > 999) return "∞";
@@ -37,7 +52,7 @@ const WorksheetType: React.FC<SchemaContentType> = ({ model_name, fields }) => {
   };
 
   return (
-    <Paper sx={{ mb:2, p:1 }}>
+    <Paper sx={{ mb: 2, p: 1 }}>
       <Typography variant="h5" component="h2" gutterBottom>
         {model_name}
       </Typography>
@@ -48,7 +63,7 @@ const WorksheetType: React.FC<SchemaContentType> = ({ model_name, fields }) => {
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Label</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Name</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Type</TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "white", minWidth:97 }}>How Many</TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "white", minWidth: 97 }}>How Many</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Required</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Relationship</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Default</TableCell>

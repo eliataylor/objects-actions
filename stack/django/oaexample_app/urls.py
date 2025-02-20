@@ -28,7 +28,6 @@ from .views import redirect_to_frontend
 
 ####OBJECT-ACTIONS-URL-IMPORTS-ENDS####
 urlpatterns = [path('', RenderFrontendIndex.as_view(), name='index')]
-from .spreadsheets import SchemaGeneratorViewSet
 
 ####OBJECT-ACTIONS-URLS-STARTS####
 
@@ -62,13 +61,6 @@ urlpatterns += [
     path('api/', include(OARouter.urls)),
 ]
 ####OBJECT-ACTIONS-URLS-ENDS####
-
-AiRouter = DefaultRouter(trailing_slash=False)
-AiRouter.register(r'worksheet', SchemaGeneratorViewSet, basename='schema')
-
-urlpatterns += [
-    path('api/', include(AiRouter.urls)),
-]
 
 from .views import SendCodeView, VerifyCodeView
 

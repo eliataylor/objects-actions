@@ -1,30 +1,77 @@
-import openai
-from django.contrib.auth import get_user_model
 from django.db import models
-from .serializers import sanitize_json
+from django.contrib.auth import get_user_model
+from .utils import sanitize_json
+from django.utils.timezone import now
 
 User = get_user_model()
 
-class SpreadsheetDefinition(models.Model):
-    prompt = models.CharField(max_length=255)
-    response = models.CharField(max_length=4000)
+# Model to track assistant creation
+class AssistantConfig(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    assistant_id = models.CharField(max_length=100, null=True, blank=True) # openai id
+    thread_id = models.CharField(max_length=100, null=True, blank=True)  # openai id
+    run_id = models.CharField(max_length=100, null=True, blank=True)  # openai id
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    openai_model = models.CharField(max_length=100, null=True, blank=True)
+
+    class Meta:
+        app_label = 'oasheets_app'
+
+    def save(self, *args, **kwargs):
+        self.modified_at = now()
+        super().save(*args, **kwargs)
+
+class OasheetsSchemaDefinition(models.Model):
+    prompt = models.TextField(max_length=512)
+    run_id = models.CharField(max_length=100)  # openai id
+    response = models.TextField(blank=True, null=True)
     schema = models.JSONField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_created")
+
+    # Version tracking fields
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='versions'
+    )
+    version = models.PositiveIntegerField(default=1)
+    version_notes = models.TextField(blank=True, null=True)
+    is_latest = models.BooleanField(default=True)
 
     class Meta:
-        abstract = False
-        verbose_name = "Spreadsheet Builder"
-        verbose_name_plural = "Spreadsheet Builders"
+        verbose_name = "Oasheets Schema"
+        verbose_name_plural = "Oasheets Schemas"
+        ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.prompt}"
+        version_str = f"v{self.version}" if self.version > 1 else ""
+        return f"{self.prompt} {version_str}".strip()
 
     def save(self, *args, **kwargs):
         # Ensure JSON compatibility before saving
         if self.schema:
             self.schema = sanitize_json(self.schema)
+
+        # Handle versioning logic
+        if self.parent:
+            # Get highest version number from siblings
+            highest_version = OasheetsSchemaDefinition.objects.filter(
+                parent=self.parent
+            ).order_by('-version').values_list('version', flat=True).first() or 1
+
+            # Set version to one higher than highest sibling
+            if not self.pk:  # Only for new objects
+                self.version = highest_version + 1
+
+            # Mark parent as not latest
+            if self.is_latest and self.parent.is_latest:
+                self.parent.is_latest = False
+                self.parent.save(update_fields=['is_latest'])
 
         super().save(*args, **kwargs)
 

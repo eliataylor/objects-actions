@@ -1,93 +1,186 @@
 {
+  "id": 18,
   "prompt": "My app is a pickup sports community organizer where users can organize and join pick games in any sport.",
   "schema": {
     "content_types": [
       {
-        "model_name": "User",
+        "name": "User",
+        "model": "user",
         "fields": [
           {
-            "label": "User ID",
-            "machine_name": "user_id",
-            "field_type": "ID",
-            "cardinality": 1,
-            "required": true
+            "Field Label": "Username",
+            "Field Name": "username",
+            "Field Type": "user_account",
+            "Required": true
           },
           {
-            "label": "Username",
-            "machine_name": "username",
-            "field_type": "Text",
-            "cardinality": 1,
-            "required": true
+            "Field Label": "Email",
+            "Field Name": "email",
+            "Field Type": "email",
+            "Required": true
           },
           {
-            "label": "Email",
-            "machine_name": "email",
-            "field_type": "Email",
-            "cardinality": 1,
-            "required": true
+            "Field Label": "Password",
+            "Field Name": "password",
+            "Required": true,
+            "Field Type": "password"
           },
           {
-            "label": "Password",
-            "machine_name": "password",
-            "field_type": "Password",
-            "cardinality": 1,
-            "required": true
+            "Field Label": "Registration Date",
+            "Field Name": "registration_date",
+            "Required": true,
+            "Field Type": "date_time"
           }
         ]
       },
       {
-        "model_name": "Game",
+        "name": "Profile",
+        "model": "profile",
         "fields": [
           {
-            "label": "Game ID",
-            "machine_name": "game_id",
-            "field_type": "ID",
-            "cardinality": 1,
-            "required": true
+            "Field Label": "User",
+            "Field Name": "user",
+            "Field Type": "user_profile",
+            "Required": true
           },
           {
-            "label": "Sport",
-            "machine_name": "sport",
-            "field_type": "Enum",
-            "cardinality": 1,
-            "required": true,
-            "example": "Football, Basketball, Baseball, Soccer"
+            "Field Label": "Full Name",
+            "Field Name": "full_name",
+            "Field Type": "text"
           },
           {
-            "label": "Location",
-            "machine_name": "location",
-            "field_type": "Coordinates",
-            "cardinality": 1,
-            "required": true
+            "Field Label": "Phone Number",
+            "Field Name": "phone_number",
+            "Field Type": "phone"
           },
           {
-            "label": "Time",
-            "machine_name": "time",
-            "field_type": "Date Time",
-            "cardinality": 1,
-            "required": true
+            "Field Label": "Favorite Sports",
+            "Field Name": "favorite_sports",
+            "Field Type": "flat_list",
+            "Example": "[\"Soccer\", \"Basketball\"]"
+          }
+        ]
+      },
+      {
+        "name": "Sport Event",
+        "model": "sport_event",
+        "fields": [
+          {
+            "Field Label": "Event ID",
+            "Field Name": "event_id",
+            "Field Type": "id_auto_increment",
+            "Required": true
           },
           {
-            "label": "Organizer",
-            "machine_name": "organizer",
-            "field_type": "Foreign Key",
-            "cardinality": 1,
-            "required": true,
-            "relationship": "User"
+            "Field Label": "Title",
+            "Field Name": "title",
+            "Field Type": "text",
+            "Required": true
           },
           {
-            "label": "Players",
-            "machine_name": "players",
-            "field_type": "Foreign Key",
-            "cardinality": 9999,
-            "required": false,
-            "relationship": "User"
+            "Field Label": "Sport Type",
+            "Field Name": "sport_type",
+            "Field Type": "enum",
+            "Example": "[\"Soccer\", \"Basketball\", \"Tennis\"]",
+            "Required": true
+          },
+          {
+            "Field Label": "Date & Time",
+            "Field Name": "date_time",
+            "Field Type": "date_time",
+            "Required": true
+          },
+          {
+            "Field Label": "Location",
+            "Field Name": "location",
+            "Field Type": "address",
+            "Required": true
+          },
+          {
+            "Field Label": "Organizer",
+            "Field Name": "organizer",
+            "Field Type": "type_reference",
+            "Relationship": "Profile",
+            "Required": true
+          },
+          {
+            "Field Label": "Description",
+            "Field Name": "description",
+            "Field Type": "textarea"
+          }
+        ]
+      },
+      {
+        "name": "Participation",
+        "model": "participation",
+        "fields": [
+          {
+            "Field Label": "Participation ID",
+            "Field Name": "participation_id",
+            "Field Type": "id_auto_increment",
+            "Required": true
+          },
+          {
+            "Field Label": "Event",
+            "Field Name": "event",
+            "Field Type": "type_reference",
+            "Relationship": "Sport Event",
+            "Required": true
+          },
+          {
+            "Field Label": "Participant",
+            "Field Name": "participant",
+            "Field Type": "type_reference",
+            "Relationship": "Profile",
+            "Required": true
+          },
+          {
+            "Field Label": "Status",
+            "Field Name": "status",
+            "Field Type": "enum",
+            "Example": "[\"Attending\", \"Awaiting Confirmation\"]",
+            "Required": true
+          }
+        ]
+      },
+      {
+        "name": "Sport Venue",
+        "model": "sport_venue",
+        "fields": [
+          {
+            "Field Label": "Venue ID",
+            "Field Name": "venue_id",
+            "Field Type": "id_auto_increment",
+            "Required": true
+          },
+          {
+            "Field Label": "Name",
+            "Field Name": "name",
+            "Field Type": "text",
+            "Required": true
+          },
+          {
+            "Field Label": "Address",
+            "Field Name": "address",
+            "Field Type": "address",
+            "Required": true
+          },
+          {
+            "Field Label": "Facilities",
+            "Field Name": "facilities",
+            "Field Type": "flat_list",
+            "Example": "[\"Locker rooms\", \"Showers\"]"
           }
         ]
       }
     ]
   },
-  "response": "{\n    \"content_types\": [\n        {\n            \"model_name\": \"User\",\n            \"fields\": [\n                {\n                    \"label\": \"User ID\",\n                    \"machine_name\": \"user_id\",\n                    \"field_type\": \"ID\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Username\",\n                    \"machine_name\": \"username\",\n                    \"field_type\": \"Text\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Email\",\n                    \"machine_name\": \"email\",\n                    \"field_type\": \"Email\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Password\",\n                    \"machine_name\": \"password\",\n                    \"field_type\": \"Password\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                }\n            ]\n        },\n        {\n            \"model_name\": \"Game\",\n            \"fields\": [\n                {\n                    \"label\": \"Game ID\",\n                    \"machine_name\": \"game_id\",\n                    \"field_type\": \"ID\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Sport\",\n                    \"machine_name\": \"sport\",\n                    \"field_type\": \"Enum\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"example\": \"Football, Basketball, Baseball, Soccer\"\n                },\n                {\n                    \"label\": \"Location\",\n                    \"machine_name\": \"location\",\n                    \"field_type\": \"Coordinates\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Time\",\n                    \"machine_name\": \"time\",\n                    \"field_type\": \"Date Time\",\n                    \"cardinality\": 1,\n                    \"required\": true\n                },\n                {\n                    \"label\": \"Organizer\",\n                    \"machine_name\": \"organizer\",\n                    \"field_type\": \"Foreign Key\",\n                    \"cardinality\": 1,\n                    \"required\": true,\n                    \"relationship\": \"User\"\n                },\n                {\n                    \"label\": \"Players\",\n                    \"machine_name\": \"players\",\n                    \"field_type\": \"Foreign Key\",\n                    \"cardinality\": Infinity,\n                    \"required\": false,\n                    \"relationship\": \"User\"\n                }\n            ]\n        }\n    ]\n}",
-  "created_at": "2025-02-19T20:05:54.362346Z",
-  "modified_at": "2025-02-19T20:05:54.362431Z"
+  "response": "The proposed database schema for your pickup sports community organizer app is valid. Here's the final schema:\n\n### Database Schema\n\n1. **User**\n   - **Model:** `user`\n   - **Fields:**\n     - `Username`: user_account, Required\n     - `Email`: email, Required\n     - `Password`: password, Required\n     - `Registration Date`: date_time, Required\n\n2. **Profile**\n   - **Model:** `profile`\n   - **Fields:**\n     - `User`: user_profile, Required\n     - `Full Name`: text\n     - `Phone Number`: phone\n     - `Favorite Sports`: flat_list (Example: `[\"Soccer\", \"Basketball\"]`)\n\n3. **Sport Event**\n   - **Model:** `sport_event`\n   - **Fields:**\n     - `Event ID`: id_auto_increment, Required\n     - `Title`: text, Required\n     - `Sport Type`: enum (Example: `[\"Soccer\", \"Basketball\", \"Tennis\"]`), Required\n     - `Date & Time`: date_time, Required\n     - `Location`: address, Required\n     - `Organizer`: type_reference (Relationship: `Profile`), Required\n     - `Description`: textarea\n\n4. **Participation**\n   - **Model:** `participation`\n   - **Fields:**\n     - `Participation ID`: id_auto_increment, Required\n     - `Event`: type_reference (Relationship: `Sport Event`), Required\n     - `Participant`: type_reference (Relationship: `Profile`), Required\n     - `Status`: enum (Example: `[\"Attending\", \"Awaiting Confirmation\"]`), Required\n\n5. **Sport Venue**\n   - **Model:** `sport_venue`\n   - **Fields:**\n     - `Venue ID`: id_auto_increment, Required\n     - `Name`: text, Required\n     - `Address`: address, Required\n     - `Facilities`: flat_list (Example: `[\"Locker rooms\", \"Showers\"]`)\n\nThis schema should support the functionality needed for organizing and joining pickup sports events across various sports.",
+  "created_at": "2025-02-20T08:06:42.445157Z",
+  "modified_at": "2025-02-20T08:06:42.445220Z",
+  "parent": null,
+  "version": 1,
+  "version_notes": null,
+  "is_latest": true,
+  "versions_count": 0
 }

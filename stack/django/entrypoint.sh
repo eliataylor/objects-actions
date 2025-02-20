@@ -23,6 +23,11 @@ output=$(python manage.py makemigrations oaexample_app --noinput 2>&1) || {
     echo "[OADJANGO] Make migrations output: $output";
 }
 
+echo "[OADJANGO] Building oasheets_app migrations"
+output=$(python manage.py makemigrations oasheets_app --noinput 2>&1) || {
+    echo "[OADJANGO] Make migrations output: $output";
+}
+
 echo "[OADJANGO] Building all migrations"
 output=$(python manage.py makemigrations --noinput 2>&1) || {
     echo "[OADJANGO] Make all migrations output: $output";

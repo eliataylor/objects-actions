@@ -1,0 +1,1156 @@
+{
+  "content_types": [
+    {
+      "name": "Topics",
+      "model": "Topics",
+      "fields": [
+        {
+          "Field Label": "Name",
+          "Field Name": "name",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Icon",
+          "Field Name": "icon",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Photo",
+          "Field Name": "photo",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Resource Types",
+      "model": "ResourceTypes",
+      "fields": [
+        {
+          "Field Label": "Name",
+          "Field Name": "name",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Meeting Types",
+      "model": "MeetingTypes",
+      "fields": [
+        {
+          "Field Label": "Name",
+          "Field Name": "name",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "States",
+      "model": "States",
+      "fields": [
+        {
+          "Field Label": "Name",
+          "Field Name": "name",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Website",
+          "Field Name": "website",
+          "Field Type": "URL",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Icon",
+          "Field Name": "icon",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Parties",
+      "model": "Parties",
+      "fields": [
+        {
+          "Field Label": "Name",
+          "Field Name": "name",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Logo",
+          "Field Name": "logo",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Website",
+          "Field Name": "website",
+          "Field Type": "URL",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Stakeholders",
+      "model": "Stakeholders",
+      "fields": [
+        {
+          "Field Label": "Name",
+          "Field Name": "name",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Image",
+          "Field Name": "image",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "model": "Resources",
+      "fields": [
+        {
+          "Field Label": "Title",
+          "Field Name": "title",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Description HTML",
+          "Field Name": "description_html",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Image",
+          "Field Name": "image",
+          "Field Type": "Image",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Postal Address",
+          "Field Name": "postal_address",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Price (citizencoin)",
+          "Field Name": "price_ccoin",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Resource Type",
+          "Field Name": "resource_type",
+          "Field Type": "vocabulary reference",
+          "HowMany": Infinity,
+          "Required": true,
+          "Relationship": "Resource Types",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "model": "Users",
+      "fields": [
+        {
+          "Field Label": "Email",
+          "Field Name": "email",
+          "Field Type": "email",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Phone",
+          "Field Name": "phone",
+          "Field Type": "phone",
+          "HowMany": 0,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Website",
+          "Field Name": "website",
+          "Field Type": "URL",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Bio",
+          "Field Name": "bio",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Picture",
+          "Field Name": "picture",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Cover Photo",
+          "Field Name": "cover_photo",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Resources",
+          "Field Name": "resources",
+          "Field Type": "type reference",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "Resources",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Cities",
+      "model": "Cities",
+      "fields": [
+        {
+          "Field Label": "Name",
+          "Field Name": "name",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Description",
+          "Field Name": "description",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Postal Address",
+          "Field Name": "postal_address",
+          "Field Type": "address",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Picture",
+          "Field Name": "picture",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Cover Photo",
+          "Field Name": "cover_photo",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Sponsors",
+          "Field Name": "sponsors",
+          "Field Type": "User Profile",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Website",
+          "Field Name": "website",
+          "Field Type": "URL",
+          "HowMany": 3,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Population",
+          "Field Name": "population",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Altitude",
+          "Field Name": "altitude",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "County",
+          "Field Name": "county",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "State",
+          "Field Name": "state_id",
+          "Field Type": "vocabulary reference",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "States",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Officials",
+          "Field Name": "officials",
+          "Field Type": "User Profile",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Land Area",
+          "Field Name": "land_area",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Water Area",
+          "Field Name": "water_area",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Total Area",
+          "Field Name": "total_area",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Density",
+          "Field Name": "density",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Timezone",
+          "Field Name": "timezone",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Officials",
+      "model": "Officials",
+      "fields": [
+        {
+          "Field Label": "Job Title",
+          "Field Name": "title",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Office Phone",
+          "Field Name": "office_phone",
+          "Field Type": "phone",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Office Email",
+          "Field Name": "office_email",
+          "Field Type": "email",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Social Media links",
+          "Field Name": "social_links",
+          "Field Type": "URL",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Party",
+          "Field Name": "party_affiliation",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "Parties",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "City",
+          "Field Name": "city",
+          "Field Type": "type reference",
+          "HowMany": Infinity,
+          "Required": true,
+          "Relationship": "Cities",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Rallies",
+      "model": "Rallies",
+      "fields": [
+        {
+          "Field Label": "Title",
+          "Field Name": "title",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Description",
+          "Field Name": "description",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Media",
+          "Field Name": "media",
+          "Field Type": "media",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Topics",
+          "Field Name": "topics",
+          "Field Type": "vocabulary reference",
+          "HowMany": 3,
+          "Required": true,
+          "Relationship": "Topics",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Comments",
+          "Field Name": "comments",
+          "Field Type": "textarea",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Action Plans",
+      "model": "ActionPlans",
+      "fields": [
+        {
+          "Field Label": "Title",
+          "Field Name": "title",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Recommendation",
+          "Field Name": "recommendation",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Executive Summary",
+          "Field Name": "exe_summary",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Analysis and Policy Alternatives / Proposal",
+          "Field Name": "analysis",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Background / Legislative History / Problem Statement",
+          "Field Name": "background",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "CoAuthors",
+          "Field Name": "coauthors",
+          "Field Type": "User Account",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Pro Argument",
+          "Field Name": "pro_argument",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Con Argument",
+          "Field Name": "con_argument",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Prerequisites",
+          "Field Name": "prerequisites",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Timeline",
+          "Field Name": "timeline",
+          "Field Type": "textarea",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Rally",
+          "Field Name": "rally",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "Rallies",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Meetings",
+      "model": "Meetings",
+      "fields": [
+        {
+          "Field Label": "Title",
+          "Field Name": "title",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Rally",
+          "Field Name": "rally",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "Rallies",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Meeting Type",
+          "Field Name": "meeting_type",
+          "Field Type": "vocabulary reference",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "Meeting Types",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Speakers",
+          "Field Name": "speakers",
+          "Field Type": "User Account",
+          "HowMany": 7,
+          "Required": true,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Moderators",
+          "Field Name": "moderators",
+          "Field Type": "User Account",
+          "HowMany": 2,
+          "Required": true,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Sponsors",
+          "Field Name": "sponsors",
+          "Field Type": "User Account",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Postal Address",
+          "Field Name": "address",
+          "Field Type": "address",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Start",
+          "Field Name": "start",
+          "Field Type": "date time",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "End",
+          "Field Name": "end",
+          "Field Type": "date time",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Agenda JSON",
+          "Field Name": "agenda_json",
+          "Field Type": "json",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Duration",
+          "Field Name": "duration",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Privacy",
+          "Field Name": "privacy",
+          "Field Type": "integer",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Invites",
+      "model": "Invites",
+      "fields": [
+        {
+          "Field Label": "Meeting",
+          "Field Name": "meeting",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "Meetings",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "User",
+          "Field Name": "user",
+          "Field Type": "User Account",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Invited By",
+          "Field Name": "invited_by",
+          "Field Type": "User Account",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Status",
+          "Field Name": "status",
+          "Field Type": "enum",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": "invited, rsvpd, attending, attended"
+        }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "model": "Subscriptions",
+      "fields": [
+        {
+          "Field Label": "Subscriber",
+          "Field Name": "subscriber",
+          "Field Type": "User Account",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Rally",
+          "Field Name": "rally",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "Rallies",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Meeting",
+          "Field Name": "meeting",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "Meetings",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Status",
+          "Field Name": "status",
+          "Field Type": "enum",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": "\"approved\", \"denied\", \"active\", \"seen\""
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "model": "Rooms",
+      "fields": [
+        {
+          "Field Label": "Owner",
+          "Field Name": "author",
+          "Field Type": "User Account",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "Users",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Start",
+          "Field Name": "start",
+          "Field Type": "date time",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "End",
+          "Field Name": "end",
+          "Field Type": "date time",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Rally",
+          "Field Name": "rally",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "Rallies",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Meeting",
+          "Field Name": "meeting",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "Meetings",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Privacy",
+          "Field Name": "privacy",
+          "Field Type": "enum",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": "public, invite-only, requests"
+        },
+        {
+          "Field Label": "Status",
+          "Field Name": "status",
+          "Field Type": "enum",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": "live, scheduled, ended"
+        },
+        {
+          "Field Label": "Chat Thread",
+          "Field Name": "chat_thread",
+          "Field Type": "text",
+          "HowMany": Infinity,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Recording",
+          "Field Name": "recording",
+          "Field Type": "video",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    },
+    {
+      "name": "Attendees",
+      "model": "Attendees",
+      "fields": [
+        {
+          "Field Label": "Room ID",
+          "Field Name": "room_id",
+          "Field Type": "type reference",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "Rooms",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Display Name",
+          "Field Name": "display_name",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Display Bg",
+          "Field Name": "display_bg",
+          "Field Type": "image",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Role",
+          "Field Name": "role",
+          "Field Type": "enum",
+          "HowMany": 1,
+          "Required": true,
+          "Relationship": "",
+          "Default": "",
+          "Example": "viewer, presenter, admin, chat moderator"
+        },
+        {
+          "Field Label": "Stream",
+          "Field Name": "stream",
+          "Field Type": "text",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Is Muted",
+          "Field Name": "is_muted",
+          "Field Type": "boolean",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Sharing Video",
+          "Field Name": "sharing_video",
+          "Field Type": "boolean",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Sharing Audio",
+          "Field Name": "sharing_audio",
+          "Field Type": "boolean",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Sharing Screen",
+          "Field Name": "sharing_screen",
+          "Field Type": "boolean",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Hand Raised",
+          "Field Name": "hand_raised",
+          "Field Type": "boolean",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        },
+        {
+          "Field Label": "Is Typing",
+          "Field Name": "is_typing",
+          "Field Type": "boolean",
+          "HowMany": 1,
+          "Required": false,
+          "Relationship": "",
+          "Default": "",
+          "Example": ""
+        }
+      ]
+    }
+  ]
+}

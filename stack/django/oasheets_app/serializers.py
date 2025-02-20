@@ -1,49 +1,45 @@
 import openai
-import json
 from rest_framework import serializers
+from django.db import models
 
-from .models import SpreadsheetDefinition
+from .models import OasheetsSchemaDefinition
+from .utils import sanitize_json
 
-def find_json(string):
-    start_index = min(string.find('{'), string.find('['))
-    if start_index == -1:
-        print('No JSON object found in the string.')
-        return None
-    end_char = ']' if string[start_index] == '[' else '}'
-    end_index = string.rfind(end_char)
-    if end_index == -1:
-        print('Invalid JSON object format.')
-        return None
-    json_string = string[start_index:end_index + 1]
-    try:
-        json_object = json.loads(json_string)
-        return json_object
-    except json.JSONDecodeError as e:
-        print('Error parsing JSON:', json_string, e)
-        return None
-
-
-def sanitize_value(val):
-    if isinstance(val, float) and (val == float('inf') or val == float('-inf') or val != val):
-        return 9999 if val > 0 else -9999
-    return val
-
-
-def sanitize_json(obj):
-    if isinstance(obj, dict):
-        return {k: sanitize_json(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [sanitize_json(item) for item in obj]
-    else:
-        return sanitize_value(obj)
-
-
-class BotPromptSerializer(serializers.Serializer):
+class OasheetsSchemaPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
 
 
-class SpreadsheetDefinitionSerializer(serializers.ModelSerializer):
+class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
+    versions_count = serializers.SerializerMethodField()
+
     class Meta:
-        model = SpreadsheetDefinition
-        fields = ['prompt', 'schema', 'response', 'created_at', 'modified_at']
-        read_only_fields = ['created_at', 'modified_at']
+        model = OasheetsSchemaDefinition
+        fields = [
+            'id',
+            'prompt',
+            'schema',
+            'response',
+            'created_at',
+            'modified_at',
+            'parent',
+            'version',
+            'version_notes',
+            'is_latest',
+            'versions_count'
+        ]
+        read_only_fields = [
+            'created_at',
+            'modified_at',
+            'version',
+            'versions_count'
+        ]
+
+    def get_versions_count(self, obj):
+        """Get the count of versions for this schema"""
+        # If this is a root schema, count its versions
+        if obj.parent is None:
+            return OasheetsSchemaDefinition.objects.filter(parent=obj).count()
+        # If this is a version, count its siblings + 1 (for the root)
+        return OasheetsSchemaDefinition.objects.filter(
+            models.Q(parent=obj.parent) | models.Q(id=obj.parent.id)
+        ).count()
