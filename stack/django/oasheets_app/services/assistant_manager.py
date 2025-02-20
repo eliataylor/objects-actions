@@ -18,12 +18,16 @@ class OasheetsAssistantManager:
         self.user = user
         self.config = None
 
+    def set_assistant(self, configId):
+        self.config = AssistantConfig.objects.get(pk=configId)
+
     def get_assistant_config(self):
         self.config = AssistantConfig.objects.filter(author=self.user, active=True).first()
         if self.config is None:
             self.config = self.create_assistant()
             if self.config is None:
                 raise ValueError("Failed to create assistant and no assistant_id available")
+        return self.config
 
     def build_tools(self):
         # Load field types from JSON
@@ -51,7 +55,7 @@ class OasheetsAssistantManager:
                                          "type": "object",
                                          "properties": {
                                              "name": {"type": "string"},
-                                             "model": {"type": "string"},
+                                             "model_name": {"type": "string"},
                                              "fields": {
                                                  "type": "array",
                                                  "items": {
@@ -80,7 +84,7 @@ class OasheetsAssistantManager:
                                                          },
                                                          "relationship": {
                                                              "type": "string",
-                                                             "description": "The relationship type of the field only used when the field_type is a foreign key",
+                                                             "description": "The foreign key relationship when the field type is user_profile, user_account, type_reference, or vocabulary_reference",
                                                          },
                                                          "default": {
                                                              "type": "string",
@@ -95,7 +99,7 @@ class OasheetsAssistantManager:
                                                  }
                                              }
                                          },
-                                         "required": ["name", "model", "fields"]
+                                         "required": ["name", "model_name", "fields"]
                                      }
                                  }
                              },
@@ -158,8 +162,9 @@ class OasheetsAssistantManager:
                 1. Analyze and interpret the user's idea as if building a secure, enterprise level application
                 2. Include at least 4-6 content types for any non-trivial application
                 3. Include appropriate fields for each content type based on the list of field types in the response_format
-                4. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed
-                5. Respond with the "content_types" json_schema described by the response_format
+                4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference
+                5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed
+                6. Respond with the "content_types" json_schema described by the response_format
                 """
             )
 
@@ -188,15 +193,18 @@ class OasheetsAssistantManager:
 
             if self.config.thread_id is None:
                 thread = self.client.beta.threads.create()
-                message = self.client.beta.threads.messages.create(
-                    thread_id=thread.id,
-                    role="user",
-                    content=prompt
-                )
                 self.config.thread_id = thread.id
                 AssistantConfig.objects.filter(id=self.config.id).update(thread_id=thread.id)
 
+            message = self.client.beta.threads.messages.create(
+                thread_id=self.config.thread_id,
+                role="user",
+                content=prompt
+            )
+
             run = None
+            """
+            # this is just for debugging as it just repeats a previous request without any change
             if self.config.run_id is not None:
                 run = self.client.beta.threads.runs.retrieve(
                     run_id=self.config.run_id,
@@ -204,6 +212,7 @@ class OasheetsAssistantManager:
                 )
                 if run.status == 'expired':
                     run = None
+            """
 
             if run is None:
                 run = self.client.beta.threads.runs.create(

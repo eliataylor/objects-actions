@@ -1,5 +1,6 @@
 import React from "react";
 import { Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { ModelName, ModelType } from "../types/types";
 
 interface AIFieldDefinition {
   label?: string;
@@ -28,6 +29,21 @@ export interface WorksheetApiResponse {
   errors?: string[]
 }
 
+export interface WorksheetApiResponse {
+  data:WorksheetModel;
+  success:boolean;
+  errors?: string[]
+}
+
+export interface WorksheetListResponse {
+    count: number;
+    offset: number;
+    limit: number;
+    meta: any;
+    error: string | null;
+    results: WorksheetModel[]
+}
+
 export interface WorksheetModel {
   id: number;
   prompt: string;
@@ -36,6 +52,7 @@ export interface WorksheetModel {
   created_at: string;
   modified_at: string;
 
+  assistantconfig: number;
   // Version tracking fields
   parent: number | null;
   version: number;
@@ -54,16 +71,16 @@ const WorksheetType: React.FC<SchemaContentType> = ({ model_name, name, fields }
   return (
     <Paper sx={{ mb: 2, p: 1 }}>
       <Typography variant="h5" component="h2" gutterBottom>
-        {model_name}
+        {name}
       </Typography>
       <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
         <Table aria-label={`${model_name} fields table`} size="small">
           <TableHead>
-            <TableRow sx={{ backgroundColor: "primary.main" }}>
+            <TableRow sx={{ backgroundColor: "secondary.main" }}>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Label</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Name</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Type</TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "white", minWidth: 97 }}>How Many</TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "white" }}>How Many</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Required</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Relationship</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Default</TableCell>

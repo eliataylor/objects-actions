@@ -3,24 +3,26 @@ import json
 from ..models import OasheetsSchemaDefinition
 from ..serializers import OasheetsSchemaDefinitionSerializer
 from ..services.assistant_manager import OasheetsAssistantManager
-from ..services.function_caller import OasheetsFunctionCaller
 
 
 class OasheetsGeneratorService:
     """Orchestrates the schema generation process using multiple components"""
 
     def __init__(self, user):
-        # self.vector_store = OasheetsVectorStore()
-        self.function_caller = OasheetsFunctionCaller()
         self.assistant_manager = OasheetsAssistantManager(user)
+
+    def set_assistant(self, configId):
+        self.assistant_manager.set_assistant(configId)
 
     def generate_schema(self, prompt, user):
         """Generate a comprehensive schema using multiple approaches"""
         try:
             response, schema = self.assistant_manager.generate_schema(prompt)
+            config = self.assistant_manager.get_assistant_config()
             schema_obj = OasheetsSchemaDefinition.objects.create(
                 prompt=prompt,
                 response=response,
+                assistantconfig=config,
                 schema=schema,
                 author=user
             )
@@ -59,18 +61,20 @@ class OasheetsGeneratorService:
             )
 
             # Use the assistant manager to generate an enhanced schema
-            new_schema_json = self.assistant_manager.generate_schema(enhanced_prompt)
+            response, new_schema_json = self.assistant_manager.generate_schema(enhanced_prompt)
 
             if not new_schema_json:
                 return None
 
             # Find the root parent if this schema is already a version
             root_parent = original_schema.parent or original_schema
+            config = self.assistant_manager.get_assistant_config()
 
             # Create a new schema definition record with versioning
             schema_definition = OasheetsSchemaDefinition.objects.create(
-                prompt=f"{original_schema.prompt} [Enhanced: {new_prompt}]",
-                response=json.dumps(new_schema_json),
+                prompt=new_prompt,
+                response=response,
+                assistantconfig=config,
                 schema=new_schema_json,
                 author=user,
                 parent=root_parent,

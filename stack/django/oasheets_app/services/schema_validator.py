@@ -42,7 +42,7 @@ class OasheetsSchemaValidator:
                 errors.append("Each content type must be a dictionary.")
                 continue
 
-            required_keys = ["name", "model", "fields"]
+            required_keys = ["name", "model_name", "fields"]
             for key in required_keys:
                 if key not in content_type:
                     errors.append(f"Missing key '{key}' in content type: {content_type.get('name', 'Unknown')}")
@@ -72,7 +72,7 @@ class OasheetsSchemaValidator:
 
             corrected_schema["content_types"].append({
                 "name": content_type.get("name", "Unknown"),
-                "model": content_type.get("model", "Unknown"),
+                "model_name": content_type.get("model_name", "Unknown"),
                 "fields": validated_fields
             })
 

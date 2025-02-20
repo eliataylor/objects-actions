@@ -8,6 +8,7 @@ import { WorksheetApiResponse, WorksheetModel } from "./WorksheetType";
 import WorksheetDetail from "./WorksheetDetail";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
+import { Link } from "react-router-dom";
 
 const GenerateFields: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -30,7 +31,7 @@ const GenerateFields: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post("api/worksheet/generate", {
+      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post("api/worksheets/generate", {
         prompt: promptInput
       });
 
@@ -52,24 +53,21 @@ const GenerateFields: React.FC = () => {
 
   return (
     <Box>
-      <Grid container justifyContent={"space-between"} wrap={"nowrap"}>
+      <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
         <Grid item>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Generate Object Fields
+          <Typography variant="h5" component="h1">
+            Use <em>OpenAI</em> for Object and field recommendations
           </Typography>
         </Grid>
         <Grid item>
-          <IconButton><ListAlt /></IconButton>
+            <IconButton component={Link} to={"/oa/worksheets"}><ListAlt /></IconButton>
         </Grid>
       </Grid>
 
-      <Paper sx={{ p: 3, mb: 4 }}>
-        <Typography variant="body1" paragraph>
-          Describe your app
-        </Typography>
-
+      <Paper sx={{ p: 1, mb: 4 }}>
         <TextField
           fullWidth
+          variant={"filled"}
           name={"app_idea"}
           label="What is your app meant to do?"
           placeholder="e.x., My app is a Task List tool that includes deadline dates and priorities and prerequisites"
@@ -85,27 +83,25 @@ const GenerateFields: React.FC = () => {
           </Alert>
         )}
 
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={loading ? <CircularProgress size={24} /> : <GenerateIcon />}
-            onClick={handleGenerate}
-            disabled={loading || !promptInput.trim()}
-          >
-            {loading ? "Generating..." : "Generate Fields"}
-          </Button>
-        </Box>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={loading ? <CircularProgress size={24} /> : <GenerateIcon />}
+          onClick={handleGenerate}
+          disabled={loading || !promptInput.trim()}
+        >
+          {loading ? "Generating..." : "Generate"}
+        </Button>
       </Paper>
 
       {loading &&
         <Box>
           {!aiResponse &&
-          <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
-            <FormatQuote fontSize={"small"} />
-            {promptInput}
-            <FormatQuote fontSize={"small"} />
-          </Typography>
+            <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
+              <FormatQuote fontSize={"small"} />
+              {promptInput}
+              <FormatQuote fontSize={"small"} />
+            </Typography>
           }
 
           <LinearProgress />

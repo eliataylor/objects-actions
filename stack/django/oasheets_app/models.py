@@ -26,11 +26,13 @@ class AssistantConfig(models.Model):
 class OasheetsSchemaDefinition(models.Model):
     prompt = models.TextField(max_length=512)
     run_id = models.CharField(max_length=100)  # openai id
+
     response = models.TextField(blank=True, null=True)
     schema = models.JSONField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_created")
+    assistantconfig = models.ForeignKey(AssistantConfig, on_delete=models.PROTECT, related_name="assistant_schema")
 
     # Version tracking fields
     parent = models.ForeignKey(

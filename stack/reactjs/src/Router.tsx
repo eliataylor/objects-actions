@@ -46,6 +46,8 @@ import Contribute from "./object-actions/docs/Contribute";
 import Extend from "./object-actions/docs/Extend";
 import Customize from "./object-actions/docs/Customize";
 import WorksheetForm from "./object-actions/generator/WorksheetForm";
+import WorksheetList from "./object-actions/generator/WorksheetList";
+import WorksheetDetail from "./object-actions/generator/WorksheetDetail";
 
 function createRouter() {
   const allRoutes = [
@@ -323,7 +325,9 @@ function createRouter() {
   allRoutes[0].children.push({ path: `/oa/run`, element: <Install /> });
   allRoutes[0].children.push({ path: `/oa/customize`, element: <Customize /> });
   allRoutes[0].children.push({ path: `/oa/extend`, element: <Extend /> });
-  allRoutes[0].children.push({ path: `/oa/generate`, element: <WorksheetForm /> }); // legacy route
+  allRoutes[0].children.push({ path: `/oa/worksheets`, element: <WorksheetList /> });
+  allRoutes[0].children.push({ path: `/oa/worksheets/:id`, element: <WorksheetList /> });
+  allRoutes[0].children.push({ path: `/oa/worksheets/add`, element: <WorksheetForm /> });
   allRoutes[0].children.push({
     path: `/oa/contribute`,
     element: <Contribute />

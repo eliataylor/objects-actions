@@ -7,6 +7,7 @@ from .utils import sanitize_json
 
 class OasheetsSchemaPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
+    config_id = serializers.IntegerField(required=False)
 
 
 class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
@@ -14,19 +15,7 @@ class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OasheetsSchemaDefinition
-        fields = [
-            'id',
-            'prompt',
-            'schema',
-            'response',
-            'created_at',
-            'modified_at',
-            'parent',
-            'version',
-            'version_notes',
-            'is_latest',
-            'versions_count'
-        ]
+        fields = "__all__"
         read_only_fields = [
             'created_at',
             'modified_at',
