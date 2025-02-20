@@ -8,7 +8,7 @@ import { WorksheetApiResponse, WorksheetModel } from "./WorksheetType";
 import WorksheetDetail from "./WorksheetDetail";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const GenerateFields: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -16,6 +16,7 @@ const GenerateFields: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [aiResponse, setAiResponse] = useState<WorksheetModel | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleGenerate = async () => {
     if (!promptInput.trim()) {
@@ -37,8 +38,8 @@ const GenerateFields: React.FC = () => {
 
       if (response.success && response.data) {
         if (response.data.success) {
-          setAiResponse(response.data.data as WorksheetModel);
-          return enqueueSnackbar("Fields generated successfully", { variant: "success" });
+          enqueueSnackbar("Fields generated successfully", { variant: "success" });
+          return navigate(`/oa/worksheets/${response.data.data.id}`);
         }
       }
       setError(response.error || "Failed to generate fields");
@@ -56,7 +57,7 @@ const GenerateFields: React.FC = () => {
       <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
         <Grid item>
           <Typography variant="h5" component="h1">
-            Use <em>OpenAI</em> for Object and field recommendations
+            Generate object and field recommendations for any app idea
           </Typography>
         </Grid>
         <Grid item>
@@ -69,7 +70,7 @@ const GenerateFields: React.FC = () => {
           fullWidth
           variant={"filled"}
           name={"app_idea"}
-          label="What is your app meant to do?"
+          label="Describe who your app is for and what it is supposed to do"
           placeholder="e.x., My app is a Task List tool that includes deadline dates and priorities and prerequisites"
           value={promptInput}
           onChange={(e) => setPromptInput(e.target.value)}

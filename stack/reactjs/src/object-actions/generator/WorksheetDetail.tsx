@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Box, Button, CircularProgress, Paper, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Pagination, Paper, TextField, Typography } from "@mui/material";
 import WorksheetType, { SchemaContentType, WorksheetApiResponse, WorksheetModel } from "./WorksheetType";
 import { Science as GenerateIcon } from "@mui/icons-material";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
@@ -40,8 +40,8 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
 
       if (response.success && response.data) {
         if (response.data.success) {
-          navigate(`/oa/worksheets/${response.data.data.id}`);
-          return enqueueSnackbar("Fields generated successfully", { variant: "success" });
+          enqueueSnackbar("Fields generated successfully", { variant: "success" });
+          return navigate(`/oa/worksheets/${response.data.data.id}`);
         }
       }
       setError(response.error || "Failed to generate fields");
@@ -54,6 +54,12 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
     }
   };
 
+  const handlePagination = (event: React.ChangeEvent<unknown>, value: number) => {
+    if (!worksheet.versions || worksheet.versions.length === 0) return false;
+    const next = worksheet.versions[value] as WorksheetModel;
+    navigate(`/oa/worksheets/${next.id}`);
+  };
+
   return (
     <Box>
       <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
@@ -61,7 +67,17 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
           <Typography variant="h5" component="h1">
             Review and Refine your Schema
           </Typography>
+
         </Grid>
+
+        {worksheet.versions &&
+          <Grid><Pagination
+            variant="outlined"
+            count={worksheet.versions.length + 1}
+            page={worksheet.versions.findIndex((w) => w.id === worksheet.id) ?? 0}
+            onChange={handlePagination}
+          /></Grid>
+        }
 
       </Grid>
 

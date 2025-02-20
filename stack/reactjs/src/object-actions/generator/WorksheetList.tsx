@@ -49,7 +49,7 @@ const WorksheetList = () => {
     const offset = params.has("offset") ? parseInt(params.get("offset") || "0") : 0;
     const limit = params.has("limit") ? parseInt(params.get("limit") || "10") : 10;
     fetchData(offset, limit);
-  }, [location.pathname, location.search]);
+  }, [location.search]);
 
   let content = null;
   if (!listData) {
@@ -57,7 +57,13 @@ const WorksheetList = () => {
   } else if (typeof listData === "string") {
     content = <div>{listData}</div>;
   } else if (id) {
-    content = listData.results.find(l => l.id === parseInt(id))
+    content = listData.results.find(l => {
+      if (l.id === parseInt(id)) return true;
+      if (l.versions) {
+        return l.versions.findIndex(l2 => l2.id === parseInt(id))
+      }
+      return false;
+    })
     if (!content) content = <div>invalid id</div>;
     else content = <WorksheetDetail worksheet={content} />
   } else {

@@ -17,7 +17,8 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return OasheetsSchemaDefinition.objects.filter(author=self.request.user, assistantconfig__active=True)
+        # TODO: correct sorting as thread
+        return OasheetsSchemaDefinition.objects.filter(author=self.request.user, assistantconfig__active=True, parent_id=None).order_by('created_at')
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -34,7 +35,7 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
 
         generator = OasheetsGeneratorService(request.user)
 
-        if prompt_data['config_id']:
+        if "config_id" in prompt_data:
             generator.set_assistant(prompt_data['config_id'])
 
         result = generator.generate_schema(prompt_data['prompt'], request.user)

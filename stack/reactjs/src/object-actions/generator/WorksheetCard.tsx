@@ -12,7 +12,6 @@ interface WorksheetDetailProps {
 const MAX_RESPONSE_LENGTH = 120;
 
 const WorksheetCard: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
-  const navigate = useNavigate();
 
   const truncatedResponse =
     worksheet.response.length > MAX_RESPONSE_LENGTH
@@ -20,7 +19,7 @@ const WorksheetCard: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
       : worksheet.response;
 
   return (
-    <Card>
+    <Card sx={{ marginLeft: worksheet.parent ? 3 : 0 }}>
       <CardHeader
         title={worksheet.prompt}
         subheader={new Intl.DateTimeFormat("en-US", {
@@ -32,10 +31,11 @@ const WorksheetCard: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
         </IconButton>}
       />
       <CardContent>
-        <Typography variant="body1">Versions: {worksheet.versions_count}</Typography>
+        <Typography variant="body1">ID: {worksheet.id}</Typography>
         {worksheet.parent && (
           <Typography variant="body1">Parent: {worksheet.parent}</Typography>
         )}
+        <Typography variant="body1">Versions: {worksheet.versions_count}</Typography>
         <Typography variant="body1">Response: {truncatedResponse}</Typography>
       </CardContent>
     </Card>

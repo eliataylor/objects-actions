@@ -52,6 +52,7 @@ export interface WorksheetModel {
   created_at: string;
   modified_at: string;
 
+  versions?: WorksheetModel[],
   assistantconfig: number;
   // Version tracking fields
   parent: number | null;
@@ -78,7 +79,7 @@ const WorksheetType: React.FC<SchemaContentType> = ({ model_name, name, fields }
           <TableHead>
             <TableRow sx={{ backgroundColor: "secondary.main" }}>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Label</TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Name</TableCell>
+              {/* <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Name</TableCell> */}
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Field Type</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>How Many</TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "white" }}>Required</TableCell>
@@ -94,9 +95,9 @@ const WorksheetType: React.FC<SchemaContentType> = ({ model_name, name, fields }
                 sx={{ "&:nth-of-type(odd)": { backgroundColor: "action.hover" } }}
               >
                 <TableCell>{field.label || "-"}</TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <code>{field.machine_name || "-"}</code>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   {field.field_type ? (
                     <Chip
