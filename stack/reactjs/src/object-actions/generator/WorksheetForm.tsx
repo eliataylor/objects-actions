@@ -1,20 +1,17 @@
-// src/components/worksheets/GenerateFields.tsx
 import React, { useState } from "react";
 import { Alert, Box, Button, CircularProgress, LinearProgress, Paper, TextField, Typography } from "@mui/material";
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { WorksheetApiResponse, WorksheetModel } from "./WorksheetType";
-import WorksheetDetail from "./WorksheetDetail";
+import { WorksheetApiResponse } from "./WorksheetType";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import { Link, useNavigate } from "react-router-dom";
 
-const GenerateFields: React.FC = () => {
+const WorksheetForm: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [promptInput, setPromptInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [aiResponse, setAiResponse] = useState<WorksheetModel | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -61,7 +58,7 @@ const GenerateFields: React.FC = () => {
           </Typography>
         </Grid>
         <Grid item>
-            <IconButton component={Link} to={"/oa/worksheets"}><ListAlt /></IconButton>
+          <IconButton component={Link} to={"/oa/worksheets"}><ListAlt /></IconButton>
         </Grid>
       </Grid>
 
@@ -97,21 +94,17 @@ const GenerateFields: React.FC = () => {
 
       {loading &&
         <Box>
-          {!aiResponse &&
-            <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
-              <FormatQuote fontSize={"small"} />
-              {promptInput}
-              <FormatQuote fontSize={"small"} />
-            </Typography>
-          }
+          <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
+            <FormatQuote fontSize={"small"} />
+            {promptInput}
+            <FormatQuote fontSize={"small"} />
+          </Typography>
 
           <LinearProgress />
         </Box>
       }
-
-      {aiResponse && <WorksheetDetail worksheet={aiResponse} />}
     </Box>
   );
 };
 
-export default GenerateFields;
+export default WorksheetForm;

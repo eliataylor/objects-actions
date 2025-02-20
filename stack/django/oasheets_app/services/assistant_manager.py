@@ -164,7 +164,8 @@ class OasheetsAssistantManager:
                 3. Include appropriate fields for each content type based on the list of field types in the response_format
                 4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference
                 5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed
-                6. Respond with the "content_types" json_schema described by the response_format
+                6. It is not necessary to list created datetime, modified datetime, auto incrementing ID  
+                7. Respond with the "content_types" json_schema described by the response_format
                 """
             )
 

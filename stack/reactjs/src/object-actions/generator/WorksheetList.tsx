@@ -13,7 +13,7 @@ const WorksheetList = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const me = useAuth()?.data?.user;
-  const { id } = useParams();
+  const { id, vid } = useParams();
   const [listData, updateData] = React.useState<WorksheetListResponse | null | string>(null);
 
   const fetchData = async (offset = 0, limit = 10) => {
@@ -52,20 +52,23 @@ const WorksheetList = () => {
   }, [location.search]);
 
   let content = null;
+  if (!me || !me.id) {
+    return <Box>Login to view worksheets</Box>;
+  }
   if (!listData) {
     content = <div>Loading...</div>;
   } else if (typeof listData === "string") {
     content = <div>{listData}</div>;
   } else if (id) {
     content = listData.results.find(l => {
-      if (l.id === parseInt(id)) return true;
+      if (l.id === parseInt(id)) return l;
       if (l.versions) {
-        return l.versions.findIndex(l2 => l2.id === parseInt(id))
+        return l.versions.find(l2 => l2.id === parseInt(id))
       }
       return false;
     })
     if (!content) content = <div>invalid id</div>;
-    else content = <WorksheetDetail worksheet={content} />
+    else content = <WorksheetDetail worksheet={content} version={vid ? parseInt(vid) : undefined} />
   } else {
     content = (
       <React.Fragment>

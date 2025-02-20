@@ -1,17 +1,17 @@
 import React from "react";
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { WorksheetModel } from "./WorksheetType";
 import IconButton from "@mui/material/IconButton";
 import { ReadMore } from "@mui/icons-material";
 
-interface WorksheetDetailProps {
+interface WorksheetCardProps {
   worksheet: WorksheetModel;
 }
 
 const MAX_RESPONSE_LENGTH = 120;
 
-const WorksheetCard: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
+const WorksheetCard: React.FC<WorksheetCardProps> = ({ worksheet }) => {
 
   const truncatedResponse =
     worksheet.response.length > MAX_RESPONSE_LENGTH

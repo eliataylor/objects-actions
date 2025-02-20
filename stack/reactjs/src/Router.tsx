@@ -327,6 +327,7 @@ function createRouter() {
   allRoutes[0].children.push({ path: `/oa/extend`, element: <Extend /> });
   allRoutes[0].children.push({ path: `/oa/worksheets`, element: <WorksheetList /> });
   allRoutes[0].children.push({ path: `/oa/worksheets/:id`, element: <WorksheetList /> });
+  allRoutes[0].children.push({ path: `/oa/worksheets/:id/versions/:vid`, element: <WorksheetList /> });
   allRoutes[0].children.push({ path: `/oa/worksheets/add`, element: <WorksheetForm /> });
   allRoutes[0].children.push({
     path: `/oa/contribute`,
