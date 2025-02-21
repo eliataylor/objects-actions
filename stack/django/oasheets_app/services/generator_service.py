@@ -62,12 +62,6 @@ class OasheetsGeneratorService:
 
             # Use the assistant manager to generate an enhanced schema
             response, new_schema_json = self.assistant_manager.generate_schema(enhanced_prompt)
-
-            if not new_schema_json:
-                return None
-
-            # Find the root parent if this schema is already a version
-            root_parent = original_schema.parent or original_schema
             config = self.assistant_manager.get_assistant_config()
 
             # Create a new schema definition record with versioning
@@ -77,15 +71,9 @@ class OasheetsGeneratorService:
                 assistantconfig=config,
                 schema=new_schema_json,
                 author=user,
-                parent=root_parent,
+                parent=original_schema_id,
                 version_notes=new_prompt,
-                is_latest=True
             )
-
-            # Mark the original schema as not latest if it was the latest
-            if original_schema.is_latest and original_schema.id != root_parent.id:
-                original_schema.is_latest = False
-                original_schema.save(update_fields=['is_latest'])
 
             return OasheetsSchemaDefinitionSerializer(schema_definition).data
 

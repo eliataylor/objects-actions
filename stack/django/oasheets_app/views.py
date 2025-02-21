@@ -95,27 +95,6 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
             return Response({"error": "Schema enhancement failed."},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=True, methods=['get'])
-    def versions(self, request, pk=None):
-        """
-        Retrieve all versions of a schema, including the root schema.
-        Ensures that only the author can access their schema versions.
-        """
-        schema = self.get_object()
-
-        if schema.author != request.user:
-            return Response({"error": "You are not authorized to access these versions."},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        root_schema = schema.parent if schema.parent else schema
-
-        queryset = OasheetsSchemaDefinition.objects.filter(
-            models.Q(parent=root_schema) | models.Q(id=root_schema.id)
-        ).order_by('version')
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({"root_schema_id": root_schema.id, "versions": serializer.data})
-
     @action(detail=True, methods=['delete'], url_path='delete-version')
     def delete_version(self, request, pk=None):
         """

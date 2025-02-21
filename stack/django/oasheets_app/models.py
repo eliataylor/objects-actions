@@ -77,7 +77,7 @@ class OasheetsSchemaDefinition(models.Model):
             children = OasheetsSchemaDefinition.objects.filter(parent=schema)
             return {
                 "id": schema.id,
-                "version": schema.version,
+                "name": schema.prompt if len(schema.prompt) > 80 else schema.prompt[: 80 - 3] + "...",
                 "children": [build_tree(child) for child in children]
             }
 

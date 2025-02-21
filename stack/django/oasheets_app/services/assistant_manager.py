@@ -203,7 +203,6 @@ class OasheetsAssistantManager:
                 content=prompt
             )
 
-            run = None
             """
             # this is just for debugging as it just repeats a previous request without any change
             if self.config.run_id is not None:
@@ -215,13 +214,12 @@ class OasheetsAssistantManager:
                     run = None
             """
 
-            if run is None:
-                run = self.client.beta.threads.runs.create(
-                    thread_id=self.config.thread_id,
-                    assistant_id=self.config.assistant_id,
-                )
-                AssistantConfig.objects.filter(id=self.config.id).update(run_id=run.id)
-                self.config.run_id = run.id
+            run = self.client.beta.threads.runs.create(
+                thread_id=self.config.thread_id,
+                assistant_id=self.config.assistant_id,
+            )
+            AssistantConfig.objects.filter(id=self.config.id).update(run_id=run.id)
+            self.config.run_id = run.id
 
             # Wait for completion
             while run.status in ["queued", "in_progress"]:
