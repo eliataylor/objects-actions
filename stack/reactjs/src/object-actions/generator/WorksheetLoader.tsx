@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { WorksheetModel } from "./WorksheetType";
+import { WorksheetModel } from "./generator-types";
 import WorksheetDetail from "./WorksheetDetail";
 import { LinearProgress } from "@mui/material";
 

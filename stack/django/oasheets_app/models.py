@@ -26,7 +26,6 @@ class AssistantConfig(models.Model):
 
 class OasheetsSchemaDefinition(models.Model):
     prompt = models.TextField(max_length=512)
-    run_id = models.CharField(max_length=100)  # openai id
 
     response = models.TextField(blank=True, null=True)
     schema = models.JSONField(blank=True, null=True)

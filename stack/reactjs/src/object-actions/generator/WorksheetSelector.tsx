@@ -1,7 +1,7 @@
 import React from "react";
 import { MenuItem, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { WorksheetModel } from "./WorksheetType";
+import { WorksheetModel } from "./generator-types";
 
 interface Props {
   worksheet: WorksheetModel;

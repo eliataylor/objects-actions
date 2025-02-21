@@ -5,7 +5,7 @@ import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 import { useAuth } from "../../allauth/auth";
-import { WorksheetListResponse } from "./WorksheetType";
+import { WorksheetListResponse } from "./generator-types";
 import WorksheetCard from "./WorksheetCard";
 
 const WorksheetList = () => {

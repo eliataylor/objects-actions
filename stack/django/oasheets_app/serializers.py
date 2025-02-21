@@ -19,6 +19,8 @@ class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
     versions_count = serializers.SerializerMethodField()
     version_tree = serializers.SerializerMethodField()
 
+    # assistantconfig
+
     class Meta:
         model = OasheetsSchemaDefinition
         fields = "__all__"

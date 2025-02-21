@@ -3,7 +3,7 @@ import { Alert, Box, Button, CircularProgress, LinearProgress, Paper, TextField,
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { WorksheetApiResponse } from "./WorksheetType";
+import { WorksheetApiResponse } from "./generator-types";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import { Link, useNavigate } from "react-router-dom";

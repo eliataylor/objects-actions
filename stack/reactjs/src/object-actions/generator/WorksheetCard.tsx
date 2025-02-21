@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import { WorksheetModel } from "./WorksheetType";
+import { WorksheetModel } from "./generator-types";
 import IconButton from "@mui/material/IconButton";
 import { ReadMore } from "@mui/icons-material";
 
