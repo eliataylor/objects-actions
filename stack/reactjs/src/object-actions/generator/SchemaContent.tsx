@@ -19,17 +19,21 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
     <Grid>
       <Grid container alignItems={"center"} justifyContent={"space-between"} sx={{ mb: 1 }}>
         <Grid item>
-          <ButtonGroup size={"small"} variant="outlined" color={'secondary'}>
+          <ButtonGroup size={"small"} variant="outlined" color={"secondary"}>
             <Button startIcon={<ExpandMore />} onClick={() => toggleAll(true)}>Expand All</Button>
             <Button endIcon={<ExpandLess />} onClick={() => toggleAll(false)}>Collapse All</Button>
           </ButtonGroup>
         </Grid>
-        {renderOpenAiLinks(worksheet.config)}
+        <Grid item>
+          {renderOpenAiLinks(worksheet.config)}
+        </Grid>
       </Grid>
       {worksheet.schema?.content_types?.map((w) => (
-        <Accordion sx={{ p: 0 }} variant={"outlined"} key={w.model_name} expanded={expanded[w.model_name]}
+        <Accordion variant={"outlined"} key={w.model_name} expanded={expanded[w.model_name]}
                    onChange={() => setExpanded({ ...expanded, [w.model_name]: !expanded[w.model_name] })}>
-          <AccordionSummary expandIcon={<ExpandMore />}>{w.name}</AccordionSummary>
+          <AccordionSummary
+            style={{ margin: 0, minHeight:'auto' }}
+            expandIcon={<ExpandMore />}>{w.name}</AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <SchemaTables {...w} />
           </AccordionDetails>
@@ -81,7 +85,8 @@ export function renderOpenAiLinks(config: any) {
         (!config[key]) ? null :
           <Button
             key={key}
-            startIcon={<OpenInNew />}
+            startIcon={<img src={`/oa-assets/openai-icon-black.svg`} alt={'Dark mode image'} height={17} />}
+            endIcon={<OpenInNew fontSize={'small'} />}
             size="small"
             component="a"
             href={url.replace("__ID__", config[key])}

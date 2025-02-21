@@ -1,5 +1,5 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, AxiosRequestHeaders, InternalAxiosRequestConfig } from 'axios';
-import { getCSRFToken } from '../allauth/lib/django';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { getCSRFToken } from "../allauth/lib/django";
 
 export interface HttpResponse<T = any> {
   success: boolean;
@@ -14,7 +14,7 @@ class ApiClient {
   constructor() {
     this.client = axios.create({
       baseURL: process.env.REACT_APP_API_HOST,
-      withCredentials: true,
+      withCredentials: true
     });
 
     this.setupInterceptors();
@@ -32,18 +32,18 @@ class ApiClient {
     const csrfToken = getCSRFToken();
     const allheaders = config.headers;
     if (csrfToken) {
-      allheaders['X-CSRFToken'] = csrfToken
+      allheaders["X-CSRFToken"] = csrfToken;
     }
 
     // Add mobile app headers if available
-    const appOS = localStorage.getItem('appOS');
-    const token = localStorage.getItem('oaexample_token');
+    const appOS = localStorage.getItem("appOS");
+    const token = localStorage.getItem("oaexample_token");
     if (appOS && token) {
-      allheaders['X-App-Client'] = appOS
-      allheaders['Authorization'] = `Bearer ${token}`
+      allheaders["X-App-Client"] = appOS;
+      allheaders["Authorization"] = `Bearer ${token}`;
     }
 
-    config.headers = allheaders
+    config.headers = allheaders;
 
     // Clean up URL trailing slashes
     if (config.url) {
@@ -54,20 +54,20 @@ class ApiClient {
   }
 
   private normalizeUrl(url: string): string {
-    const [path, query] = url.split('?');
-    const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+    const [path, query] = url.split("?");
+    const cleanPath = path.endsWith("/") ? path.slice(0, -1) : path;
     return query ? `${cleanPath}?${query}` : cleanPath;
   }
 
   private async request<T>(
-    method: 'get' | 'post' | 'put' | 'patch' | 'delete',
+    method: "get" | "post" | "put" | "patch" | "delete",
     url: string,
     data?: any,
     headers: any = {}
   ): Promise<HttpResponse<T>> {
     try {
       const config: AxiosRequestConfig = { headers };
-      const response: AxiosResponse<T> = await (method === 'get' || method === 'delete'
+      const response: AxiosResponse<T> = await (method === "get" || method === "delete"
         ? this.client[method]<T>(url, config)
         : this.client[method]<T>(url, data, config));
 
@@ -80,9 +80,48 @@ class ApiClient {
     }
   }
 
+  public async stream<T>(endpoint: string, data: any, onMessage: (chunk: T) => void, onError?: (error: string) => void) {
+    try {
+      const url = this.normalizeUrl(`${process.env.REACT_APP_API_HOST}${endpoint}`);
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken() || ""
+        },
+        body: JSON.stringify(data),
+        credentials: "include"
+      });
+
+      if (!response.body) throw new Error("No response body");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        chunk.split("\n").forEach((line) => {
+          if (line.trim()) {
+            try {
+              const parsed: T = JSON.parse(line);
+              onMessage(parsed);
+            } catch (err) {
+              console.error("Error parsing JSON chunk:", err);
+            }
+          }
+        });
+      }
+    } catch (error: any) {
+      if (onError) onError(error.message || "An unexpected error occurred");
+    }
+  }
+
   private handleError(error: any): HttpResponse<any> {
     if (!error) {
-      return { success: false, error: 'Unknown error occurred' };
+      return { success: false, error: "Unknown error occurred" };
     }
 
     let errorData = error;
@@ -96,7 +135,7 @@ class ApiClient {
       error: errorMessage
     };
 
-    if (typeof errorData === 'object') {
+    if (typeof errorData === "object") {
       errorResponse.errors = errorData;
     }
 
@@ -104,16 +143,16 @@ class ApiClient {
   }
 
   private extractErrorMessage(error: any): string {
-    if (typeof error === 'string') return error;
+    if (typeof error === "string") return error;
 
     const errorSource = error.error || error.detail || error;
-    if (typeof errorSource === 'object') {
+    if (typeof errorSource === "object") {
       return Object.entries(errorSource)
         .map(([key, err]) => {
-          const errorValue = Array.isArray(err) ? err.join(', ') : err;
+          const errorValue = Array.isArray(err) ? err.join(", ") : err;
           return `${key}: ${errorValue}`;
         })
-        .join('\n\r ');
+        .join("\n\r ");
     }
 
     return String(errorSource);
@@ -121,23 +160,23 @@ class ApiClient {
 
   // Public API methods
   public async get<T>(url: string): Promise<HttpResponse<T>> {
-    return this.request<T>('get', url);
+    return this.request<T>("get", url);
   }
 
   public async post<T>(url: string, data: any, headers?: any): Promise<HttpResponse<T>> {
-    return this.request<T>('post', url, data, headers);
+    return this.request<T>("post", url, data, headers);
   }
 
   public async put<T>(url: string, data: any, headers?: any): Promise<HttpResponse<T>> {
-    return this.request<T>('put', url, data, headers);
+    return this.request<T>("put", url, data, headers);
   }
 
   public async patch<T>(url: string, data: any, headers?: any): Promise<HttpResponse<T>> {
-    return this.request<T>('patch', url, data, headers);
+    return this.request<T>("patch", url, data, headers);
   }
 
   public async delete<T>(url: string): Promise<HttpResponse<T>> {
-    return this.request<T>('delete', url);
+    return this.request<T>("delete", url);
   }
 }
 

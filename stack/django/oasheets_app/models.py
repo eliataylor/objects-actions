@@ -77,18 +77,23 @@ class SchemaVersions(models.Model):
         super().save(*args, **kwargs)
 
     def compute_versions_count(self):
+        """Recursively count all descendant versions of this schema"""
         if not self.pk:  # Ensure the instance has been saved
-            return 0  # Default to zero if not saved yet
+            return 0
 
-        if self.parent is None:
-            return SchemaVersions.objects.filter(parent=self).count()
-        return SchemaVersions.objects.filter(
-            models.Q(parent=self.parent) | models.Q(id=self.parent.id)
-        ).count()
+        def count_children(schema):
+            children = SchemaVersions.objects.filter(parent=schema)
+            return children.count() + sum(count_children(child) for child in children)
+
+        return count_children(self)
 
     def compute_version_tree(self):
         if not self.pk:  # Ensure the instance has been saved
             return None
+
+        root = self
+        while root.parent:
+            root = root.parent
 
         def build_tree(schema):
             children = SchemaVersions.objects.filter(parent=schema)
@@ -98,4 +103,4 @@ class SchemaVersions(models.Model):
                 "children": [build_tree(child) for child in children]
             }
 
-        return build_tree(self if not self.parent else self.parent)
+        return build_tree(root)

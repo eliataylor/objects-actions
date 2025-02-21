@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import JsonResponse
+from django.http import StreamingHttpResponse
 from django.db import models
 
 from .models import SchemaVersions
@@ -39,32 +40,31 @@ class SchemaVersionsViewSet(PaginatedViewSet):
 
     @action(detail=False, methods=['post'])
     def generate(self, request):
+        """
+        Toggle between streaming and non-streaming responses based on query param `stream=true`.
+        """
         serializer = PostedPromptSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         prompt_data = serializer.validated_data
-
         generator = Prompt2SchemaService(request.user)
 
         if "config_id" in prompt_data:
-            generator.load_assistant(
+            generator.load_config(
                 prompt_data['config_id'],
                 *(prompt_data[key] for key in ['thread_id', 'message_id', 'run_id'] if key in prompt_data)
             )
 
-        result = generator.generate_schema(prompt_data['prompt'], request.user)
+        if request.query_params.get("stream") == "true":
+            response_generator = generator.generate_schema_stream(prompt_data['prompt'], request.user)
+            return StreamingHttpResponse(response_generator, content_type="application/json")
 
+        result = generator.generate_schema(prompt_data['prompt'], request.user)
         if result:
-            return Response({
-                'success': True,
-                'data': result
-            })
+            return Response({"success": True, "data": result})
         else:
-            return Response(
-                {'error': 'Schema generation failed'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return Response({"error": "Schema generation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['post'])
     def enhance(self, request, pk=None):
@@ -82,7 +82,7 @@ class SchemaVersionsViewSet(PaginatedViewSet):
 
         generator = Prompt2SchemaService(request.user)
         if "config_id" in prompt_data:
-            generator.load_assistant(
+            generator.load_config(
                 prompt_data['config_id'],
                 *(prompt_data[key] for key in ['thread_id', 'message_id', 'run_id'] if key in prompt_data)
             )

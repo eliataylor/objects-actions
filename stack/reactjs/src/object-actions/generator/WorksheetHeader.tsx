@@ -22,10 +22,16 @@ const WorksheetHeader: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet })
     setLoading(true);
     setError(null);
     try {
-      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post(`api/worksheets/${worksheet.id}/enhance`, {
+      const toPass:any = {
         prompt: promptInput,
         config_id: worksheet.config.id
-      });
+      }
+      if (error) {
+        toPass.thread_id = worksheet.config.thread_id
+        toPass.message_id = worksheet.config.message_id
+        toPass.run_id = worksheet.config.run_id
+      }
+      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post(`api/worksheets/${worksheet.id}/enhance`, toPass);
       if (response.success && response.data) {
         enqueueSnackbar("Schema generated", { variant: "success" });
         setPromptInput("");

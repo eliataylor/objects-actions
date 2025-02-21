@@ -9,11 +9,12 @@ from .utils import sanitize_json
 class PostedPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
     config_id = serializers.IntegerField(required=False)
-    run_id = serializers.IntegerField(required=False)
-    thread_id = serializers.IntegerField(required=False)
-    assistant_id = serializers.IntegerField(required=False)
-    message_id = serializers.IntegerField(required=False)
-    preserve = serializers.DictField(required=False)
+    run_id = serializers.CharField(required=False)
+    thread_id = serializers.CharField(required=False)
+    assistant_id = serializers.CharField(required=False)
+    message_id = serializers.CharField(required=False)
+    stream = serializers.BooleanField(required=False, default=True)
+
 
 
 class SchemaVersionSerializer(CustomSerializer):
@@ -52,23 +53,27 @@ class SchemaVersionSerializer(CustomSerializer):
 
     def get_version_tree(self, obj):
         """Retrieve version tree"""
-        def get_version_tree(schema):
+        root = obj
+        while root.parent:
+            root = root.parent
+
+        def build_tree(schema):
             children = SchemaVersions.objects.filter(parent=schema)
 
             return {
                 "id": schema.id,
                 "name": schema.prompt if len(schema.prompt) > 80 else schema.prompt[: 80 - 3] + "...",
-                "children": [get_version_tree(child) for child in children]
+                "children": [build_tree(child) for child in children]
             }
 
-        return get_version_tree(obj if not obj.parent else obj.parent)
+        return build_tree(root)
 
     def get_versions_count(self, obj):
-        """Get the count of versions for this schema"""
-        # If this is a root schema, count its versions
-        if obj.parent is None:
-            return SchemaVersions.objects.filter(parent=obj).count()
-        # If this is a version, count its siblings + 1 (for the root)
-        return SchemaVersions.objects.filter(
-            models.Q(parent=obj.parent) | models.Q(id=obj.parent.id)
-        ).count()
+        """Get the count of all direct and indirect child versions for this schema"""
+
+        def count_children(schema):
+            children = SchemaVersions.objects.filter(parent=schema)
+            return children.count() + sum(count_children(child) for child in children)
+
+        return count_children(obj)
+

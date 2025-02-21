@@ -11,15 +11,49 @@ class Prompt2SchemaService:
     def __init__(self, user):
         self.assistant_manager = OpenAIPromptManager(user)
 
-    def load_assistant(self, config_id, thread_id=None, message_id=None, run_id=None):
-        self.assistant_manager.load_assistant(config_id, thread_id, message_id, run_id)
+    def load_config(self, config_id, thread_id=None, message_id=None, run_id=None):
+        self.assistant_manager.load_config(config_id, thread_id, message_id, run_id)
+
+    """
+    Orchestrates schema generation, now with a streaming implementation.
+    """
+
+    def generate_schema_stream(self, prompt, user):
+        """
+        Stream the reasoning and schema generation process.
+        """
+        try:
+            response_generator = self.assistant_manager.generate_schema_stream(prompt)
+            reasoning_chunks = []
+
+            for chunk in response_generator:
+                yield json.dumps({"reasoning": chunk}) + "\n"
+                reasoning_chunks.append(chunk)
+
+            # Parse JSON only after the stream is complete
+            full_reasoning = "\n".join(reasoning_chunks)
+            schema_json = self.assistant_manager.extract_json(full_reasoning)
+
+            config = self.assistant_manager.get_assistant_config()
+
+            if schema_json:
+                schema_version = SchemaVersions.objects.create(
+                    prompt=prompt,
+                    response=full_reasoning,
+                    config_id=config.id,
+                    schema=schema_json,
+                    author_id=user.id
+                )
+                yield json.dumps({"schema_version_id": schema_version.id, "final": True}) + "\n"
+
+        except Exception as e:
+            yield json.dumps({"error": f"Schema generation failed: {str(e)}"}) + "\n"
 
     def generate_schema(self, prompt, user):
         """Generate a comprehensive schema using multiple approaches"""
         try:
             response, schema = self.assistant_manager.generate_schema(prompt)
             config = self.assistant_manager.get_assistant_config()
-            config.save()
             schema_obj = SchemaVersions.objects.create(
                 prompt=prompt,
                 response=response,
@@ -52,9 +86,8 @@ class Prompt2SchemaService:
 
             # Create an enhanced prompt that includes the original schema
             enhanced_prompt = (
-                f"Enhance the following database schema based on these new requirements: {prompt}\n\n"
-                f"Original schema prompt: {original_schema.prompt}\n\n"
-                f"Original schema: {json.dumps(original_schema.schema, indent=2)}"
+                f"{prompt}\n\n"
+                f"Apply changes to this Schema: ```json{json.dumps(original_schema.schema, indent=2)}```"
             )
 
             # Use the assistant manager to generate an enhanced schema

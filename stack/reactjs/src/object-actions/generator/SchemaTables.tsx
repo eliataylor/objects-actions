@@ -1,5 +1,5 @@
 import React from "react";
-import { Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { SchemaContentType } from "./generator-types";
 
 const WorksheetType: React.FC<SchemaContentType> = ({ model_name, name, fields }) => {

@@ -114,11 +114,37 @@ class OpenAIPromptManager:
 
         return tools
 
-    def create_assistant(self):
+    def create_assistant(self, stream=False):
         """Create a new schema generation assistant"""
         try:
 
             tools = self.build_tools()
+
+            instructions = """
+                            When generating responses:
+                            1. Analyze and interpret the user's idea as if building a secure, enterprise level application
+                            2. Include at least 4-6 content types for any non-trivial application
+                            3. Include appropriate fields for each content type based on the list of field types in the response_format
+                            4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference
+                            5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed
+                            6. It is not necessary to list created datetime, modified datetime, auto incrementing ID  
+                            7. Respond with the "content_types" json_schema described by the response_format                            
+                        """
+            if stream is True:
+                instructions = """
+                                When streaming responses:
+                                1. Begin by analyzing the prompt and providing a structured reasoning process.
+                                   - Explain what assumptions are being made.
+                                   - List potential content types before finalizing the structure.
+                                2. Include at least 4-6 content types for any non-trivial application.
+                                3. Use only approved field types from the response_format schema.
+                                4. Set the relationship property with the model_name of the related content type where applicable.
+                                5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types only if needed.
+                                6. It is not necessary to list created datetime, modified datetime, auto incrementing ID.
+                                7. Once reasoning is complete, construct the final JSON based on the "content_types" json_schema described by the response_format   
+                                8. Finally return a single final chunk of the entire validated JSON.
+                            """
+
             # Create the assistant
             assistant = self.client.beta.assistants.create(
                 name="Database Schema Designer",
@@ -129,13 +155,13 @@ class OpenAIPromptManager:
                     "type": "json_schema",
                     "json_schema": {
                         "name": "content_types",
-#                        "strict": True,
+                        #                        "strict": True,
                         "schema": {
                             "type": "object",
                             "description": "The generated schema to be validated.",
-#                            "additionalProperties": False,
+                            #                            "additionalProperties": False,
                             "properties": {
-#                                "additionalProperties": False,
+                                #                                "additionalProperties": False,
                                 **tools[0]['function']['parameters']['properties'],
                             },
                             "required": [
@@ -144,17 +170,10 @@ class OpenAIPromptManager:
                         }
                     }
                 },
-                instructions="""
+                instructions=f"""
                 You are a database schema designer assistant. Your job is to generate a database schema of based on any app idea.
-
-                When generating responses:
-                1. Analyze and interpret the user's idea as if building a secure, enterprise level application
-                2. Include at least 4-6 content types for any non-trivial application
-                3. Include appropriate fields for each content type based on the list of field types in the response_format
-                4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference
-                5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed
-                6. It is not necessary to list created datetime, modified datetime, auto incrementing ID  
-                7. Respond with the "content_types" json_schema described by the response_format
+                                
+                {instructions}
                 """
             )
 
@@ -177,12 +196,11 @@ class OpenAIPromptManager:
             return None
 
     # loads and resets thread, message, run by default
-    def load_assistant(self, config_id, thread_id=None, message_id=None, run_id=None):
+    def load_config(self, config_id, thread_id=None, message_id=None, run_id=None):
         self.config = PromptConfig.objects.get(pk=config_id)
         self.config.thread_id = thread_id
         self.config.message_id = message_id
         self.config.run_id = run_id
-        self.config.save()
         return self.config
 
     def get_assistant_config(self):
@@ -280,12 +298,48 @@ class OpenAIPromptManager:
 
         raise ValueError(f"Schema validation failed: {validation_result['errors']}")
 
+    """
+       Manages an OpenAI Assistant specialized for schema generation,
+       now with a streaming capability.
+       """
+
+    def generate_schema_stream(self, prompt):
+        """
+        Stream the reasoning and schema generation process.
+        """
+        if self.config is None:
+            self.get_assistant_config()
+
+        try:
+            run = self.get_or_create_run(prompt)
+
+            if run.status != "completed":
+                yield json.dumps({"error": f"Assistant run failed with status: {run.status}"}) + "\n"
+                return
+
+            messages = self.client.beta.threads.messages.list(thread_id=self.config.thread_id)
+
+            reasoning_chunks = []
+            schema_json = None
+
+            for message in messages.data:
+                if message.role == "assistant":
+                    for chunk in message.content[0].text.value.split("\n"):
+                        yield json.dumps({"reasoning": chunk}) + "\n"
+                        reasoning_chunks.append(chunk)
+
+                    if not schema_json:
+                        schema_json = self.extract_json("\n".join(reasoning_chunks))
+                        yield json.dumps({"schema": schema_json}) + "\n"
+
+        except OpenAIError as e:
+            yield json.dumps({"error": f"OpenAI Assistant Error: {str(e)}"}) + "\n"
+
     def generate_schema(self, prompt):
         if self.config is None:
             self.get_assistant_config()
 
         try:
-
             run = self.get_or_create_run(prompt)
 
             if run.status != "completed":
@@ -305,7 +359,7 @@ class OpenAIPromptManager:
                     content = message.content[0].text.value
                     if schema_json is not None:
                         break
-                    schema_json = self._extract_json(content)
+                    schema_json = self.extract_json(content)
                     if schema_json:
                         break
 
@@ -319,7 +373,7 @@ class OpenAIPromptManager:
             print(f"OpenAI Assistant Error: {e}")
             return None
 
-    def _extract_json(self, text):
+    def extract_json(self, text):
         """Extract JSON object from a text response, handling multiple formats."""
         try:
             # Find JSON starting points: ```json, {, or [
@@ -349,7 +403,7 @@ class OpenAIPromptManager:
                 end += 1  # Include closing bracket/brace
                 json_str = text[start:end].strip()
                 json_obj = json.loads(json_str)
-                if "schema" in json_obj: # WARN: hackery. fix in response_format
+                if "schema" in json_obj:  # WARN: hackery. fix in response_format
                     return json_obj["schema"]
                 return json_obj
 
