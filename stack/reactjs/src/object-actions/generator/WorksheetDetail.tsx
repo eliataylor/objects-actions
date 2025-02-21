@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Alert, Box, Button, CircularProgress, Pagination, Paper, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Paper, TextField, Typography } from "@mui/material";
 import WorksheetType, { SchemaContentType, WorksheetApiResponse, WorksheetModel } from "./WorksheetType";
 import { Science as GenerateIcon } from "@mui/icons-material";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import { useSnackbar } from "notistack";
-import Grid from "@mui/material/Grid";
 import { useNavigate } from "react-router-dom";
 import WorksheetSelector from "./WorksheetSelector";
 
@@ -15,7 +14,7 @@ interface WorksheetDetailProps {
 const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [promptInput, setPromptInput] = useState<string>(worksheet.prompt);
+  const [promptInput, setPromptInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -34,14 +33,22 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
     setLoading(true);
     setError(null);
     try {
-      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post(`api/worksheets/${worksheet.id}/enhance`, {
+      const toPass:any = {
         prompt: promptInput,
         config_id: worksheet.assistantconfig
-      });
+      }
+      // only for faster & cheaper debugging to trigger duplicate requests on the same thread / message / run / assistant
+
+      if (error) {
+        toPass.preserve = {run:1, thread:1, message:1, assistant:1}
+      }
+
+      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post(`api/worksheets/${worksheet.id}/enhance`, toPass);
 
       if (response.success && response.data) {
         if (response.data.success) {
-          enqueueSnackbar("Fields generated successfully", { variant: "success" });
+          enqueueSnackbar("Schema generated", { variant: "success" });
+          setPromptInput('')
           return navigate(`/oa/worksheets/${response.data.data.id}`);
         }
       }
@@ -57,24 +64,22 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
 
   return (
     <Box>
-      <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
-        <Grid item>
-          <Typography variant="h5" component="h1">
-            Review and Refine your Schema
+      <Box>
+
+        {worksheet.versions_count > 0 ?
+          <WorksheetSelector worksheet={worksheet} />
+          :
+          <Typography variant="h6" component="h1">
+            Start your Schema
           </Typography>
-
-        </Grid>
-
-        {worksheet.versions_count > 0 &&
-          <Grid sx={{minWidth:150, maxWidth:220}}><WorksheetSelector worksheet={worksheet} /></Grid>
         }
 
-      </Grid>
+      </Box>
 
       <Paper sx={{ p: 1, mb: 4 }}>
         <TextField
           fullWidth
-          variant={"filled"}
+          variant={"standard"}
           name={"app_idea"}
           label="How do you want to change this schema"
           placeholder="e.x., My app is a Task List tool that includes deadline dates and priorities and prerequisites"
@@ -85,7 +90,7 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
         />
 
         {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
+          <Alert severity="error" sx={{ mb:2 }}>
             {error}
           </Alert>
         )}

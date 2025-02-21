@@ -11,8 +11,8 @@ class OasheetsGeneratorService:
     def __init__(self, user):
         self.assistant_manager = OasheetsAssistantManager(user)
 
-    def set_assistant(self, configId):
-        self.assistant_manager.set_assistant(configId)
+    def load_assistant(self, config_id, thread_id=None, message_id=None, run_id=None):
+        self.assistant_manager.load_assistant(config_id, thread_id, message_id, run_id)
 
     def generate_schema(self, prompt, user):
         """Generate a comprehensive schema using multiple approaches"""
@@ -37,13 +37,13 @@ class OasheetsGeneratorService:
             print(f"Error in schema generation: {e}")
             return None
 
-    def enhance_schema(self, new_prompt, original_schema_id, user):
+    def enhance_schema(self, prompt, schema_version, user):
         """
         Enhance an existing schema based on a new prompt.
 
         Args:
-            new_prompt (str): The new requirements or modifications
-            original_schema_id (int): ID of the original schema to enhance
+            prompt (str): The new requirements or modifications
+            schema_version (int): ID of the original schema to enhance
             user (User): The user requesting the enhancement
 
         Returns:
@@ -51,11 +51,11 @@ class OasheetsGeneratorService:
         """
         try:
             # Get the original schema
-            original_schema = OasheetsSchemaDefinition.objects.get(id=original_schema_id)
+            original_schema = OasheetsSchemaDefinition.objects.get(id=schema_version)
 
             # Create an enhanced prompt that includes the original schema
             enhanced_prompt = (
-                f"Enhance the following database schema based on these new requirements: {new_prompt}\n\n"
+                f"Enhance the following database schema based on these new requirements: {prompt}\n\n"
                 f"Original schema prompt: {original_schema.prompt}\n\n"
                 f"Original schema: {json.dumps(original_schema.schema, indent=2)}"
             )
@@ -66,19 +66,19 @@ class OasheetsGeneratorService:
 
             # Create a new schema definition record with versioning
             schema_definition = OasheetsSchemaDefinition.objects.create(
-                prompt=new_prompt,
+                prompt=prompt,
                 response=response,
                 assistantconfig=config,
                 schema=new_schema_json,
                 author=user,
-                parent=original_schema_id,
-                version_notes=new_prompt,
+                parent_id=schema_version,
+                version_notes=enhanced_prompt,
             )
 
             return OasheetsSchemaDefinitionSerializer(schema_definition).data
 
         except OasheetsSchemaDefinition.DoesNotExist:
-            print(f"Original schema with ID {original_schema_id} not found")
+            print(f"Original schema with ID {schema_version} not found")
             return None
         except Exception as e:
             print(f"Error enhancing schema: {str(e)}")

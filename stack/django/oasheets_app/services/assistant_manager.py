@@ -18,17 +18,6 @@ class OasheetsAssistantManager:
         self.user = user
         self.config = None
 
-    def set_assistant(self, configId):
-        self.config = AssistantConfig.objects.get(pk=configId)
-
-    def get_assistant_config(self):
-        self.config = AssistantConfig.objects.filter(author=self.user, active=True).first()
-        if self.config is None:
-            self.config = self.create_assistant()
-            if self.config is None:
-                raise ValueError("Failed to create assistant and no assistant_id available")
-        return self.config
-
     def build_tools(self):
         # Load field types from JSON
         with open(os.path.join(settings.ROOT_DIR, 'oasheets_app/fixtures/field_types_definitions.json'), "r") as f:
@@ -176,6 +165,7 @@ class OasheetsAssistantManager:
                     'assistant_id': assistant.id,
                     'openai_model': assistant.model,
                     'thread_id': None,
+                    'message_id': None,
                     'run_id': None,
                     'active': True
                 }
@@ -186,88 +176,129 @@ class OasheetsAssistantManager:
             print(f"Error creating assistant: {e}")
             return None
 
+    # loads and resets thread, message, run by default
+    def load_assistant(self, config_id, thread_id=None, message_id=None, run_id=None):
+        self.config = AssistantConfig.objects.get(pk=config_id)
+        self.config.thread_id = thread_id
+        self.config.message_id = message_id
+        self.config.run_id = run_id
+        return self.config
+
+    def get_assistant_config(self):
+        if self.config:
+            return self.config
+
+        self.config = AssistantConfig.objects.filter(author=self.user, active=True).first()
+        if self.config is None:
+            self.config = self.create_assistant()
+            if self.config is None:
+                raise ValueError("Failed to create assistant and no assistant_id available")
+        return self.config
+
+    def get_or_create_run(self, prompt):
+        """
+        Recursively retrieves or creates the run object based on its status.
+        Returns a completed run object or raises an error if unsuccessful.
+        """
+        if self.config is None:
+            self.get_assistant_config()
+
+        # Ensure a thread exists
+        if self.config.thread_id is None:
+            thread = self.client.beta.threads.create()
+            self.config.thread_id = thread.id
+            AssistantConfig.objects.filter(id=self.config.id).update(thread_id=thread.id)
+
+        message = self.client.beta.threads.messages.create(
+            thread_id=self.config.thread_id,
+            role="user",
+            content=prompt
+        )
+        AssistantConfig.objects.filter(id=self.config.id).update(message_id=message.id)
+
+        # Retrieve existing run if available
+        if self.config.run_id:
+            run = self.client.beta.threads.runs.retrieve(
+                thread_id=self.config.thread_id,
+                run_id=self.config.run_id
+            )
+            if run.status in ["completed", "failed"]:
+                return run  # Return if already finished
+
+        # Create a new run if needed
+        run = self.client.beta.threads.runs.create(
+            thread_id=self.config.thread_id,
+            assistant_id=self.config.assistant_id,
+        )
+        AssistantConfig.objects.filter(id=self.config.id).update(run_id=run.id)
+        self.config.run_id = run.id
+
+        # Wait for the run to complete
+        return self._wait_for_run_completion(run)
+
+    def _wait_for_run_completion(self, run):
+        """
+        Waits for the run to complete and handles status updates recursively.
+        """
+        while run.status in ["queued", "in_progress"]:
+            time.sleep(1)
+            run = self.client.beta.threads.runs.retrieve(
+                thread_id=self.config.thread_id,
+                run_id=self.config.run_id
+            )
+
+        if run.status == "requires_action" and run.required_action.type == 'submit_tool_outputs':
+            return self._handle_required_action(run)
+
+        if run.status != "completed":
+            raise ValueError(f"Run failed with status: {run.status}")
+
+        return run
+
+    def _handle_required_action(self, run):
+        """
+        Handles cases where a run requires additional action.
+        """
+        validator = OasheetsSchemaValidator()
+        tool = run.required_action.submit_tool_outputs.tool_calls[0]
+        schema_to_validate = tool.function.arguments
+        validation_result = validator.validate_schema(schema_to_validate)
+
+        if validation_result['is_valid']:
+            run = self.client.beta.threads.runs.submit_tool_outputs(
+                thread_id=self.config.thread_id,
+                run_id=self.config.run_id,
+                tool_outputs=[
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(validation_result["corrected_schema"])
+                    }
+                ]
+            )
+            return self._wait_for_run_completion(run)
+
+        raise ValueError(f"Schema validation failed: {validation_result['errors']}")
+
     def generate_schema(self, prompt):
         if self.config is None:
             self.get_assistant_config()
 
         try:
 
-            if self.config.thread_id is None:
-                thread = self.client.beta.threads.create()
-                self.config.thread_id = thread.id
-                AssistantConfig.objects.filter(id=self.config.id).update(thread_id=thread.id)
-
-            message = self.client.beta.threads.messages.create(
-                thread_id=self.config.thread_id,
-                role="user",
-                content=prompt
-            )
-
-            """
-            # this is just for debugging as it just repeats a previous request without any change
-            if self.config.run_id is not None:
-                run = self.client.beta.threads.runs.retrieve(
-                    run_id=self.config.run_id,
-                    thread_id=self.config.thread_id
-                )
-                if run.status == 'expired':
-                    run = None
-            """
-
-            run = self.client.beta.threads.runs.create(
-                thread_id=self.config.thread_id,
-                assistant_id=self.config.assistant_id,
-            )
-            AssistantConfig.objects.filter(id=self.config.id).update(run_id=run.id)
-            self.config.run_id = run.id
-
-            # Wait for completion
-            while run.status in ["queued", "in_progress"]:
-                time.sleep(1)
-                run = self.client.beta.threads.runs.retrieve(
-                    thread_id=self.config.thread_id,
-                    run_id=self.config.run_id
-                )
-
-            schema_json = None
-            if run.status == "requires_action" and run.required_action.type == 'submit_tool_outputs':
-                validator = OasheetsSchemaValidator()
-                tool = run.required_action.submit_tool_outputs.tool_calls[0]
-                schema_to_validate = tool.function.arguments
-                validation_result = validator.validate_schema(schema_to_validate)
-                if validation_result['is_valid'] == True:
-                    schema_json = validation_result['corrected_schema']
-                    run.status = 'completed'  # WARN, is this ok?
-                else:
-                    run = self.client.beta.threads.runs.submit_tool_outputs(
-                        thread_id=self.config.thread_id,
-                        run_id=self.config.run_id,
-                        tool_outputs=[
-                            {
-                                "tool_call_id": tool.id,
-                                "output": json.dumps(validation_result)  # Pass the function result as a JSON string
-                            }
-                        ]
-                    )
-
-                    while run.status in ["queued", "in_progress"]:
-                        time.sleep(1)
-                        run = self.client.beta.threads.runs.retrieve(
-                            thread_id=self.config.thread_id,
-                            run_id=self.config.run_id
-                        )
+            run = self.get_or_create_run(prompt)
 
             if run.status != "completed":
-                print(f"Assistant run failed with status: {run.status}")
-                return None
+                err = f"Assistant run failed with status: {run.status}"
+                print(err)
+                return err, None
 
-            # Get the response
             messages = self.client.beta.threads.messages.list(
                 thread_id=self.config.thread_id
             )
 
             # Find the JSON schema in the response
             content = None
+            schema_json = None
             for message in messages.data:
                 if message.role == "assistant":
                     content = message.content[0].text.value

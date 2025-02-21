@@ -8,6 +8,11 @@ from .utils import sanitize_json
 class OasheetsSchemaPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
     config_id = serializers.IntegerField(required=False)
+    run_id = serializers.IntegerField(required=False)
+    thread_id = serializers.IntegerField(required=False)
+    assistant_id = serializers.IntegerField(required=False)
+    message_id = serializers.IntegerField(required=False)
+    preserve = serializers.DictField(required=False)
 
 
 class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):

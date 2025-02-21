@@ -48,7 +48,10 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
         generator = OasheetsGeneratorService(request.user)
 
         if "config_id" in prompt_data:
-            generator.set_assistant(prompt_data['config_id'])
+            generator.load_assistant(
+                prompt_data['config_id'],
+                *(prompt_data[key] for key in ['thread_id', 'message_id', 'run_id'] if key in prompt_data)
+            )
 
         result = generator.generate_schema(prompt_data['prompt'], request.user)
 
@@ -65,12 +68,9 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
 
     @action(detail=True, methods=['post'])
     def enhance(self, request, pk=None):
-        """
-        Enhance a specific schema version based on additional requirements.
-        """
-        schema_definition = self.get_object()
+        schema_version = self.get_object()
 
-        if schema_definition.author != request.user:
+        if schema_version.author != request.user:
             return Response({"error": "You are not authorized to enhance this schema."},
                             status=status.HTTP_403_FORBIDDEN)
 
@@ -78,14 +78,18 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        new_prompt = serializer.validated_data['prompt']
+        prompt_data = serializer.validated_data
 
         generator = OasheetsGeneratorService(request.user)
-        generator.set_assistant(schema_definition.assistantconfig_id)
+        if "config_id" in prompt_data:
+            generator.load_assistant(
+                prompt_data['config_id'],
+                *(prompt_data[key] for key in ['thread_id', 'message_id', 'run_id'] if key in prompt_data)
+            )
 
         result = generator.enhance_schema(
-            new_prompt=new_prompt,
-            original_schema_id=schema_definition.id,
+            prompt_data['prompt'],
+            schema_version=schema_version.id,
             user=request.user
         )
 

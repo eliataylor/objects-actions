@@ -9,6 +9,7 @@ User = get_user_model()
 class AssistantConfig(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     assistant_id = models.CharField(max_length=100, null=True, blank=True) # openai id
+    message_id = models.CharField(max_length=100, null=True, blank=True)  # openai id
     thread_id = models.CharField(max_length=100, null=True, blank=True)  # openai id
     run_id = models.CharField(max_length=100, null=True, blank=True)  # openai id
     created_at = models.DateTimeField(auto_now_add=True)

@@ -60,7 +60,7 @@ const WorksheetSelector: React.FC<Props> = ({ worksheet }) => {
       label="Select Version"
       value={worksheet.id}
       onChange={handleChange}
-      variant="standard"
+      variant="filled"
     >
       {worksheet.version_tree && renderVersionTree(worksheet.version_tree)}
     </TextField>
