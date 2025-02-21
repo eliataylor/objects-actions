@@ -23,7 +23,7 @@ const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick }) => {
         name={"Run Demo"}
       />
       <NavBarItem
-        to={"/oa/worksheets/add"}
+        to={"/oa/schemas/add"}
         icon={<AutoAwesome fontSize={"small"} />}
         name={"AI Assistant"}
       />

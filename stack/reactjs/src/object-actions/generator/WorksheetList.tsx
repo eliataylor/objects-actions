@@ -51,7 +51,7 @@ const WorksheetList = () => {
 
   let content = null;
   if (!me || !me.id) {
-    return <Box>Login to view worksheets</Box>;
+    return <Box>Login to view schemas</Box>;
   }
   if (!listData) {
     content = <div>Loading...</div>;
@@ -72,7 +72,7 @@ const WorksheetList = () => {
             alignContent="center"
             alignItems="center"
           >
-            <Grid item>Worksheets</Grid>
+            <Grid item>Schemas</Grid>
             <TablePaginator
               totalItems={listData.count}
               onPageChange={handlePagination}
@@ -99,8 +99,8 @@ const WorksheetList = () => {
         color="secondary"
         size="small"
         sx={{ position: "fixed", right: 20, bottom: 20 }}
-        data-href={`/oa/worksheets/add`}
-        onClick={() => navigate(`/oa/worksheets/add`)}
+        data-href={`/oa/schemas/add`}
+        onClick={() => navigate(`/oa/schemas/add`)}
       >
         <Add />
       </Fab>

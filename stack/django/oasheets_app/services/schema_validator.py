@@ -2,7 +2,7 @@ import json
 import os
 from django.conf import settings
 
-class OasheetsSchemaValidator:
+class SchemaValidator:
     """Validates schemas for completeness and correctness"""
 
     def __init__(self):

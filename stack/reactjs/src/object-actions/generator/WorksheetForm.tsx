@@ -36,7 +36,7 @@ const WorksheetForm: React.FC = () => {
       if (response.success && response.data) {
         if (response.data.success) {
           enqueueSnackbar("Fields generated successfully", { variant: "success" });
-          return navigate(`/oa/worksheets/${response.data.data.id}`);
+          return navigate(`/oa/schemas/${response.data.data.id}`);
         }
       }
       setError(response.error || "Failed to generate fields");
@@ -58,7 +58,7 @@ const WorksheetForm: React.FC = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <IconButton component={Link} to={"/oa/worksheets"}><ListAlt /></IconButton>
+          <IconButton component={Link} to={"/oa/schemas"}><ListAlt /></IconButton>
         </Grid>
       </Grid>
 
@@ -67,6 +67,8 @@ const WorksheetForm: React.FC = () => {
           fullWidth
           variant={"filled"}
           name={"app_idea"}
+          multiline={true}
+          rows={5}
           label="Describe who your app is for and what it is supposed to do"
           placeholder="e.x., My app is a Task List tool that includes deadline dates and priorities and prerequisites"
           value={promptInput}
@@ -76,7 +78,7 @@ const WorksheetForm: React.FC = () => {
         />
 
         {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
+          <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}

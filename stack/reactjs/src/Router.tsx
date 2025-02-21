@@ -326,10 +326,10 @@ function createRouter() {
   allRoutes[0].children.push({ path: `/oa/run`, element: <Install /> });
   allRoutes[0].children.push({ path: `/oa/customize`, element: <Customize /> });
   allRoutes[0].children.push({ path: `/oa/extend`, element: <Extend /> });
-  allRoutes[0].children.push({ path: `/oa/worksheets`, element: <WorksheetList /> });
-  allRoutes[0].children.push({ path: `/oa/worksheets/:id`, element: <WorksheetLoader /> });
-  allRoutes[0].children.push({ path: `/oa/worksheets/:id/versions/:version`, element: <WorksheetLoader /> });
-  allRoutes[0].children.push({ path: `/oa/worksheets/add`, element: <WorksheetForm /> });
+  allRoutes[0].children.push({ path: `/oa/schemas`, element: <WorksheetList /> });
+  allRoutes[0].children.push({ path: `/oa/schemas/:id`, element: <WorksheetLoader /> });
+  allRoutes[0].children.push({ path: `/oa/schemas/:id/versions/:version`, element: <WorksheetLoader /> });
+  allRoutes[0].children.push({ path: `/oa/schemas/add`, element: <WorksheetForm /> });
   allRoutes[0].children.push({
     path: `/oa/contribute`,
     element: <Contribute />

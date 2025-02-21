@@ -2,10 +2,11 @@ import openai
 from rest_framework import serializers
 from django.db import models
 
-from .models import OasheetsSchemaDefinition
+from .models import SchemaVersions
+from oaexample_app.serializers import CustomSerializer
 from .utils import sanitize_json
 
-class OasheetsSchemaPromptSerializer(serializers.Serializer):
+class PostedPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
     config_id = serializers.IntegerField(required=False)
     run_id = serializers.IntegerField(required=False)
@@ -15,14 +16,12 @@ class OasheetsSchemaPromptSerializer(serializers.Serializer):
     preserve = serializers.DictField(required=False)
 
 
-class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
+class SchemaVersionSerializer(CustomSerializer):
     versions_count = serializers.SerializerMethodField()
     version_tree = serializers.SerializerMethodField()
 
-    # assistantconfig
-
     class Meta:
-        model = OasheetsSchemaDefinition
+        model = SchemaVersions
         fields = "__all__"
         read_only_fields = [
             'created_at',
@@ -31,11 +30,30 @@ class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
             'version_tree'
         ]
 
+    def to_representation(self, instance):
+        """Override to inject config fields into the representation"""
+        representation = super().to_representation(instance)
+
+        # Extract `config` related fields if `config` exists
+        if instance.config:
+            config_data = {
+                "run_id": instance.config.run_id,
+                "thread_id": instance.config.thread_id,
+                "message_id": instance.config.message_id,
+                "assistant_id": instance.config.assistant_id,
+            }
+
+            # Ensure config exists in the serialized representation and inject values
+            if "config" not in representation:
+                representation["config"] = {}
+            representation["config"].update(config_data)
+
+        return representation
 
     def get_version_tree(self, obj):
         """Retrieve version tree"""
         def get_version_tree(schema):
-            children = OasheetsSchemaDefinition.objects.filter(parent=schema)
+            children = SchemaVersions.objects.filter(parent=schema)
 
             return {
                 "id": schema.id,
@@ -49,8 +67,8 @@ class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
         """Get the count of versions for this schema"""
         # If this is a root schema, count its versions
         if obj.parent is None:
-            return OasheetsSchemaDefinition.objects.filter(parent=obj).count()
+            return SchemaVersions.objects.filter(parent=obj).count()
         # If this is a version, count its siblings + 1 (for the root)
-        return OasheetsSchemaDefinition.objects.filter(
+        return SchemaVersions.objects.filter(
             models.Q(parent=obj.parent) | models.Q(id=obj.parent.id)
         ).count()

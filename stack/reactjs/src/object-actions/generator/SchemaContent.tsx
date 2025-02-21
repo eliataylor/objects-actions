@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, IconButton, Typography } from "@mui/material";
-import { ExpandMore, OpenInNew } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Button, ButtonGroup, Typography } from "@mui/material";
+import { ExpandLess, ExpandMore, OpenInNew } from "@mui/icons-material";
 import { WorksheetModel } from "./generator-types";
 import SchemaTables from "./SchemaTables";
+import Grid from "@mui/material/Grid";
 
 
 const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) => {
@@ -15,20 +16,16 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
   };
 
   return (
-    <Box>
-      <Box sx={{ mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Button variant="outlined" onClick={() => toggleAll(true)}>Expand All</Button>
-        <Button variant="outlined" onClick={() => toggleAll(false)}>Collapse All</Button>
-
-        <Button
-                startIcon={<OpenInNew />}
-                size={'small'}
-                component="a"
-                href={`https://platform.openai.com/playground/assistants?assistant=${worksheet.assistantconfig}`}
-                target="_blank" rel="noopener noreferrer">
-           Assistant
-        </Button>
-      </Box>
+    <Grid>
+      <Grid container alignItems={"center"} justifyContent={"space-between"} sx={{ mb: 1 }}>
+        <Grid item>
+          <ButtonGroup size={"small"} variant="outlined" color={'secondary'}>
+            <Button startIcon={<ExpandMore />} onClick={() => toggleAll(true)}>Expand All</Button>
+            <Button endIcon={<ExpandLess />} onClick={() => toggleAll(false)}>Collapse All</Button>
+          </ButtonGroup>
+        </Grid>
+        {renderOpenAiLinks(worksheet.config)}
+      </Grid>
       {worksheet.schema?.content_types?.map((w) => (
         <Accordion sx={{ p: 0 }} variant={"outlined"} key={w.model_name} expanded={expanded[w.model_name]}
                    onChange={() => setExpanded({ ...expanded, [w.model_name]: !expanded[w.model_name] })}>
@@ -38,35 +35,62 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
           </AccordionDetails>
         </Accordion>
       )) || <Typography>{worksheet.response}</Typography>}
-    </Box>
+    </Grid>
   );
 };
 
 export default SchemaContent;
 
-
-
-export function renderOpenAiLinks(config:any) {
-    const linkKeys = {
-        'vector_store_id': 'https://platform.openai.com/storage/vector_stores/__ID__',
-        'assistant_id': 'https://platform.openai.com/assistants/__ID__',
-        'thread_id': 'https://platform.openai.com/threads/__ID__',
-        'file_id': 'https://platform.openai.com/storage/files/__ID__',
-        'file_path': 'https://platform.openai.com/storage/files/__ID__'
+export function renderOpenAiLinks(config: any) {
+  const linkConfig = {
+    "vector_store_id": {
+      url: "https://platform.openai.com/storage/vector_stores/__ID__",
+      name: "Vector Store"
+    },
+    "assistant_id": {
+      url: "https://platform.openai.com/assistants/__ID__",
+      name: "Assistant"
+    },
+    "thread_id": {
+      url: "https://platform.openai.com/threads/__ID__",
+      name: "Thread"
+    },
+    /*
+    "message_id": {
+      url: "https://platform.openai.com/messages/__ID__",
+      name: "Message"
+    },
+    "run_id": {
+      url: "https://platform.openai.com/runs/__ID__",
+      name: "Run"
+    },
+     */
+    "file_id": {
+      url: "https://platform.openai.com/storage/files/__ID__",
+      name: "File"
+    },
+    "file_path": {
+      url: "https://platform.openai.com/storage/files/__ID__",
+      name: "File Path"
     }
-    return <React.Fragment>
-        {Object.entries(linkKeys).map(([key, value]) => {
+  };
 
-            // const bool = value.toString().toUpperCase()
-            return <Button
-                startIcon={<OpenInNew />}
-                size={'small'}
-                component="a"
-                href={value.replaceAll('__ID__', config)}
-                target="_blank" rel="noopener noreferrer">
-           Assistant
-        </Button>
-
-        })}
+  return (
+    <React.Fragment>
+      {Object.entries(linkConfig).map(([key, { url, name }]) => (
+        (!config[key]) ? null :
+          <Button
+            key={key}
+            startIcon={<OpenInNew />}
+            size="small"
+            component="a"
+            href={url.replace("__ID__", config[key])}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {name}
+          </Button>
+      ))}
     </React.Fragment>
+  );
 }

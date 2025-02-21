@@ -1,15 +1,15 @@
 import json
 
-from ..models import OasheetsSchemaDefinition
-from ..serializers import OasheetsSchemaDefinitionSerializer
-from ..services.assistant_manager import OasheetsAssistantManager
+from ..models import SchemaVersions
+from ..serializers import SchemaVersionSerializer
+from ..services.assistant_manager import OpenAIPromptManager
 
 
-class OasheetsGeneratorService:
+class Prompt2SchemaService:
     """Orchestrates the schema generation process using multiple components"""
 
     def __init__(self, user):
-        self.assistant_manager = OasheetsAssistantManager(user)
+        self.assistant_manager = OpenAIPromptManager(user)
 
     def load_assistant(self, config_id, thread_id=None, message_id=None, run_id=None):
         self.assistant_manager.load_assistant(config_id, thread_id, message_id, run_id)
@@ -19,19 +19,16 @@ class OasheetsGeneratorService:
         try:
             response, schema = self.assistant_manager.generate_schema(prompt)
             config = self.assistant_manager.get_assistant_config()
-            schema_obj = OasheetsSchemaDefinition.objects.create(
+            config.save()
+            schema_obj = SchemaVersions.objects.create(
                 prompt=prompt,
                 response=response,
-                assistantconfig=config,
+                config_id=config.id,
                 schema=schema,
-                author=user
+                author_id=user.id
             )
 
-            # 8. Store as a new example if it's high quality
-            # if enhanced_schema and len(enhanced_schema.get('content_types', [])) >= 4:
-            # self.vector_store.create_example_embedding(prompt, enhanced_schema)
-
-            return OasheetsSchemaDefinitionSerializer(schema_obj).data
+            return SchemaVersionSerializer(schema_obj).data
 
         except Exception as e:
             print(f"Error in schema generation: {e}")
@@ -51,7 +48,7 @@ class OasheetsGeneratorService:
         """
         try:
             # Get the original schema
-            original_schema = OasheetsSchemaDefinition.objects.get(id=schema_version)
+            original_schema = SchemaVersions.objects.get(id=schema_version)
 
             # Create an enhanced prompt that includes the original schema
             enhanced_prompt = (
@@ -65,19 +62,19 @@ class OasheetsGeneratorService:
             config = self.assistant_manager.get_assistant_config()
 
             # Create a new schema definition record with versioning
-            schema_definition = OasheetsSchemaDefinition.objects.create(
+            schema_definition = SchemaVersions.objects.create(
                 prompt=prompt,
                 response=response,
-                assistantconfig=config,
+                config_id=config.id,
                 schema=new_schema_json,
-                author=user,
+                author_id=user.id,
                 parent_id=schema_version,
                 version_notes=enhanced_prompt,
             )
 
-            return OasheetsSchemaDefinitionSerializer(schema_definition).data
+            return SchemaVersionSerializer(schema_definition).data
 
-        except OasheetsSchemaDefinition.DoesNotExist:
+        except SchemaVersions.DoesNotExist:
             print(f"Original schema with ID {schema_version} not found")
             return None
         except Exception as e:

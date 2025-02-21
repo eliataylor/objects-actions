@@ -40,6 +40,14 @@ export interface WorksheetListResponse {
   results: WorksheetModel[];
 }
 
+interface SerializedPromptConfig {
+  id: number;
+  run_id: string | null;
+  thread_id: string | null;
+  message_id: string | null;
+  assistant_id: string | null;
+}
+
 export interface WorksheetModel {
   id: number;
   prompt: string;
@@ -47,10 +55,11 @@ export interface WorksheetModel {
   schema: AiSchemaResponse;
   created_at: string;
   modified_at: string;
-  assistantconfig: number;
+  config: SerializedPromptConfig;
 
   // Version tracking fields
   parent: number | null;
+  version_notes: string | null;
   versions_count: number;
   version_tree: VersionTree;
 }

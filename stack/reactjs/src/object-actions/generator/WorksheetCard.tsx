@@ -26,7 +26,7 @@ const WorksheetCard: React.FC<WorksheetCardProps> = ({ worksheet }) => {
           dateStyle: "full",
           timeStyle: "long"
         }).format(new Date(worksheet.created_at))}
-        action={<IconButton color={"primary"} component={Link} to={`/oa/worksheets/${worksheet.id}`}>
+        action={<IconButton color={"primary"} component={Link} to={`/oa/schemas/${worksheet.id}`}>
           <ReadMore />
         </IconButton>}
       />

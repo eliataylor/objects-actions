@@ -23,7 +23,7 @@ const WorksheetSelector: React.FC<Props> = ({ worksheet }) => {
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const selectedId = event.target.value as number;
-    navigate(`/oa/worksheets/${selectedId}`);
+    navigate(`/oa/schemas/${selectedId}`);
   };
 
   // Recursively push MenuItem elements into the array
@@ -41,7 +41,7 @@ const WorksheetSelector: React.FC<Props> = ({ worksheet }) => {
         sx={{ pl: depth * 2 }}
         selected={node.id === worksheet.id}
         disabled={node.id === worksheet.id}
-        onClick={() => navigate(`/oa/worksheets/${node.id}`)}
+        onClick={() => navigate(`/oa/schemas/${node.id}`)}
       >
         {shortenName(node)}
       </MenuItem>

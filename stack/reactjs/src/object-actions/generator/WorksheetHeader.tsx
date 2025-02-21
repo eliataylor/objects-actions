@@ -24,12 +24,12 @@ const WorksheetHeader: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet })
     try {
       const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post(`api/worksheets/${worksheet.id}/enhance`, {
         prompt: promptInput,
-        config_id: worksheet.assistantconfig
+        config_id: worksheet.config.id
       });
       if (response.success && response.data) {
         enqueueSnackbar("Schema generated", { variant: "success" });
         setPromptInput("");
-        return navigate(`/oa/worksheets/${response.data.data.id}`);
+        return navigate(`/oa/schemas/${response.data.data.id}`);
       }
       setError(response.error || "Failed to generate fields");
       enqueueSnackbar("Error generating fields", { variant: "error" });
@@ -50,6 +50,8 @@ const WorksheetHeader: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet })
           variant="standard"
           name="app_idea"
           label="How do you want to change this schema"
+          multiline={true}
+          rows={5}
           value={promptInput}
           onChange={(e) => setPromptInput(e.target.value)}
           disabled={loading}

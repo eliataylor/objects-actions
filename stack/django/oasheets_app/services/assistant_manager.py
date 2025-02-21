@@ -6,11 +6,11 @@ import openai
 from django.conf import settings
 from openai import OpenAIError
 
-from .schema_validator import OasheetsSchemaValidator
-from ..models import AssistantConfig
+from .schema_validator import SchemaValidator
+from ..models import PromptConfig
 
 
-class OasheetsAssistantManager:
+class OpenAIPromptManager:
     """Manages an OpenAI Assistant specialized for schema generation"""
 
     def __init__(self, user):
@@ -158,7 +158,7 @@ class OasheetsAssistantManager:
                 """
             )
 
-            config, created = AssistantConfig.objects.update_or_create(
+            config, created = PromptConfig.objects.update_or_create(
                 author=self.user,
                 defaults={
                     'author': self.user,
@@ -178,17 +178,18 @@ class OasheetsAssistantManager:
 
     # loads and resets thread, message, run by default
     def load_assistant(self, config_id, thread_id=None, message_id=None, run_id=None):
-        self.config = AssistantConfig.objects.get(pk=config_id)
+        self.config = PromptConfig.objects.get(pk=config_id)
         self.config.thread_id = thread_id
         self.config.message_id = message_id
         self.config.run_id = run_id
+        self.config.save()
         return self.config
 
     def get_assistant_config(self):
         if self.config:
             return self.config
 
-        self.config = AssistantConfig.objects.filter(author=self.user, active=True).first()
+        self.config = PromptConfig.objects.filter(author=self.user, active=True).first()
         if self.config is None:
             self.config = self.create_assistant()
             if self.config is None:
@@ -207,14 +208,14 @@ class OasheetsAssistantManager:
         if self.config.thread_id is None:
             thread = self.client.beta.threads.create()
             self.config.thread_id = thread.id
-            AssistantConfig.objects.filter(id=self.config.id).update(thread_id=thread.id)
+            PromptConfig.objects.filter(id=self.config.id).update(thread_id=thread.id)
 
         message = self.client.beta.threads.messages.create(
             thread_id=self.config.thread_id,
             role="user",
             content=prompt
         )
-        AssistantConfig.objects.filter(id=self.config.id).update(message_id=message.id)
+        PromptConfig.objects.filter(id=self.config.id).update(message_id=message.id)
 
         # Retrieve existing run if available
         if self.config.run_id:
@@ -230,7 +231,7 @@ class OasheetsAssistantManager:
             thread_id=self.config.thread_id,
             assistant_id=self.config.assistant_id,
         )
-        AssistantConfig.objects.filter(id=self.config.id).update(run_id=run.id)
+        PromptConfig.objects.filter(id=self.config.id).update(run_id=run.id)
         self.config.run_id = run.id
 
         # Wait for the run to complete
@@ -259,7 +260,7 @@ class OasheetsAssistantManager:
         """
         Handles cases where a run requires additional action.
         """
-        validator = OasheetsSchemaValidator()
+        validator = SchemaValidator()
         tool = run.required_action.submit_tool_outputs.tool_calls[0]
         schema_to_validate = tool.function.arguments
         validation_result = validator.validate_schema(schema_to_validate)
@@ -310,7 +311,7 @@ class OasheetsAssistantManager:
 
             if schema_json is None:
                 # clear run so this can be resubmitted for testing
-                AssistantConfig.objects.filter(id=self.config.id).update(run_id=None, thread_id=None)
+                PromptConfig.objects.filter(id=self.config.id).update(run_id=None, thread_id=None)
 
             return content, schema_json
 

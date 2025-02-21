@@ -6,19 +6,19 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from django.db import models
 
-from .models import OasheetsSchemaDefinition
-from .serializers import OasheetsSchemaDefinitionSerializer, OasheetsSchemaPromptSerializer
-from .services.generator_service import OasheetsGeneratorService
+from .models import SchemaVersions
+from .serializers import SchemaVersionSerializer, PostedPromptSerializer
+from .services.generator_service import Prompt2SchemaService
 from oaexample_app.views import PaginatedViewSet
 
-class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
-    queryset = OasheetsSchemaDefinition.objects.all()
-    serializer_class = OasheetsSchemaDefinitionSerializer
+class SchemaVersionsViewSet(PaginatedViewSet):
+    queryset = SchemaVersions.objects.all()
+    serializer_class = SchemaVersionSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         # TODO: correct sorting as thread
-        return OasheetsSchemaDefinition.objects.filter(author=self.request.user, assistantconfig__active=True).order_by('created_at')
+        return SchemaVersions.objects.filter(author=self.request.user, config__active=True).order_by('created_at')
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset().filter(parent_id=None))
@@ -39,13 +39,13 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
 
     @action(detail=False, methods=['post'])
     def generate(self, request):
-        serializer = OasheetsSchemaPromptSerializer(data=request.data)
+        serializer = PostedPromptSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         prompt_data = serializer.validated_data
 
-        generator = OasheetsGeneratorService(request.user)
+        generator = Prompt2SchemaService(request.user)
 
         if "config_id" in prompt_data:
             generator.load_assistant(
@@ -74,13 +74,13 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
             return Response({"error": "You are not authorized to enhance this schema."},
                             status=status.HTTP_403_FORBIDDEN)
 
-        serializer = OasheetsSchemaPromptSerializer(data=request.data)
+        serializer = PostedPromptSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         prompt_data = serializer.validated_data
 
-        generator = OasheetsGeneratorService(request.user)
+        generator = Prompt2SchemaService(request.user)
         if "config_id" in prompt_data:
             generator.load_assistant(
                 prompt_data['config_id'],
