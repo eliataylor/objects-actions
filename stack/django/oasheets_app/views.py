@@ -18,12 +18,24 @@ class OasheetsSchemaGeneratorViewSet(PaginatedViewSet):
 
     def get_queryset(self):
         # TODO: correct sorting as thread
-        return OasheetsSchemaDefinition.objects.filter(author=self.request.user, assistantconfig__active=True, parent_id=None).order_by('created_at')
+        return OasheetsSchemaDefinition.objects.filter(author=self.request.user, assistantconfig__active=True).order_by('created_at')
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.filter_queryset(self.get_queryset().filter(parent_id=None))
         data = self.apply_pagination(queryset)
         return JsonResponse(data)
+
+    def retrieve(self, request, pk=None):
+        schema = self.get_object()
+
+        if schema.author != request.user:
+            return Response({"error": "You are not authorized to access this schema."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.get_serializer(schema)
+        response_data = serializer.data
+
+        return Response(response_data)
 
     @action(detail=False, methods=['post'])
     def generate(self, request):

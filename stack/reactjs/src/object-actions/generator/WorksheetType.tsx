@@ -51,15 +51,18 @@ export interface WorksheetModel {
   schema: AiSchemaResponse;
   created_at: string;
   modified_at: string;
-
-  versions?: WorksheetModel[],
   assistantconfig: number;
+
   // Version tracking fields
   parent: number | null;
-  version: number;
-  version_notes: string | null;
-  is_latest: boolean;
   versions_count: number;
+  version_tree: VersionTree;
+}
+
+interface VersionTree {
+  id: number;
+  name?: string;
+  children: VersionTree[];
 }
 
 const WorksheetType: React.FC<SchemaContentType> = ({ model_name, name, fields }) => {

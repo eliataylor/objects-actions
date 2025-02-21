@@ -10,17 +10,12 @@ import WorksheetSelector from "./WorksheetSelector";
 
 interface WorksheetDetailProps {
   worksheet: WorksheetModel;
-  version?: number;
 }
 
-const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet, version }) => {
-
-
-  // TODO: write nary tree search
-  const activeWrk = worksheet.versions?.find(w => w.id === version) ?? worksheet
+const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [promptInput, setPromptInput] = useState<string>(activeWrk.prompt);
+  const [promptInput, setPromptInput] = useState<string>(worksheet.prompt);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -39,9 +34,9 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet, version })
     setLoading(true);
     setError(null);
     try {
-      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post(`api/worksheets/${activeWrk.id}/enhance`, {
+      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post(`api/worksheets/${worksheet.id}/enhance`, {
         prompt: promptInput,
-        config_id: activeWrk.assistantconfig
+        config_id: worksheet.assistantconfig
       });
 
       if (response.success && response.data) {
@@ -70,8 +65,8 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet, version })
 
         </Grid>
 
-        {activeWrk.versions &&
-          <Grid sx={{minWidth:150}}><WorksheetSelector version={version} worksheet={worksheet} /></Grid>
+        {worksheet.versions_count > 0 &&
+          <Grid sx={{minWidth:150, maxWidth:220}}><WorksheetSelector worksheet={worksheet} /></Grid>
         }
 
       </Grid>
@@ -106,12 +101,12 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet, version })
         </Button>
       </Paper>
 
-      {activeWrk.schema?.content_types && Array.isArray(activeWrk.schema?.content_types) ?
-        activeWrk.schema?.content_types.map((w: SchemaContentType, i: number) => {
+      {worksheet.schema?.content_types && Array.isArray(worksheet.schema?.content_types) ?
+        worksheet.schema?.content_types.map((w: SchemaContentType, i: number) => {
           return <WorksheetType key={`worksheet-${w.model_name}-${i}`} {...w} />;
         })
         :
-        <Typography>{activeWrk.response}</Typography>
+        <Typography>{worksheet.response}</Typography>
       }
     </Box>
   );

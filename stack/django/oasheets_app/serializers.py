@@ -12,7 +12,7 @@ class OasheetsSchemaPromptSerializer(serializers.Serializer):
 
 class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
     versions_count = serializers.SerializerMethodField()
-    versions = serializers.SerializerMethodField()
+    version_tree = serializers.SerializerMethodField()
 
     class Meta:
         model = OasheetsSchemaDefinition
@@ -20,15 +20,23 @@ class OasheetsSchemaDefinitionSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'created_at',
             'modified_at',
-            'version',
-            'versions',
-            'versions_count'
+            'versions_count',
+            'version_tree'
         ]
 
-    def get_versions(self, obj):
-        """Retrieve all child worksheets based on parent_id"""
-        child_worksheets = obj.versions.all()  # Uses related_name='versions'
-        return OasheetsSchemaDefinitionSerializer(child_worksheets, many=True).data
+
+    def get_version_tree(self, obj):
+        """Retrieve version tree"""
+        def get_version_tree(schema):
+            children = OasheetsSchemaDefinition.objects.filter(parent=schema)
+
+            return {
+                "id": schema.id,
+                "name": schema.prompt if len(schema.prompt) > 80 else schema.prompt[: 80 - 3] + "...",
+                "children": [get_version_tree(child) for child in children]
+            }
+
+        return get_version_tree(obj if not obj.parent else obj.parent)
 
     def get_versions_count(self, obj):
         """Get the count of versions for this schema"""

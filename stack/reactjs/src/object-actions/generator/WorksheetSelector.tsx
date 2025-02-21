@@ -5,43 +5,64 @@ import { WorksheetModel } from "./WorksheetType";
 
 interface Props {
   worksheet: WorksheetModel;
-  version?: number; // Currently selected worksheet
 }
 
-const WorksheetSelector: React.FC<Props> = ({ worksheet, version }) => {
+const MAX_RESPONSE_LENGTH = 200;
+
+const WorksheetSelector: React.FC<Props> = ({ worksheet }) => {
   const navigate = useNavigate();
 
+  function shortenName(node: WorksheetModel["version_tree"]) {
+    const str = `#${node.id}`;
+    if (!node.name) return str;
+    if (node.name.length > MAX_RESPONSE_LENGTH) {
+      return `${str} ${node.name.substring(0, MAX_RESPONSE_LENGTH)}...`;
+    }
+    return `${str} ${node.name}`;
+  }
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const selectedId = event.target.value as number;
-    navigate(`/oa/worksheets/${worksheet.id}/versions/${version}`);
+    navigate(`/oa/worksheets/${selectedId}`);
   };
 
-  const renderOptions = (list: WorksheetModel[], depth = 0) => {
-    return list.map((wrk) => (
-      <React.Fragment key={wrk.id}>
-        <MenuItem onClick={(e) => navigate(`/oa/worksheets/${worksheet.id}/versions/${e.currentTarget.value}`)}
-                  value={wrk.id}
-                  sx={{ pl: depth * 2 }}>
-          #{wrk.id}: {wrk.prompt.substring(0, 20)}...
-        </MenuItem>
-        {wrk.versions && renderOptions(wrk.versions, depth + 1)}
-      </React.Fragment>
-    ));
-  }
+  // Recursively push MenuItem elements into the array
+  const renderVersionTree = (
+    node: WorksheetModel["version_tree"],
+    depth = 0,
+    elements: JSX.Element[] = []
+  ) => {
+    if (!node) return elements;
 
-  if (!worksheet.versions || worksheet.versions.length === 0) return null;
+    elements.push(
+      <MenuItem
+        key={node.id}
+        value={node.id}
+        sx={{ pl: depth * 2 }}
+        selected={node.id === worksheet.id}
+        disabled={node.id === worksheet.id}
+        onClick={() => navigate(`/oa/worksheets/${node.id}`)}
+      >
+        {shortenName(node)}
+      </MenuItem>
+    );
+
+    node.children.forEach((child) => renderVersionTree(child, depth + 1, elements));
+
+    return elements;
+  };
 
   return (
     <TextField
       select
       fullWidth
+      id="VersionSelector"
       label="Select Version"
-      value={version ?? ""}
+      value={worksheet.id}
       onChange={handleChange}
       variant="standard"
     >
-      {renderOptions(worksheet.versions)}
+      {worksheet.version_tree && renderVersionTree(worksheet.version_tree)}
     </TextField>
   );
 };

@@ -2,18 +2,16 @@ import React, { useEffect } from "react";
 import { AppBar, Box, Fab, Grid } from "@mui/material";
 import TablePaginator from "../../components/TablePaginator";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 import { useAuth } from "../../allauth/auth";
 import { WorksheetListResponse } from "./WorksheetType";
 import WorksheetCard from "./WorksheetCard";
-import WorksheetDetail from "./WorksheetDetail";
 
 const WorksheetList = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const me = useAuth()?.data?.user;
-  const { id, vid } = useParams();
   const [listData, updateData] = React.useState<WorksheetListResponse | null | string>(null);
 
   const fetchData = async (offset = 0, limit = 10) => {
@@ -59,16 +57,6 @@ const WorksheetList = () => {
     content = <div>Loading...</div>;
   } else if (typeof listData === "string") {
     content = <div>{listData}</div>;
-  } else if (id) {
-    content = listData.results.find(l => {
-      if (l.id === parseInt(id)) return l;
-      if (l.versions) {
-        return l.versions.find(l2 => l2.id === parseInt(id))
-      }
-      return false;
-    })
-    if (!content) content = <div>invalid id</div>;
-    else content = <WorksheetDetail worksheet={content} version={vid ? parseInt(vid) : undefined} />
   } else {
     content = (
       <React.Fragment>

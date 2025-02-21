@@ -34,6 +34,9 @@ class OasheetsSchemaDefinition(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_created")
     assistantconfig = models.ForeignKey(AssistantConfig, on_delete=models.PROTECT, related_name="assistant_schema")
 
+    versions_count = models.PositiveIntegerField(default=0, editable=False)
+    version_tree = models.JSONField(default=dict, blank=True, editable=False)
+
     # Version tracking fields
     parent = models.ForeignKey(
         'self',
@@ -42,9 +45,7 @@ class OasheetsSchemaDefinition(models.Model):
         blank=True,
         related_name='versions'
     )
-    version = models.PositiveIntegerField(default=1)
     version_notes = models.TextField(blank=True, null=True)
-    is_latest = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Oasheets Schema"
@@ -52,29 +53,32 @@ class OasheetsSchemaDefinition(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        version_str = f"v{self.version}" if self.version > 1 else ""
-        return f"{self.prompt} {version_str}".strip()
+        return f"{self.parent_id}: {self.id}: {self.prompt}".strip()
 
     def save(self, *args, **kwargs):
-        # Ensure JSON compatibility before saving
         if self.schema:
             self.schema = sanitize_json(self.schema)
 
-        # Handle versioning logic
-        if self.parent:
-            # Get highest version number from siblings
-            highest_version = OasheetsSchemaDefinition.objects.filter(
-                parent=self.parent
-            ).order_by('-version').values_list('version', flat=True).first() or 1
-
-            # Set version to one higher than highest sibling
-            if not self.pk:  # Only for new objects
-                self.version = highest_version + 1
-
-            # Mark parent as not latest
-            if self.is_latest and self.parent.is_latest:
-                self.parent.is_latest = False
-                self.parent.save(update_fields=['is_latest'])
+        # Compute versions count and version tree
+        self.versions_count = self.compute_versions_count()
+        self.version_tree = self.compute_version_tree()
 
         super().save(*args, **kwargs)
 
+    def compute_versions_count(self):
+        if self.parent is None:
+            return OasheetsSchemaDefinition.objects.filter(parent=self).count()
+        return OasheetsSchemaDefinition.objects.filter(
+            models.Q(parent=self.parent) | models.Q(id=self.parent.id)
+        ).count()
+
+    def compute_version_tree(self):
+        def build_tree(schema):
+            children = OasheetsSchemaDefinition.objects.filter(parent=schema)
+            return {
+                "id": schema.id,
+                "version": schema.version,
+                "children": [build_tree(child) for child in children]
+            }
+
+        return build_tree(self if not self.parent else self.parent)
