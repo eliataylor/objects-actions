@@ -21,7 +21,7 @@ const WorksheetCard: React.FC<WorksheetCardProps> = ({ worksheet }) => {
   return (
     <Card sx={{ marginLeft: worksheet.parent ? 3 : 0 }}>
       <CardHeader
-        title={worksheet.prompt}
+        title={<Typography variant="subtitle1">[#{worksheet.id}] {worksheet.prompt}</Typography>}
         subheader={new Intl.DateTimeFormat("en-US", {
           dateStyle: "full",
           timeStyle: "long"
@@ -31,12 +31,7 @@ const WorksheetCard: React.FC<WorksheetCardProps> = ({ worksheet }) => {
         </IconButton>}
       />
       <CardContent>
-        <Typography variant="body1">ID: {worksheet.id}</Typography>
-        {worksheet.parent && (
-          <Typography variant="body1">Parent: {worksheet.parent}</Typography>
-        )}
-        <Typography variant="body1">Versions: {worksheet.versions_count}</Typography>
-        <Typography variant="body1">Response: {truncatedResponse}</Typography>
+        <Typography variant="body2">Descending Versions {worksheet.versions_count}</Typography>
       </CardContent>
     </Card>
   );

@@ -55,8 +55,9 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
           <OALogo height={80} />
         </Grid>
         <Grid item style={{ textAlign: "left" }} flexGrow={1}>
+          <Typography variant="overline">Kick started by</Typography>
           <Typography variant="h3" style={{fontStyle:'italic'}}>Objects / Actions</Typography>
-          <Typography variant="h1">Spreadsheets to Full Stack</Typography>
+          <Typography variant="h2" >Spreadsheets to Full Stack</Typography>
           <Link to={"/oa/readme"}>
             <TightButton
               style={{ marginTop: 20 }}
