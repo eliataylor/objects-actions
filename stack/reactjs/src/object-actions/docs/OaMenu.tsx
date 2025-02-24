@@ -18,14 +18,14 @@ const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick }) => {
         name={"About O/A"}
       />
       <NavBarItem
-        to={"/oa/run"}
-        icon={<InstallIcon fontSize={"small"} />}
-        name={"Run Demo"}
-      />
-      <NavBarItem
         to={"/oa/schemas/add"}
         icon={<AutoAwesome fontSize={"small"} />}
         name={"AI Assistant"}
+      />
+      <NavBarItem
+        to={"/oa/run"}
+        icon={<InstallIcon fontSize={"small"} />}
+        name={"Run Demo"}
       />
       <NavBarItem
         to={"/oa/customize"}

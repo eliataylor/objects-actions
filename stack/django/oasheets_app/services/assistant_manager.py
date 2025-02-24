@@ -10,145 +10,144 @@ from .schema_validator import SchemaValidator
 from ..models import PromptConfig
 
 
-class OpenAIPromptManager:
-    """Manages an OpenAI Assistant specialized for schema generation"""
+def build_tools():
+    # Load field types from JSON
+    with open(os.path.join(settings.ROOT_DIR, 'oasheets_app/fixtures/field_types_definitions.json'), "r") as f:
+        field_types_data = json.load(f)
 
-    def __init__(self, user):
-        self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        self.user = user
-        self.config = None
+    # Extract field names as a list
+    valid_field_types = [field["name"] for field in field_types_data]
 
-    def build_tools(self):
-        # Load field types from JSON
-        with open(os.path.join(settings.ROOT_DIR, 'oasheets_app/fixtures/field_types_definitions.json'), "r") as f:
-            field_types_data = json.load(f)
-
-        # Extract field names as a list
-        valid_field_types = [field["name"] for field in field_types_data]
-
-        tools = [
-            {"type": "function",
-             "function": {
-                 "name": "validate_schema",
-                 "description": "Validates if a schema follows the required format and uses only approved field types.",
-                 "parameters": {
+    tools = [
+        {"type": "function",
+         "function": {
+             "name": "validate_schema",
+             "description": "Validates if a schema follows the required format and uses only approved field types.",
+             "parameters": {
+                 "type": "object",
+                 "properties": {
+                     "schema": {
+                         "type": "object",
+                         "description": "The generated schema to be validated.",
+                         "properties": {
+                             "content_types": {
+                                 "type": "array",
+                                 "items": {
+                                     "type": "object",
+                                     "properties": {
+                                         "name": {"type": "string"},
+                                         "model_name": {"type": "string"},
+                                         "fields": {
+                                             "type": "array",
+                                             "items": {
+                                                 "type": "object",
+                                                 "properties": {
+                                                     "label": {
+                                                         "type": "string",
+                                                         "description": "The human readable label of the field",
+                                                     },
+                                                     "machine": {
+                                                         "type": "string",
+                                                         "description": "The machine of the field",
+                                                     },
+                                                     "field_type": {
+                                                         "type": "string",
+                                                         "description": "The field type appropriate for the intended data",
+                                                         "enum": valid_field_types
+                                                     },
+                                                     "cardinality": {
+                                                         "type": "number",
+                                                         "description": "How many values of this field are allowed per content type. Set -1 for infinity.",
+                                                     },
+                                                     "required": {
+                                                         "type": "boolean",
+                                                         "description": "Whether this field is required for an entry",
+                                                     },
+                                                     "relationship": {
+                                                         "type": "string",
+                                                         "description": "The foreign key relationship when the field type is user_profile, user_account, type_reference, or vocabulary_reference",
+                                                     },
+                                                     "default": {
+                                                         "type": "string",
+                                                         "description": "The default value for the field",
+                                                     },
+                                                     "example": {
+                                                         "type": "string",
+                                                         "description": "An example value or the fixed list of options for  list / enum fields",
+                                                     }
+                                                 },
+                                                 "required": ["label", "field_type", "cardinality"]
+                                             }
+                                         }
+                                     },
+                                     "required": ["name", "model_name", "fields"]
+                                 }
+                             }
+                         },
+                         "required": ["content_types"]
+                     },
+                 },
+                 "returns": {  # Explicitly define the function output schema
                      "type": "object",
                      "properties": {
-                         "schema": {
-                             "type": "object",
-                             "description": "The generated schema to be validated.",
-                             "properties": {
-                                 "content_types": {
-                                     "type": "array",
-                                     "items": {
-                                         "type": "object",
-                                         "properties": {
-                                             "name": {"type": "string"},
-                                             "model_name": {"type": "string"},
-                                             "fields": {
-                                                 "type": "array",
-                                                 "items": {
-                                                     "type": "object",
-                                                     "properties": {
-                                                         "label": {
-                                                             "type": "string",
-                                                             "description": "The human readable label of the field",
-                                                         },
-                                                         "machine": {
-                                                             "type": "string",
-                                                             "description": "The machine of the field",
-                                                         },
-                                                         "field_type": {
-                                                             "type": "string",
-                                                             "description": "The field type appropriate for the intended data",
-                                                             "enum": valid_field_types
-                                                         },
-                                                         "cardinality": {
-                                                             "type": "number",
-                                                             "description": "How many values of this field are allowed per content type",
-                                                         },
-                                                         "required": {
-                                                             "type": "boolean",
-                                                             "description": "Whether this field is required for an entry",
-                                                         },
-                                                         "relationship": {
-                                                             "type": "string",
-                                                             "description": "The foreign key relationship when the field type is user_profile, user_account, type_reference, or vocabulary_reference",
-                                                         },
-                                                         "default": {
-                                                             "type": "string",
-                                                             "description": "The default value for the field",
-                                                         },
-                                                         "example": {
-                                                             "type": "string",
-                                                             "description": "An example value or the fixed list of options for  list / enum fields",
-                                                         }
-                                                     },
-                                                     "required": ["label", "field_type", "cardinality"]
-                                                 }
-                                             }
-                                         },
-                                         "required": ["name", "model_name", "fields"]
-                                     }
-                                 }
-                             },
-                             "required": ["content_types"]
+                         "is_valid": {"type": "boolean"},
+                         "errors": {
+                             "type": "array",
+                             "items": {"type": "string"}
                          },
-                     },
-                     "returns": {  # Explicitly define the function output schema
-                         "type": "object",
-                         "properties": {
-                             "is_valid": {"type": "boolean"},
-                             "errors": {
-                                 "type": "array",
-                                 "items": {"type": "string"}
-                             },
-                             "corrected_schema": {
-                                 "type": "object"
-                             }
+                         "corrected_schema": {
+                             "type": "object"
                          }
                      }
                  }
-             }}
-        ]
+             }
+         }}
+    ]
 
-        return tools
+    return tools
 
-    def create_assistant(self, stream=False):
+
+class OpenAIPromptManager:
+    """Manages an OpenAI Assistant specialized for schema generation"""
+
+    def __init__(self, user, variant):
+        self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        self.user = user
+        self.variant = 'request' if variant != 'stream' else 'stream'
+        self.config = None
+
+    def create_assistant(self):
         """Create a new schema generation assistant"""
         try:
 
-            tools = self.build_tools()
+            tools = build_tools()
 
-            instructions = """
-                            When generating responses:
-                            1. Analyze and interpret the user's idea as if building a secure, enterprise level application
-                            2. Include at least 4-6 content types for any non-trivial application
-                            3. Include appropriate fields for each content type based on the list of field types in the response_format
-                            4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference
-                            5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed
-                            6. It is not necessary to list created datetime, modified datetime, auto incrementing ID  
-                            7. Respond with the "content_types" json_schema described by the response_format                            
-                        """
-            if stream is True:
-                instructions = """
-                                When streaming responses:
-                                1. Begin by analyzing the prompt and providing a structured reasoning process.
+            instructions = """When generating responses:
+                            1. Analyze and interpret the prompt as if building a secure, enterprise level application.
+                            2. Include at least 4-12 content types for any non-trivial application.
+                            3. Include appropriate fields for each content type based on the list of field types in the response_format.
+                            4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference.
+                            5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed.
+                            6. It is not necessary to list created / modified date times or auto incrementing ID.
+                            7. Respond with the validated "content_types" json_schema described by the response_format."""
+            if self.variant == 'stream':
+                instructions = """When streaming responses:
+                                1. Analyze and interpret the prompt as if building a secure, enterprise level application.
+                                2. Begin by analyzing the prompt and providing a structured reasoning process.
                                    - Explain what assumptions are being made.
                                    - List potential content types before finalizing the structure.
-                                2. Include at least 4-6 content types for any non-trivial application.
-                                3. Use only approved field types from the response_format schema.
-                                4. Set the relationship property with the model_name of the related content type where applicable.
-                                5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types only if needed.
-                                6. It is not necessary to list created datetime, modified datetime, auto incrementing ID.
-                                7. Once reasoning is complete, construct the final JSON based on the "content_types" json_schema described by the response_format   
-                                8. Finally return a single final chunk of the entire validated JSON.
-                            """
+                                3. Include at least 4-12 content types for any non-trivial application.
+                                4. Use only approved field types from the response_format schema.
+                                5. Set the relationship property with the model_name of the related content type where applicable.
+                                6. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types only if needed.
+                                7. It is not necessary to list created / modified date times or auto incrementing ID.
+                                8. Once reasoning is complete, construct the final JSON based on the "content_types" json_schema described by the response_format.   
+                                9. Finally return a single final chunk of the entire validated JSON."""
 
             # Create the assistant
             assistant = self.client.beta.assistants.create(
-                name="Database Schema Designer",
-                description="Specialized assistant for generating comprehensive database schemas",
+                name=f"Database Schema Designer {self.variant}",
+                description="Specialized assistant for generating comprehensive database schemas as a JSON of field definitions.",
                 model="gpt-4o",
                 tools=tools,
                 response_format={
@@ -170,19 +169,20 @@ class OpenAIPromptManager:
                         }
                     }
                 },
-                instructions=f"""
-                You are a database schema designer assistant. Your job is to generate a database schema of based on any app idea.
+                instructions=f"""You are a database schema designer assistant. Your job is to generate a database schema of based on any app idea.
                                 
-                {instructions}
+                {instructions.strip()}
                 """
             )
 
+            # WARN: huge potential conflicts with anonymous users sharing configs
             config, created = PromptConfig.objects.update_or_create(
-                author=self.user,
+                author =self.user if self.user.is_authenticated else None,
                 defaults={
-                    'author': self.user,
+                    'author': self.user if self.user.is_authenticated else None,  # Ensure valid Users instance or None
                     'assistant_id': assistant.id,
                     'openai_model': assistant.model,
+                    'variant': self.variant,
                     'thread_id': None,
                     'message_id': None,
                     'run_id': None,
@@ -194,6 +194,9 @@ class OpenAIPromptManager:
         except OpenAIError as e:
             print(f"Error creating assistant: {e}")
             return None
+
+    def set_config(self, config):
+        self.config = config
 
     # loads and resets thread, message, run by default
     def load_config(self, config_id, thread_id=None, message_id=None, run_id=None):
@@ -207,11 +210,21 @@ class OpenAIPromptManager:
         if self.config:
             return self.config
 
-        self.config = PromptConfig.objects.filter(author=self.user, active=True).first()
+        if self.user.is_authenticated:
+            self.config = PromptConfig.objects.filter(author=self.user, active=True, variant=self.variant).first()
+        else:
+            # WARN: huge potential conflicts with anonymous users sharing configs
+            self.config = PromptConfig.objects.filter(author__isnull=True, active=True, variant=self.variant).first()
+
         if self.config is None:
             self.config = self.create_assistant()
             if self.config is None:
                 raise ValueError("Failed to create assistant and no assistant_id available")
+        else:
+            # always reset these here. if reusing any of these, it'll happen in load_config
+            self.config.thread_id = None
+            self.config.message_id = None
+            self.config.run_id = None
         return self.config
 
     def get_or_create_run(self, prompt):
@@ -233,6 +246,7 @@ class OpenAIPromptManager:
             role="user",
             content=prompt
         )
+        self.config.message_id = message.id
         PromptConfig.objects.filter(id=self.config.id).update(message_id=message.id)
 
         # Retrieve existing run if available
@@ -303,7 +317,7 @@ class OpenAIPromptManager:
        now with a streaming capability.
        """
 
-    def generate_schema_stream(self, prompt):
+    def get_schema_stream(self, prompt):
         """
         Stream the reasoning and schema generation process.
         """

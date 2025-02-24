@@ -4,6 +4,7 @@ import { ExpandLess, ExpandMore, OpenInNew } from "@mui/icons-material";
 import { WorksheetModel } from "./generator-types";
 import SchemaTables from "./SchemaTables";
 import Grid from "@mui/material/Grid";
+import LightDarkImg from "../../components/LightDarkImg";
 
 
 const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) => {
@@ -85,7 +86,7 @@ export function renderOpenAiLinks(config: any) {
         (!config[key]) ? null :
           <Button
             key={key}
-            startIcon={<img src={`/oa-assets/openai-icon-black.svg`} alt={'Dark mode image'} height={17} />}
+            startIcon={<LightDarkImg light={'/oa-assets/openai-icon-black.svg'} dark={'/oa-assets/openai-icon-white.svg'} styles={{height:17}} />}
             endIcon={<OpenInNew fontSize={'small'} />}
             size="small"
             component="a"

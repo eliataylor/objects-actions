@@ -8,14 +8,19 @@ from .utils import sanitize_json
 
 class PostedPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
+    privacy = serializers.ChoiceField(choices=SchemaVersions.PrivacyChoices.choices, default=SchemaVersions.PrivacyChoices.public)
     config_id = serializers.IntegerField(required=False)
     run_id = serializers.CharField(required=False)
     thread_id = serializers.CharField(required=False)
     assistant_id = serializers.CharField(required=False)
     message_id = serializers.CharField(required=False)
-    stream = serializers.BooleanField(required=False, default=True)
+    stream = serializers.BooleanField(default=False)
 
-
+    def validate(self, attrs):
+        request = self.context.get("request")
+        if not request or not request.user or not request.user.is_authenticated:
+            attrs["privacy"] = SchemaVersions.PrivacyChoices.public
+        return attrs
 
 class SchemaVersionSerializer(CustomSerializer):
     versions_count = serializers.SerializerMethodField()
@@ -59,6 +64,8 @@ class SchemaVersionSerializer(CustomSerializer):
 
         def build_tree(schema):
             children = SchemaVersions.objects.filter(parent=schema)
+
+            # TODO: filter by privacy!
 
             return {
                 "id": schema.id,

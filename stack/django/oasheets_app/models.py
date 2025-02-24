@@ -7,16 +7,26 @@ User = get_user_model()
 
 # Model to track assistant creation
 class PromptConfig(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
+
+    collaborators = models.ManyToManyField(User, related_name="collaborators", blank=True)
 
     # OpenAI ids
     assistant_id = models.CharField(max_length=100, null=True, blank=True)
     thread_id = models.CharField(max_length=100, null=True, blank=True)
     message_id = models.CharField(max_length=100, null=True, blank=True)
     run_id = models.CharField(max_length=100, null=True, blank=True)
+
+    # different OpenAI assistant configurations
+    class VariantChoices(models.TextChoices):
+        stream = ("stream", "Stream")
+        request = ("request", "Request")
+
+    variant = models.CharField(max_length=10, choices=VariantChoices.choices, verbose_name='Variant', blank=True,
+                               null=True, default=VariantChoices.request)
 
     def __str__(self):
         return next(
@@ -34,20 +44,37 @@ class PromptConfig(models.Model):
         super().save(*args, **kwargs)
 
 class SchemaVersions(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_created")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_created", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
-    prompt = models.TextField(max_length=2555)
+    class PrivacyChoices(models.TextChoices):
+        public = ("public", "Public")
+        unlisted = ("unlisted", "Unlisted")
+        inviteonly = ("inviteonly", "Invite Only")
+        authusers = ("authusers", "Authenticated Users")
+        onlyme = ("onlyme", "Only Me")
+        archived = ("archived", "archived")
+    privacy = models.CharField(max_length=10, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True, default=PrivacyChoices.onlyme)
+
+    # prompt should be unique per user
+    prompt = models.TextField(max_length=2555, verbose_name='Prompt', blank=False, null=False)
     config = models.ForeignKey(PromptConfig, on_delete=models.PROTECT, related_name="prompt_config")
 
-    response = models.TextField(blank=True, null=True) # reasoninng
+    # OpenAI ids
+    assistant_id = models.CharField(max_length=100, null=True, blank=True)
+    thread_id = models.CharField(max_length=100, null=True, blank=True)
+    message_id = models.CharField(max_length=100, null=True, blank=True)
+    run_id = models.CharField(max_length=100, null=True, blank=True)
+
+    response = models.TextField(blank=True, null=True) # reasoning
     schema = models.JSONField(blank=True, null=True) # validated and parsed schema
 
+    # Version tracking fields
     versions_count = models.PositiveIntegerField(default=0, editable=False)
     version_tree = models.JSONField(default=dict, blank=True, null=True, editable=False)
 
-    # Version tracking fields
+    # original idea is when parent is NULL
     parent = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,

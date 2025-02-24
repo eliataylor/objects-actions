@@ -56,7 +56,7 @@ output=$(python manage.py collectstatic --noinput 2>&1) || {
 PORT=$(echo "$REACT_APP_API_HOST" | sed -E 's|^https?://[^:/]+:?([0-9]*)/?|\1|')
 
 # Default to 8080 if no port is extracted
-if [[ -z "$PORT" ]]; then
+if [[ -z "$PORT" || ! "$PORT" =~ ^[0-9]+$ ]]; then
     PORT=8080
 fi
 

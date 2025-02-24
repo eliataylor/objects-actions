@@ -1,3 +1,5 @@
+import { RelEntity } from "../types/types";
+
 interface AIFieldDefinition {
   label?: string;
   machine_name?: string;
@@ -25,10 +27,11 @@ export interface WorksheetApiResponse {
   errors?: string[];
 }
 
-export interface WorksheetApiResponse {
-  data: WorksheetModel;
-  success: boolean;
-  errors?: string[];
+export interface WorksheetStreamResponse {
+  reasoning?: string;
+  schema?: Record<string, unknown>;
+  config_id?: number;
+  error?: string;
 }
 
 export interface WorksheetListResponse {
@@ -42,20 +45,30 @@ export interface WorksheetListResponse {
 
 interface SerializedPromptConfig {
   id: number;
+  author: RelEntity<'Users'>;
+
+  collaborators: RelEntity<'Users'>[];
+
   run_id: string | null;
   thread_id: string | null;
   message_id: string | null;
   assistant_id: string | null;
+
 }
 
 export interface WorksheetModel {
   id: number;
-  prompt: string;
-  response: string;
-  schema: AiSchemaResponse;
+  author: RelEntity<'Users'>
   created_at: string;
   modified_at: string;
+  privacy: 'public' | 'unlisted' | 'inviteonly' | 'authusers' | 'onlyme' | 'archived'
+
+  prompt: string;
   config: SerializedPromptConfig;
+
+  response: string;
+  schema: AiSchemaResponse;
+
 
   // Version tracking fields
   parent: number | null;

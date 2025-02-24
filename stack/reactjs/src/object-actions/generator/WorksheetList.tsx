@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { AppBar, Box, Fab, Grid } from "@mui/material";
 import TablePaginator from "../../components/TablePaginator";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 import { useAuth } from "../../allauth/auth";
 import { WorksheetListResponse } from "./generator-types";
@@ -50,9 +50,6 @@ const WorksheetList = () => {
   }, [location.search]);
 
   let content = null;
-  if (!me || !me.id) {
-    return <Box>Login to view schemas</Box>;
-  }
   if (!listData) {
     content = <div>Loading...</div>;
   } else if (typeof listData === "string") {

@@ -45,9 +45,8 @@ import Install from "./object-actions/docs/Install";
 import Contribute from "./object-actions/docs/Contribute";
 import Extend from "./object-actions/docs/Extend";
 import Customize from "./object-actions/docs/Customize";
-import WorksheetForm from "./object-actions/generator/WorksheetForm";
+import NewSchemaForm from "./object-actions/generator/NewSchemaForm";
 import WorksheetList from "./object-actions/generator/WorksheetList";
-import WorksheetDetail from "./object-actions/generator/WorksheetDetail";
 import WorksheetLoader from "./object-actions/generator/WorksheetLoader";
 
 function createRouter() {
@@ -329,7 +328,7 @@ function createRouter() {
   allRoutes[0].children.push({ path: `/oa/schemas`, element: <WorksheetList /> });
   allRoutes[0].children.push({ path: `/oa/schemas/:id`, element: <WorksheetLoader /> });
   allRoutes[0].children.push({ path: `/oa/schemas/:id/versions/:version`, element: <WorksheetLoader /> });
-  allRoutes[0].children.push({ path: `/oa/schemas/add`, element: <WorksheetForm /> });
+  allRoutes[0].children.push({ path: `/oa/schemas/add`, element: <NewSchemaForm /> });
   allRoutes[0].children.push({
     path: `/oa/contribute`,
     element: <Contribute />
