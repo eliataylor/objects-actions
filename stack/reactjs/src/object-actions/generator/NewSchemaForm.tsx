@@ -79,18 +79,25 @@ const NewSchemaForm: React.FC = () => {
 
   return (
     <Box>
-      <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
+      <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"} >
         <Grid item>
           <Typography variant="h5" component="h1">
-            Generate object and field recommendations for any app idea
+            Generate schema recommendations for any app idea
           </Typography>
         </Grid>
         <Grid item>
-          <IconButton component={Link} to={"/oa/schemas"}><ListAlt /></IconButton>
+          <Button component={Link}
+                  to={"/oa/schemas"}
+                  variant={'contained'}
+                  size={'small'}
+                  color={'secondary'}
+                  endIcon={<ListAlt />}>
+            View App Schemas
+          </Button>
         </Grid>
       </Grid>
 
-      <Paper sx={{ p: 1, mb: 4 }}>
+      <Paper sx={{ p: 1, mb: 4, mt:1 }}>
         <TextField
           fullWidth
           variant={"filled"}
