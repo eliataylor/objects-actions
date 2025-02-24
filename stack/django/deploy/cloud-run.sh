@@ -54,8 +54,6 @@ if [[ "${REACT_APP_APP_HOST}" =~ localhost|localapi|:[0-9]+ ]]; then
   fi
 fi
 
-
-
 show_section_header "DEPLOY CLOUD RUN FROM SOURCE"
 
 login_service_account "$GCP_SA_KEY_PATH" "$GCP_PROJECT_ID"
