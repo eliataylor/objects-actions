@@ -17,7 +17,6 @@ export default function App() {
           vertical: "bottom",
           horizontal: "center"
         }}
-        style={{ marginBottom: 50 }}
       >
         <EnvProvider>
           <AuthContextProvider>

@@ -7,6 +7,7 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 logger.debug(f"[OADJANGO] Using Root Dir {ROOT_DIR}")
 
 # Only use this when you still want the private version in debug mode / locally like for social keys
+# this is mostly just a hack for OA Contributors to develop without having to changing .env.public or .env
 def myEnv(key, default=None):
     if os.path.exists(ROOT_DIR + '/.env.private'):
         config = dotenv_values(ROOT_DIR + '/.env.private')
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     "allauth.usersessions",
 
     'oaexample_app',
+    'oasheets_app',
     'drf_spectacular',
 ]
 

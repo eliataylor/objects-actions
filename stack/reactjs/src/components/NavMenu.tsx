@@ -37,7 +37,7 @@ const NavMenu = () => {
           style={{ justifyContent: "space-between" }}
           onClick={handleClick}
         >
-          <ListItemText primary="Objects" />
+          <ListItemText primary="Types" />
           {objectsOpen ? (
             <ExpandLess fontSize={"small"} />
           ) : (

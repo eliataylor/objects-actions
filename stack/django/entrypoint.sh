@@ -23,6 +23,11 @@ output=$(python manage.py makemigrations oaexample_app --noinput 2>&1) || {
     echo "[OADJANGO] Make migrations output: $output";
 }
 
+echo "[OADJANGO] Building oasheets_app migrations"
+output=$(python manage.py makemigrations oasheets_app --noinput 2>&1) || {
+    echo "[OADJANGO] Make migrations output: $output";
+}
+
 echo "[OADJANGO] Building all migrations"
 output=$(python manage.py makemigrations --noinput 2>&1) || {
     echo "[OADJANGO] Make all migrations output: $output";
@@ -51,7 +56,7 @@ output=$(python manage.py collectstatic --noinput 2>&1) || {
 PORT=$(echo "$REACT_APP_API_HOST" | sed -E 's|^https?://[^:/]+:?([0-9]*)/?|\1|')
 
 # Default to 8080 if no port is extracted
-if [[ -z "$PORT" ]]; then
+if [[ -z "$PORT" || ! "$PORT" =~ ^[0-9]+$ ]]; then
     PORT=8080
 fi
 

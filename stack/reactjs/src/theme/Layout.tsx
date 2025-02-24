@@ -105,7 +105,7 @@ const Layout: React.FC = () => {
               width: "100%",
               margin: `${isMounted ? 0 : "100px"} auto 0 auto`,
               padding: "1%",
-              maxWidth: 1024
+              maxWidth: 1224
             }}
           >
             <Outlet />

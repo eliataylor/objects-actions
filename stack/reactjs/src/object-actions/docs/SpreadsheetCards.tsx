@@ -75,7 +75,7 @@ const SpreadsheetCards: React.FC = () => {
                     />
                   }
                 >
-                  Site Sample
+                  Completed Example
                 </TightButton>
               </a>
             </Grid>
@@ -137,7 +137,7 @@ const SpreadsheetCards: React.FC = () => {
                     />
                   }
                 >
-                  Site Sample
+                  Completed Example
                 </TightButton>
               </a>
             </Grid>

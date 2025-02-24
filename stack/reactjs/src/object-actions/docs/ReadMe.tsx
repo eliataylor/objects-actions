@@ -7,6 +7,7 @@ import Avatar from '@mui/material/Avatar';
 import LightDarkImg from '../../components/LightDarkImg';
 import OaStackCards from './OaStackCards';
 import SpreadsheetCards from './SpreadsheetCards';
+import { Link } from "react-router-dom";
 
 const ReadMe: React.FC = () => {
   const mediaHeight = 250;
@@ -145,6 +146,14 @@ const ReadMe: React.FC = () => {
                 secondary={
                   'This becomes your database schema and clear documentation for your team and contracts.'
                 }
+              />
+            </ListItem>
+            <ListItem sx={{ p: 0, m: 0 }} component={Link} to={'/oa/schemas/add'}>
+              <Avatar style={{ marginRight: 8 }}>
+                <LightDarkImg light={'/oa-assets/openai-icon-black.svg'} dark={'/oa-assets/openai-icon-white.svg'} styles={{height:25}} />
+              </Avatar>
+              <ListItemText
+                primary={'Get help with this pre-trained AI assistant.'}
               />
             </ListItem>
           </Grid>

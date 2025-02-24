@@ -69,7 +69,7 @@ class DjangoBuilder:
         # TODO: personalize the CustomPagination class
 
     def build_django(self, types_path, default_perm):
-        if types_path or not os.path.exists(types_path):
+        if types_path is None or not os.path.exists(types_path):
             self.json = build_types_from_csv(types_path)
             self.build_models()
             self.build_serializers()
@@ -78,6 +78,33 @@ class DjangoBuilder:
         else:
             logger.warning(f'Cannot find Object Types {types_path}')
             sys.exit(0)
+
+
+    # python generate.py chatbot --types=examples/object-fields-demo.csv --output_dir=../stack/django/oasheets_app/fixtures
+    def build_chatbot_structures(self, types_path):
+        if types_path is None or not os.path.exists(types_path):
+            logger.warning(f'Cannot find Object Types {types_path}')
+            sys.exit(0)
+
+        self.json = build_types_from_csv(types_path)
+
+        newjson = {
+            "content_types": []
+        }
+
+        for class_name in self.json:
+
+            model_name = create_object_name(class_name)
+            content_type = {
+                "name": class_name,
+                "model": model_name,
+                "fields": self.json[class_name]
+            }
+            newjson["content_types"].append(content_type)
+
+        with open(os.path.join(self.output_dir, f'example_schema.json'), 'w') as file:
+            file.write(json.dumps(newjson, indent=2))
+
 
     def append_import(self, key, val):
         if val not in self.imports[key]:

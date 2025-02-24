@@ -29,3 +29,6 @@ Werkzeug==3.0.3
 pillow==10.4.0
 
 certifi==2024.7.4
+
+# for SchemaGenerator
+openai==1.63.2

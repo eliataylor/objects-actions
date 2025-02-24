@@ -10,7 +10,7 @@ logger.add(sys.stdout, level="INFO")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate project files based on field types CSV.")
-    parser.add_argument('command', choices=['django', 'typescript', 'permissions-ts', 'forms'],
+    parser.add_argument('command', choices=['django', 'typescript', 'permissions-ts', 'forms', 'chatbot'],
                         help="Target command for the generation.")
     parser.add_argument('--types', required=True, help="Path to the Object Types CSV file.")
     parser.add_argument('--permissions', required=False, help="Path to the Permissions Matrix CSV file.")
@@ -38,7 +38,10 @@ if __name__ == "__main__":
     logger.info(f"Running command: {command}")
     logger.info(f"Output directory: {output_dir}")
 
-    if command == 'django':
+    if command == 'chatbot':
+        builder = DjangoBuilder(output_dir)
+        builder.build_chatbot_structures(types_path)
+    elif command == 'django':
         builder = DjangoBuilder(output_dir)
         builder.build_django(types_path, default_perm)
         # builder.build_permissions(matrix_path, default_perm)

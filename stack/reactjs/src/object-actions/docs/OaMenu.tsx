@@ -1,5 +1,5 @@
 import React from "react";
-import { LocalLibrary } from "@mui/icons-material";
+import { AutoAwesome, LocalLibrary } from "@mui/icons-material";
 import InstallIcon from "@mui/icons-material/Download";
 import CustomizeIcon from "@mui/icons-material/Build";
 import ExtendIcon from "@mui/icons-material/Extension";
@@ -18,7 +18,12 @@ const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick }) => {
         name={"About O/A"}
       />
       <NavBarItem
-        to={"/oa/install"}
+        to={"/oa/schemas/add"}
+        icon={<AutoAwesome fontSize={"small"} />}
+        name={"AI Assistant"}
+      />
+      <NavBarItem
+        to={"/oa/run"}
         icon={<InstallIcon fontSize={"small"} />}
         name={"Run Demo"}
       />

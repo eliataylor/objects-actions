@@ -1,13 +1,13 @@
-import React from 'react';
-import { useConfig } from '../auth';
-import { redirectToProvider } from '../lib/allauth';
-import { Button, Grid, SvgIcon } from '@mui/material';
-import { ReactComponent as Spotify } from '../logos/spotify.svg';
-import { ReactComponent as Github } from '../logos/github-mark-white.svg';
-import { ReactComponent as Linkedin } from '../logos/linkedin.svg';
-import { ReactComponent as Apple } from '../logos/apple.svg';
-import { ReactComponent as Google } from '../logos/google.svg';
-import { WifiPassword } from '@mui/icons-material';
+import React from "react";
+import { useConfig } from "../auth";
+import { redirectToProvider } from "../lib/allauth";
+import { Button, Grid, SvgIcon } from "@mui/material";
+import { ReactComponent as Spotify } from "../logos/spotify.svg";
+import { ReactComponent as Github } from "../logos/github-mark-white.svg";
+import { ReactComponent as Linkedin } from "../logos/linkedin.svg";
+import { ReactComponent as Apple } from "../logos/apple.svg";
+import { ReactComponent as Google } from "../logos/google.svg";
+import { WifiPassword } from "@mui/icons-material";
 
 interface ProviderListProps {
   callbackURL: string;
@@ -16,10 +16,10 @@ interface ProviderListProps {
 }
 
 const ProviderList: React.FC<ProviderListProps> = ({
-  callbackURL,
-  process,
-  accounts,
-}) => {
+                                                     callbackURL,
+                                                     process,
+                                                     accounts
+                                                   }) => {
   const config = useConfig();
   const providers = config.data.socialaccount.providers;
   if (!providers.length) {
@@ -27,17 +27,17 @@ const ProviderList: React.FC<ProviderListProps> = ({
   }
 
   function getIcon(provider: string) {
-    if (provider === 'apple') {
-      return <SvgIcon fontSize={'large'} component={Apple} inheritViewBox />;
-    } else if (provider === 'google') {
+    if (provider === "apple") {
+      return <SvgIcon fontSize={"large"} component={Apple} inheritViewBox />;
+    } else if (provider === "google") {
       return <Google />;
-    } else if (provider === 'spotify') {
+    } else if (provider === "spotify") {
       return (
         <SvgIcon viewBox="0 0 496 512" component={Spotify} inheritViewBox />
       );
-    } else if (provider === 'github') {
+    } else if (provider === "github") {
       return <SvgIcon viewBox="0 0 98 96" component={Github} inheritViewBox />;
-    } else if (provider === 'linkedin') {
+    } else if (provider === "linkedin") {
       return (
         <SvgIcon viewBox="0 0 72 72" component={Linkedin} inheritViewBox />
       );
@@ -49,8 +49,20 @@ const ProviderList: React.FC<ProviderListProps> = ({
     <Grid container gap={2}>
       {providers.map((provider: any) => {
         const connected = accounts?.find(
-          (a: any) => a.provider.id === provider.id,
+          (a: any) => a.provider.id === provider.id
         );
+
+        if (window.location.search.indexOf("debug") === -1) {
+          if (!connected && provider.id === "google") {
+            return null;
+          }
+          if (!connected && provider.id === "facebook") {
+            return null;
+          }
+          if (!connected && provider.id === "spotify") {
+            return null;
+          }
+        }
 
         // @ts-ignore
         return (
@@ -59,8 +71,8 @@ const ProviderList: React.FC<ProviderListProps> = ({
             endIcon={connected ? <WifiPassword /> : undefined}
             key={provider.id}
             fullWidth
-            variant={'outlined'}
-            color={'inherit'}
+            variant={"outlined"}
+            color={"inherit"}
             onClick={() =>
               redirectToProvider(provider.id, callbackURL, process)
             }
