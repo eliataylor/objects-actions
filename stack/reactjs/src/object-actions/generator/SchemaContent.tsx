@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Button, ButtonGroup, Typography } from "@mui/material";
-import { ExpandLess, ExpandMore, OpenInNew } from "@mui/icons-material";
+import { ExpandLess, ExpandMore, FileDownload, OpenInNew } from "@mui/icons-material";
 import { WorksheetModel } from "./generator-types";
 import SchemaTables from "./SchemaTables";
 import Grid from "@mui/material/Grid";
@@ -27,13 +27,22 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
         </Grid>
         <Grid item>
           {renderOpenAiLinks(worksheet.config)}
+          <Button
+            variant={"contained"}
+            color={"primary"}
+            endIcon={<FileDownload fontSize={"small"} />}
+            onClick={() => window.alert("Feature coming soon!")}
+            size="small"
+          >
+            Export to CSV
+          </Button>
         </Grid>
       </Grid>
       {worksheet.schema?.content_types?.map((w) => (
         <Accordion variant={"outlined"} key={w.model_name} expanded={expanded[w.model_name]}
                    onChange={() => setExpanded({ ...expanded, [w.model_name]: !expanded[w.model_name] })}>
           <AccordionSummary
-            style={{ margin: 0, minHeight:'auto' }}
+            style={{ margin: 0, minHeight: "auto" }}
             expandIcon={<ExpandMore />}>{w.name}</AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <SchemaTables {...w} />
@@ -86,8 +95,11 @@ export function renderOpenAiLinks(config: any) {
         (!config[key]) ? null :
           <Button
             key={key}
-            startIcon={<LightDarkImg light={'/oa-assets/openai-icon-black.svg'} dark={'/oa-assets/openai-icon-white.svg'} styles={{height:17}} />}
-            endIcon={<OpenInNew fontSize={'small'} />}
+            style={{ marginRight: 10 }}
+            startIcon={<LightDarkImg light={"/oa-assets/openai-icon-black.svg"} dark={"/oa-assets/openai-icon-white.svg"} styles={{ height: 17 }} />}
+            endIcon={<OpenInNew fontSize={"small"} />}
+            variant={"outlined"}
+            color={"inherit"}
             size="small"
             component="a"
             href={url.replace("__ID__", config[key])}
