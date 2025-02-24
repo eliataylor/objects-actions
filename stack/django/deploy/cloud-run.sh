@@ -31,6 +31,7 @@ REQUIRED_VARS=("GCP_PROJECT_ID" \
               "TWILIO_ACCOUNT_SID" \
               "TWILIO_AUTH_TOKEN" \
               "TWILIO_PHONE_NUMBER" \
+              "OPENAI_API_KEY" \
               "GOOGLE_OAUTH_CLIENT_ID" \
               "GOOGLE_OAUTH_SECRET" \
               "GOOGLE_OAUTH_KEY" )
@@ -102,6 +103,7 @@ gcloud run deploy $GCP_SERVICE_NAME-cloudrun \
     --set-secrets LINKEDIN_SECRET=LINKEDIN_SECRET:latest \
     --set-secrets EMAIL_HOST_PASSWORD=EMAIL_HOST_PASSWORD:latest \
     --set-secrets SPOTIFY_SECRET=SPOTIFY_SECRET:latest \
+    --set-secrets OPENAI_API_KEY=OPENAI_API_KEY:latest \
     --set-secrets DJANGO_SECRET_KEY=DJANGO_SECRET_KEY:latest \
     --set-secrets DJANGO_SUPERUSER_PASSWORD=DJANGO_SUPERUSER_PASSWORD:latest \
     --set-secrets MYSQL_PASSWORD=MYSQL_PASSWORD:latest \
