@@ -3,11 +3,11 @@ import { Alert, Box, Button, CircularProgress, LinearProgress, List, ListItem, L
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { WorksheetApiResponse, WorksheetStreamResponse } from "./generator-types";
+import { WorksheetApiResponse } from "./generator-types";
 import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../allauth/auth";
+import StreamingOutput, { StreamChunk } from "./StreamingOutput";
 
 const NewSchemaForm: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -16,7 +16,7 @@ const NewSchemaForm: React.FC = () => {
   const [privacy, setPrivacy] = useState<string>("public");
   const [useStream, setUseStream] = useState<boolean>(window.location.search.indexOf("stream") > -1);
   const [loading, setLoading] = useState<boolean>(false);
-  const [reasoning, setReasoning] = useState<string[]>([]);
+  const [streamedChunk, setStreamedChunk] = useState<StreamChunk | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -42,22 +42,14 @@ const NewSchemaForm: React.FC = () => {
 
     try {
       if (useStream === true) {
-        ApiClient.stream<WorksheetStreamResponse>("/api/worksheets/generate?stream=true", toPass,
+        ApiClient.stream<StreamChunk>("/api/worksheets/generate?stream=true", toPass,
           (chunk) => {
-            if (!chunk || (!chunk.reasoning && !chunk.schema && !chunk.error)) {
-              setError("Unknown server error");
-            } else if (chunk.error) {
-              setError(chunk.error);
-            } else if (chunk.reasoning) {
-              setReasoning([...reasoning, chunk.reasoning]);
-            }
-            if (chunk.config_id) {
-              enqueueSnackbar("Fields generated successfully", { variant: "success" });
-              return navigate(`/oa/schemas/${chunk.config_id}`);
-            }
-          }, (error) => {
-            setError(error);
-          });
+            setStreamedChunk(chunk); // Directly pass new chunk
+          },
+          (error) => {
+            console.error(error);
+          }
+        );
       } else {
         const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post("api/worksheets/generate", toPass);
         if (response.success && response.data) {
@@ -79,7 +71,7 @@ const NewSchemaForm: React.FC = () => {
 
   return (
     <Box>
-      <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"} >
+      <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
         <Grid item>
           <Typography variant="h5" component="h1">
             Generate schema recommendations for any app idea
@@ -88,16 +80,16 @@ const NewSchemaForm: React.FC = () => {
         <Grid item>
           <Button component={Link}
                   to={"/oa/schemas"}
-                  variant={'contained'}
-                  size={'small'}
-                  color={'secondary'}
+                  variant={"contained"}
+                  size={"small"}
+                  color={"secondary"}
                   endIcon={<ListAlt />}>
             View App Schemas
           </Button>
         </Grid>
       </Grid>
 
-      <Paper sx={{ p: 1, mb: 4, mt:1 }}>
+      <Paper sx={{ p: 1, mb: 4, mt: 1 }}>
         <TextField
           fullWidth
           variant={"filled"}
@@ -165,15 +157,7 @@ const NewSchemaForm: React.FC = () => {
         </Box>
       }
 
-      {reasoning.length > 0 && (
-        <List>
-          {reasoning.map((line, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={line} />
-            </ListItem>
-          ))}
-        </List>
-      )}
+      {streamedChunk && <StreamingOutput chunk={streamedChunk} />}
     </Box>
   );
 };

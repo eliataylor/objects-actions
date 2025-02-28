@@ -8,6 +8,26 @@ from openai import OpenAIError
 
 from .schema_validator import SchemaValidator
 from ..models import PromptConfig
+from pydantic import BaseModel
+
+# Define the Pydantic model for schema validation
+class ValidateSchema(BaseModel):
+    schema: dict
+
+def extract_message_text(event):
+    """
+    Safely extracts text from a MessageDeltaEvent.
+    Handles multiple possible content structures.
+    """
+    try:
+        if hasattr(event, "data") and hasattr(event.data, "delta") and hasattr(event.data.delta, "content"):
+            for content_block in event.data.delta.content:
+                if hasattr(content_block, "text") and hasattr(content_block.text, "value"):
+                    return content_block.text.value  # Extract text safely
+        return None  # No valid text found
+    except Exception as e:
+        print(f"Error extracting text: {e}")
+        return None
 
 
 def build_tools():
@@ -122,7 +142,9 @@ class OpenAIPromptManager:
 
             tools = build_tools()
 
-            instructions = """When generating responses:
+            instructions = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea.
+            
+                            When generating responses:
                             1. Analyze and interpret the prompt as if building a secure, enterprise level application.
                             2. Include at least 4-12 content types for any non-trivial application.
                             3. Include appropriate fields for each content type based on the list of field types in the response_format.
@@ -131,24 +153,22 @@ class OpenAIPromptManager:
                             6. It is not necessary to list created / modified date times or auto incrementing ID.
                             7. Respond with the validated "content_types" json_schema described by the response_format."""
             if self.variant == 'stream':
-                instructions = """When streaming responses:
-                                1. Analyze and interpret the prompt as if building a secure, enterprise level application.
-                                2. Begin by analyzing the prompt and providing a structured reasoning process.
-                                   - Explain what assumptions are being made.
-                                   - List potential content types before finalizing the structure.
-                                3. Include at least 4-12 content types for any non-trivial application.
-                                4. Use only approved field types from the response_format schema.
-                                5. Set the relationship property with the model_name of the related content type where applicable.
-                                6. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types only if needed.
-                                7. It is not necessary to list created / modified date times or auto incrementing ID.
-                                8. Once reasoning is complete, construct the final JSON based on the "content_types" json_schema described by the response_format.   
-                                9. Finally return a single final chunk of the entire validated JSON."""
+                instructions = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea and provide reasoning for your choices.
+                                
+                                When responding to a prompt, you will:
+                                1. Analyzing the prompt as if building a secure, enterprise level online application.
+                                   - List sufficient potential content types for any non-trivial application
+                                   - Describe the logic behind relationships among your fields.
+                                2. Once you have provided sufficient reasoning via messages, use the `validate_schema` function to generate the final structured schema.
+                                   - Do NOT attempt to generate JSON in the message responses.
+                                   - Only use the function call response for structured JSON.
+                                   - Ensure the JSON output is complete before returning."""
 
             # Create the assistant
             assistant = self.client.beta.assistants.create(
-                name=f"Database Schema Designer {self.variant}",
-                description="Specialized assistant for generating comprehensive database schemas as a JSON of field definitions.",
-                model="gpt-4o",
+                name=f"Data Schema Designer {self.variant}",
+                description="Agent for generating data schemas for app ideas",
+                model="gpt-4o-mini",
                 tools=tools,
                 response_format={
                     "type": "json_schema",
@@ -169,15 +189,11 @@ class OpenAIPromptManager:
                         }
                     }
                 },
-                instructions=f"""You are a database schema designer assistant. Your job is to generate a database schema of based on any app idea.
-                                
-                {instructions.strip()}
-                """
+                instructions=instructions.strip()
             )
 
             # WARN: huge potential conflicts with anonymous users sharing configs
-            config, created = PromptConfig.objects.update_or_create(
-                author =self.user if self.user.is_authenticated else None,
+            config, created = PromptConfig.objects.create(
                 defaults={
                     'author': self.user if self.user.is_authenticated else None,  # Ensure valid Users instance or None
                     'assistant_id': assistant.id,
@@ -318,36 +334,56 @@ class OpenAIPromptManager:
        """
 
     def get_schema_stream(self, prompt):
-        """
-        Stream the reasoning and schema generation process.
-        """
         if self.config is None:
             self.get_assistant_config()
 
+        # Ensure a thread exists
+        if self.config.thread_id is None:
+            thread = self.client.beta.threads.create()
+            self.config.thread_id = thread.id
+            PromptConfig.objects.filter(id=self.config.id).update(thread_id=thread.id)
+
+        # Step 1: Send the initial user message
+        message = self.client.beta.threads.messages.create(
+            thread_id=self.config.thread_id,
+            role="user",
+            content=prompt
+        )
+        self.config.message_id = message.id
+        PromptConfig.objects.filter(id=self.config.id).update(message_id=message.id)
+
         try:
-            run = self.get_or_create_run(prompt)
 
-            if run.status != "completed":
-                yield json.dumps({"error": f"Assistant run failed with status: {run.status}"}) + "\n"
-                return
+            # Step 3: Stream the Assistant’s Response
+            with self.client.beta.threads.runs.stream(
+                    thread_id=self.config.thread_id,
+                    assistant_id=self.config.assistant_id,
+                    instructions="Once reasoning is complete, call `validate_schema`.",
+                    tools=[
+                        openai.pydantic_function_tool(ValidateSchema, name="validate_schema"),
+                    ],
+                    parallel_tool_calls=True
+            ) as stream:
+                for event in stream:
+                    if hasattr(event, 'event'):
+                        # 📝 Step 1: Stream English Reasoning
+                        if event.event == "thread.message.delta":
+                            message_text = extract_message_text(event)
+                            if message_text:
+                                yield {"type": "message", "content": message_text}
 
-            messages = self.client.beta.threads.messages.list(thread_id=self.config.thread_id)
+                        # 🛠 Step 2: Stream JSON Chunks
+                        elif event.event == "tool_calls.function.arguments.delta":
+                            function_args = getattr(event.data, "arguments", {})
+                            yield {"type": "partial_function_call", "arguments": function_args}
 
-            reasoning_chunks = []
-            schema_json = None
-
-            for message in messages.data:
-                if message.role == "assistant":
-                    for chunk in message.content[0].text.value.split("\n"):
-                        yield json.dumps({"reasoning": chunk}) + "\n"
-                        reasoning_chunks.append(chunk)
-
-                    if not schema_json:
-                        schema_json = self.extract_json("\n".join(reasoning_chunks))
-                        yield json.dumps({"schema": schema_json}) + "\n"
+                        # ✅ Step 3: Return the Fully Validated JSON Schema
+                        elif event.event == "tool_calls.function.arguments.done":
+                            final_args = getattr(event.data, "arguments", {})
+                            yield {"type": "final_function_call", "arguments": final_args, "done": True}
 
         except OpenAIError as e:
-            yield json.dumps({"error": f"OpenAI Assistant Error: {str(e)}"}) + "\n"
+            yield {"error": f"OpenAI Assistant Error: {str(e)}"}
 
     def generate_schema(self, prompt):
         if self.config is None:

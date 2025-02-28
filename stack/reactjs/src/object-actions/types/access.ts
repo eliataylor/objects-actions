@@ -16,6 +16,8 @@ export interface MySession {
 export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | '' | 'view' | 'subscribe' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject' | 'user' | 'rooms';
 //---OBJECT-ACTIONS-PERMS-VERBS-ENDS---//
 
+
+
 //---OBJECT-ACTIONS-PERMS-ROLES-STARTS---//
 
 export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'AllowAny';

@@ -4,7 +4,6 @@ from ..models import SchemaVersions
 from ..serializers import SchemaVersionSerializer
 from ..services.assistant_manager import OpenAIPromptManager
 
-
 class Prompt2SchemaService:
     """Orchestrates the schema generation process using multiple components"""
 
@@ -100,11 +99,12 @@ class Prompt2SchemaService:
         Stream the reasoning and schema generation process.
         """
         try:
-            response_generator = self.assistant_manager.get_schema_stream(prompt)
+            response_stream = self.assistant_manager.get_schema_stream(prompt)
             config = self.assistant_manager.get_assistant_config()
             schema_version = SchemaVersions.objects.create(
                 prompt=prompt,
                 privacy=privacy,
+                config=config,
                 assistant_id=config.assistant_id,
                 thread_id=config.thread_id,
                 message_id=config.message_id,
@@ -112,24 +112,32 @@ class Prompt2SchemaService:
                 author = user if user.is_authenticated else None
             )
 
-            reasoning_chunks = []
+            full_response = []
+            partial_schema = {}
 
-            for chunk in response_generator:
-                yield json.dumps({"reasoning": chunk}) + "\n"
-                reasoning_chunks.append(chunk)
+            for response in response_stream:
+                # 📝 Step 1: Stream English Reasoning
+                if response["type"] == "message":
+                    full_response.append(response["content"])
+                    yield json.dumps({"type": "message", "content": response["content"]}) + "\n"
 
-            # Parse JSON only after the stream is complete
-            full_reasoning = "\n".join(reasoning_chunks)
-            schema_json = self.assistant_manager.extract_json(full_reasoning)
+                # 🛠 Step 2: Stream JSON Chunks (Partial Schema)
+                elif response["type"] == "partial_function_call":
+                    partial_schema.update(response["arguments"])
+                    yield json.dumps({"type": "partial_function_call", "arguments": response["arguments"]}) + "\n"
 
-            if schema_json:
-                schema_version = SchemaVersions.objects.filter(pk=config.id).update(
-                    response=full_reasoning,
-                    schema=schema_json
-                )
-                yield json.dumps({"config_id": schema_version.id, "schema": schema_json}) + "\n"
-            else:
-                yield json.dumps({"config_id": schema_version.id, "response": full_reasoning}) + "\n"
+                # ✅ Step 3: Finalized Schema - Store & Return It
+                elif response["type"] == "final_function_call":
+                    schema_data = response["arguments"]
+                    schema_version.response = "".join(full_response)  # Store reasoning
+                    schema_version.schema = schema_data  # Store final schema
+                    schema_version.save()
+
+                    yield json.dumps({
+                        "type": "done",
+                        "config_id": schema_version.id,
+                        "schema": schema_data
+                    }) + "\n"
 
         except Exception as e:
             yield json.dumps({"error": f"Schema generation failed: {str(e)}"}) + "\n"

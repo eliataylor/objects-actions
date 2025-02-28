@@ -13,11 +13,6 @@ const MAX_RESPONSE_LENGTH = 120;
 
 const WorksheetCard: React.FC<WorksheetCardProps> = ({ worksheet }) => {
 
-  const truncatedResponse =
-    worksheet.response.length > MAX_RESPONSE_LENGTH
-      ? `${worksheet.response.substring(0, MAX_RESPONSE_LENGTH)}...`
-      : worksheet.response;
-
   return (
     <Card sx={{ marginLeft: worksheet.parent ? 3 : 0 }}>
       <CardHeader

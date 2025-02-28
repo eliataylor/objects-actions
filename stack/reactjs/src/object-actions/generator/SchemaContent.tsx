@@ -6,7 +6,6 @@ import SchemaTables from "./SchemaTables";
 import Grid from "@mui/material/Grid";
 import LightDarkImg from "../../components/LightDarkImg";
 
-
 const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
     Object.fromEntries((worksheet.schema?.content_types || []).map(ct => [ct.model_name, false]))
