@@ -8,6 +8,7 @@ import Grid from "@mui/material/Grid";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../allauth/auth";
 import StreamingOutput, { StreamChunk } from "./StreamingOutput";
+import JSONTreeView from "../components/JSONTreeView";
 
 const NewSchemaForm: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -18,16 +19,12 @@ const NewSchemaForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [streamedChunk, setStreamedChunk] = useState<StreamChunk | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [schema, setSchema] = useState<string | null>(null);
+  const [schema, setSchema] = useState<Record<string, any> | null>(null);
   const [loadingSchema, setLoadingSchema] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleSchema = (chunk: StreamChunk) => {
-    let str = chunk.content;
-    if (typeof str === "object") {
-      str = JSON.stringify(str);
-    }
-    setSchema(str);
+    setSchema(chunk.content as Record<string, any>);
     setLoadingSchema(false);
   };
 
@@ -178,13 +175,7 @@ const NewSchemaForm: React.FC = () => {
 
       {loadingSchema === true && <LinearProgress />}
 
-      {schema &&
-        <Typography
-          component="pre"
-          sx={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}
-        >
-          {schema}
-        </Typography>}
+      {schema && <JSONTreeView data={schema} />}
     </Box>
   );
 };
