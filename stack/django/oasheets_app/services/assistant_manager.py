@@ -372,7 +372,6 @@ class OpenAIPromptManager:
             with self.client.beta.threads.runs.stream(
                     thread_id=self.config.thread_id,
                     assistant_id=self.config.assistant_id,
-#                    instructions="Once reasoning is complete, call `validate_schema`.",
                     tools=[
                         openai.pydantic_function_tool(ValidateSchema, name="validate_schema"),
                     ],
@@ -405,12 +404,8 @@ class OpenAIPromptManager:
                                     if tool_call.function.name == "validate_schema":
                                         # Extract the schema to validate
                                         try:
-                                            schema_to_validate = json.loads(tool_call.function.arguments)
-                                            validator = SchemaValidator()
-                                            validation_result = validator.validate_schema(schema_to_validate)
-
                                             # Submit the tool output back to the run
-                                            response = self.client.beta.threads.runs.submit_tool_outputs(
+                                            self.client.beta.threads.runs.submit_tool_outputs(
                                                 thread_id=self.config.thread_id,
                                                 run_id=event.data.id,
                                                 tool_outputs=[
@@ -421,12 +416,19 @@ class OpenAIPromptManager:
                                                 ]
                                             )
 
+                                            # optional do another internal validation and correct it
+                                            schema_to_validate = json.loads(tool_call.function.arguments)
+                                            validator = SchemaValidator()
+                                            validation_result = validator.validate_schema(schema_to_validate)
+
                                             # Yield the validation result
                                             yield {
                                                 "type": "corrected_schema",
                                                 "event": "validate_schema",
+                                                "errors": validation_result["errors"],
                                                 "content": validation_result['corrected_schema']
                                             }
+
                                         except Exception as e:
                                             yield {
                                                 "type": "error",

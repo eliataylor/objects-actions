@@ -66,7 +66,7 @@ class SchemaValidator:
                 if field.get("field_type") not in self.valid_field_types:
                     errors.append(
                         f"Invalid Field Type '{field.get('field_type')}' in field '{field.get('label')}'.")
-                    field["field_type"] = "text"  # Defaulting to "text" if invalid
+                    field["field_type"] = field.get('field_type')
 
                 validated_fields.append(field)
 

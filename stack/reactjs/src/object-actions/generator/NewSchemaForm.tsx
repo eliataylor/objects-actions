@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Box, Button, CircularProgress, LinearProgress, List, ListItem, ListItemText, MenuItem, Paper, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Divider, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
@@ -18,7 +18,22 @@ const NewSchemaForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [streamedChunk, setStreamedChunk] = useState<StreamChunk | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [schema, setSchema] = useState<string | null>(null);
+  const [loadingSchema, setLoadingSchema] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  const handleSchema = (chunk: StreamChunk) => {
+    let str = chunk.content;
+    if (typeof str === "object") {
+      str = JSON.stringify(str);
+    }
+    setSchema(str);
+    setLoadingSchema(false);
+  };
+
+  const handleNewVersion = (chunk: StreamChunk) => {
+    setLoadingSchema(true);
+  };
 
   const handleGenerate = async () => {
     if (!promptInput.trim()) {
@@ -157,7 +172,19 @@ const NewSchemaForm: React.FC = () => {
         </Box>
       }
 
-      {streamedChunk && <StreamingOutput chunk={streamedChunk} />}
+      {streamedChunk && <StreamingOutput chunk={streamedChunk} onSchema={handleSchema} onVersionComplete={handleNewVersion} />}
+
+      <Divider />
+
+      {loadingSchema === true && <LinearProgress />}
+
+      {schema &&
+        <Typography
+          component="pre"
+          sx={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}
+        >
+          {schema}
+        </Typography>}
     </Box>
   );
 };

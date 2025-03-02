@@ -118,13 +118,19 @@ class Prompt2SchemaService:
                 elif response['type'] == 'corrected_schema':
                     schema_version.schema = response['content']
                     schema_version.save()
+                    yield json.dumps(response) + "\n"
+                elif response['type'] == 'tool_result':
+                    schema_version.schema = response['content']
+                    schema_version.save()
+                    yield json.dumps(response) + "\n"
                 elif response["type"] == "done":
                     schema_version.response = response['content']
                     schema_version.save()
 
                     yield json.dumps({
                         "type": "done",
-                        "config_id": schema_version.id,
+                        "schema_version": schema_version.id,
+                        "config_id": config.id,
                     }) + "\n"
                 else:
                     print(f"Unknown response type: {json.dumps(response)}")

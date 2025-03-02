@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { Box, LinearProgress, Typography } from "@mui/material";
+import { LinearProgress } from "@mui/material";
 import Paper from "@mui/material/Paper";
+import ReactMarkdown from "react-markdown";
 
 export type StreamChunk = {
-  type: "message" | "partial_function_call" | "done";
-  content?: string;
-  arguments?: Record<string, any>;
-  schema?: Record<string, any>;
+  type: "message" | "tool_result" | "corrected_schema" | "done";
+  content: string;
+  event: string;
+  config_id?: string;
+  schema_version?: string;
   error?: string;
 };
 
 interface StreamingOutputProps {
   chunk: StreamChunk | null;
+  onSchema: (chunk:StreamChunk) => void;
+  onVersionComplete: (chunk:StreamChunk) => void;
 }
 
-const StreamingOutput: React.FC<StreamingOutputProps> = ({ chunk }) => {
+const StreamingOutput: React.FC<StreamingOutputProps> = ({ chunk, onSchema, onVersionComplete }) => {
   const [reasoning, setReasoning] = useState<string[]>([]);
-  const [schema, setSchema] = useState<Record<string, any>>({});
-  const [finalSchema, setFinalSchema] = useState<Record<string, any> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,10 +29,10 @@ const StreamingOutput: React.FC<StreamingOutputProps> = ({ chunk }) => {
       setError(chunk.error);
     } else if (chunk.type === "message" && chunk.content) {
       setReasoning(reasoning.concat(chunk.content));
-    } else if (chunk.type === "partial_function_call" && chunk.arguments) {
-      setSchema((prev) => ({ ...prev, ...chunk.arguments })); // Merge incremental updates
-    } else if (chunk.type === "done" && chunk.schema) {
-      setFinalSchema(chunk.schema);
+    } else if (chunk.type === "corrected_schema" || chunk.type === "tool_result") {
+      onSchema(chunk)
+    } else if (chunk.schema_version) {
+      onVersionComplete(chunk)
     }
   }, [chunk]); // Reacts to each new chunk update
 
@@ -38,15 +40,13 @@ const StreamingOutput: React.FC<StreamingOutputProps> = ({ chunk }) => {
     <React.Fragment>
       {error && <p className="error">{error}</p>}
 
-      <Paper elevation={1} sx={{ p:1 }}>
+      <Paper elevation={1} sx={{ p: 1 }}>
         {reasoning.length > 0 ? (
-          <Box>
-            {reasoning.map((message, index) => (
-              <React.Fragment key={index}>{message}</React.Fragment>
-            ))}
-          </Box>
-        ) :
-        <LinearProgress />}
+            <ReactMarkdown>
+              {reasoning.join("")}
+            </ReactMarkdown>
+          ) :
+          <LinearProgress />}
       </Paper>
 
     </React.Fragment>
