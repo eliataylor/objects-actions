@@ -372,7 +372,7 @@ class OpenAIPromptManager:
             with self.client.beta.threads.runs.stream(
                     thread_id=self.config.thread_id,
                     assistant_id=self.config.assistant_id,
-                    instructions="Once reasoning is complete, call `validate_schema`.",
+#                    instructions="Once reasoning is complete, call `validate_schema`.",
                     tools=[
                         openai.pydantic_function_tool(ValidateSchema, name="validate_schema"),
                     ],
@@ -396,6 +396,44 @@ class OpenAIPromptManager:
                             message_text = extract_message_text(event)
                             yield {"type": "error", "event":event.event, "content": message_text}
 
+                        elif event.event == "thread.run.requires_action":
+                            if hasattr(event.data, "required_action") and event.data.required_action.type == "submit_tool_outputs":
+                                tool_calls = event.data.required_action.submit_tool_outputs.tool_calls
+
+                                # Process each tool call (in this case, validate_schema)
+                                for tool_call in tool_calls:
+                                    if tool_call.function.name == "validate_schema":
+                                        # Extract the schema to validate
+                                        try:
+                                            schema_to_validate = json.loads(tool_call.function.arguments)
+                                            validator = SchemaValidator()
+                                            validation_result = validator.validate_schema(schema_to_validate)
+
+                                            # Submit the tool output back to the run
+                                            response = self.client.beta.threads.runs.submit_tool_outputs(
+                                                thread_id=self.config.thread_id,
+                                                run_id=event.data.id,
+                                                tool_outputs=[
+                                                    {
+                                                        "tool_call_id": tool_call.id,
+                                                        "output": tool_call.function.arguments
+                                                    }
+                                                ]
+                                            )
+
+                                            # Yield the validation result
+                                            yield {
+                                                "type": "corrected_schema",
+                                                "event": "validate_schema",
+                                                "content": validation_result['corrected_schema']
+                                            }
+                                        except Exception as e:
+                                            yield {
+                                                "type": "error",
+                                                "event": "validate_schema_error",
+                                                "content": f"Error validating schema: {str(e)}"
+                                            }
+
                         elif event.event == "tool_calls.function.arguments.delta":
                             function_args = getattr(event.data, "arguments", {})
                             yield {"type": "partial_function_call", "event":event.event, "content": function_args}
@@ -405,9 +443,8 @@ class OpenAIPromptManager:
                             yield {"type": "final_function_call", "event":event.event, "content": final_args}
 
                         else:
+                            print(event.event)
                             print(event)
-                            message_text = extract_message_text(event)
-                            print(message_text)
 
         except OpenAIError as e:
             yield {"error": f"OpenAI Assistant Error: {str(e)}", "type": "error"}
