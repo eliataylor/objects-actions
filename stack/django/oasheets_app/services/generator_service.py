@@ -112,32 +112,21 @@ class Prompt2SchemaService:
                 author = user if user.is_authenticated else None
             )
 
-            full_response = []
-            partial_schema = {}
-
             for response in response_stream:
-                # 📝 Step 1: Stream English Reasoning
-                if response["type"] == "message":
-                    full_response.append(response["content"])
-                    yield json.dumps({"type": "message", "content": response["content"]}) + "\n"
-
-                # 🛠 Step 2: Stream JSON Chunks (Partial Schema)
-                elif response["type"] == "partial_function_call":
-                    partial_schema.update(response["arguments"])
-                    yield json.dumps({"type": "partial_function_call", "arguments": response["arguments"]}) + "\n"
-
-                # ✅ Step 3: Finalized Schema - Store & Return It
-                elif response["type"] == "final_function_call":
-                    schema_data = response["arguments"]
-                    schema_version.response = "".join(full_response)  # Store reasoning
-                    schema_version.schema = schema_data  # Store final schema
+                if response['type'] == 'message':
+                    yield json.dumps(response)
+                elif response["type"] == "done":
+                    schema_version.response = response['content']
+                    # schema_version.schema =
                     schema_version.save()
 
                     yield json.dumps({
                         "type": "done",
                         "config_id": schema_version.id,
-                        "schema": schema_data
-                    }) + "\n"
+                    })
+                else:
+                    print(f"Unknown response type: {json.dumps(response)}")
+
 
         except Exception as e:
             yield json.dumps({"error": f"Schema generation failed: {str(e)}"}) + "\n"

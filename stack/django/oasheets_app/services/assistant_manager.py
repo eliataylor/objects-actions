@@ -1,7 +1,6 @@
 import json
 import os
 import time
-
 import openai
 from django.conf import settings
 from openai import OpenAIError
@@ -9,10 +8,28 @@ from openai import OpenAIError
 from .schema_validator import SchemaValidator
 from ..models import PromptConfig
 from pydantic import BaseModel
+from .stream_handler import StreamHandler
 
 # Define the Pydantic model for schema validation
+from pydantic import BaseModel
+from typing import List, Dict, Any
+
+class FieldSchema(BaseModel):
+    label: str
+    field_type: str
+    cardinality: int
+    required: bool
+    relationship: str = None
+    default: str = None
+    example: str = None
+
+class ContentTypeSchema(BaseModel):
+    name: str
+    model_name: str
+    fields: List[FieldSchema]
+
 class ValidateSchema(BaseModel):
-    schema: dict
+    content_types: List[ContentTypeSchema]
 
 def extract_message_text(event):
     """
@@ -141,20 +158,16 @@ class OpenAIPromptManager:
         try:
 
             tools = build_tools()
+            assistantProps = {
+                "name": f"Data Schema Designer {self.variant}",
+                "description": "Agent for generating data schemas for app ideas",
+                "model": "gpt-4o-mini",
+                "tools": tools,
+            }
 
-            instructions = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea.
-            
-                            When generating responses:
-                            1. Analyze and interpret the prompt as if building a secure, enterprise level application.
-                            2. Include at least 4-12 content types for any non-trivial application.
-                            3. Include appropriate fields for each content type based on the list of field types in the response_format.
-                            4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference.
-                            5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed.
-                            6. It is not necessary to list created / modified date times or auto incrementing ID.
-                            7. Respond with the validated "content_types" json_schema described by the response_format."""
             if self.variant == 'stream':
-                instructions = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea and provide reasoning for your choices.
-                                
+                assistantProps["instructions"] = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea and provide reasoning for your choices.
+
                                 When responding to a prompt, you will:
                                 1. Analyzing the prompt as if building a secure, enterprise level online application.
                                    - List sufficient potential content types for any non-trivial application
@@ -163,48 +176,51 @@ class OpenAIPromptManager:
                                    - Do NOT attempt to generate JSON in the message responses.
                                    - Only use the function call response for structured JSON.
                                    - Ensure the JSON output is complete before returning."""
-
-            # Create the assistant
-            assistant = self.client.beta.assistants.create(
-                name=f"Data Schema Designer {self.variant}",
-                description="Agent for generating data schemas for app ideas",
-                model="gpt-4o-mini",
-                tools=tools,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "content_types",
-                        #                        "strict": True,
-                        "schema": {
-                            "type": "object",
-                            "description": "The generated schema to be validated.",
-                            #                            "additionalProperties": False,
-                            "properties": {
-                                #                                "additionalProperties": False,
-                                **tools[0]['function']['parameters']['properties'],
-                            },
-                            "required": [
-                                "content_types"
-                            ]
+            else:
+                assistantProps["instructions"] = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea.
+                
+                                When generating responses:
+                                1. Analyze and interpret the prompt as if building a secure, enterprise level application.
+                                2. Include at least 4-12 content types for any non-trivial application.
+                                3. Include appropriate fields for each content type based on the list of field types in the response_format.
+                                4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference.
+                                5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed.
+                                6. It is not necessary to list created / modified date times or auto incrementing ID.
+                                7. Respond with the validated "content_types" json_schema described by the response_format."""
+                assistantProps["response_format"] = {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": "content_types",
+                            #                        "strict": True,
+                            "schema": {
+                                "type": "object",
+                                "description": "The generated schema to be validated.",
+                                #                            "additionalProperties": False,
+                                "properties": {
+                                    #                                "additionalProperties": False,
+                                    **tools[0]['function']['parameters']['properties'],
+                                },
+                                "required": [
+                                    "content_types"
+                                ]
+                            }
                         }
                     }
-                },
-                instructions=instructions.strip()
-            )
+
+
+            # Create the assistant
+            assistant = self.client.beta.assistants.create(**assistantProps)
 
             # WARN: huge potential conflicts with anonymous users sharing configs
-            config, created = PromptConfig.objects.create(
-                defaults={
-                    'author': self.user if self.user.is_authenticated else None,  # Ensure valid Users instance or None
-                    'assistant_id': assistant.id,
-                    'openai_model': assistant.model,
-                    'variant': self.variant,
-                    'thread_id': None,
-                    'message_id': None,
-                    'run_id': None,
-                    'active': True
-                }
-            )
+            config = PromptConfig.objects.create(
+                    author=self.user if self.user.is_authenticated else None,  # Ensure valid Users instance or None
+                    assistant_id=assistant.id,
+                    openai_model=assistant.model,
+                    variant=self.variant,
+                    thread_id=None,
+                    message_id=None,
+                    run_id=None,
+                    active=True)
             return config
 
         except OpenAIError as e:
@@ -353,8 +369,6 @@ class OpenAIPromptManager:
         PromptConfig.objects.filter(id=self.config.id).update(message_id=message.id)
 
         try:
-
-            # Step 3: Stream the Assistant’s Response
             with self.client.beta.threads.runs.stream(
                     thread_id=self.config.thread_id,
                     assistant_id=self.config.assistant_id,
@@ -366,24 +380,37 @@ class OpenAIPromptManager:
             ) as stream:
                 for event in stream:
                     if hasattr(event, 'event'):
-                        # 📝 Step 1: Stream English Reasoning
                         if event.event == "thread.message.delta":
                             message_text = extract_message_text(event)
-                            if message_text:
-                                yield {"type": "message", "content": message_text}
+                            yield {"type": "message", "event":event.event, "content": message_text}
 
-                        # 🛠 Step 2: Stream JSON Chunks
+                        elif event.event == "thread.message.completed":
+                            message_text = event.data.content[0].text.value
+                            yield {"type": "done", "event":event.event, "content": message_text}
+
+                        elif event.event == "done":
+                            message_text = extract_message_text(event)
+                            yield {"type": "done", "event":event.event, "content": message_text}
+
+                        elif event.event == "error":
+                            message_text = extract_message_text(event)
+                            yield {"type": "error", "event":event.event, "content": message_text}
+
                         elif event.event == "tool_calls.function.arguments.delta":
                             function_args = getattr(event.data, "arguments", {})
-                            yield {"type": "partial_function_call", "arguments": function_args}
+                            yield {"type": "partial_function_call", "event":event.event, "content": function_args}
 
-                        # ✅ Step 3: Return the Fully Validated JSON Schema
                         elif event.event == "tool_calls.function.arguments.done":
                             final_args = getattr(event.data, "arguments", {})
-                            yield {"type": "final_function_call", "arguments": final_args, "done": True}
+                            yield {"type": "final_function_call", "event":event.event, "content": final_args}
+
+                        else:
+                            print(event)
+                            message_text = extract_message_text(event)
+                            print(message_text)
 
         except OpenAIError as e:
-            yield {"error": f"OpenAI Assistant Error: {str(e)}"}
+            yield {"error": f"OpenAI Assistant Error: {str(e)}", "type": "error"}
 
     def generate_schema(self, prompt):
         if self.config is None:
