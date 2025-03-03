@@ -8,8 +8,8 @@ import LightDarkImg from "../../components/LightDarkImg";
 import ReactMarkdown from "react-markdown";
 
 const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) => {
-  const [reasoningExpanded, setReasoningExpanded] = useState<boolean>(false);
-  const [forceExpanded, setForceExpanded] = useState<boolean>(false);
+  const [reasoningExpanded, setReasoningExpanded] = useState<boolean>(true);
+  const [forceExpanded, setForceExpanded] = useState<boolean>(true);
 
   const toggleAll = (expand: boolean) => {
     setForceExpanded(!forceExpanded);

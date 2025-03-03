@@ -24,14 +24,20 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
   const [reasoning, setReasoning] = useState<string>("");
 
   const onDone = () => {
-    if (!schema) {
-      if (versionId > 0) {
-        navigate(`/oa/schemas/${versionId}`);
-      } else {
-        console.warn(`Missing version: ${versionId}`);
-        setError("Something went wrong. Try again.");
+    setVersionId((latestVersionId) => {
+      if (!schema) {
+        if (latestVersionId > 0) {
+          setReasoning("")
+          setSchema(null)
+          navigate(`/oa/schemas/${latestVersionId}`);
+        } else {
+          console.warn(`Missing version: ${latestVersionId}`);
+          setError("Something went wrong. Try again.");
+        }
       }
-    }
+      return latestVersionId;
+    });
+
     setLoading(false);
     setLoadingSchema(false);
   };

@@ -23,15 +23,20 @@ const NewSchemaForm: React.FC = () => {
   const [reasoning, setReasoning] = useState<string>("");
 
   const onDone = () => {
-    console.log("Stream finished.");
-    if (!schema) {
-      if (versionId > 0) {
-        navigate(`/oa/schemas/${versionId}`);
-      } else {
-        console.warn(`Missing version: ${versionId}`)
-        setError("Something went wrong. Try again.");
+    setVersionId((latestVersionId) => {
+      if (!schema) {
+        if (latestVersionId > 0) {
+          setReasoning("")
+          setSchema(null)
+          navigate(`/oa/schemas/${latestVersionId}`);
+        } else {
+          console.warn(`Missing version: ${latestVersionId}`);
+          setError("Something went wrong. Try again.");
+        }
       }
-    }
+      return latestVersionId;
+    });
+
     setLoading(false);
     setLoadingSchema(false);
   };
