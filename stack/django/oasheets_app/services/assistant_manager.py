@@ -426,7 +426,7 @@ class OpenAIPromptManager:
                                                 "type": "corrected_schema",
                                                 "event": "validate_schema",
                                                 "errors": validation_result["errors"],
-                                                "content": validation_result['corrected_schema']
+                                                "schema": validation_result['corrected_schema']
                                             }
 
                                         except Exception as e:
@@ -444,9 +444,9 @@ class OpenAIPromptManager:
                             final_args = getattr(event.data, "arguments", {})
                             yield {"type": "final_function_call", "event":event.event, "content": final_args}
 
-                        else:
-                            print(event.event)
-                            print(event)
+#                        else:
+#                            print(event.event)
+#                            print(event)
 
         except OpenAIError as e:
             yield {"error": f"OpenAI Assistant Error: {str(e)}", "type": "error"}

@@ -116,7 +116,7 @@ class Prompt2SchemaService:
                 if response['type'] == 'message':
                     yield json.dumps(response) + "\n"
                 elif response['type'] == 'corrected_schema':
-                    schema_version.schema = response['content']
+                    schema_version.schema = response['schema']
                     schema_version.save()
                     yield json.dumps(response) + "\n"
                 elif response['type'] == 'tool_result':
@@ -129,7 +129,7 @@ class Prompt2SchemaService:
 
                     yield json.dumps({
                         "type": "done",
-                        "schema_version": schema_version.id,
+                        "version_id": schema_version.id,
                         "config_id": config.id,
                     }) + "\n"
                 else:

@@ -2,20 +2,22 @@ import React, { useEffect, useState } from "react";
 import { LinearProgress } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import ReactMarkdown from "react-markdown";
+import { AiSchemaResponse } from "./generator-types";
 
 export type StreamChunk = {
   type: "message" | "tool_result" | "corrected_schema" | "done";
   content: string | Record<string, any>;
+  schema: AiSchemaResponse
   event: string;
-  config_id?: string;
-  schema_version?: string;
+  config_id?: number;
+  version_id?: number;
   error?: string;
 };
 
 interface StreamingOutputProps {
   chunk: StreamChunk | null;
-  onSchema: (chunk:StreamChunk) => void;
-  onVersionComplete: (chunk:StreamChunk) => void;
+  onSchema: (chunk: StreamChunk) => void;
+  onVersionComplete: (chunk: StreamChunk) => void;
 }
 
 const StreamingOutput: React.FC<StreamingOutputProps> = ({ chunk, onSchema, onVersionComplete }) => {
@@ -30,9 +32,9 @@ const StreamingOutput: React.FC<StreamingOutputProps> = ({ chunk, onSchema, onVe
     } else if (chunk.type === "message" && chunk.content) {
       setReasoning(reasoning.concat(chunk.content as string));
     } else if (chunk.type === "corrected_schema" || chunk.type === "tool_result") {
-      onSchema(chunk)
-    } else if (chunk.schema_version) {
-      onVersionComplete(chunk)
+      onSchema(chunk);
+    } else if (chunk.version_id) {
+      onVersionComplete(chunk);
     }
   }, [chunk]); // Reacts to each new chunk update
 

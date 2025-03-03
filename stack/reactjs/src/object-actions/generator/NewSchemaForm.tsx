@@ -1,35 +1,36 @@
 import React, { useState } from "react";
-import { Alert, Box, Button, CircularProgress, Divider, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
-import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { WorksheetApiResponse } from "./generator-types";
+import ApiClient from "../../config/ApiClient";
+import { AiSchemaResponse } from "./generator-types";
 import Grid from "@mui/material/Grid";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../allauth/auth";
-import StreamingOutput, { StreamChunk } from "./StreamingOutput";
-import JSONTreeView from "../components/JSONTreeView";
+import { StreamChunk } from "./StreamingOutput";
+import ReactMarkdown from "react-markdown";
+import SchemaTables from "./SchemaTables";
 
 const NewSchemaForm: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const me = useAuth()?.data?.user;
   const [promptInput, setPromptInput] = useState<string>("");
   const [privacy, setPrivacy] = useState<string>("public");
-  const [useStream, setUseStream] = useState<boolean>(window.location.search.indexOf("stream") > -1);
   const [loading, setLoading] = useState<boolean>(false);
-  const [streamedChunk, setStreamedChunk] = useState<StreamChunk | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [schema, setSchema] = useState<Record<string, any> | null>(null);
+  const [versionId, setVersionId] = useState<number>(0);
+  const [schema, setSchema] = useState<AiSchemaResponse | null>(null);
   const [loadingSchema, setLoadingSchema] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const [reasoning, setReasoning] = useState<string>("");
 
   const handleSchema = (chunk: StreamChunk) => {
-    setSchema(chunk.content as Record<string, any>);
+    setSchema(chunk.schema);
     setLoadingSchema(false);
   };
 
   const handleNewVersion = (chunk: StreamChunk) => {
     setLoadingSchema(true);
+    setVersionId(chunk.version_id as number);
   };
 
   const handleGenerate = async () => {
@@ -48,36 +49,31 @@ const NewSchemaForm: React.FC = () => {
 
     const toPass = {
       prompt: promptInput,
-      stream: useStream,
+      stream: true,
       privacy: privacy
     };
 
     try {
-      if (useStream === true) {
-        ApiClient.stream<StreamChunk>("/api/worksheets/generate?stream=true", toPass,
-          (chunk) => {
-            setStreamedChunk(chunk); // Directly pass new chunk
-          },
-          (error) => {
-            console.error(error);
+      ApiClient.stream<StreamChunk>("/api/worksheets/generate?stream=true", toPass,
+        (chunk) => {
+          if (chunk.error) {
+            setError(chunk.error);
+          } else if (chunk.type === "message" && chunk.content) {
+            setReasoning(((prev) => prev + chunk.content as string));
+            setLoading(false);
+          } else if (chunk.type === "corrected_schema" || chunk.type === "tool_result") {
+            handleSchema(chunk);
+          } else if (chunk.version_id) {
+            handleNewVersion(chunk);
           }
-        );
-      } else {
-        const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post("api/worksheets/generate", toPass);
-        if (response.success && response.data) {
-          if (response.data.success) {
-            enqueueSnackbar("Fields generated successfully", { variant: "success" });
-            return navigate(`/oa/schemas/${response.data.data.id}`);
-          }
+        },
+        (error) => {
+          console.error(error);
         }
-        setError(response.error || "Failed to generate fields");
-        enqueueSnackbar("Error generating fields", { variant: "error" });
-      }
+      );
     } catch (err) {
       setError("An unexpected error occurred");
       enqueueSnackbar("Error connecting to the server", { variant: "error" });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -157,7 +153,7 @@ const NewSchemaForm: React.FC = () => {
 
       </Paper>
 
-      {loading &&
+      {loading === true &&
         <Box>
           <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
             <FormatQuote fontSize={"small"} />
@@ -169,13 +165,22 @@ const NewSchemaForm: React.FC = () => {
         </Box>
       }
 
-      {streamedChunk && <StreamingOutput chunk={streamedChunk} onSchema={handleSchema} onVersionComplete={handleNewVersion} />}
-
-      <Divider />
+      {reasoning && <ReactMarkdown>
+        {reasoning}
+      </ReactMarkdown>}
 
       {loadingSchema === true && <LinearProgress />}
 
-      {schema && <JSONTreeView data={schema} />}
+      {schema?.content_types?.map((w) =>
+        <SchemaTables forceExpand={true}
+                      key={`schematable-${w.model_name}`}
+                      {...w} />)}
+
+      {schema && loadingSchema === false && <Button variant={"contained"}
+                                                    component={Link}
+                                                    fullWidth={true}
+                                                    to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
+
     </Box>
   );
 };

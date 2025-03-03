@@ -19,6 +19,7 @@ export interface SchemaContentType {
   model_name: string;
   name: string;
   fields: AIFieldDefinition[];
+  forceExpand?: boolean;
 }
 
 export interface WorksheetApiResponse {

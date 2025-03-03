@@ -35,7 +35,7 @@ class SchemaVersionsViewSet(PaginatedViewSet):
         return queryset.order_by('created_at')
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset().filter(parent_id=None)).exclude(privacy=SchemaVersions.PrivacyChoices.unlisted)
+        queryset = self.get_queryset().filter(parent_id=None).exclude(privacy=SchemaVersions.PrivacyChoices.unlisted).order_by('-created_at')
         data = self.apply_pagination(queryset)
         return JsonResponse(data)
 
