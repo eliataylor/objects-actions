@@ -8,12 +8,23 @@ import LightDarkImg from "../../components/LightDarkImg";
 import ReactMarkdown from "react-markdown";
 
 const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) => {
-  const [reasoningExpanded, setReasoningExpanded] = useState<boolean>(false)
-  const [forceExpanded, setForceExpanded] = useState<boolean>(false)
+  const [reasoningExpanded, setReasoningExpanded] = useState<boolean>(false);
+  const [forceExpanded, setForceExpanded] = useState<boolean>(false);
 
   const toggleAll = (expand: boolean) => {
     setForceExpanded(!forceExpanded);
   };
+
+  const handleDownload = () => {
+    const url = `${process.env.REACT_APP_API_HOST}/api/worksheets/${worksheet.id}/download`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `worksheet_${worksheet.id}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   return (
     <Grid>
@@ -30,11 +41,13 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
             variant={"contained"}
             color={"primary"}
             endIcon={<FileDownload fontSize={"small"} />}
-            onClick={() => window.alert("Feature coming soon!")}
+            onClick={handleDownload}
             size="small"
           >
             Export to CSV
           </Button>
+
+
         </Grid>
       </Grid>
       <Accordion variant={"elevation"} expanded={reasoningExpanded}

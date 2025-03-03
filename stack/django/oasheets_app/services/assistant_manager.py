@@ -7,12 +7,10 @@ from openai import OpenAIError
 
 from .schema_validator import SchemaValidator
 from ..models import PromptConfig
-from pydantic import BaseModel
-from .stream_handler import StreamHandler
 
 # Define the Pydantic model for schema validation
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List
 
 class FieldSchema(BaseModel):
     label: str
@@ -72,8 +70,14 @@ def build_tools():
                                  "items": {
                                      "type": "object",
                                      "properties": {
-                                         "name": {"type": "string"},
-                                         "model_name": {"type": "string"},
+                                         "name": {
+                                            "type": "string",
+                                            "description": "The human readable label of table"
+                                          },
+                                         "model_name": {
+                                             "type": "string",
+                                             "description": "The machine name of the table"
+                                         },
                                          "fields": {
                                              "type": "array",
                                              "items": {
@@ -173,9 +177,8 @@ class OpenAIPromptManager:
                                    - List sufficient potential content types for any non-trivial application
                                    - Describe the logic behind relationships among your fields.
                                 2. Once you have provided sufficient reasoning via messages, use the `validate_schema` function to generate the final structured schema.
-                                   - Do NOT attempt to generate JSON in the message responses.
-                                   - Only use the function call response for structured JSON.
-                                   - Ensure the JSON output is complete before returning."""
+                                   - Do NOT waste tokens including the full JSON in your reasoning.
+                                   - Use the tool function `validate_schema` to return the structured JSON as your last step."""
             else:
                 assistantProps["instructions"] = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea.
                 
@@ -385,11 +388,18 @@ class OpenAIPromptManager:
 
                         elif event.event == "thread.message.completed":
                             message_text = event.data.content[0].text.value
-                            yield {"type": "done", "event":event.event, "content": message_text}
-
-                        elif event.event == "done":
-                            message_text = extract_message_text(event)
-                            yield {"type": "done", "event":event.event, "content": message_text}
+                            schema_json = self.extract_json(message_text)
+                            if schema_json:
+                                message_text = self.remove_json(message_text) # strip it from response now that we have it parsed out
+                                validator = SchemaValidator()
+                                validation_result = validator.validate_schema(schema_json)
+                                yield {
+                                    "type": "corrected_schema",
+                                    "event": "validate_schema",
+                                    "errors": validation_result["errors"],
+                                    "schema": validation_result['corrected_schema']
+                                }
+                            yield {"type": "done", "event":event.event, "content": message_text, "run_id": event.data.run_id, "thread_id": event.data.thread_id}
 
                         elif event.event == "error":
                             message_text = extract_message_text(event)
@@ -494,7 +504,6 @@ class OpenAIPromptManager:
         try:
             # Find JSON starting points: ```json, {, or [
             json_start_markers = [
-                text.find("```json"),
                 text.find("{"),
                 text.find("[")
             ]
@@ -505,14 +514,9 @@ class OpenAIPromptManager:
                 print("No JSON object found in the string.")
                 return None
 
-            # If it's a markdown-style block, adjust start position
-            if text.startswith("```json", start):
-                start += 7  # Skip ```json marker
-                end = text.find("```", start)
-            else:
-                # Determine correct closing character
-                end_char = ']' if text[start] == '[' else '}'
-                end = text.rfind(end_char)
+            # Determine correct closing character
+            end_char = ']' if text[start] == '[' else '}'
+            end = text.rfind(end_char)
 
             # Validate the end position
             if end != -1:
@@ -528,3 +532,29 @@ class OpenAIPromptManager:
         except json.JSONDecodeError as e:
             print("Error decoding JSON:", e)
             return None
+
+    def remove_json(self, text):
+        """remove JSON object from a text response."""
+        # Find JSON starting points: ```{, or [
+        json_start_markers = [
+            text.find("{"),
+            text.find("[")
+        ]
+
+        # Get the first valid occurrence
+        start = min(filter(lambda x: x != -1, json_start_markers), default=-1)
+        if start == -1:
+            print("No JSON object found in the string.")
+            return None
+
+        # Determine correct closing character
+        end_char = ']' if text[start] == '[' else '}'
+        end = text.rfind(end_char)
+
+        # Validate the end position
+        if end != -1:
+            end += 1  # Include closing bracket/brace
+            json_str = text[start:end].strip()
+            text = text.replace(json_str, "")
+
+        return text

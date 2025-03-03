@@ -181,7 +181,7 @@ class ModelBuilder:
                 return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
             else:
                 return f"models.ManyToManyField({model_name}, related_name='{field_name}_to_{model_machine}')"
-        elif field_type == "text":
+        elif field_type == "text" or field_type == "string":
             return "models.CharField(max_length=255)"  # Adjust max_length as needed
         elif field_type == "textarea":
             return "models.TextField()"
@@ -200,7 +200,7 @@ class ModelBuilder:
         elif field_type == "date":
             # TODO: auto_now=True ?
             return "models.DateField()"
-        elif field_type == "date_time":
+        elif field_type == "date_time" or field_type == "timestamp":
             # TODO: auto_now=True ?
             return "models.DateTimeField()"
         elif field_type == "date_time_range":

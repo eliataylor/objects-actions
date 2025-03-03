@@ -33,7 +33,7 @@ const NewSchemaForm: React.FC = () => {
     setVersionId(chunk.version_id as number);
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (!promptInput.trim()) {
       setError("Please enter at least one object name");
       return;
@@ -153,7 +153,7 @@ const NewSchemaForm: React.FC = () => {
 
       </Paper>
 
-      {loading === true &&
+      {loading &&
         <Box>
           <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
             <FormatQuote fontSize={"small"} />
@@ -169,17 +169,17 @@ const NewSchemaForm: React.FC = () => {
         {reasoning}
       </ReactMarkdown>}
 
-      {loadingSchema === true && <LinearProgress />}
+      {loadingSchema && <LinearProgress />}
 
       {schema?.content_types?.map((w) =>
         <SchemaTables forceExpand={true}
                       key={`schematable-${w.model_name}`}
                       {...w} />)}
 
-      {schema && loadingSchema === false && <Button variant={"contained"}
-                                                    component={Link}
-                                                    fullWidth={true}
-                                                    to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
+      {schema && !loadingSchema && <Button variant={"contained"}
+                                           component={Link}
+                                           fullWidth={true}
+                                           to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
 
     </Box>
   );

@@ -69,7 +69,9 @@ const WorksheetList = () => {
             alignContent="center"
             alignItems="center"
           >
-            <Grid item>Schemas</Grid>
+            <Grid item>
+              Schemas
+            </Grid>
             <TablePaginator
               totalItems={listData.count}
               onPageChange={handlePagination}

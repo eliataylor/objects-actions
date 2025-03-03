@@ -16,7 +16,6 @@ class Prompt2SchemaService:
     def set_config(self, config):
         self.assistant_manager.set_config(config)
 
-
     def generate_schema(self, prompt, privacy, user):
         """Generate a comprehensive schema using multiple approaches"""
         try:
@@ -95,9 +94,6 @@ class Prompt2SchemaService:
     Orchestrates schema generation, now with a streaming implementation.
     """
     def generate_via_stream(self, prompt, privacy, user):
-        """
-        Stream the reasoning and schema generation process.
-        """
         try:
             response_stream = self.assistant_manager.get_schema_stream(prompt)
             config = self.assistant_manager.get_assistant_config()
@@ -140,47 +136,55 @@ class Prompt2SchemaService:
             yield json.dumps({"error": f"Schema generation failed: {str(e)}"}) + "\n"
 
     def enhance_via_stream(self, prompt, privacy, user, schema_version):
-        """
-        Enhance an existing schema based on a new prompt.
-
-        Args:
-            privacy (str): Privacy.choices
-            prompt (str): The new requirements or modifications
-            user (User): The user requesting the enhancement
-            schema_version (SchemaVersions): original schema to enhance
-
-        Returns:
-            dict: Enhanced schema data or None if failed
-        """
         try:
 
             # Create an enhanced prompt that includes the original schema
             enhanced_prompt = (
                 f"{prompt}\n\n"
-                f"Apply changes to this Schema: ```json{json.dumps(schema_version.schema, indent=2)}```"
+                f"Apply changes to this Schema: ```{json.dumps(schema_version.schema, indent=2)}```"
             )
 
-            # Use the assistant manager to generate an enhanced schema
-            response, new_schema_json = self.assistant_manager.get_schema_stream(enhanced_prompt)
+            response_stream = self.assistant_manager.get_schema_stream(prompt)
             config = self.assistant_manager.get_assistant_config()
-
-            # Create a new schema definition record with versioning
-            schema_definition = SchemaVersions.objects.create(
+            schema_version = SchemaVersions.objects.create(
                 prompt=prompt,
-                response=response,
                 config_id=config.id,
                 assistant_id=config.assistant_id,
                 thread_id=config.thread_id,
                 message_id=config.message_id,
                 run_id=config.run_id,
                 privacy=privacy,
-                schema=new_schema_json,
                 author=user if user.is_authenticated else None,
                 parent_id=schema_version.id,
                 version_notes=enhanced_prompt,
             )
 
-            return SchemaVersionSerializer(schema_definition).data
+            for response in response_stream:
+                if response['type'] == 'message':
+                    yield json.dumps(response) + "\n"
+                elif response['type'] == 'corrected_schema':
+                    schema_version.schema = response['schema']
+                    schema_version.save()
+                    yield json.dumps(response) + "\n"
+                elif response['type'] == 'tool_result':
+                    schema_version.schema = response['content']
+                    schema_version.save()
+                    yield json.dumps(response) + "\n"
+                elif response["type"] == "done":
+                    schema_version.response = response['content']
+                    if "run_id" in response:
+                        schema_version.run_id = response['run_id']
+                    if "thread_id" in response:
+                        schema_version.thread_id = response['thread_id']
+                    schema_version.save()
+
+                    yield json.dumps({
+                        "type": "done",
+                        "version_id": schema_version.id,
+                        "config_id": config.id,
+                    }) + "\n"
+                else:
+                    print(f"Unknown response type: {json.dumps(response)}")
 
         except SchemaVersions.DoesNotExist:
             print(f"Original schema with ID {schema_version} not found")
