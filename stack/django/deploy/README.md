@@ -4,7 +4,7 @@ Follow installation instructions here: https://cloud.google.com/sdk/docs/install
 
 ```bash
 `gcloud auth login` # and set this project as your defaulgt
-`cloud config set project objects-actions`
+`gcloud config set project objects-actions`
 
 cp .env.public .env.gcp # and update your project ID, zones, passwords, and listed resource names
 

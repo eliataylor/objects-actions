@@ -46,8 +46,6 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
           >
             Export to CSV
           </Button>
-
-
         </Grid>
       </Grid>
       <Accordion variant={"elevation"} expanded={reasoningExpanded}
