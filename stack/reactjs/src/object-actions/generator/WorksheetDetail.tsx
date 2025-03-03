@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Box, Button, LinearProgress } from "@mui/material";
+import { Alert, Box, Button, LinearProgress } from "@mui/material";
 import WorksheetHeader from "./WorksheetHeader";
 import SchemaContent from "./SchemaContent";
 import { AiSchemaResponse, WorksheetModel } from "./generator-types";
-import { useSnackbar } from "notistack";
 import { Link, useNavigate } from "react-router-dom";
 import { StreamChunk } from "./StreamingOutput";
 import ApiClient from "../../config/ApiClient";
@@ -16,7 +15,6 @@ interface WorksheetDetailProps {
 
 const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
 
-  const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -25,14 +23,17 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
   const [loadingSchema, setLoadingSchema] = useState<boolean>(false);
   const [reasoning, setReasoning] = useState<string>("");
 
-  const handleSchema = (chunk: StreamChunk) => {
-    setSchema(chunk.schema);
+  const onDone = () => {
+    if (!schema) {
+      if (versionId > 0) {
+        navigate(`/oa/schemas/${versionId}`);
+      } else {
+        console.warn(`Missing version: ${versionId}`);
+        setError("Something went wrong. Try again.");
+      }
+    }
+    setLoading(false);
     setLoadingSchema(false);
-  };
-
-  const handleNewVersion = (chunk: StreamChunk) => {
-    setLoadingSchema(true);
-    setVersionId(chunk.version_id as number);
   };
 
   const handleEnhance = (promptInput: string, privacy: string) => {
@@ -57,48 +58,47 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
         (chunk) => {
           if (chunk.error) {
             setError(chunk.error);
-          } else if (chunk.type === "message" && chunk.content) {
+          }
+          if (chunk.type === "message" && chunk.content) {
             setReasoning(((prev) => prev + chunk.content as string));
-            setLoading(false);
-          } else if (chunk.type === "corrected_schema" || chunk.type === "tool_result") {
-            handleSchema(chunk);
-          } else if (chunk.version_id) {
-            handleNewVersion(chunk);
+          }
+          if (chunk.schema) {
+            setSchema(chunk.schema);
+            setLoadingSchema(false);
+          }
+          if (chunk.version_id) {
+            setVersionId(chunk.version_id as number);
+          }
+          if (chunk.type === "done") {
+            setLoadingSchema(true);
           }
         },
         (error) => {
           console.error(error);
-          setLoading(true);
-          setError(error.toString());
+          setError(error);
         },
-        () => {
-          console.log("Stream finished.");
-          if (!schema) {
-            if (versionId > 0) {
-              navigate(`/oa/schemas/${versionId}`);
-            } else {
-              setError("Something went wrong. Try again.");
-            }
-          }
-          setLoading(false);
-          setLoadingSchema(false);
-        }
+        onDone
       );
     } catch (err) {
-      setError("An unexpected error occurred");
-      enqueueSnackbar("Error connecting to the server", { variant: "error" });
+      setError(`An unexpected error occurred ${err?.toString()}`);
     }
   };
 
   return (
     <Box>
       <WorksheetHeader worksheet={worksheet} loading={loading} handleEnhance={handleEnhance} />
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
       {!schema && reasoning.length === 0 && <SchemaContent worksheet={worksheet} />}
 
       {reasoning.length > 0 && <ReactMarkdown>
         {reasoning}
       </ReactMarkdown>}
-
 
       {loadingSchema && <LinearProgress />}
 

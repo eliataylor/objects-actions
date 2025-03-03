@@ -177,8 +177,11 @@ class OpenAIPromptManager:
                                    - List sufficient potential content types for any non-trivial application
                                    - Describe the logic behind relationships among your fields.
                                 2. Once you have provided sufficient reasoning via messages, use the `validate_schema` function to generate the final structured schema.
-                                   - Do NOT waste tokens including the full JSON in your reasoning.
-                                   - Use the tool function `validate_schema` to return the structured JSON as your last step."""
+                                   - Choose the appropriate `field_type` from the enum of fields listed in the `field_type` property of the `validate_schema` function.
+                                   - Set the `relationship` property with the model_name of the related content type.
+                                   - Set the `cardinality` property number of entries a field can have for each item and use -1 for infinity.
+                                   - When an `enum` field is needed, set the list of options in the `example` property.
+                                   - Do NOT waste tokens including the full JSON in your reasoning, but use the tool function `validate_schema` to return the structured JSON as your last step."""
             else:
                 assistantProps["instructions"] = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea.
                 

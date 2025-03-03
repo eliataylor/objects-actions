@@ -108,6 +108,12 @@ class Prompt2SchemaService:
                 author = user if user.is_authenticated else None
             )
 
+            yield json.dumps({
+                "type": "version",
+                "version_id": schema_version.id,
+                "config_id": config.id,
+            }) + "\n"
+
             for response in response_stream:
                 if response['type'] == 'message':
                     yield json.dumps(response) + "\n"
@@ -130,7 +136,6 @@ class Prompt2SchemaService:
                     }) + "\n"
                 else:
                     print(f"Unknown response type: {json.dumps(response)}")
-
 
         except Exception as e:
             yield json.dumps({"error": f"Schema generation failed: {str(e)}"}) + "\n"
@@ -158,6 +163,12 @@ class Prompt2SchemaService:
                 parent_id=schema_version.id,
                 version_notes=enhanced_prompt,
             )
+
+            yield json.dumps({
+                "type": "version",
+                "version_id": schema_version.id,
+                "config_id": config.id
+            }) + "\n"
 
             for response in response_stream:
                 if response['type'] == 'message':

@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { Alert, Box, Button, CircularProgress, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
-import { useSnackbar } from "notistack";
 import ApiClient from "../../config/ApiClient";
 import { AiSchemaResponse } from "./generator-types";
 import Grid from "@mui/material/Grid";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../allauth/auth";
 import { StreamChunk } from "./StreamingOutput";
 import ReactMarkdown from "react-markdown";
 import SchemaTables from "./SchemaTables";
 
 const NewSchemaForm: React.FC = () => {
-  const { enqueueSnackbar } = useSnackbar();
   const me = useAuth()?.data?.user;
+  const navigate = useNavigate();
   const [promptInput, setPromptInput] = useState<string>("");
   const [privacy, setPrivacy] = useState<string>("public");
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,14 +22,18 @@ const NewSchemaForm: React.FC = () => {
   const [loadingSchema, setLoadingSchema] = useState<boolean>(false);
   const [reasoning, setReasoning] = useState<string>("");
 
-  const handleSchema = (chunk: StreamChunk) => {
-    setSchema(chunk.schema);
+  const onDone = () => {
+    console.log("Stream finished.");
+    if (!schema) {
+      if (versionId > 0) {
+        navigate(`/oa/schemas/${versionId}`);
+      } else {
+        console.warn(`Missing version: ${versionId}`)
+        setError("Something went wrong. Try again.");
+      }
+    }
+    setLoading(false);
     setLoadingSchema(false);
-  };
-
-  const handleNewVersion = (chunk: StreamChunk) => {
-    setLoadingSchema(true);
-    setVersionId(chunk.version_id as number);
   };
 
   const handleGenerate = () => {
@@ -58,22 +61,31 @@ const NewSchemaForm: React.FC = () => {
         (chunk) => {
           if (chunk.error) {
             setError(chunk.error);
-          } else if (chunk.type === "message" && chunk.content) {
+          }
+          if (chunk.type === "message" && chunk.content) {
             setReasoning(((prev) => prev + chunk.content as string));
-            setLoading(false);
-          } else if (chunk.type === "corrected_schema" || chunk.type === "tool_result") {
-            handleSchema(chunk);
-          } else if (chunk.version_id) {
-            handleNewVersion(chunk);
+          }
+          if (chunk.schema) {
+            setSchema(chunk.schema);
+            setLoadingSchema(false);
+          }
+          if (chunk.version_id) {
+            setVersionId(chunk.version_id as number);
+          }
+          if (chunk.type === "done") {
+            setLoadingSchema(true);
           }
         },
         (error) => {
           console.error(error);
+          setError(error);
+        },
+        () => {
+          onDone();
         }
       );
     } catch (err) {
-      setError("An unexpected error occurred");
-      enqueueSnackbar("Error connecting to the server", { variant: "error" });
+      setError(`An unexpected error occurred ${err?.toString()}`);
     }
   };
 
@@ -147,7 +159,8 @@ const NewSchemaForm: React.FC = () => {
               <MenuItem value={"inviteonly"}>Invite Only</MenuItem>
               <MenuItem value={"authusers"}>Authenticated Users</MenuItem>
               <MenuItem value={"onlyme"}>Only Me</MenuItem>
-            </TextField></Grid>
+            </TextField>
+          </Grid>
         </Grid>
 
 
