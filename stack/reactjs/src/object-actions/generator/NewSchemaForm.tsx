@@ -1,44 +1,64 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Alert, Box, Button, CircularProgress, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import ApiClient from "../../config/ApiClient";
-import { AiSchemaResponse } from "./generator-types";
+import { AiSchemaResponse, WorksheetModel } from "./generator-types";
 import Grid from "@mui/material/Grid";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../allauth/auth";
 import { StreamChunk } from "./StreamingOutput";
 import ReactMarkdown from "react-markdown";
 import SchemaTables from "./SchemaTables";
+import { useSnackbar } from "notistack";
 
 const NewSchemaForm: React.FC = () => {
+
+  const { enqueueSnackbar } = useSnackbar();
   const me = useAuth()?.data?.user;
   const navigate = useNavigate();
   const [promptInput, setPromptInput] = useState<string>("");
   const [privacy, setPrivacy] = useState<string>("public");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
   const [versionId, setVersionId] = useState<number>(0);
   const [schema, setSchema] = useState<AiSchemaResponse | null>(null);
   const [loadingSchema, setLoadingSchema] = useState<boolean>(false);
   const [reasoning, setReasoning] = useState<string>("");
 
-  const onDone = () => {
-    setVersionId((latestVersionId) => {
-      if (!schema) {
-        if (latestVersionId > 0) {
-          setReasoning("")
-          setSchema(null)
-          navigate(`/oa/schemas/${latestVersionId}`);
-        } else {
-          console.warn(`Missing version: ${latestVersionId}`);
-          setError("Something went wrong. Try again.");
+  // because onDone won't have the latest version in state!
+  const versionIdRef = useRef(0);
+  const reasoningRef = useRef("");
+  const schemaRef = useRef<AiSchemaResponse | null>(null);
+
+  const onDone = async () => {
+    ApiClient.get(`/api/worksheets/${versionIdRef.current}`).then(response => {
+      if (response.success && response.data) {
+        const newWorksheet = response.data as WorksheetModel;
+        let hasErrors = 0;
+        if (newWorksheet.response !== reasoningRef.current) {
+          hasErrors++;
+          enqueueSnackbar("Reasoning not correctly saved in database", { variant: "warning" });
         }
+        if (JSON.stringify(newWorksheet.schema) !== JSON.stringify(schemaRef.current)) {
+          hasErrors++;
+          enqueueSnackbar("Schema not correctly saved in database", { variant: "warning" });
+        }
+        if (hasErrors === 0) {
+          setReasoning("");
+          setSchema(null);
+          navigate(`/oa/schemas/${versionIdRef.current}`);
+        }
+      } else {
+        setError("Got invalid worksheet from database.");
       }
-      return latestVersionId;
+    }).catch((err) => {
+      setError("Failed to load saved worksheet from database.");
+    }).finally(() => {
+      setLoading(false);
+      setLoadingSchema(false);
     });
 
-    setLoading(false);
-    setLoadingSchema(false);
   };
 
   const handleGenerate = () => {
@@ -68,14 +88,20 @@ const NewSchemaForm: React.FC = () => {
             setError(chunk.error);
           }
           if (chunk.type === "message" && chunk.content) {
-            setReasoning(((prev) => prev + chunk.content as string));
+            setReasoning((prev) => {
+              const newReasoning = prev + chunk.content as string;
+              reasoningRef.current = newReasoning; // Update the ref with the new value
+              return newReasoning;
+            });
           }
           if (chunk.schema) {
             setSchema(chunk.schema);
+            schemaRef.current = chunk.schema;
             setLoadingSchema(false);
           }
           if (chunk.version_id) {
             setVersionId(chunk.version_id as number);
+            versionIdRef.current = chunk.version_id as number;
           }
           if (chunk.type === "done") {
             setLoadingSchema(true);
