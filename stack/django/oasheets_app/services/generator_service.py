@@ -58,6 +58,8 @@ class Prompt2SchemaService:
             yield from self.handle_stream(schema_version, config, response_stream)
 
         except Exception as e:
+            if self.doSave:
+                schema_version.save()
             yield json.dumps({"error": f"New schema failed: {str(e)}"}) + "\n"
 
     def enhance_via_stream(self, prompt, privacy, user, schema_version):
@@ -84,24 +86,26 @@ class Prompt2SchemaService:
             yield json.dumps({"error": f"Original schema with ID {schema_version.id} not found"}) + "\n"
 
         except Exception as e:
+            if self.doSave:
+                schema_version.save()
             print(f"Error enhancing schema: {str(e)}")
             yield json.dumps({"error": f"Edit failed: {str(e)}"}) + "\n"
 
     def handle_stream(self, schema_version, config, response_stream):
 
-        doSave = False
+        self.doSave = False
 
         for response in response_stream:
 
             if "run_id" in response:
                 schema_version.run_id = response['run_id']
-                doSave = True
+                self.doSave = True
             if "thread_id" in response:
                 schema_version.thread_id = response['thread_id']
-                doSave = True
+                self.doSave = True
             if "schema" in response:
                 schema_version.schema = response['schema']
-                doSave = True
+                self.doSave = True
 
             if response["type"] == "reasoning":
                 schema_version.response = response['content']
@@ -113,20 +117,21 @@ class Prompt2SchemaService:
             reasoning, schema = self.assistant_manager.request("Please generate the validated schema based on your recommendations")
             if schema_version.response is None and reasoning is not None:
                 schema_version.response = reasoning
-                doSave = True
+                self.doSave = True
             if schema is not None:
                 schema_version.schema = schema
                 yield json.dumps({"type": "requested_schema", "schema": schema}) + "\n"
-                doSave = True
+                self.doSave = True
 
         if schema_version.schema is not None:
             # cleanup potential json inside reasoning body:
             schema_json = self.assistant_manager.extract_json(schema_version.response)
             if schema_json:
                 schema_version.response = self.assistant_manager.remove_json(schema_version.response)
-                doSave = True
+                self.doSave = True
 
-        if doSave:
+        if self.doSave:
+            self.doSave = False
             schema_version.save()
 
         yield json.dumps({"type": "done", "version_id": schema_version.id, "config_id": config.id}) + "\n"
