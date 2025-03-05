@@ -1,54 +1,102 @@
 import React from "react";
-import { Container, Grid, Card, CardContent, Typography, Button, Box } from "@mui/material";
+import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
+import { useSnackbar } from "notistack";
 
 const pricingOptions = [
   {
-    title: "Full Stack from Content Types",
+    title: "Your Full Stack Architecture",
     price: "$499",
-    description: "Generate a full-stack application from structured content types, including backend and frontend.",
-    features: ["Auto-generated API", "Database schema setup", "React-based frontend"],
+    description: "8 hours, 1-one-1, screensharing session to design your scalable database and full-stack architecture.",
+    features: [
+      "Your idea's content types and fields formally documented.",
+      "ReactJS Web App.",
+      "Django API & CMS.",
+      "Cypress Test Suite.",
+      "Fake Data Generator.",
+      "User Authentication with Email / Username + Password, SMS + Code, MFA, Google, Facebook, LinkedIn, Spotify, & Github."
+    ]
   },
   {
-    title: "Permissions and Access Controls",
+    title: "Your Roles & Permissions",
     price: "$249",
-    description: "Add role-based access control and user permissions management to your application.",
-    features: ["RBAC implementation", "Fine-grained access control", "Admin dashboard"],
+    description: "Another 4 hours to discuss and implement role-based access permissions for all operations.",
+    features: [
+      "Secure access to Create, Read, Update, or Delete (CRUD).",
+      "Fine tune CRUD access based on content ownership.",
+      "Clear error handling."
+    ]
   },
   {
-    title: "Cloud Deploy to GCP",
+    title: "Your Domain Deployed",
     price: "$249",
-    description: "Seamless deployment of your full-stack application to Google Cloud Platform.",
-    features: ["Containerized deployment", "CI/CD setup", "Scalable hosting"],
+    description: "Deploy your full stack to your custom domain on your Google Cloud Platform.",
+    features: [
+      "Your custom domain configured.",
+      "HTTPS via Load balancers with multi-region distribution.",
+      "Deployment pipeline to release future improvements with 1 command."
+    ]
   },
+  {
+    title: "Your Mobile App",
+    price: "$249",
+    description: "Publish your responsive web app with Flutter with handling for Deep Links and Push Notifications.",
+    features: [
+      "iOS Build.",
+      "Android Build."
+    ]
+  }
 ];
 
 const Consulting: React.FC = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleCopy = async () => {
+    const textToCopy = 'Help@OAExample.com'
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+        enqueueSnackbar("Email copied to clipboard", { variant: "success" });
+      } catch (error) {
+        console.error("Failed to copy text: ", error);
+        enqueueSnackbar("Failed to copy text", { variant: "error" });
+      }
+    } else {
+      console.error(
+        "Clipboard API is not available. Please copy manually: " + textToCopy
+      );
+    }
+  };
+
   return (
-    <Container maxWidth="md" sx={{ py: 5 }}>
-      <Typography variant="h3" align="center" gutterBottom>
-        Consulting Pricing
+    <Box p={1}>
+      <Typography variant="h6" align="center" sx={{ fontWeight: 100 }} >
+        Need Help?
       </Typography>
-      <Typography variant="h6" align="center" color="textSecondary" paragraph>
-        Choose the right plan for your needs and build your application effortlessly.
+      {/* <Typography variant="h6" align="center" color="textSecondary" gutterBottom={true}>
+        For founders and small startups ready to launch a secure, scalable application.
+      </Typography> */}
+      <Typography variant="h3" align="center" color="textSecondary" gutterBottom={true} style={{ textAlign: "center", margin:"20px auto" }}>
+        Get a solid, secure full-stack foundation built for growth, without the guesswork.
       </Typography>
-      <Grid container spacing={4}>
+      <Grid container spacing={2}>
         {pricingOptions.map((option, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
+          <Grid item xs={12} md={6} lg={3} key={index}>
             <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
               <CardContent>
-                <Typography variant="h5" gutterBottom>
+                <Typography variant="h5" align="center" gutterBottom>
                   {option.title}
                 </Typography>
-                <Typography variant="h4" color="primary" sx={{textAlign:'center'}} gutterBottom>
+                <Typography variant="h4" color="primary" align="center" sx={{ fontWeight: 100 }}  gutterBottom>
                   {option.price}
                 </Typography>
-                <Typography variant="body2" color="textSecondary" gutterBottom>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
                   {option.description}
                 </Typography>
                 <Box mt={2}>
+                  <Typography variant="overline" sx={{ fontSize: 9 }}>INCLUDES</Typography>
                   {option.features.map((feature, i) => (
-                    <Typography key={i} variant="body2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography key={i} variant="body2" sx={{ display: "flex", alignItems: "flex-start", gap: .7, mb: .5 }}>
                       <CheckCircleOutline color="primary" fontSize="small" /> {feature}
                     </Typography>
                   ))}
@@ -58,7 +106,18 @@ const Consulting: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-    </Container>
+
+
+      <Typography style={{ textAlign: "center", margin:"20px auto" }}>
+
+        Drop us an email at
+        <Button variant={"text"} size={'large'}
+                onClick={handleCopy}>Help <span style={{ margin: "0 2px" }}>@</span> OAExample.com</Button>
+        and let's discuss your project.
+
+      </Typography>
+
+    </Box>
   );
 };
 
