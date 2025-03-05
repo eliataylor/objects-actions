@@ -53,7 +53,7 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'X-App-Client',  # used by mobile to toggle to Token auth
 ]
 
-logger.warning(f"Allowing Hosts: {", ".join(ALLOWED_HOSTS)}")
+logger.debug(f"Allowing Hosts: {", ".join(ALLOWED_HOSTS)}")
 
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
@@ -67,8 +67,8 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 # CSRF_COOKIE_DOMAIN = None
 # CSRF_COOKIE_SAMESITE = None
 
-logger.warning(f"Allowed Origins: {CSRF_COOKIE_DOMAIN}")
-logger.warning(f"Allowed Trusted/CSRF Domains: {", ".join(CSRF_TRUSTED_ORIGINS)}")
+logger.debug(f"Allowed Origins: {CSRF_COOKIE_DOMAIN}")
+logger.debug(f"Allowed Trusted/CSRF Domains: {", ".join(CSRF_TRUSTED_ORIGINS)}")
 
 # same for session cookies
 SESSION_COOKIE_DOMAIN = CSRF_COOKIE_DOMAIN

@@ -3,6 +3,7 @@ import time
 from ..models import SchemaVersions
 from ..serializers import SchemaVersionSerializer
 from ..services.assistant_manager import OpenAIPromptManager
+import threading
 
 class SchemaGenerator:
     def __init__(self, prompt_data, user, last_version=None):
@@ -102,14 +103,31 @@ class SchemaGenerator:
         # fallback if we never get the schema or even a response
         if self.version.schema is None:
             print('No schema returned. Prompting in new http request.')
-            reasoning, schema = self.assistant_manager.request("Please generate the validated schema based on your recommendations")
-            if self.version.reasoning is None and reasoning is not None:
-                self.version.reasoning = reasoning
-                self.doSave = True
-            if schema is not None:
-                self.version.schema = schema
-                yield json.dumps({"type": "requested_schema", "schema": schema}) + "||JSON_END||"
-                self.doSave = True
+
+            def fallback_request():
+                nonlocal last_keepalive
+                try:
+                    reasoning, schema = self.assistant_manager.request(
+                        "Please generate the validated schema based on your recommendations"
+                    )
+                    if self.version.reasoning is None and reasoning is not None:
+                        self.version.reasoning = reasoning
+                        self.doSave = True
+                    if schema is not None:
+                        self.version.schema = schema
+                        yield json.dumps({"type": "requested_schema", "schema": schema}) + "||JSON_END||"
+                        self.doSave = True
+                except Exception as e:
+                    yield json.dumps({"error": f"Fallback request failed: {str(e)}"}) + "||JSON_END||"
+
+            # Start fallback request in a separate thread
+            fallback_thread = threading.Thread(target=fallback_request)
+            fallback_thread.start()
+
+            # Keep connection alive while fallback request is being processed
+            while fallback_thread.is_alive():
+                yield json.dumps({"type": "keep_alive"}) + "||JSON_END||"
+                time.sleep(5)  # Adjust as needed
 
         if self.version.schema is not None:
             # cleanup potential json inside reasoning body:

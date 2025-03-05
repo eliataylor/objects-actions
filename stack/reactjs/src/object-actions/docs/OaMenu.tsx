@@ -6,6 +6,7 @@ import ExtendIcon from "@mui/icons-material/Extension";
 import ContributeIcon from "@mui/icons-material/VolunteerActivism";
 import { NavBarItem } from "../../components/AuthMenu";
 import LightDarkImg from "../../components/LightDarkImg";
+import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 
 const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick }) => {
 
@@ -41,6 +42,11 @@ const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick }) => {
         to={"/oa/contribute"}
         icon={<ContributeIcon fontSize={"small"} />}
         name={"Contribute"}
+      />
+      <NavBarItem
+        to={"/oa/consulting"}
+        icon={<LiveHelpIcon fontSize={"small"} />}
+        name={"Need Help?"}
       />
       <NavBarItem
         to={"https://github.com/eliataylor/objects-actions"}

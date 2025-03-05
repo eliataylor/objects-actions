@@ -1,8 +1,7 @@
 import json
 import os
-import time
 from typing import List
-
+import asyncio
 import openai
 from django.conf import settings
 from openai import OpenAIError
@@ -367,18 +366,6 @@ When responding to a prompt, you will:
 
         self.ids["message_id"] = message.id
 
-        if self.ids["run_id"]:
-            # is this ever a good idea?
-            try:
-                run = self.client.beta.threads.runs.retrieve(
-                    thread_id=self.ids["thread_id"],
-                    run_id=self.ids["run_id"]
-                )
-                if run.status in ["completed", "failed"]:
-                    return run  # better to just throw an error?
-            except Exception as e:
-                print(f"run_id is missing {self.ids["run_id"]}")
-
         run = self.client.beta.threads.runs.create(
             thread_id=self.ids["thread_id"],
             assistant_id=self.ids['assistant_id'],
@@ -388,12 +375,12 @@ When responding to a prompt, you will:
         # Wait for the run to complete
         return self._wait_for_run_completion(run)
 
-    def _wait_for_run_completion(self, run):
+    async def _wait_for_run_completion(self, run):
         """
         Waits for the run to complete and handles status updates recursively.
         """
         while run.status in ["queued", "in_progress"]:
-            time.sleep(1)
+            await asyncio.sleep(0.2)
             run = self.client.beta.threads.runs.retrieve(
                 thread_id=self.ids["thread_id"],
                 run_id=self.ids["run_id"]

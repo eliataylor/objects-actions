@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Alert, Box, Button, LinearProgress } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Fab, LinearProgress } from "@mui/material";
 import WorksheetHeader from "./WorksheetHeader";
 import SchemaContent from "./SchemaContent";
 import { AiSchemaResponse, StreamChunk, SchemaVersions } from "./generator-types";
@@ -79,7 +79,9 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
           if (chunk.error) {
             setError(chunk.error);
           }
-          if (chunk.type === "reasoning" && chunk.content) {
+          if (chunk.type === "keep_alive") {
+            enqueueSnackbar("Still working...", { variant: "info" });
+          } else if (chunk.type === "reasoning" && chunk.content) {
             setReasoning(chunk.content);
             reasoningRef.current = chunk.content;
           } else if (chunk.type === "message" && chunk.content) {
@@ -147,7 +149,15 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
         {reasoning}
       </ReactMarkdown>}
 
-      {loadingSchema && <LinearProgress />}
+      {(loading || loadingSchema) &&
+       <Fab
+            color="primary"
+            size="small"
+            sx={{ position: "fixed", backgroundColor:'transparent', left: 20, bottom: 20 }}
+          >
+            <CircularProgress color={!loading ? 'primary' : 'secondary'} />
+          </Fab>
+      }
 
       {schema?.content_types?.map((w) =>
         <SchemaTables forceExpand={true}

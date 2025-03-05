@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { Alert, Box, Button, CircularProgress, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
-import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
+import { Alert, Box, Button, CircularProgress, Fab, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
+import { Add, FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import ApiClient from "../../config/ApiClient";
 import { AiSchemaResponse, SchemaVersions, StreamChunk } from "./generator-types";
 import Grid from "@mui/material/Grid";
@@ -70,12 +70,12 @@ const NewSchemaForm: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const toPass:any = {
+    const toPass: any = {
       prompt: promptInput,
       privacy: privacy
     };
     if (versionId > 0) { // for retries
-      toPass.version_id = versionId
+      toPass.version_id = versionId;
     }
 
     try {
@@ -84,7 +84,9 @@ const NewSchemaForm: React.FC = () => {
           if (chunk.error) {
             setError(chunk.error);
           }
-          if (chunk.type === "reasoning" && chunk.content) {
+          if (chunk.type === "keep_alive") {
+            enqueueSnackbar("Still working...", { variant: "info" });
+          } else if (chunk.type === "reasoning" && chunk.content) {
             setReasoning(chunk.content);
             reasoningRef.current = chunk.content;
           } else if (chunk.type === "message" && chunk.content) {
@@ -201,7 +203,7 @@ const NewSchemaForm: React.FC = () => {
 
       </Paper>
 
-      {loading &&
+      {(loading || loadingSchema) &&
         <Box>
           <Typography variant="subtitle1" style={{ fontStyle: "italic", textAlign: "center" }} component="h3" gutterBottom>
             <FormatQuote fontSize={"small"} />
@@ -209,7 +211,13 @@ const NewSchemaForm: React.FC = () => {
             <FormatQuote fontSize={"small"} />
           </Typography>
 
-          <LinearProgress />
+          <Fab
+            color="primary"
+            size="small"
+            sx={{ position: "fixed", backgroundColor:'transparent', left: 20, bottom: 20 }}
+          >
+            <CircularProgress color={!loading ? 'primary' : 'secondary'} />
+          </Fab>
         </Box>
       }
 
@@ -222,8 +230,6 @@ const NewSchemaForm: React.FC = () => {
       {reasoning && <ReactMarkdown>
         {reasoning}
       </ReactMarkdown>}
-
-      {loadingSchema && <LinearProgress />}
 
       {schema?.content_types?.map((w) =>
         <SchemaTables forceExpand={true}
