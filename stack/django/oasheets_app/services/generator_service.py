@@ -1,5 +1,5 @@
 import json
-
+import time
 from ..models import SchemaVersions
 from ..serializers import SchemaVersionSerializer
 from ..services.assistant_manager import OpenAIPromptManager
@@ -70,13 +70,17 @@ class SchemaGenerator:
         except Exception as e:
             if self.doSave:
                 self.version.save()
-            yield json.dumps({"error": f"Stream failed: {str(e)}"}) + "\n"
+            yield json.dumps({"error": f"Stream failed: {str(e)}"}) + "||JSON_END||"
 
     def handle_stream(self, response_stream):
 
         self.doSave = False
+        last_keepalive = time.time()  # Track last keep-alive time
 
         for response in response_stream:
+            if time.time() - last_keepalive >= 10:
+                yield "\n"  # Send keep-alive every 10 seconds, mostly in case an extra .request call is needed
+                last_keepalive = time.time()
 
             if "run_id" in response:
                 self.version.run_id = response['run_id']
@@ -90,18 +94,21 @@ class SchemaGenerator:
 
             if response["type"] == "reasoning":
                 self.version.reasoning = response['content']
-
-            yield json.dumps(response) + "\n"
+                self.doSave = True
+                yield json.dumps(response) + "||JSON_END||"
+            else:
+                yield json.dumps(response) + "||JSON_END||"
 
         # fallback if we never get the schema or even a response
         if self.version.schema is None:
+            print('No schema returned. Prompting in new http request.')
             reasoning, schema = self.assistant_manager.request("Please generate the validated schema based on your recommendations")
             if self.version.reasoning is None and reasoning is not None:
                 self.version.reasoning = reasoning
                 self.doSave = True
             if schema is not None:
                 self.version.schema = schema
-                yield json.dumps({"type": "requested_schema", "schema": schema}) + "\n"
+                yield json.dumps({"type": "requested_schema", "schema": schema}) + "||JSON_END||"
                 self.doSave = True
 
         if self.version.schema is not None:
@@ -115,4 +122,4 @@ class SchemaGenerator:
             self.doSave = False
             self.version.save()
 
-        yield json.dumps({"type": "done", "version_id": self.version.id}) + "\n"
+        yield json.dumps({"type": "done", "version_id": self.version.id}) + "||JSON_END||"

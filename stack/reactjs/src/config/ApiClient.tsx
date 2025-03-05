@@ -84,6 +84,9 @@ class ApiClient {
                          onMessage: (chunk: T) => void,
                          onError?: (error: string) => void,
                          onDone?: () => void) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
+
     try {
       const url = this.normalizeUrl(`${process.env.REACT_APP_API_HOST}${endpoint}`);
       const response = await fetch(url, {
@@ -93,7 +96,8 @@ class ApiClient {
           "X-CSRFToken": getCSRFToken() || ""
         },
         body: JSON.stringify(data),
-        credentials: "include"
+        credentials: "include",
+        signal: controller.signal // Attach timeout controller
       });
 
       if (!response.body) throw new Error("No response body");
@@ -106,7 +110,7 @@ class ApiClient {
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        chunk.split("\n").forEach((line) => {
+        chunk.split("||JSON_END||").forEach((line) => {
           if (line.trim()) {
             try {
               const parsed: T = JSON.parse(line);
@@ -120,9 +124,11 @@ class ApiClient {
     } catch (error: any) {
       if (onError) onError(error.message || "An unexpected error occurred");
     } finally {
+      clearTimeout(timeout); // Clear timeout when done
       if (onDone) onDone();
     }
   }
+
 
   private handleError(error: any): HttpResponse<any> {
     if (!error) {

@@ -81,7 +81,10 @@ class SchemaVersionsViewSet(PaginatedViewSet):
         generator = SchemaGenerator(prompt_data, request.user, version)
 
         response_generator = generator.start_stream(prompt_data['prompt'])
-        return StreamingHttpResponse(response_generator, content_type="application/json")
+        response = StreamingHttpResponse(response_generator, content_type="application/json")
+        response["Cache-Control"] = "no-cache"
+        response["X-Accel-Buffering"] = "no"  # Important for Nginx (disable buffering)
+        return response
 
     @action(detail=True, methods=['post'])
     def enhance(self, request, pk=None):
@@ -108,7 +111,10 @@ class SchemaVersionsViewSet(PaginatedViewSet):
         generator = SchemaGenerator(prompt_data, request.user, version)
 
         response_generator = generator.start_stream(prompt_data['prompt'])
-        return StreamingHttpResponse(response_generator, content_type="application/json")
+        response = StreamingHttpResponse(response_generator, content_type="application/json")
+        response["Cache-Control"] = "no-cache"
+        response["X-Accel-Buffering"] = "no"  # Important for Nginx (disable buffering)
+        return response
 
     @action(detail=True, methods=['get'], url_path='download')
     def download_csv(self, request, pk=None):
