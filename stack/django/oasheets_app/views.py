@@ -134,7 +134,7 @@ class SchemaVersionsViewSet(PaginatedViewSet):
                                                               request.user, schema)
             return StreamingHttpResponse(response_generator, content_type="application/json")
 
-        result = generator.enhance_schema(prompt_data['prompt'], prompt_data['privacy'], request.user, schema)
+        result = generator.generate_schema(prompt_data['prompt'], prompt_data['privacy'], request.user)
 
         if result:
             return Response({"success": True, "data": result})

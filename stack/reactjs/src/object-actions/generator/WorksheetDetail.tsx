@@ -2,9 +2,8 @@ import React, { useRef, useState } from "react";
 import { Alert, Box, Button, LinearProgress } from "@mui/material";
 import WorksheetHeader from "./WorksheetHeader";
 import SchemaContent from "./SchemaContent";
-import { AiSchemaResponse, WorksheetModel } from "./generator-types";
+import { AiSchemaResponse, StreamChunk, WorksheetModel } from "./generator-types";
 import { Link, useNavigate } from "react-router-dom";
-import { StreamChunk } from "./StreamingOutput";
 import ApiClient from "../../config/ApiClient";
 import ReactMarkdown from "react-markdown";
 import SchemaTables from "./SchemaTables";
@@ -31,22 +30,18 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
   const schemaRef = useRef<AiSchemaResponse | null>(null);
 
   const onDone = async () => {
+    if (versionIdRef.current === 0) {
+      console.warn("Never got the version id!?");
+      return false;
+    }
     ApiClient.get(`/api/worksheets/${versionIdRef.current}`).then(response => {
       if (response.success && response.data) {
         const newWorksheet = response.data as WorksheetModel;
-        let hasErrors = 0;
-        if (newWorksheet.response !== reasoningRef.current) {
-          hasErrors++;
-          enqueueSnackbar("Reasoning not correctly saved in database", { variant: "warning" });
-        }
-        if (JSON.stringify(newWorksheet.schema) !== JSON.stringify(schemaRef.current)) {
-          hasErrors++;
-          enqueueSnackbar("Schema not correctly saved in database", { variant: "warning" });
-        }
-        if (hasErrors === 0) {
-          setReasoning("");
-          setSchema(null);
-          navigate(`/oa/schemas/${versionIdRef.current}`);
+        if (newWorksheet.schema && newWorksheet.response) {
+          enqueueSnackbar("Successful.", { variant: "success" });
+          return navigate(`/oa/schemas/${newWorksheet.id}`);
+        } else {
+          enqueueSnackbar("Incomplete answer. Use this page to try again, or click Request Edits to continue the thread.", { variant: "warning" });
         }
       } else {
         setError("Got invalid worksheet from database.");
@@ -57,6 +52,7 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
       setLoading(false);
       setLoadingSchema(false);
     });
+
   };
 
   const handleEnhance = (promptInput: string, privacy: string) => {
@@ -82,23 +78,31 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
           if (chunk.error) {
             setError(chunk.error);
           }
-          if (chunk.type === "message" && chunk.content) {
+          if (chunk.type === "reasoning" && chunk.content) {
+            setReasoning(chunk.content);
+            reasoningRef.current = chunk.content;
+          } else if (chunk.type === "message" && chunk.content) {
             setReasoning((prev) => {
               const newReasoning = prev + chunk.content as string;
               reasoningRef.current = newReasoning; // Update the ref with the new value
               return newReasoning;
             });
+          } else {
+            console.log("CHUNK ", chunk);
           }
           if (chunk.schema) {
+            console.log("SETTING SCHEMA ", chunk);
             setSchema(chunk.schema);
             schemaRef.current = chunk.schema;
             setLoadingSchema(false);
           }
           if (chunk.version_id) {
+            console.log("SETTING VERSION ID ", chunk);
             setVersionId(chunk.version_id as number);
             versionIdRef.current = chunk.version_id as number;
           }
           if (chunk.type === "done") {
+            console.log("SETTING DONE ", chunk);
             setLoadingSchema(true);
           }
         },
@@ -119,6 +123,16 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
     <Box>
       <WorksheetHeader worksheet={worksheet} loading={loading} handleEnhance={handleEnhance} />
 
+      {versionId > 0 && <Button variant={"contained"}
+                                component={Link}
+                                fullWidth={true}
+                                sx={{ mt: 3, mb: 4 }}
+                                onClick={() => {
+                                  setReasoning('');
+                                  setSchema(null)
+                                }}
+                                to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
+
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
@@ -137,12 +151,6 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
         <SchemaTables forceExpand={true}
                       key={`schematable-${w.model_name}`}
                       {...w} />)}
-
-      {schema && !loadingSchema && <Button variant={"contained"}
-                                           component={Link}
-                                           fullWidth={true}
-                                           sx={{ mt: 3, mb: 4 }}
-                                           to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
 
 
     </Box>

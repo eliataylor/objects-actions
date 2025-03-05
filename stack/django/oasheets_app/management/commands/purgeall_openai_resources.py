@@ -8,14 +8,13 @@ class OpenAIClient:
     def __init__(self):
         self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
         self.api_key = settings.OPENAI_API_KEY
-        self.sessionToken = 'sess-CHANGEME' # the sdk doesn't have a threads.list method so i hack the playground API here
+        self.sessionToken = 'sess-bfnXwRuYBA3b7T25rTxHBtwExhOZ2QDydSIWnYuG' # the sdk doesn't have a threads.list method so i hack the playground API here
         self.base_url = "https://api.openai.com/v1"
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.sessionToken}",
             "OpenAI-Beta": "assistants=v2",
-            "Openai-Organization": "org-CHANGEME",
-            "Openai-Project": "proj_CHANGE"
+            "Openai-Project": "proj_acIts9GSMmHlgr1vcOmCX4wQ"
         }
 
     def delete_all_assistants(self):

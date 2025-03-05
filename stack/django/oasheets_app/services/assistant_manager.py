@@ -284,19 +284,29 @@ class OpenAIPromptManager:
             role="user",
             content=prompt
         )
+        if message is None:
+            # probably still running and this will throw an error
+            if self.config.message_id is not None:
+                message = self.client.beta.threads.messages.retrieve(
+                    thread_id=self.config.message_id,
+                    message_id=self.config.message_id,
+                )
+            else:
+                pass
+
         self.config.message_id = message.id
         PromptConfig.objects.filter(id=self.config.id).update(message_id=message.id)
 
-        # Retrieve existing run if available
+
         if self.config.run_id:
+            # is this ever a good idea?
             run = self.client.beta.threads.runs.retrieve(
                 thread_id=self.config.thread_id,
                 run_id=self.config.run_id
             )
             if run.status in ["completed", "failed"]:
-                return run  # Return if already finished
+                return run  # why?
 
-        # Create a new run if needed
         run = self.client.beta.threads.runs.create(
             thread_id=self.config.thread_id,
             assistant_id=self.config.assistant_id,
@@ -335,7 +345,7 @@ class OpenAIPromptManager:
         schema_to_validate = tool.function.arguments
         validation_result = validator.validate_schema(schema_to_validate)
 
-        if validation_result['is_valid']:
+        if validation_result['corrected_schema'] and len(validation_result['corrected_schema']) > 0:
             run = self.client.beta.threads.runs.submit_tool_outputs(
                 thread_id=self.config.thread_id,
                 run_id=self.config.run_id,
@@ -350,12 +360,7 @@ class OpenAIPromptManager:
 
         raise ValueError(f"Schema validation failed: {validation_result['errors']}")
 
-    """
-       Manages an OpenAI Assistant specialized for schema generation,
-       now with a streaming capability.
-       """
-
-    def get_schema_stream(self, prompt):
+    def stream(self, prompt):
         if self.config is None:
             self.get_assistant_config()
 
@@ -374,6 +379,8 @@ class OpenAIPromptManager:
         self.config.message_id = message.id
         PromptConfig.objects.filter(id=self.config.id).update(message_id=message.id)
 
+        allEventTypes = {} # debugging
+
         try:
             with self.client.beta.threads.runs.stream(
                     thread_id=self.config.thread_id,
@@ -385,6 +392,7 @@ class OpenAIPromptManager:
             ) as stream:
                 for event in stream:
                     if hasattr(event, 'event'):
+                        allEventTypes[event.event] = 1
                         if event.event == "thread.message.delta":
                             message_text = extract_message_text(event)
                             yield {"type": "message", "event":event.event, "content": message_text}
@@ -402,7 +410,7 @@ class OpenAIPromptManager:
                                     "errors": validation_result["errors"],
                                     "schema": validation_result['corrected_schema']
                                 }
-                            yield {"type": "done", "event":event.event, "content": message_text, "run_id": event.data.run_id, "thread_id": event.data.thread_id}
+                            yield {"type": "reasoning", "event":event.event, "content": message_text, "run_id": event.data.run_id, "thread_id": event.data.thread_id}
 
                         elif event.event == "error":
                             message_text = extract_message_text(event)
@@ -417,18 +425,6 @@ class OpenAIPromptManager:
                                     if tool_call.function.name == "validate_schema":
                                         # Extract the schema to validate
                                         try:
-                                            # Submit the tool output back to the run
-                                            self.client.beta.threads.runs.submit_tool_outputs(
-                                                thread_id=self.config.thread_id,
-                                                run_id=event.data.id,
-                                                tool_outputs=[
-                                                    {
-                                                        "tool_call_id": tool_call.id,
-                                                        "output": tool_call.function.arguments
-                                                    }
-                                                ]
-                                            )
-
                                             # optional do another internal validation and correct it
                                             schema_to_validate = json.loads(tool_call.function.arguments)
                                             validator = SchemaValidator()
@@ -441,6 +437,18 @@ class OpenAIPromptManager:
                                                 "errors": validation_result["errors"],
                                                 "schema": validation_result['corrected_schema']
                                             }
+
+                                            # why bother at this point?
+                                            self.client.beta.threads.runs.submit_tool_outputs(
+                                                thread_id=self.config.thread_id,
+                                                run_id=event.data.id,
+                                                tool_outputs=[
+                                                    {
+                                                        "tool_call_id": tool_call.id,
+                                                        "output": json.dumps(validation_result['corrected_schema'])
+                                                    }
+                                                ]
+                                            )
 
                                         except Exception as e:
                                             yield {
@@ -457,14 +465,12 @@ class OpenAIPromptManager:
                             final_args = getattr(event.data, "arguments", {})
                             yield {"type": "final_function_call", "event":event.event, "content": final_args}
 
-#                        else:
-#                            print(event.event)
-#                            print(event)
+                print(allEventTypes)
 
         except OpenAIError as e:
             yield {"error": f"OpenAI Assistant Error: {str(e)}", "type": "error"}
 
-    def generate_schema(self, prompt):
+    def request(self, prompt):
         if self.config is None:
             self.get_assistant_config()
 
@@ -486,21 +492,16 @@ class OpenAIPromptManager:
             for message in messages.data:
                 if message.role == "assistant":
                     content = message.content[0].text.value
-                    if schema_json is not None:
-                        break
                     schema_json = self.extract_json(content)
-                    if schema_json:
+                    if schema_json is not None:
+                        content = self.remove_json(content) # only save reasoning text here
                         break
-
-            if schema_json is None:
-                # clear run so this can be resubmitted for testing
-                PromptConfig.objects.filter(id=self.config.id).update(run_id=None, thread_id=None)
 
             return content, schema_json
 
         except OpenAIError as e:
             print(f"OpenAI Assistant Error: {e}")
-            return None
+            return str(e), None
 
     def extract_json(self, text):
         """Extract JSON object from a text response, handling multiple formats."""

@@ -83,3 +83,14 @@ interface VersionTree {
   name?: string;
   children: VersionTree[];
 }
+
+
+export type StreamChunk = {
+  type: "message" | "tool_result" | "corrected_schema" | "done" | "reasoning";
+  event?: string;
+  content?: string;
+  schema?: AiSchemaResponse
+  config_id?: number;
+  version_id?: number;
+  error?: string;
+};

@@ -2,11 +2,10 @@ import React, { useRef, useState } from "react";
 import { Alert, Box, Button, CircularProgress, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import ApiClient from "../../config/ApiClient";
-import { AiSchemaResponse, WorksheetModel } from "./generator-types";
+import { AiSchemaResponse, WorksheetModel, StreamChunk } from "./generator-types";
 import Grid from "@mui/material/Grid";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../allauth/auth";
-import { StreamChunk } from "./StreamingOutput";
 import ReactMarkdown from "react-markdown";
 import SchemaTables from "./SchemaTables";
 import { useSnackbar } from "notistack";
@@ -32,22 +31,18 @@ const NewSchemaForm: React.FC = () => {
   const schemaRef = useRef<AiSchemaResponse | null>(null);
 
   const onDone = async () => {
+    if (versionIdRef.current === 0) {
+      console.warn("Never got the version id!?");
+      return false;
+    }
     ApiClient.get(`/api/worksheets/${versionIdRef.current}`).then(response => {
       if (response.success && response.data) {
         const newWorksheet = response.data as WorksheetModel;
-        let hasErrors = 0;
-        if (newWorksheet.response !== reasoningRef.current) {
-          hasErrors++;
-          enqueueSnackbar("Reasoning not correctly saved in database", { variant: "warning" });
-        }
-        if (JSON.stringify(newWorksheet.schema) !== JSON.stringify(schemaRef.current)) {
-          hasErrors++;
-          enqueueSnackbar("Schema not correctly saved in database", { variant: "warning" });
-        }
-        if (hasErrors === 0) {
-          setReasoning("");
-          setSchema(null);
-          navigate(`/oa/schemas/${versionIdRef.current}`);
+        if (newWorksheet.schema && newWorksheet.response) {
+          enqueueSnackbar("Successful.", { variant: "success" });
+          return navigate(`/oa/schemas/${newWorksheet.id}`);
+        } else {
+          enqueueSnackbar("Incomplete answer. Use this page to try again, or click Request Edits to continue the thread.", { variant: "warning" });
         }
       } else {
         setError("Got invalid worksheet from database.");
@@ -87,23 +82,31 @@ const NewSchemaForm: React.FC = () => {
           if (chunk.error) {
             setError(chunk.error);
           }
-          if (chunk.type === "message" && chunk.content) {
+          if (chunk.type === "reasoning" && chunk.content) {
+            setReasoning(chunk.content);
+            reasoningRef.current = chunk.content;
+          } else if (chunk.type === "message" && chunk.content) {
             setReasoning((prev) => {
               const newReasoning = prev + chunk.content as string;
               reasoningRef.current = newReasoning; // Update the ref with the new value
               return newReasoning;
             });
+          } else {
+            console.log("CHUNK ", chunk);
           }
           if (chunk.schema) {
+            console.log("SETTING SCHEMA ", chunk);
             setSchema(chunk.schema);
             schemaRef.current = chunk.schema;
             setLoadingSchema(false);
           }
           if (chunk.version_id) {
+            console.log("SETTING VERSION ID ", chunk);
             setVersionId(chunk.version_id as number);
             versionIdRef.current = chunk.version_id as number;
           }
           if (chunk.type === "done") {
+            console.log("SETTING DONE ", chunk);
             setLoadingSchema(true);
           }
         },
@@ -194,7 +197,6 @@ const NewSchemaForm: React.FC = () => {
           </Grid>
         </Grid>
 
-
       </Paper>
 
       {loading &&
@@ -209,6 +211,12 @@ const NewSchemaForm: React.FC = () => {
         </Box>
       }
 
+      {versionId > 0 && <Button variant={"contained"}
+                                component={Link}
+                                fullWidth={true}
+                                to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
+
+
       {reasoning && <ReactMarkdown>
         {reasoning}
       </ReactMarkdown>}
@@ -219,11 +227,6 @@ const NewSchemaForm: React.FC = () => {
         <SchemaTables forceExpand={true}
                       key={`schematable-${w.model_name}`}
                       {...w} />)}
-
-      {schema && !loadingSchema && <Button variant={"contained"}
-                                           component={Link}
-                                           fullWidth={true}
-                                           to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
 
     </Box>
   );
