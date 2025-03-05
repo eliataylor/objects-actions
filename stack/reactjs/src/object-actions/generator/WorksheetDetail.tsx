@@ -79,7 +79,9 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
           if (chunk.error) {
             setError(chunk.error);
           }
-          if (chunk.type === "reasoning" && chunk.content) {
+          if (chunk.type === "keep_alive") {
+            enqueueSnackbar("Still working...", { variant: "info" });
+          } else if (chunk.type === "reasoning" && chunk.content) {
             setReasoning(chunk.content);
             reasoningRef.current = chunk.content;
           } else if (chunk.type === "message" && chunk.content) {
