@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { AppBar, Box, Fab, Grid } from "@mui/material";
+import { AppBar, Box, Fab, Grid, Typography } from "@mui/material";
 import { ApiListResponse, ModelName, NavItem, ModelType, NAVITEMS } from "../object-actions/types/types";
 import EntityCard from "../object-actions/components/EntityCard";
 import TablePaginator from "../components/TablePaginator";
@@ -88,6 +88,7 @@ const EntityList = <T extends ModelName>({
 
   if (!hasUrl) return <div>Invalid URL...</div>;
 
+  let allowAdd: boolean | string = true
   let content = null;
   if (!listData) {
     content = <div>Loading...</div>;
@@ -96,11 +97,16 @@ const EntityList = <T extends ModelName>({
   } else {
     const firstResult = listData.results[0] as ModelType<T>;
     const canView = (!listData.results.length) ? true : canDo("view", firstResult, me);
-    // TODO: make this check BOTH own and others since list could contain both!
+    // WARN: consider moving inside loop since listData.result could contain multiple Object types
 
     if (typeof canView === "string") {
       content = <PermissionError error={canView} />;
     } else {
+      if (listData.results.length > 0) {
+ //         allowAdd = true
+         allowAdd = canDo("add", listData.results[0], me);
+      }
+
       content = (
         <React.Fragment>
           <AppBar
@@ -123,11 +129,17 @@ const EntityList = <T extends ModelName>({
             </Grid>
           </AppBar>
           <Grid container gap={2}>
-            {listData.results.map((obj, i) => (
-              <Grid xs={12} item key={`entitycard-${i}`}>
+            {listData.results.map((obj, i) => {
+              /* // if listData.results might include different content types!
+              const allowAdd = canDo('add', obj, me)
+              if (typeof allowAdd === 'string') {
+                return <Typography>Not Authorized: {allowAdd}</Typography>
+              }
+               */
+              return <Grid xs={12} item key={`entitycard-${i}`}>
                 <EntityCard entity={obj} />
               </Grid>
-            ))}
+            })}
           </Grid>
         </React.Fragment>
       );
@@ -138,7 +150,7 @@ const EntityList = <T extends ModelName>({
     <Box sx={{ padding: 2 }} id="EntityList">
       {content}
 
-      {showFab && (
+      {showFab && allowAdd === true && (
         <Fab
           color="secondary"
           size="small"

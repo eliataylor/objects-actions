@@ -80,7 +80,10 @@ class ApiClient {
     }
   }
 
-  public async stream<T>(endpoint: string, data: any, onMessage: (chunk: T) => void, onError?: (error: string) => void) {
+  public async stream<T>(endpoint: string, data: any,
+                         onMessage: (chunk: T) => void,
+                         onError?: (error: string) => void,
+                         onDone?: () => void) {
     try {
       const url = this.normalizeUrl(`${process.env.REACT_APP_API_HOST}${endpoint}`);
       const response = await fetch(url, {
@@ -116,6 +119,8 @@ class ApiClient {
       }
     } catch (error: any) {
       if (onError) onError(error.message || "An unexpected error occurred");
+    } finally {
+      if (onDone) onDone();
     }
   }
 

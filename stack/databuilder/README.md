@@ -1,5 +1,5 @@
 # Fake User & Data generator
-__**This project generates infinite users and rwos of data using the `faker` library. It is especially useful for quickly testing permissions and pagination.**__
+__**This project generates infinite users and rows of data using the `faker` library. It is especially useful for quickly testing permissions and pagination.**__
 
 
 # IN DOCKER

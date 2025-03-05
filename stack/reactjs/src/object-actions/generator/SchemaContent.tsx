@@ -1,20 +1,30 @@
 import React, { useState } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Button, ButtonGroup, Typography } from "@mui/material";
 import { ExpandLess, ExpandMore, FileDownload, OpenInNew } from "@mui/icons-material";
-import { WorksheetModel } from "./generator-types";
+import { SchemaVersions } from "./generator-types";
 import SchemaTables from "./SchemaTables";
 import Grid from "@mui/material/Grid";
 import LightDarkImg from "../../components/LightDarkImg";
+import ReactMarkdown from "react-markdown";
 
-
-const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) => {
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(
-    Object.fromEntries((worksheet.schema?.content_types || []).map(ct => [ct.model_name, false]))
-  );
+const SchemaContent: React.FC<{ worksheet: SchemaVersions }> = ({ worksheet }) => {
+  const [reasoningExpanded, setReasoningExpanded] = useState<boolean>(true);
+  const [forceExpanded, setForceExpanded] = useState<boolean>(true);
 
   const toggleAll = (expand: boolean) => {
-    setExpanded(Object.fromEntries((worksheet.schema?.content_types || []).map(ct => [ct.model_name, expand])));
+    setForceExpanded(!forceExpanded);
   };
+
+  const handleDownload = () => {
+    const url = `${process.env.REACT_APP_API_HOST}/api/worksheets/${worksheet.id}/download`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `worksheet_${worksheet.id}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   return (
     <Grid>
@@ -26,29 +36,31 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
           </ButtonGroup>
         </Grid>
         <Grid item>
-          {renderOpenAiLinks(worksheet.config)}
+          {renderOpenAiLinks(worksheet)}
           <Button
             variant={"contained"}
             color={"primary"}
             endIcon={<FileDownload fontSize={"small"} />}
-            onClick={() => window.alert("Feature coming soon!")}
+            onClick={handleDownload}
             size="small"
           >
             Export to CSV
           </Button>
         </Grid>
       </Grid>
+      <Accordion variant={"elevation"} expanded={reasoningExpanded}
+                 sx={{ mb: 2, mt: 2 }}
+                 onChange={() => setReasoningExpanded(!reasoningExpanded)}>
+        <AccordionSummary expandIcon={<ExpandMore />}>AI Reasoning</AccordionSummary>
+        <AccordionDetails>
+          <ReactMarkdown>
+            {worksheet.reasoning}
+          </ReactMarkdown>
+        </AccordionDetails>
+      </Accordion>
       {worksheet.schema?.content_types?.map((w) => (
-        <Accordion variant={"outlined"} key={w.model_name} expanded={expanded[w.model_name]}
-                   onChange={() => setExpanded({ ...expanded, [w.model_name]: !expanded[w.model_name] })}>
-          <AccordionSummary
-            style={{ margin: 0, minHeight: "auto" }}
-            expandIcon={<ExpandMore />}>{w.name}</AccordionSummary>
-          <AccordionDetails sx={{ p: 0 }}>
-            <SchemaTables {...w} />
-          </AccordionDetails>
-        </Accordion>
-      )) || <Typography>{worksheet.response}</Typography>}
+        <SchemaTables forceExpand={forceExpanded} key={`schematable-${w.model_name}`}  {...w} />
+      )) || <Typography>{worksheet.reasoning}</Typography>}
     </Grid>
   );
 };

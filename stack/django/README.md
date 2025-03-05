@@ -59,3 +59,9 @@ The builder writes these files based on your Object Types spreadsheet. The surro
 
 
 ***__Feel free to edit the file outside comment deliminators for each generated code block. If you edit inside, use git and be aware it could get editted by the builder if you rerun it later.__***
+
+## To Deploy:
+- bash deploy/cloud-run.sh -env .env.private
+
+## To Build a GCP project with CloudRun, SQL Cloud, and all necessary service agents, load balancers, ...
+Follow instructions in [deploy/README.md](stack/django/deploy/README.md)

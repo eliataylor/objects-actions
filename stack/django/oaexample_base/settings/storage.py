@@ -36,12 +36,14 @@ if OA_ENV_STORAGE == 'gcp':
     if os.path.isfile(GS_CREDENTIALS_PATH):
         GOOGLE_APPLICATION_CREDENTIALS = GS_CREDENTIALS_PATH
         logger.debug(f'loading Google Service credentials from {GS_CREDENTIALS_PATH}')
-    else:
+    elif myEnv('GS_CREDENTIALS') is not None:
         import json
         from google.oauth2 import service_account
         credentials_info = json.loads(myEnv('GS_CREDENTIALS'))
         GS_CREDENTIALS = service_account.Credentials.from_service_account_info(credentials_info)
         logger.debug(f'Using Google Service credentials from secret manager')
+    else:
+        logger.warning(f'No Google Service credentials found: {GS_CREDENTIALS_PATH}')
 
     GS_FILE_OVERWRITE = False
     GS_BUCKET_NAME = sanitize_bucket_name(myEnv('GCP_BUCKET_API_NAME', 'oaexample-media'))

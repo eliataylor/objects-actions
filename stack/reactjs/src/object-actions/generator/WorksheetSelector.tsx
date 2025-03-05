@@ -1,10 +1,10 @@
 import React from "react";
 import { MenuItem, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { WorksheetModel } from "./generator-types";
+import { SchemaVersions } from "./generator-types";
 
 interface Props {
-  worksheet: WorksheetModel;
+  worksheet: SchemaVersions;
 }
 
 const MAX_RESPONSE_LENGTH = 200;
@@ -12,7 +12,7 @@ const MAX_RESPONSE_LENGTH = 200;
 const WorksheetSelector: React.FC<Props> = ({ worksheet }) => {
   const navigate = useNavigate();
 
-  function shortenName(node: WorksheetModel["version_tree"]) {
+  function shortenName(node: SchemaVersions["version_tree"]) {
     const str = `#${node.id}`;
     if (!node.name) return str;
     if (node.name.length > MAX_RESPONSE_LENGTH) {
@@ -28,7 +28,7 @@ const WorksheetSelector: React.FC<Props> = ({ worksheet }) => {
 
   // Recursively push MenuItem elements into the array
   const renderVersionTree = (
-    node: WorksheetModel["version_tree"],
+    node: SchemaVersions["version_tree"],
     depth = 0,
     elements: JSX.Element[] = []
   ) => {

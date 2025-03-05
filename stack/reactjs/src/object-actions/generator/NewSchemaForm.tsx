@@ -1,26 +1,62 @@
-import React, { useState } from "react";
-import { Alert, Box, Button, CircularProgress, LinearProgress, List, ListItem, ListItemText, MenuItem, Paper, TextField, Typography } from "@mui/material";
+import React, { useRef, useState } from "react";
+import { Alert, Box, Button, CircularProgress, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
-import { useSnackbar } from "notistack";
-import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { WorksheetApiResponse, WorksheetStreamResponse } from "./generator-types";
+import ApiClient from "../../config/ApiClient";
+import { AiSchemaResponse, SchemaVersions, StreamChunk } from "./generator-types";
 import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../allauth/auth";
+import ReactMarkdown from "react-markdown";
+import SchemaTables from "./SchemaTables";
+import { useSnackbar } from "notistack";
 
 const NewSchemaForm: React.FC = () => {
+
   const { enqueueSnackbar } = useSnackbar();
   const me = useAuth()?.data?.user;
+  const navigate = useNavigate();
   const [promptInput, setPromptInput] = useState<string>("");
   const [privacy, setPrivacy] = useState<string>("public");
-  const [useStream, setUseStream] = useState<boolean>(window.location.search.indexOf("stream") > -1);
   const [loading, setLoading] = useState<boolean>(false);
-  const [reasoning, setReasoning] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
-  const handleGenerate = async () => {
+  const [versionId, setVersionId] = useState<number>(0);
+  const [schema, setSchema] = useState<AiSchemaResponse | null>(null);
+  const [loadingSchema, setLoadingSchema] = useState<boolean>(false);
+  const [reasoning, setReasoning] = useState<string>("");
+
+  // because onDone won't have the latest version in state!
+  const versionIdRef = useRef(0);
+  const reasoningRef = useRef("");
+  const schemaRef = useRef<AiSchemaResponse | null>(null);
+
+  const onDone = async () => {
+    if (versionIdRef.current === 0) {
+      console.warn("Never got the version id!?");
+      return false;
+    }
+    ApiClient.get(`/api/worksheets/${versionIdRef.current}`).then(response => {
+      if (response.success && response.data) {
+        const newWorksheet = response.data as SchemaVersions;
+        if (newWorksheet.schema && newWorksheet.reasoning) {
+          enqueueSnackbar("Successful.", { variant: "success" });
+          return navigate(`/oa/schemas/${newWorksheet.id}`);
+        } else {
+          enqueueSnackbar("Incomplete answer. Use this page to try again, or click Request Edits to continue the thread.", { variant: "warning" });
+        }
+      } else {
+        setError("Got invalid worksheet from database.");
+      }
+    }).catch((err) => {
+      setError("Failed to load saved worksheet from database.");
+    }).finally(() => {
+      setLoading(false);
+      setLoadingSchema(false);
+    });
+
+  };
+
+  const handleGenerate = () => {
     if (!promptInput.trim()) {
       setError("Please enter at least one object name");
       return;
@@ -34,46 +70,58 @@ const NewSchemaForm: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const toPass = {
+    const toPass:any = {
       prompt: promptInput,
-      stream: useStream,
       privacy: privacy
     };
+    if (versionId > 0) { // for retries
+      toPass.version_id = versionId
+    }
 
     try {
-      if (useStream === true) {
-        ApiClient.stream<WorksheetStreamResponse>("/api/worksheets/generate?stream=true", toPass,
-          (chunk) => {
-            if (!chunk || (!chunk.reasoning && !chunk.schema && !chunk.error)) {
-              setError("Unknown server error");
-            } else if (chunk.error) {
-              setError(chunk.error);
-            } else if (chunk.reasoning) {
-              setReasoning([...reasoning, chunk.reasoning]);
-            }
-            if (chunk.config_id) {
-              enqueueSnackbar("Fields generated successfully", { variant: "success" });
-              return navigate(`/oa/schemas/${chunk.config_id}`);
-            }
-          }, (error) => {
-            setError(error);
-          });
-      } else {
-        const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post("api/worksheets/generate", toPass);
-        if (response.success && response.data) {
-          if (response.data.success) {
-            enqueueSnackbar("Fields generated successfully", { variant: "success" });
-            return navigate(`/oa/schemas/${response.data.data.id}`);
+      ApiClient.stream<StreamChunk>("/api/worksheets/generate", toPass,
+        (chunk) => {
+          if (chunk.error) {
+            setError(chunk.error);
           }
+          if (chunk.type === "reasoning" && chunk.content) {
+            setReasoning(chunk.content);
+            reasoningRef.current = chunk.content;
+          } else if (chunk.type === "message" && chunk.content) {
+            setReasoning((prev) => {
+              const newReasoning = prev + chunk.content as string;
+              reasoningRef.current = newReasoning; // Update the ref with the new value
+              return newReasoning;
+            });
+          } else {
+            console.log("CHUNK ", chunk);
+          }
+          if (chunk.schema) {
+            console.log("SETTING SCHEMA ", chunk);
+            setSchema(chunk.schema);
+            schemaRef.current = chunk.schema;
+            setLoadingSchema(false);
+          }
+          if (chunk.version_id) {
+            console.log("SETTING VERSION ID ", chunk);
+            setVersionId(chunk.version_id as number);
+            versionIdRef.current = chunk.version_id as number;
+          }
+          if (chunk.type === "done" || (versionIdRef.current > 0 && schemaRef.current)) {
+            console.log("SETTING DONE ", chunk);
+            setLoadingSchema(true);
+          }
+        },
+        (error) => {
+          console.error(error);
+          setError(error);
+        },
+        () => {
+          onDone();
         }
-        setError(response.error || "Failed to generate fields");
-        enqueueSnackbar("Error generating fields", { variant: "error" });
-      }
+      );
     } catch (err) {
-      setError("An unexpected error occurred");
-      enqueueSnackbar("Error connecting to the server", { variant: "error" });
-    } finally {
-      setLoading(false);
+      setError(`An unexpected error occurred ${err?.toString()}`);
     }
   };
 
@@ -82,15 +130,22 @@ const NewSchemaForm: React.FC = () => {
       <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
         <Grid item>
           <Typography variant="h5" component="h1">
-            Generate object and field recommendations for any app idea
+            Generate schema recommendations for any app idea
           </Typography>
         </Grid>
         <Grid item>
-          <IconButton component={Link} to={"/oa/schemas"}><ListAlt /></IconButton>
+          <Button component={Link}
+                  to={"/oa/schemas"}
+                  variant={"contained"}
+                  size={"small"}
+                  color={"secondary"}
+                  endIcon={<ListAlt />}>
+            View App Schemas
+          </Button>
         </Grid>
       </Grid>
 
-      <Paper sx={{ p: 1, mb: 4 }}>
+      <Paper sx={{ p: 1, mb: 4, mt: 1 }}>
         <TextField
           fullWidth
           variant={"filled"}
@@ -140,9 +195,9 @@ const NewSchemaForm: React.FC = () => {
               <MenuItem value={"inviteonly"}>Invite Only</MenuItem>
               <MenuItem value={"authusers"}>Authenticated Users</MenuItem>
               <MenuItem value={"onlyme"}>Only Me</MenuItem>
-            </TextField></Grid>
+            </TextField>
+          </Grid>
         </Grid>
-
 
       </Paper>
 
@@ -158,15 +213,23 @@ const NewSchemaForm: React.FC = () => {
         </Box>
       }
 
-      {reasoning.length > 0 && (
-        <List>
-          {reasoning.map((line, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={line} />
-            </ListItem>
-          ))}
-        </List>
-      )}
+      {versionId > 0 && <Button variant={"contained"}
+                                component={Link}
+                                fullWidth={true}
+                                to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
+
+
+      {reasoning && <ReactMarkdown>
+        {reasoning}
+      </ReactMarkdown>}
+
+      {loadingSchema && <LinearProgress />}
+
+      {schema?.content_types?.map((w) =>
+        <SchemaTables forceExpand={true}
+                      key={`schematable-${w.model_name}`}
+                      {...w} />)}
+
     </Box>
   );
 };

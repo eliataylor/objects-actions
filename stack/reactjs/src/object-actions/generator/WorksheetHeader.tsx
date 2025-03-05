@@ -1,63 +1,25 @@
-import React, { useState } from "react";
-import { Alert, Box, Button, CircularProgress, MenuItem, Paper, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Button, CircularProgress, MenuItem, Paper, TextField } from "@mui/material";
 import { Science as GenerateIcon } from "@mui/icons-material";
-import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { useSnackbar } from "notistack";
-import { useNavigate } from "react-router-dom";
-import { WorksheetApiResponse, WorksheetModel } from "./generator-types";
+import { SchemaVersions } from "./generator-types";
 import WorksheetSelector from "./WorksheetSelector";
 import Grid from "@mui/material/Grid";
 import { useAuth } from "../../allauth/auth";
 
 interface WorksheetHeaderProps {
-  worksheet: WorksheetModel;
+  worksheet: SchemaVersions;
+  handleEnhance: (prompt: string, privacy: string) => void;
+  loading:boolean;
 }
 
-const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet }) => {
-  const { enqueueSnackbar } = useSnackbar();
+const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet, handleEnhance, loading }) => {
   const me = useAuth()?.data?.user;
   const [promptInput, setPromptInput] = useState<string>("");
   const [privacy, setPrivacy] = useState<string>(worksheet.privacy);
-  const [useStream, setUseStream] = useState<boolean>(window.location.search.indexOf("stream") > -1);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
-  const handleEnhance = async () => {
-    if (!promptInput.trim()) {
-      setError("Please enter at least one object name");
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const toPass: any = {
-        prompt: promptInput,
-        config_id: worksheet.config.id,
-        stream: useStream,
-        privacy: privacy
-      };
-      if (error) {
-        toPass.thread_id = worksheet.config.thread_id;
-        toPass.message_id = worksheet.config.message_id;
-        toPass.run_id = worksheet.config.run_id;
-      }
-      const response: HttpResponse<WorksheetApiResponse> = await ApiClient.post(`api/worksheets/${worksheet.id}/enhance`, toPass);
-      if (response.success && response.data) {
-        enqueueSnackbar("Schema generated", { variant: "success" });
-        setPromptInput("");
-        return navigate(`/oa/schemas/${response.data.data.id}`);
-      }
-      setError(response.error || "Failed to generate fields");
-      enqueueSnackbar("Error generating fields", { variant: "error" });
-    } catch (err) {
-      setError("An unexpected error occurred");
-      enqueueSnackbar("Error connecting to the server", { variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  useEffect(() => {
+    setPromptInput("")
+  }, [worksheet]);
 
   return (
     <Box>
@@ -75,7 +37,6 @@ const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet }) => {
           disabled={loading}
           sx={{ mb: 2 }}
         />
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
         <Grid container alignItems={"center"} justifyContent={"space-between"}>
           <Grid item>
@@ -83,7 +44,7 @@ const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet }) => {
               variant="contained"
               color="primary"
               startIcon={loading ? <CircularProgress size={24} /> : <GenerateIcon />}
-              onClick={handleEnhance}
+              onClick={() => handleEnhance(promptInput, privacy)}
               disabled={loading || !promptInput.trim()}
             >
               {loading ? "Generating..." : "Rebuild"}
@@ -111,6 +72,8 @@ const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet }) => {
         </Grid>
 
       </Paper>
+
+
     </Box>
   );
 };

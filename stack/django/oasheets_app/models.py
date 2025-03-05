@@ -6,47 +6,27 @@ from django.utils.timezone import now
 User = get_user_model()
 
 # Model to track assistant creation
-class PromptConfig(models.Model):
+class ProjectSchema(models.Model):
+    title = models.CharField(max_length=100, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
-
     collaborators = models.ManyToManyField(User, related_name="collaborators", blank=True)
 
-    # OpenAI ids
-    assistant_id = models.CharField(max_length=100, null=True, blank=True)
-    thread_id = models.CharField(max_length=100, null=True, blank=True)
-    message_id = models.CharField(max_length=100, null=True, blank=True)
-    run_id = models.CharField(max_length=100, null=True, blank=True)
-
-    # different OpenAI assistant configurations
-    class VariantChoices(models.TextChoices):
-        stream = ("stream", "Stream")
-        request = ("request", "Request")
-
-    variant = models.CharField(max_length=10, choices=VariantChoices.choices, verbose_name='Variant', blank=True,
-                               null=True, default=VariantChoices.request)
-
     def __str__(self):
-        return next(
-            (field for field in [self.run_id, self.message_id, self.thread_id, self.assistant_id] if field),
-            f"Config: {self.id}"
-        )
-
-    openai_model = models.CharField(max_length=100, null=True, blank=True)
-
-    class Meta:
-        app_label = 'oasheets_app'
+        return self.title
 
     def save(self, *args, **kwargs):
         self.modified_at = now()
         super().save(*args, **kwargs)
 
 class SchemaVersions(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_created", null=True, blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
+
+    project = models.ForeignKey(ProjectSchema, on_delete=models.PROTECT, related_name="project", blank=True, null=True)
+    prompt = models.TextField(max_length=4000, blank=False, null=False)
 
     class PrivacyChoices(models.TextChoices):
         public = ("public", "Public")
@@ -57,17 +37,14 @@ class SchemaVersions(models.Model):
         archived = ("archived", "archived")
     privacy = models.CharField(max_length=10, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True, default=PrivacyChoices.onlyme)
 
-    # prompt should be unique per user
-    prompt = models.TextField(max_length=2555, verbose_name='Prompt', blank=False, null=False)
-    config = models.ForeignKey(PromptConfig, on_delete=models.PROTECT, related_name="prompt_config")
-
     # OpenAI ids
-    assistant_id = models.CharField(max_length=100, null=True, blank=True)
+    assistant_id = models.CharField(max_length=100, null=False, blank=False) # REQUIRED!
     thread_id = models.CharField(max_length=100, null=True, blank=True)
     message_id = models.CharField(max_length=100, null=True, blank=True)
     run_id = models.CharField(max_length=100, null=True, blank=True)
+    openai_model = models.CharField(max_length=100, null=True, blank=True)
 
-    response = models.TextField(blank=True, null=True) # reasoning
+    reasoning = models.TextField(blank=True, null=True)
     schema = models.JSONField(blank=True, null=True) # validated and parsed schema
 
     # Version tracking fields

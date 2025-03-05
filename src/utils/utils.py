@@ -338,7 +338,7 @@ def infer_field_datatype(field_type):
         return "RelEntity"
     elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
         return "RelEntity"
-    elif field_type == "text":
+    elif field_type == "text" or field_type == "string":
         return "string"
     elif field_type == "textarea":
         return "string"
@@ -352,7 +352,7 @@ def infer_field_datatype(field_type):
         return "number"
     elif field_type == "date":
         return "string"
-    elif field_type == "date_time":
+    elif field_type == "date_time" or field_type == "timestamp":
         return "string"
     elif field_type == "date_range":
         return "string"

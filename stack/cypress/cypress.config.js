@@ -1,3 +1,4 @@
+const fs = require('fs')
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({

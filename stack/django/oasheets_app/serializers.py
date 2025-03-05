@@ -1,26 +1,21 @@
-import openai
 from rest_framework import serializers
-from django.db import models
 
-from .models import SchemaVersions
 from oaexample_app.serializers import CustomSerializer
-from .utils import sanitize_json
+from .models import SchemaVersions
 
 class PostedPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
-    privacy = serializers.ChoiceField(choices=SchemaVersions.PrivacyChoices.choices, default=SchemaVersions.PrivacyChoices.public)
-    config_id = serializers.IntegerField(required=False)
-    run_id = serializers.CharField(required=False)
-    thread_id = serializers.CharField(required=False)
-    assistant_id = serializers.CharField(required=False)
-    message_id = serializers.CharField(required=False)
-    stream = serializers.BooleanField(default=False)
+    privacy = serializers.ChoiceField(choices=SchemaVersions.PrivacyChoices.choices,
+                                      default=SchemaVersions.PrivacyChoices.public)
+    version_id = serializers.IntegerField(required=False)
+    openai_model = serializers.CharField(default="gpt-4o-mini")
 
     def validate(self, attrs):
         request = self.context.get("request")
         if not request or not request.user or not request.user.is_authenticated:
             attrs["privacy"] = SchemaVersions.PrivacyChoices.public
         return attrs
+
 
 class SchemaVersionSerializer(CustomSerializer):
     versions_count = serializers.SerializerMethodField()
@@ -31,30 +26,9 @@ class SchemaVersionSerializer(CustomSerializer):
         fields = "__all__"
         read_only_fields = [
             'created_at',
-            'modified_at',
             'versions_count',
             'version_tree'
         ]
-
-    def to_representation(self, instance):
-        """Override to inject config fields into the representation"""
-        representation = super().to_representation(instance)
-
-        # Extract `config` related fields if `config` exists
-        if instance.config:
-            config_data = {
-                "run_id": instance.config.run_id,
-                "thread_id": instance.config.thread_id,
-                "message_id": instance.config.message_id,
-                "assistant_id": instance.config.assistant_id,
-            }
-
-            # Ensure config exists in the serialized representation and inject values
-            if "config" not in representation:
-                representation["config"] = {}
-            representation["config"].update(config_data)
-
-        return representation
 
     def get_version_tree(self, obj):
         """Retrieve version tree"""
@@ -83,4 +57,3 @@ class SchemaVersionSerializer(CustomSerializer):
             return children.count() + sum(count_children(child) for child in children)
 
         return count_children(obj)
-
