@@ -153,8 +153,12 @@ class OpenAIPromptManager:
         self.ids['run_id'] = vid
 
     def retrieve_assistant(self, assistant_id):
-        assistant = self.client.beta.assistants.retrieve(assistant_id)
-        return assistant
+        try:
+            assistant = self.client.beta.assistants.retrieve(assistant_id)
+            return assistant
+        except Exception as e:
+            print(f"assistant_id is missing {assistant_id}")
+            return None
 
     """Only called when there is no other version with an active assistant ID"""
     def create_assistant(self):
@@ -195,7 +199,10 @@ When responding to a prompt, you will:
         # Ensure a thread exists
         thread = None
         if self.ids["thread_id"] is not None:
-            thread = self.client.beta.threads.retrieve(self.ids["thread_id"])
+            try:
+                thread = self.client.beta.threads.retrieve(self.ids["thread_id"])
+            except Exception as e:
+                print(f"thread_id is missing {self.ids["thread_id"]}")
 
         if thread is None:
             thread = self.client.beta.threads.create()
@@ -246,6 +253,7 @@ When responding to a prompt, you will:
                             if self.ids["thread_id"] != event.data.thread_id and event.data.thread_id:
                                 print(f"Thread ID changed to {event.data.thread_id}")
                                 self.ids["thread_id"] = event.data.thread_id
+
                             yield {"type": "reasoning", "event": event.event, "content": message_text,
                                    "run_id": event.data.run_id, "thread_id": event.data.thread_id}
 
@@ -361,12 +369,15 @@ When responding to a prompt, you will:
 
         if self.ids["run_id"]:
             # is this ever a good idea?
-            run = self.client.beta.threads.runs.retrieve(
-                thread_id=self.ids["thread_id"],
-                run_id=self.ids["run_id"]
-            )
-            if run.status in ["completed", "failed"]:
-                return run  # better to just throw an error?
+            try:
+                run = self.client.beta.threads.runs.retrieve(
+                    thread_id=self.ids["thread_id"],
+                    run_id=self.ids["run_id"]
+                )
+                if run.status in ["completed", "failed"]:
+                    return run  # better to just throw an error?
+            except Exception as e:
+                print(f"run_id is missing {self.ids["run_id"]}")
 
         run = self.client.beta.threads.runs.create(
             thread_id=self.ids["thread_id"],
