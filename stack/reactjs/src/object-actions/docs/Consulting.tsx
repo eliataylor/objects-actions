@@ -2,6 +2,8 @@ import React from "react";
 import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
+import { TightButton } from "../../theme/StyledFields";
+import LightDarkImg from "../../components/LightDarkImg";
 
 const pricingOptions = [
   {
@@ -52,7 +54,7 @@ const Consulting: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleCopy = async () => {
-    const textToCopy = 'Help@OAExample.com'
+    const textToCopy = "Help@OAExample.com";
     if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(textToCopy);
@@ -70,13 +72,13 @@ const Consulting: React.FC = () => {
 
   return (
     <Box p={1}>
-      <Typography variant="h6" align="center" sx={{ fontWeight: 100 }} >
+      <Typography variant="h6" align="center" sx={{ fontWeight: 100 }}>
         Need Help?
       </Typography>
       {/* <Typography variant="h6" align="center" color="textSecondary" gutterBottom={true}>
         For founders and small startups ready to launch a secure, scalable application.
       </Typography> */}
-      <Typography variant="h3" align="center" color="textSecondary" gutterBottom={true} style={{ textAlign: "center", margin:"20px auto" }}>
+      <Typography variant="h3" align="center" color="textSecondary" gutterBottom={true} style={{ textAlign: "center", margin: "20px auto" }}>
         Get a solid, secure full-stack foundation built for growth, without the guesswork.
       </Typography>
       <Grid container spacing={2}>
@@ -87,7 +89,7 @@ const Consulting: React.FC = () => {
                 <Typography variant="h5" align="center" gutterBottom>
                   {option.title}
                 </Typography>
-                <Typography variant="h4" color="primary" align="center" sx={{ fontWeight: 100 }}  gutterBottom>
+                <Typography variant="h4" color="primary" align="center" sx={{ fontWeight: 100 }} gutterBottom>
                   {option.price}
                 </Typography>
                 <Typography variant="body1" color="textSecondary" gutterBottom>
@@ -107,13 +109,34 @@ const Consulting: React.FC = () => {
         ))}
       </Grid>
 
+      <Typography align={"center"} style={{  margin: "20px auto" }}>
+        <a
+          href={"https://calendar.app.google/N9RfLgwx62TqJRqs5"}
+          target={"_blank"}
+          style={{ textAlign: "center" }}
+        >
+          <TightButton
+            size={"small"}
+            variant={"contained"}
+            startIcon={
+              <LightDarkImg
+                light={"/oa-assets/google-calendar.svg"}
+                dark={"/oa-assets/google-calendar.svg"}
+                styles={{ height: 20 }}
+              />
+            }
+          >
+            Book a Free 30 minute consult today!
+          </TightButton>
+        </a>
+      </Typography>
 
-      <Typography style={{ textAlign: "center", margin:"20px auto" }}>
 
-        Drop us an email at
-        <Button variant={"text"} size={'large'}
+      <Typography align={"center"} style={{ margin: "10px auto 30px auto" }}>
+
+        or email
+        <Button variant={"text"} size={"large"}
                 onClick={handleCopy}>Help <span style={{ margin: "0 2px" }}>@</span> OAExample.com</Button>
-        and let's discuss your project.
 
       </Typography>
 
