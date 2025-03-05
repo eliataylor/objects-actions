@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Alert, Box, Button, LinearProgress } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Fab, LinearProgress } from "@mui/material";
 import WorksheetHeader from "./WorksheetHeader";
 import SchemaContent from "./SchemaContent";
 import { AiSchemaResponse, StreamChunk, SchemaVersions } from "./generator-types";
@@ -149,7 +149,15 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
         {reasoning}
       </ReactMarkdown>}
 
-      {loadingSchema && <LinearProgress />}
+      {(loading || loadingSchema) &&
+       <Fab
+            color="primary"
+            size="small"
+            sx={{ position: "fixed", backgroundColor:'transparent', left: 20, bottom: 20 }}
+          >
+            <CircularProgress color={!loading ? 'primary' : 'secondary'} />
+          </Fab>
+      }
 
       {schema?.content_types?.map((w) =>
         <SchemaTables forceExpand={true}
