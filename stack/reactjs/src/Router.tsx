@@ -48,6 +48,7 @@ import Customize from "./object-actions/docs/Customize";
 import NewSchemaForm from "./object-actions/generator/NewSchemaForm";
 import WorksheetList from "./object-actions/generator/WorksheetList";
 import WorksheetLoader from "./object-actions/generator/WorksheetLoader";
+import Consulting from "./object-actions/docs/Consulting";
 
 function createRouter() {
   const allRoutes = [
@@ -329,6 +330,8 @@ function createRouter() {
   allRoutes[0].children.push({ path: `/oa/schemas/:id`, element: <WorksheetLoader /> });
   allRoutes[0].children.push({ path: `/oa/schemas/:id/versions/:version`, element: <WorksheetLoader /> });
   allRoutes[0].children.push({ path: `/oa/schemas/add`, element: <NewSchemaForm /> });
+  allRoutes[0].children.push({ path: `/oa/consulting`, element: <Consulting /> });
+
   allRoutes[0].children.push({
     path: `/oa/contribute`,
     element: <Contribute />

@@ -1,16 +1,14 @@
 import json
 import os
 import time
+from typing import List
+
 import openai
 from django.conf import settings
 from openai import OpenAIError
+from pydantic import BaseModel
 
 from .schema_validator import SchemaValidator
-from ..models import PromptConfig
-
-# Define the Pydantic model for schema validation
-from pydantic import BaseModel
-from typing import List
 
 class FieldSchema(BaseModel):
     label: str
@@ -21,28 +19,15 @@ class FieldSchema(BaseModel):
     default: str = None
     example: str = None
 
+
 class ContentTypeSchema(BaseModel):
     name: str
     model_name: str
     fields: List[FieldSchema]
 
+
 class ValidateSchema(BaseModel):
     content_types: List[ContentTypeSchema]
-
-def extract_message_text(event):
-    """
-    Safely extracts text from a MessageDeltaEvent.
-    Handles multiple possible content structures.
-    """
-    try:
-        if hasattr(event, "data") and hasattr(event.data, "delta") and hasattr(event.data.delta, "content"):
-            for content_block in event.data.delta.content:
-                if hasattr(content_block, "text") and hasattr(content_block.text, "value"):
-                    return content_block.text.value  # Extract text safely
-        return None  # No valid text found
-    except Exception as e:
-        print(f"Error extracting text: {e}")
-        return None
 
 
 def build_tools():
@@ -71,9 +56,9 @@ def build_tools():
                                      "type": "object",
                                      "properties": {
                                          "name": {
-                                            "type": "string",
-                                            "description": "The human readable label of table"
-                                          },
+                                             "type": "string",
+                                             "description": "The human readable label of table"
+                                         },
                                          "model_name": {
                                              "type": "string",
                                              "description": "The machine name of the table"
@@ -147,244 +132,90 @@ def build_tools():
 
     return tools
 
-
 class OpenAIPromptManager:
-    """Manages an OpenAI Assistant specialized for schema generation"""
 
-    def __init__(self, user, variant):
+    def __init__(self):
+        self.version = None
         self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        self.user = user
-        self.variant = 'request' if variant != 'stream' else 'stream'
-        self.config = None
+        self.ids = {"thread_id":None, "message_id": None, "run_id":None, "assistant_id":None}
 
+    # required
+    def set_assistant_id(self, vid):
+        self.ids['assistant_id'] = vid
+
+    def set_thread_id(self, vid):
+        self.ids['thread_id'] = vid
+
+    def set_message_id(self, vid):
+        self.ids['message_id'] = vid
+
+    def set_run_id(self, vid):
+        self.ids['run_id'] = vid
+
+    def retrieve_assistant(self, assistant_id):
+        assistant = self.client.beta.assistants.retrieve(assistant_id)
+        return assistant
+
+    """Only called when there is no other version with an active assistant ID"""
     def create_assistant(self):
-        """Create a new schema generation assistant"""
         try:
 
             tools = build_tools()
-            assistantProps = {
-                "name": f"Data Schema Designer {self.variant}",
-                "description": "Agent for generating data schemas for app ideas",
-                "model": "gpt-4o-mini",
-                "tools": tools,
-            }
+            assistantProps = {"name": f"Data Schema Designer",
+                              "description": "Agent for generating data schemas for app ideas", "model": "gpt-4o-mini",
+                              "tools": tools,
+                              "instructions": """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea and provide reasoning for your choices.
 
-            if self.variant == 'stream':
-                assistantProps["instructions"] = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea and provide reasoning for your choices.
-
-                                When responding to a prompt, you will:
-                                1. Analyzing the prompt as if building a secure, enterprise level online application.
-                                   - List sufficient potential content types for any non-trivial application
-                                   - Describe the logic behind relationships among your fields.
-                                2. Once you have provided sufficient reasoning via messages, use the `validate_schema` function to generate the final structured schema.
-                                   - Choose the appropriate `field_type` from the enum of fields listed in the `field_type` property of the `validate_schema` function.
-                                   - Set the `relationship` property with the model_name of the related content type.
-                                   - Set the `cardinality` property number of entries a field can have for each item and use -1 for infinity.
-                                   - When an `enum` field is needed, set the list of options in the `example` property.
-                                   - Do NOT waste tokens including the full JSON in your reasoning, but use the tool function `validate_schema` to return the structured JSON as your last step."""
-            else:
-                assistantProps["instructions"] = """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea.
-                
-                                When generating responses:
-                                1. Analyze and interpret the prompt as if building a secure, enterprise level application.
-                                2. Include at least 4-12 content types for any non-trivial application.
-                                3. Include appropriate fields for each content type based on the list of field types in the response_format.
-                                4. Set the relationship property with the model_name of the related content type. Only use on foreign keys: user_profile, user_account, type_reference, or vocabulary_reference.
-                                5. Reserve the "User" content type as the core authentication data layer but allow separate "Profile" content types if needed.
-                                6. It is not necessary to list created / modified date times or auto incrementing ID.
-                                7. Respond with the validated "content_types" json_schema described by the response_format."""
-                assistantProps["response_format"] = {
-                        "type": "json_schema",
-                        "json_schema": {
-                            "name": "content_types",
-                            #                        "strict": True,
-                            "schema": {
-                                "type": "object",
-                                "description": "The generated schema to be validated.",
-                                #                            "additionalProperties": False,
-                                "properties": {
-                                    #                                "additionalProperties": False,
-                                    **tools[0]['function']['parameters']['properties'],
-                                },
-                                "required": [
-                                    "content_types"
-                                ]
-                            }
-                        }
-                    }
-
+When responding to a prompt, you will:
+1. Analyzing the prompt as if building a secure, enterprise level online application.
+   - List sufficient potential content types for any non-trivial application
+   - Describe the logic behind relationships among your fields.
+2. Once you have provided sufficient reasoning via messages, use the `validate_schema` function to generate the final structured schema.
+   - Choose the appropriate `field_type` from the enum of fields listed in the `field_type` property of the `validate_schema` function.
+   - Set the `relationship` property with the model_name of the related content type.
+   - Set the `cardinality` property number of entries a field can have for each item and use -1 for infinity.
+   - When an `enum` field is needed, set the list of options in the `example` property.
+   - Do NOT waste tokens including the full JSON in your reasoning, but use the tool function `validate_schema` to return the structured JSON as your last step."""}
 
             # Create the assistant
             assistant = self.client.beta.assistants.create(**assistantProps)
-
-            # WARN: huge potential conflicts with anonymous users sharing configs
-            config = PromptConfig.objects.create(
-                    author=self.user if self.user.is_authenticated else None,  # Ensure valid Users instance or None
-                    assistant_id=assistant.id,
-                    openai_model=assistant.model,
-                    variant=self.variant,
-                    thread_id=None,
-                    message_id=None,
-                    run_id=None,
-                    active=True)
-            return config
+            return assistant
 
         except OpenAIError as e:
             print(f"Error creating assistant: {e}")
             return None
 
-    def set_config(self, config):
-        self.config = config
-
-    # loads and resets thread, message, run by default
-    def load_config(self, config_id, thread_id=None, message_id=None, run_id=None):
-        self.config = PromptConfig.objects.get(pk=config_id)
-        self.config.thread_id = thread_id
-        self.config.message_id = message_id
-        self.config.run_id = run_id
-        return self.config
-
-    def get_assistant_config(self):
-        if self.config:
-            return self.config
-
-        if self.user.is_authenticated:
-            self.config = PromptConfig.objects.filter(author=self.user, active=True, variant=self.variant).first()
-        else:
-            # WARN: huge potential conflicts with anonymous users sharing configs
-            self.config = PromptConfig.objects.filter(author__isnull=True, active=True, variant=self.variant).first()
-
-        if self.config is None:
-            self.config = self.create_assistant()
-            if self.config is None:
-                raise ValueError("Failed to create assistant and no assistant_id available")
-        else:
-            # always reset these here. if reusing any of these, it'll happen in load_config
-            self.config.thread_id = None
-            self.config.message_id = None
-            self.config.run_id = None
-        return self.config
-
-    def get_or_create_run(self, prompt):
-        """
-        Recursively retrieves or creates the run object based on its status.
-        Returns a completed run object or raises an error if unsuccessful.
-        """
-        if self.config is None:
-            self.get_assistant_config()
-
-        # Ensure a thread exists
-        if self.config.thread_id is None:
-            thread = self.client.beta.threads.create()
-            self.config.thread_id = thread.id
-            PromptConfig.objects.filter(id=self.config.id).update(thread_id=thread.id)
-
-        message = self.client.beta.threads.messages.create(
-            thread_id=self.config.thread_id,
-            role="user",
-            content=prompt
-        )
-        if message is None:
-            # probably still running and this will throw an error
-            if self.config.message_id is not None:
-                message = self.client.beta.threads.messages.retrieve(
-                    thread_id=self.config.message_id,
-                    message_id=self.config.message_id,
-                )
-            else:
-                pass
-
-        self.config.message_id = message.id
-        PromptConfig.objects.filter(id=self.config.id).update(message_id=message.id)
-
-
-        if self.config.run_id:
-            # is this ever a good idea?
-            run = self.client.beta.threads.runs.retrieve(
-                thread_id=self.config.thread_id,
-                run_id=self.config.run_id
-            )
-            if run.status in ["completed", "failed"]:
-                return run  # why?
-
-        run = self.client.beta.threads.runs.create(
-            thread_id=self.config.thread_id,
-            assistant_id=self.config.assistant_id,
-        )
-        PromptConfig.objects.filter(id=self.config.id).update(run_id=run.id)
-        self.config.run_id = run.id
-
-        # Wait for the run to complete
-        return self._wait_for_run_completion(run)
-
-    def _wait_for_run_completion(self, run):
-        """
-        Waits for the run to complete and handles status updates recursively.
-        """
-        while run.status in ["queued", "in_progress"]:
-            time.sleep(1)
-            run = self.client.beta.threads.runs.retrieve(
-                thread_id=self.config.thread_id,
-                run_id=self.config.run_id
-            )
-
-        if run.status == "requires_action" and run.required_action.type == 'submit_tool_outputs':
-            return self._handle_required_action(run)
-
-        if run.status != "completed":
-            raise ValueError(f"Run failed with status: {run.status}")
-
-        return run
-
-    def _handle_required_action(self, run):
-        """
-        Handles cases where a run requires additional action.
-        """
-        validator = SchemaValidator()
-        tool = run.required_action.submit_tool_outputs.tool_calls[0]
-        schema_to_validate = tool.function.arguments
-        validation_result = validator.validate_schema(schema_to_validate)
-
-        if validation_result['corrected_schema'] and len(validation_result['corrected_schema']) > 0:
-            run = self.client.beta.threads.runs.submit_tool_outputs(
-                thread_id=self.config.thread_id,
-                run_id=self.config.run_id,
-                tool_outputs=[
-                    {
-                        "tool_call_id": tool.id,
-                        "output": json.dumps(validation_result["corrected_schema"])
-                    }
-                ]
-            )
-            return self._wait_for_run_completion(run)
-
-        raise ValueError(f"Schema validation failed: {validation_result['errors']}")
+    def get_openai_ids(self):
+        return self.ids
 
     def stream(self, prompt):
-        if self.config is None:
-            self.get_assistant_config()
+        if self.ids['assistant_id'] is None:
+            self.create_assistant()
 
         # Ensure a thread exists
-        if self.config.thread_id is None:
+        thread = None
+        if self.ids["thread_id"] is not None:
+            thread = self.client.beta.threads.retrieve(self.ids["thread_id"])
+
+        if thread is None:
             thread = self.client.beta.threads.create()
-            self.config.thread_id = thread.id
-            PromptConfig.objects.filter(id=self.config.id).update(thread_id=thread.id)
+            self.ids["thread_id"] = thread.id
+
 
         # Step 1: Send the initial user message
         message = self.client.beta.threads.messages.create(
-            thread_id=self.config.thread_id,
+            thread_id=self.ids["thread_id"],
             role="user",
             content=prompt
         )
-        self.config.message_id = message.id
-        PromptConfig.objects.filter(id=self.config.id).update(message_id=message.id)
+        self.ids["message_id"] = message.id
 
-        allEventTypes = {} # debugging
+        allEventTypes = {}  # debugging
 
         try:
             with self.client.beta.threads.runs.stream(
-                    thread_id=self.config.thread_id,
-                    assistant_id=self.config.assistant_id,
+                    thread_id=self.ids["thread_id"],
+                    assistant_id=self.ids['assistant_id'],
                     tools=[
                         openai.pydantic_function_tool(ValidateSchema, name="validate_schema"),
                     ],
@@ -394,14 +225,15 @@ class OpenAIPromptManager:
                     if hasattr(event, 'event'):
                         allEventTypes[event.event] = 1
                         if event.event == "thread.message.delta":
-                            message_text = extract_message_text(event)
-                            yield {"type": "message", "event":event.event, "content": message_text}
+                            message_text = self.extract_message_text(event)
+                            yield {"type": "message", "event": event.event, "content": message_text}
 
                         elif event.event == "thread.message.completed":
                             message_text = event.data.content[0].text.value
                             schema_json = self.extract_json(message_text)
                             if schema_json:
-                                message_text = self.remove_json(message_text) # strip it from response now that we have it parsed out
+                                message_text = self.remove_json(
+                                    message_text)  # strip it from response now that we have it parsed out
                                 validator = SchemaValidator()
                                 validation_result = validator.validate_schema(schema_json)
                                 yield {
@@ -410,14 +242,20 @@ class OpenAIPromptManager:
                                     "errors": validation_result["errors"],
                                     "schema": validation_result['corrected_schema']
                                 }
-                            yield {"type": "reasoning", "event":event.event, "content": message_text, "run_id": event.data.run_id, "thread_id": event.data.thread_id}
+                            self.ids["run_id"] = event.data.run_id
+                            if self.ids["thread_id"] != event.data.thread_id and event.data.thread_id:
+                                print(f"Thread ID changed to {event.data.thread_id}")
+                                self.ids["thread_id"] = event.data.thread_id
+                            yield {"type": "reasoning", "event": event.event, "content": message_text,
+                                   "run_id": event.data.run_id, "thread_id": event.data.thread_id}
 
                         elif event.event == "error":
-                            message_text = extract_message_text(event)
-                            yield {"type": "error", "event":event.event, "content": message_text}
+                            message_text = self.extract_message_text(event)
+                            yield {"type": "error", "event": event.event, "content": message_text}
 
                         elif event.event == "thread.run.requires_action":
-                            if hasattr(event.data, "required_action") and event.data.required_action.type == "submit_tool_outputs":
+                            if hasattr(event.data,
+                                       "required_action") and event.data.required_action.type == "submit_tool_outputs":
                                 tool_calls = event.data.required_action.submit_tool_outputs.tool_calls
 
                                 # Process each tool call (in this case, validate_schema)
@@ -440,7 +278,7 @@ class OpenAIPromptManager:
 
                                             # why bother at this point?
                                             self.client.beta.threads.runs.submit_tool_outputs(
-                                                thread_id=self.config.thread_id,
+                                                thread_id=self.ids["thread_id"],
                                                 run_id=event.data.id,
                                                 tool_outputs=[
                                                     {
@@ -459,19 +297,20 @@ class OpenAIPromptManager:
 
                         elif event.event == "tool_calls.function.arguments.delta":
                             function_args = getattr(event.data, "arguments", {})
-                            yield {"type": "partial_function_call", "event":event.event, "content": function_args}
+                            yield {"type": "partial_function_call", "event": event.event, "content": function_args}
 
                         elif event.event == "tool_calls.function.arguments.done":
                             final_args = getattr(event.data, "arguments", {})
-                            yield {"type": "final_function_call", "event":event.event, "content": final_args}
+                            yield {"type": "final_function_call", "event": event.event, "content": final_args}
 
                 print(allEventTypes)
 
         except OpenAIError as e:
             yield {"error": f"OpenAI Assistant Error: {str(e)}", "type": "error"}
 
+    # used as fallback when schema is not found in stream
     def request(self, prompt):
-        if self.config is None:
+        if self.ids is None:
             self.get_assistant_config()
 
         try:
@@ -483,7 +322,7 @@ class OpenAIPromptManager:
                 return err, None
 
             messages = self.client.beta.threads.messages.list(
-                thread_id=self.config.thread_id
+                thread_id=self.ids["thread_id"]
             )
 
             # Find the JSON schema in the response
@@ -494,7 +333,7 @@ class OpenAIPromptManager:
                     content = message.content[0].text.value
                     schema_json = self.extract_json(content)
                     if schema_json is not None:
-                        content = self.remove_json(content) # only save reasoning text here
+                        content = self.remove_json(content)  # only save reasoning text here
                         break
 
             return content, schema_json
@@ -502,6 +341,99 @@ class OpenAIPromptManager:
         except OpenAIError as e:
             print(f"OpenAI Assistant Error: {e}")
             return str(e), None
+
+    def get_or_create_run(self, prompt):
+
+        # Ensure a thread exists
+        if self.ids["thread_id"] is None:
+            thread = self.client.beta.threads.create()
+            self.ids["thread_id"] = thread.id
+
+        message = self.client.beta.threads.messages.create(
+            thread_id=self.ids["thread_id"],
+            role="user",
+            content=prompt
+        )
+        if message is None:
+            raise ValueError("Failed to create message")
+
+        self.ids["message_id"] = message.id
+
+        if self.ids["run_id"]:
+            # is this ever a good idea?
+            run = self.client.beta.threads.runs.retrieve(
+                thread_id=self.ids["thread_id"],
+                run_id=self.ids["run_id"]
+            )
+            if run.status in ["completed", "failed"]:
+                return run  # better to just throw an error?
+
+        run = self.client.beta.threads.runs.create(
+            thread_id=self.ids["thread_id"],
+            assistant_id=self.ids['assistant_id'],
+        )
+        self.ids["run_id"] = run.id
+
+        # Wait for the run to complete
+        return self._wait_for_run_completion(run)
+
+    def _wait_for_run_completion(self, run):
+        """
+        Waits for the run to complete and handles status updates recursively.
+        """
+        while run.status in ["queued", "in_progress"]:
+            time.sleep(1)
+            run = self.client.beta.threads.runs.retrieve(
+                thread_id=self.ids["thread_id"],
+                run_id=self.ids["run_id"]
+            )
+
+        if run.status == "requires_action" and run.required_action.type == 'submit_tool_outputs':
+            return self._handle_required_action(run)
+
+        if run.status != "completed":
+            raise ValueError(f"Run failed with status: {run.status}")
+
+        return run
+
+    def _handle_required_action(self, run):
+        """
+        Handles cases where a run requires additional action.
+        """
+        validator = SchemaValidator()
+        tool = run.required_action.submit_tool_outputs.tool_calls[0]
+        schema_to_validate = tool.function.arguments
+        validation_result = validator.validate_schema(schema_to_validate)
+
+        if validation_result['corrected_schema'] and len(validation_result['corrected_schema']) > 0:
+            run = self.client.beta.threads.runs.submit_tool_outputs(
+                thread_id=self.ids["thread_id"],
+                run_id=self.ids["run_id"],
+                tool_outputs=[
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(validation_result["corrected_schema"])
+                    }
+                ]
+            )
+            return self._wait_for_run_completion(run)
+
+        raise ValueError(f"Schema validation failed: {validation_result['errors']}")
+
+    def extract_message_text(self, event):
+        """
+        Safely extracts text from a MessageDeltaEvent.
+        Handles multiple possible content structures.
+        """
+        try:
+            if hasattr(event, "data") and hasattr(event.data, "delta") and hasattr(event.data.delta, "content"):
+                for content_block in event.data.delta.content:
+                    if hasattr(content_block, "text") and hasattr(content_block.text, "value"):
+                        return content_block.text.value  # Extract text safely
+            return None  # No valid text found
+        except Exception as e:
+            print(f"Error extracting text: {e}")
+        return None
 
     def extract_json(self, text):
         """Extract JSON object from a text response, handling multiple formats."""

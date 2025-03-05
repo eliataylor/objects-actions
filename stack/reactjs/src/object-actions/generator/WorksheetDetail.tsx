@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Alert, Box, Button, LinearProgress } from "@mui/material";
 import WorksheetHeader from "./WorksheetHeader";
 import SchemaContent from "./SchemaContent";
-import { AiSchemaResponse, StreamChunk, WorksheetModel } from "./generator-types";
+import { AiSchemaResponse, StreamChunk, SchemaVersions } from "./generator-types";
 import { Link, useNavigate } from "react-router-dom";
 import ApiClient from "../../config/ApiClient";
 import ReactMarkdown from "react-markdown";
@@ -10,7 +10,7 @@ import SchemaTables from "./SchemaTables";
 import { useSnackbar } from "notistack";
 
 interface WorksheetDetailProps {
-  worksheet: WorksheetModel;
+  worksheet: SchemaVersions;
 }
 
 const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
@@ -36,8 +36,11 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
     }
     ApiClient.get(`/api/worksheets/${versionIdRef.current}`).then(response => {
       if (response.success && response.data) {
-        const newWorksheet = response.data as WorksheetModel;
-        if (newWorksheet.schema && newWorksheet.response) {
+        const newWorksheet = response.data as SchemaVersions;
+        if (newWorksheet.schema && newWorksheet.reasoning) {
+          setVersionId(0);
+          setReasoning("");
+          setSchema(null);
           enqueueSnackbar("Successful.", { variant: "success" });
           return navigate(`/oa/schemas/${newWorksheet.id}`);
         } else {
@@ -67,13 +70,11 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
     try {
       const toPass: any = {
         prompt: promptInput,
-        config_id: worksheet.config.id,
-        stream: true,
         privacy: privacy,
-        thread_id: worksheet.config.thread_id
+        version_id: worksheet.id
       };
 
-      ApiClient.stream<StreamChunk>(`/api/worksheets/${worksheet.id}/enhance?stream=true`, toPass,
+      ApiClient.stream<StreamChunk>(`/api/worksheets/${worksheet.id}/enhance`, toPass,
         (chunk) => {
           if (chunk.error) {
             setError(chunk.error);
@@ -101,7 +102,7 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
             setVersionId(chunk.version_id as number);
             versionIdRef.current = chunk.version_id as number;
           }
-          if (chunk.type === "done") {
+          if (chunk.type === "done" || (versionIdRef.current > 0 && schemaRef.current)) {
             console.log("SETTING DONE ", chunk);
             setLoadingSchema(true);
           }
@@ -128,8 +129,9 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
                                 fullWidth={true}
                                 sx={{ mt: 3, mb: 4 }}
                                 onClick={() => {
-                                  setReasoning('');
-                                  setSchema(null)
+                                  setVersionId(0);
+                                  setReasoning("");
+                                  setSchema(null);
                                 }}
                                 to={`/oa/schemas/${versionId}`}>Request Edits</Button>}
 

@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Alert, Box, Button, CircularProgress, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
 import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import ApiClient from "../../config/ApiClient";
-import { AiSchemaResponse, WorksheetModel, StreamChunk } from "./generator-types";
+import { AiSchemaResponse, SchemaVersions, StreamChunk } from "./generator-types";
 import Grid from "@mui/material/Grid";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../allauth/auth";
@@ -37,8 +37,8 @@ const NewSchemaForm: React.FC = () => {
     }
     ApiClient.get(`/api/worksheets/${versionIdRef.current}`).then(response => {
       if (response.success && response.data) {
-        const newWorksheet = response.data as WorksheetModel;
-        if (newWorksheet.schema && newWorksheet.response) {
+        const newWorksheet = response.data as SchemaVersions;
+        if (newWorksheet.schema && newWorksheet.reasoning) {
           enqueueSnackbar("Successful.", { variant: "success" });
           return navigate(`/oa/schemas/${newWorksheet.id}`);
         } else {
@@ -70,14 +70,16 @@ const NewSchemaForm: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const toPass = {
+    const toPass:any = {
       prompt: promptInput,
-      stream: true,
       privacy: privacy
     };
+    if (versionId > 0) { // for retries
+      toPass.version_id = versionId
+    }
 
     try {
-      ApiClient.stream<StreamChunk>("/api/worksheets/generate?stream=true", toPass,
+      ApiClient.stream<StreamChunk>("/api/worksheets/generate", toPass,
         (chunk) => {
           if (chunk.error) {
             setError(chunk.error);
@@ -105,7 +107,7 @@ const NewSchemaForm: React.FC = () => {
             setVersionId(chunk.version_id as number);
             versionIdRef.current = chunk.version_id as number;
           }
-          if (chunk.type === "done") {
+          if (chunk.type === "done" || (versionIdRef.current > 0 && schemaRef.current)) {
             console.log("SETTING DONE ", chunk);
             setLoadingSchema(true);
           }

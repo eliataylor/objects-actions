@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, CircularProgress, MenuItem, Paper, TextField } from "@mui/material";
 import { Science as GenerateIcon } from "@mui/icons-material";
-import { WorksheetModel } from "./generator-types";
+import { SchemaVersions } from "./generator-types";
 import WorksheetSelector from "./WorksheetSelector";
 import Grid from "@mui/material/Grid";
 import { useAuth } from "../../allauth/auth";
 
 interface WorksheetHeaderProps {
-  worksheet: WorksheetModel;
+  worksheet: SchemaVersions;
   handleEnhance: (prompt: string, privacy: string) => void;
   loading:boolean;
 }
@@ -16,6 +16,10 @@ const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet, handleEnha
   const me = useAuth()?.data?.user;
   const [promptInput, setPromptInput] = useState<string>("");
   const [privacy, setPrivacy] = useState<string>(worksheet.privacy);
+
+  useEffect(() => {
+    setPromptInput("")
+  }, [worksheet]);
 
   return (
     <Box>

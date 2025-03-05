@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SchemaVersions, PromptConfig
+from .models import SchemaVersions, ProjectSchema
 
 class SchemaVersionsAdmin(admin.ModelAdmin):
 	readonly_fields = ('id',)
@@ -7,8 +7,8 @@ class SchemaVersionsAdmin(admin.ModelAdmin):
 
 admin.site.register(SchemaVersions, SchemaVersionsAdmin)
 
-class PromptConfigAdmin(admin.ModelAdmin):
+class ProjectSchemaAdmin(admin.ModelAdmin):
 	readonly_fields = ('id',)
-	list_display = ('id', 'active', 'assistant_id', 'message_id', 'run_id', 'openai_model')
+	list_display = ('id', 'title', 'author')
 
-admin.site.register(PromptConfig, PromptConfigAdmin)
+admin.site.register(ProjectSchema, ProjectSchemaAdmin)

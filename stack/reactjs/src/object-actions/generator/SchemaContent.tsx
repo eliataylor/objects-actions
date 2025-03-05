@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Button, ButtonGroup, Typography } from "@mui/material";
 import { ExpandLess, ExpandMore, FileDownload, OpenInNew } from "@mui/icons-material";
-import { WorksheetModel } from "./generator-types";
+import { SchemaVersions } from "./generator-types";
 import SchemaTables from "./SchemaTables";
 import Grid from "@mui/material/Grid";
 import LightDarkImg from "../../components/LightDarkImg";
 import ReactMarkdown from "react-markdown";
 
-const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) => {
+const SchemaContent: React.FC<{ worksheet: SchemaVersions }> = ({ worksheet }) => {
   const [reasoningExpanded, setReasoningExpanded] = useState<boolean>(true);
   const [forceExpanded, setForceExpanded] = useState<boolean>(true);
 
@@ -36,7 +36,7 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
           </ButtonGroup>
         </Grid>
         <Grid item>
-          {renderOpenAiLinks(worksheet.config)}
+          {renderOpenAiLinks(worksheet)}
           <Button
             variant={"contained"}
             color={"primary"}
@@ -54,13 +54,13 @@ const SchemaContent: React.FC<{ worksheet: WorksheetModel }> = ({ worksheet }) =
         <AccordionSummary expandIcon={<ExpandMore />}>AI Reasoning</AccordionSummary>
         <AccordionDetails>
           <ReactMarkdown>
-            {worksheet.response}
+            {worksheet.reasoning}
           </ReactMarkdown>
         </AccordionDetails>
       </Accordion>
       {worksheet.schema?.content_types?.map((w) => (
         <SchemaTables forceExpand={forceExpanded} key={`schematable-${w.model_name}`}  {...w} />
-      )) || <Typography>{worksheet.response}</Typography>}
+      )) || <Typography>{worksheet.reasoning}</Typography>}
     </Grid>
   );
 };

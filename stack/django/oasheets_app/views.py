@@ -12,8 +12,7 @@ from rest_framework.response import Response
 from oaexample_app.views import PaginatedViewSet
 from .models import SchemaVersions
 from .serializers import SchemaVersionSerializer, PostedPromptSerializer
-from .services.generator_service import Prompt2SchemaService
-
+from .services.generator_service import SchemaGenerator
 
 class SchemaVersionsViewSet(PaginatedViewSet):
     queryset = SchemaVersions.objects.all()
@@ -34,7 +33,7 @@ class SchemaVersionsViewSet(PaginatedViewSet):
                 models.Q(privacy__in=[SchemaVersions.PrivacyChoices.public, SchemaVersions.PrivacyChoices.unlisted,
                                       SchemaVersions.PrivacyChoices.authusers]) |
                 models.Q(privacy=SchemaVersions.PrivacyChoices.inviteonly,
-                         config__collaborators=user) |  # TODO: CRUD operations for collaborators
+                         project__collaborators=user) |  # TODO: CRUD operations for collaborators
                 models.Q(privacy=SchemaVersions.PrivacyChoices.onlyme, author=user)
             )
 
@@ -58,7 +57,7 @@ class SchemaVersionsViewSet(PaginatedViewSet):
             return Response({"error": "You are not authorized to access this schema."},
                             status=status.HTTP_403_FORBIDDEN)
 
-        if schema.privacy == SchemaVersions.PrivacyChoices.inviteonly and request.user not in schema.config.collaborators.all():
+        if schema.privacy == SchemaVersions.PrivacyChoices.inviteonly and request.user not in schema.collaborators.all():
             return Response({"error": "You need an invitation to view this schema."}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = self.get_serializer(schema)
@@ -74,42 +73,30 @@ class SchemaVersionsViewSet(PaginatedViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         prompt_data = serializer.validated_data
-        variant = 'stream' if request.query_params.get("stream") == "true" else 'request'
-        generator = Prompt2SchemaService(request.user, variant)
-
-        if "config_id" in prompt_data:
-            config = generator.load_config(
-                prompt_data['config_id'],
-                *(prompt_data[key] for key in ['thread_id', 'message_id', 'run_id'] if key in prompt_data)
-            )
-            if config.author != request.user:
-                generator.set_config(None)
-
-        if variant == "stream":
-            response_generator = generator.generate_via_stream(prompt_data['prompt'], prompt_data['privacy'],
-                                                               request.user)
-            return StreamingHttpResponse(response_generator, content_type="application/json")
-
-        result = generator.generate_schema(prompt_data['prompt'], prompt_data['privacy'], request.user)
-        if result:
-            return Response({"success": True, "data": result})
+        if "version_id" in prompt_data:
+            version = SchemaVersions.objects.filter(pk=prompt_data["version_id"]).first()  # it's ok if it's been deleted or inactivated
         else:
-            return Response({"error": "Schema generation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            version = None
+
+        generator = SchemaGenerator(prompt_data, request.user, version)
+
+        response_generator = generator.start_stream(prompt_data['prompt'])
+        return StreamingHttpResponse(response_generator, content_type="application/json")
 
     @action(detail=True, methods=['post'])
     def enhance(self, request, pk=None):
-        schema = self.get_object()
+        version = self.get_object()
 
-        if request.user is None and schema.privacy not in [SchemaVersions.PrivacyChoices.public,
+        if request.user is None and version.privacy not in [SchemaVersions.PrivacyChoices.public,
                                                            SchemaVersions.PrivacyChoices.unlisted]:
             return Response({"error": "Login to view this schema."},
                             status=status.HTTP_403_FORBIDDEN)
 
-        if schema.privacy == SchemaVersions.PrivacyChoices.onlyme and schema.author != request.user:
+        if version.privacy == SchemaVersions.PrivacyChoices.onlyme and version.author != request.user:
             return Response({"error": "You are not authorized to enhance this schema."},
                             status=status.HTTP_403_FORBIDDEN)
 
-        if schema.privacy == SchemaVersions.PrivacyChoices.inviteonly and request.user not in schema.config.collaborators.all():
+        if version.privacy == SchemaVersions.PrivacyChoices.inviteonly and request.user not in version.collaborators.all():
             return Response({"error": "You need an invitation to enhance this schema."},
                             status=status.HTTP_403_FORBIDDEN)
 
@@ -117,29 +104,11 @@ class SchemaVersionsViewSet(PaginatedViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        variant = 'stream' if request.query_params.get("stream") == "true" else 'request'
         prompt_data = serializer.validated_data
-        generator = Prompt2SchemaService(request.user, variant)
+        generator = SchemaGenerator(prompt_data, request.user, version)
 
-        if "config_id" in prompt_data:
-            config = generator.load_config(
-                prompt_data['config_id'],
-                *(prompt_data[key] for key in ['thread_id', 'message_id', 'run_id'] if key in prompt_data)
-            )
-            if config.author != request.user:
-                generator.set_config(None)
-
-        if request.query_params.get("stream") == "true":
-            response_generator = generator.enhance_via_stream(prompt_data['prompt'], prompt_data['privacy'],
-                                                              request.user, schema)
-            return StreamingHttpResponse(response_generator, content_type="application/json")
-
-        result = generator.generate_schema(prompt_data['prompt'], prompt_data['privacy'], request.user)
-
-        if result:
-            return Response({"success": True, "data": result})
-        else:
-            return Response({"error": "Schema enhancement failed."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response_generator = generator.start_stream(prompt_data['prompt'])
+        return StreamingHttpResponse(response_generator, content_type="application/json")
 
     @action(detail=True, methods=['get'], url_path='download')
     def download_csv(self, request, pk=None):
@@ -158,7 +127,7 @@ class SchemaVersionsViewSet(PaginatedViewSet):
         ]
 
         # Extract schema fields
-        schema_data = version.schema  # Assuming schema.config stores the ValidateSchema data
+        schema_data = version.schema
         if schema_data is None:
             return Response({"error": "This version has no schema"}, status=204)
         rows = []

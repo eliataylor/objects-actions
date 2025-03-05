@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { AppBar, Box, Fab, Grid } from "@mui/material";
 import TablePaginator from "../../components/TablePaginator";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 import { useAuth } from "../../allauth/auth";
 import { WorksheetListResponse } from "./generator-types";

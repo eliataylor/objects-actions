@@ -4,134 +4,115 @@ from ..models import SchemaVersions
 from ..serializers import SchemaVersionSerializer
 from ..services.assistant_manager import OpenAIPromptManager
 
-class Prompt2SchemaService:
-    """Orchestrates the schema generation process using multiple components"""
+class SchemaGenerator:
+    def __init__(self, prompt_data, user, last_version=None):
 
-    def __init__(self, user, variant):
-        self.assistant_manager = OpenAIPromptManager(user, variant)
+        self.assistant_manager = OpenAIPromptManager()
 
-    def load_config(self, config_id, thread_id=None, message_id=None, run_id=None):
-        return self.assistant_manager.load_config(config_id, thread_id, message_id, run_id)
+        self.assistant = None
+        if last_version is not None: # if a specific version was passed in to inherit
+            self.assistant = self.assistant_manager.retrieve_assistant(last_version.assistant_id)
+        else: # else just use the latest version's assistant since they're all the same
+            assistant_id = SchemaVersions.objects.order_by("-id").values_list("assistant_id", flat=True).first()
+            if assistant_id:
+                self.assistant = self.assistant_manager.retrieve_assistant(assistant_id)
 
-    def set_config(self, config):
-        self.assistant_manager.set_config(config)
+        if self.assistant is None:
+            self.assistant = self.assistant_manager.create_assistant()
 
-    def generate_schema(self, prompt, privacy, user):
-        """Generate a comprehensive schema using multiple approaches"""
+        self.version = SchemaVersions.objects.create(
+            author=user if user.is_authenticated else None,
+            prompt=prompt_data["prompt"],
+            privacy=prompt_data["privacy"],
+            assistant_id=self.assistant.id,
+            thread_id=last_version.thread_id if last_version else None,
+            parent_id=last_version.id if last_version else None,
+            run_id=None,
+            message_id=None,
+            openai_model=prompt_data["openai_model"],
+        )
+
+        self.assistant_manager.set_assistant_id(self.assistant.id)
+        self.assistant_manager.set_thread_id(self.version.thread_id)
+        if last_version:
+            if last_version.message_id:
+                self.assistant_manager.set_message_id(last_version.message_id)
+            if last_version.run_id:
+                self.assistant_manager.set_run_id(last_version.run_id)
+
+    # http request (non-streaming) to openai, deprecated
+    def request_schema(self, prompt):
         try:
-            response, schema = self.assistant_manager.request(prompt)
-            config = self.assistant_manager.get_assistant_config()
-            schema_obj = SchemaVersions.objects.create(
-                prompt=prompt,
-                response=response,
-                privacy=privacy,
-                config_id=config.id,
-                assistant_id=config.assistant_id,
-                thread_id=config.thread_id,
-                message_id=config.message_id,
-                run_id=config.run_id,
-                schema=schema,
-                author=user if user.is_authenticated else None
-            )
+            reasoning, schema = self.assistant_manager.request(prompt)
+            runtime = self.assistant_manager.get_openai_ids()
+            self.version.prompt = prompt
+            self.version.reasoning = reasoning
+            self.version.schema = schema
+            self.version.thread_id = runtime['thread_id']
+            self.version.message_id = runtime['message_id']
+            self.version.run_id = runtime['run_id']
+            self.version.save()
 
-            return SchemaVersionSerializer(schema_obj).data
+            return SchemaVersionSerializer(self.version).data
 
         except Exception as e:
             print(f"Error in schema generation: {e}")
             return None
 
-    def generate_via_stream(self, prompt, privacy, user):
+    # streaming response to openai
+    def start_stream(self, prompt):
         try:
             response_stream = self.assistant_manager.stream(prompt)
-            config = self.assistant_manager.get_assistant_config()
-            schema_version = SchemaVersions.objects.create(
-                prompt=prompt,
-                privacy=privacy,
-                config=config,
-                assistant_id=config.assistant_id,
-                thread_id=config.thread_id,
-                message_id=config.message_id,
-                run_id=config.run_id,
-                author = user if user.is_authenticated else None
-            )
+            self.version.prompt = prompt
 
-            yield from self.handle_stream(schema_version, config, response_stream)
+            yield from self.handle_stream(response_stream)
 
         except Exception as e:
             if self.doSave:
-                schema_version.save()
-            yield json.dumps({"error": f"New schema failed: {str(e)}"}) + "\n"
+                self.version.save()
+            yield json.dumps({"error": f"Stream failed: {str(e)}"}) + "\n"
 
-    def enhance_via_stream(self, prompt, privacy, user, schema_version):
-        try:
-
-            response_stream = self.assistant_manager.stream(prompt)
-            config = self.assistant_manager.get_assistant_config()
-            schema_version = SchemaVersions.objects.create(
-                prompt=prompt,
-                config_id=config.id,
-                assistant_id=config.assistant_id,
-                thread_id=config.thread_id,
-                message_id=config.message_id,
-                run_id=config.run_id,
-                privacy=privacy,
-                author=user if user.is_authenticated else None,
-                parent_id=schema_version.id
-            )
-
-            yield from self.handle_stream(schema_version, config, response_stream)
-
-        except SchemaVersions.DoesNotExist:
-            print(f"Original schema with ID {schema_version} not found")
-            yield json.dumps({"error": f"Original schema with ID {schema_version.id} not found"}) + "\n"
-
-        except Exception as e:
-            if self.doSave:
-                schema_version.save()
-            print(f"Error enhancing schema: {str(e)}")
-            yield json.dumps({"error": f"Edit failed: {str(e)}"}) + "\n"
-
-    def handle_stream(self, schema_version, config, response_stream):
+    def handle_stream(self, response_stream):
 
         self.doSave = False
 
         for response in response_stream:
 
             if "run_id" in response:
-                schema_version.run_id = response['run_id']
+                self.version.run_id = response['run_id']
                 self.doSave = True
             if "thread_id" in response:
-                schema_version.thread_id = response['thread_id']
+                self.version.thread_id = response['thread_id']
                 self.doSave = True
             if "schema" in response:
-                schema_version.schema = response['schema']
+                self.version.schema = response['schema']
                 self.doSave = True
 
             if response["type"] == "reasoning":
-                schema_version.response = response['content']
+                self.version.reasoning = response['content']
 
             yield json.dumps(response) + "\n"
 
         # fallback if we never get the schema or even a response
-        if schema_version.schema is None:
+        if self.version.schema is None:
             reasoning, schema = self.assistant_manager.request("Please generate the validated schema based on your recommendations")
-            if schema_version.response is None and reasoning is not None:
-                schema_version.response = reasoning
+            if self.version.reasoning is None and reasoning is not None:
+                self.version.reasoning = reasoning
                 self.doSave = True
             if schema is not None:
-                schema_version.schema = schema
+                self.version.schema = schema
                 yield json.dumps({"type": "requested_schema", "schema": schema}) + "\n"
                 self.doSave = True
 
-        if schema_version.schema is not None:
+        if self.version.schema is not None:
             # cleanup potential json inside reasoning body:
-            schema_json = self.assistant_manager.extract_json(schema_version.response)
+            schema_json = self.assistant_manager.extract_json(self.version.reasoning)
             if schema_json:
-                schema_version.response = self.assistant_manager.remove_json(schema_version.response)
+                self.version.reasoning = self.assistant_manager.remove_json(self.version.reasoning)
                 self.doSave = True
 
         if self.doSave:
             self.doSave = False
-            schema_version.save()
+            self.version.save()
 
-        yield json.dumps({"type": "done", "version_id": schema_version.id, "config_id": config.id}) + "\n"
+        yield json.dumps({"type": "done", "version_id": self.version.id}) + "\n"

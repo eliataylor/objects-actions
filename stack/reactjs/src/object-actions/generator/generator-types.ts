@@ -22,68 +22,59 @@ export interface SchemaContentType {
   forceExpand?: boolean;
 }
 
-export interface WorksheetApiResponse {
-  data: WorksheetModel;
-  success: boolean;
-  errors?: string[];
-}
-
-export interface WorksheetStreamResponse {
-  reasoning?: string;
-  schema?: Record<string, unknown>;
-  config_id?: number;
-  error?: string;
-}
-
 export interface WorksheetListResponse {
   count: number;
   offset: number;
   limit: number;
   meta: any;
   error: string | null;
-  results: WorksheetModel[];
+  results: SchemaVersions[];
 }
 
-interface SerializedPromptConfig {
+export type ProjectSchema = {
   id: number;
-  author: RelEntity<'Users'>;
-
+  title?: string;
+  author?: RelEntity<'Users'>;
+  created_at: string; // ISO 8601 date string
+  modifiedAt: string; // ISO 8601 date string
+  active: boolean;
   collaborators: RelEntity<'Users'>[];
+};
 
-  run_id: string | null;
-  thread_id: string | null;
-  message_id: string | null;
-  assistant_id: string | null;
+type PrivacyChoices =
+  | "public"
+  | "unlisted"
+  | "inviteonly"
+  | "authusers"
+  | "onlyme"
+  | "archived";
 
-}
-
-export interface WorksheetModel {
+export type SchemaVersions = {
   id: number;
-  author: RelEntity<'Users'>
-  created_at: string;
-  modified_at: string;
-  privacy: 'public' | 'unlisted' | 'inviteonly' | 'authusers' | 'onlyme' | 'archived'
-
+  author?: RelEntity<'Users'>;
+  created_at: string; // ISO 8601 date string
+  project?: ProjectSchema;
   prompt: string;
-  config: SerializedPromptConfig;
-
-  response: string;
-  schema: AiSchemaResponse;
-
-
-  // Version tracking fields
-  parent: number | null;
-  version_notes: string | null;
+  privacy: PrivacyChoices;
+  assistant_id: string;
+  thread_id?: string;
+  message_id?: string;
+  run_id?: string;
+  openai_model?: string;
+  reasoning?: string;
+  schema?: AiSchemaResponse;
   versions_count: number;
   version_tree: VersionTree;
-}
+  parent?: number;
+  version_notes?: string;
+  versions?: SchemaVersions[];
+};
 
 interface VersionTree {
   id: number;
   name?: string;
   children: VersionTree[];
 }
-
 
 export type StreamChunk = {
   type: "message" | "tool_result" | "corrected_schema" | "done" | "reasoning";
