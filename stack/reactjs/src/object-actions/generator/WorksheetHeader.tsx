@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, CircularProgress, MenuItem, Paper, TextField } from "@mui/material";
-import { Science as GenerateIcon } from "@mui/icons-material";
+import { Add, Science as GenerateIcon } from "@mui/icons-material";
 import { SchemaVersions } from "./generator-types";
 import WorksheetSelector from "./WorksheetSelector";
 import Grid from "@mui/material/Grid";
 import { useAuth } from "../../allauth/auth";
+import { TightButton } from "../../theme/StyledFields";
+import { Link } from "react-router-dom";
 
 interface WorksheetHeaderProps {
   worksheet: SchemaVersions;
   handleEnhance: (prompt: string, privacy: string) => void;
-  loading:boolean;
+  loading: boolean;
 }
 
 const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet, handleEnhance, loading }) => {
@@ -18,18 +20,30 @@ const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet, handleEnha
   const [privacy, setPrivacy] = useState<string>(worksheet.privacy);
 
   useEffect(() => {
-    setPromptInput("")
+    setPromptInput("");
   }, [worksheet]);
 
   return (
     <Box>
+      <Box style={{textAlign:'right', marginBottom:10}}>
+      <Button
+        color="secondary"
+        variant={"text"}
+        endIcon={<Add />}
+        component={Link}
+        to={`/oa/schemas/add`}
+        data-href={`/oa/schemas/add`}
+      >
+        Start a new Thread
+      </Button>
+      </Box>
       <WorksheetSelector worksheet={worksheet} />
       <Paper sx={{ p: 1, mb: 4 }}>
         <TextField
           fullWidth
           variant="standard"
           name="app_idea"
-          label="How do you want to change this schema"
+          label="How do you want to change refine this idea?"
           multiline={true}
           rows={5}
           value={promptInput}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { GradientButton } from './StyledFields';
-import { Button } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { GradientButton } from "./StyledFields";
 
 interface LogoProps {
   height?: number;
@@ -24,11 +24,10 @@ const Logo: React.FC<LogoProps> = (props) => {
   return (
     <Link to={'/'}>
       <GradientButton
-        variant={'outlined'}
         color={'secondary'}
-        sx={{ fontSize: 9, width: '100%' }}
+        sx={{ minWidth:30, minHeight:30, maxWidth:30, maxHeight:30, borderRadius:30, padding:2, }}
       >
-        Your Logo
+
       </GradientButton>
     </Link>
   );

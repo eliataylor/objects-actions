@@ -1,8 +1,11 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Button } from "@mui/material";
 import { Command, StyledPaper, StyledTypography } from '../components/StyledComponents';
 import EnvBuilder from '../forming/EnvBuilder';
 import { useEnvContext } from '../forming/EnvProvider';
+import { Link } from "react-router-dom";
+import { LiveHelp } from "@mui/icons-material";
+import { NeedHelp } from "./NeedHelp";
 
 interface Task {
   description: string;
@@ -53,6 +56,13 @@ const Extend: React.FC = () => {
         </StyledTypography>
         <Command command="docker-compose up --build -d" />
       </StyledPaper>
+
+
+
+      <Box sx={{ mt: 5, mb: 5, textAlign: "right" }}>
+        <NeedHelp />
+      </Box>
+
     </Box>
   );
 };

@@ -153,7 +153,7 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
        <Fab
             color="primary"
             size="small"
-            sx={{ position: "fixed", backgroundColor:'transparent', left: 20, bottom: 20 }}
+            sx={{ position: "fixed", backgroundColor:'transparent', right: 20, bottom: 20 }}
           >
             <CircularProgress color={!loading ? 'primary' : 'secondary'} />
           </Fab>

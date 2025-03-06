@@ -121,12 +121,12 @@ export default function AuthMenu() {
       </React.Fragment> : <React.Fragment>
         <NavBarItem
           to="/account/login"
-          icon={<Login fontSize={"small"} />}
+          icon={<Login fontSize={"small"} color={'secondary'} />}
           name="Sign In"
         />
         <NavBarItem
           to="/account/signup"
-          icon={<AppRegistration fontSize={"small"} />}
+          icon={<AppRegistration color={'secondary'} fontSize={"small"} />}
           name="Sign Up"
         />
       </React.Fragment>}

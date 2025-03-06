@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  font-family: 'Jost';
+  font-family: 'Jost', sans-serif;
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

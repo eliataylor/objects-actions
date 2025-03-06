@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { AppBar, Box, Fab, Grid } from "@mui/material";
+import { AppBar, Box, Fab, Grid, LinearProgress, Typography } from "@mui/material";
 import TablePaginator from "../../components/TablePaginator";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { Add } from "@mui/icons-material";
 import { useAuth } from "../../allauth/auth";
 import { WorksheetListResponse } from "./generator-types";
 import WorksheetCard from "./WorksheetCard";
+import { TightButton } from "../../theme/StyledFields";
 
 const WorksheetList = () => {
   const location = useLocation();
@@ -49,11 +50,21 @@ const WorksheetList = () => {
     fetchData(offset, limit);
   }, [location.search]);
 
+  const addButton = <TightButton
+    color="secondary"
+    variant={"contained"}
+    startIcon={<Add />}
+    data-href={`/oa/schemas/add`}
+    onClick={() => navigate(`/oa/schemas/add`)}
+  >
+    Start a Thread
+  </TightButton>;
+
   let content = null;
   if (!listData) {
-    content = <div>Loading...</div>;
+    content = <Typography color={"warning"}><LinearProgress /></Typography>;
   } else if (typeof listData === "string") {
-    content = <div>{listData}</div>;
+    content = <Typography color={"error"}>{listData} {addButton}</Typography>;
   } else {
     content = (
       <React.Fragment>
@@ -63,19 +74,22 @@ const WorksheetList = () => {
           color="inherit"
         >
           <Grid
-            pl={1}
+            pl={1} pr={1}
             container
             justifyContent="space-between"
             alignContent="center"
             alignItems="center"
           >
             <Grid item>
-              Schemas
+              Ideas
             </Grid>
             <TablePaginator
               totalItems={listData.count}
               onPageChange={handlePagination}
             />
+            <Grid item>
+              {addButton}
+            </Grid>
           </Grid>
         </AppBar>
         <Grid container gap={2}>
@@ -91,18 +105,8 @@ const WorksheetList = () => {
   }
 
   return (
-    <Box sx={{ padding: 2 }} id="WorksheetList">
+    <Box sx={{ padding:2 }} id="WorksheetList">
       {content}
-
-      <Fab
-        color="secondary"
-        size="small"
-        sx={{ position: "fixed", right: 20, bottom: 20 }}
-        data-href={`/oa/schemas/add`}
-        onClick={() => navigate(`/oa/schemas/add`)}
-      >
-        <Add />
-      </Fab>
     </Box>
   );
 };
