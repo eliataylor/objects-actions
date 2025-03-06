@@ -4,6 +4,7 @@ import { ReactComponent as LOGO } from './oa-logo.svg';
 
 interface LogoProps {
   height?: number;
+  filter? : string;
 }
 
 const Logo: React.FC<LogoProps> = (props) => {
@@ -18,6 +19,8 @@ const Logo: React.FC<LogoProps> = (props) => {
     toPass.sx.fontSize = props.height;
     // @ts-ignore
     toPass.sx.height = 'auto';
+  } else if  (props.filter) {
+    toPass.sx.filter = props.filter
   }
 
   return (

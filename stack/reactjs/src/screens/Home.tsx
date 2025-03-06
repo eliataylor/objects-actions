@@ -18,6 +18,7 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
       container
       direction={"column"}
       gap={4}
+      p={2}
       justifyContent={"space-between"}
       sx={{
         textAlign: "center",
@@ -28,11 +29,14 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
     >
       <Grid item>
         <Typography variant="h1" style={{ fontWeight: 100 }}>
-          Your Brand Name
+          Your Brand
         </Typography>
-        <Grid sx={{ width: 300, margin: "auto", marginTop: 3 }}>
-          <Logo height={120} />
+        <Grid sx={{ width: 300, margin: "auto", marginTop: 3, marginBottom: 3 }}>
+          <Logo height={60} />
         </Grid>
+        <Typography variant="h2" component={Link} to={"/content"} style={{ fontWeight: 100 }}>
+          Your Content
+        </Typography>
       </Grid>
 
       <Divider />
@@ -46,27 +50,31 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
       <Grid
         container
         wrap={"nowrap"}
-        justifyContent={"space-between"}
+        justifyContent={"center"}
         alignItems={"center"}
         alignContent={"center"}
-        gap={4}
       >
-        <Grid item>
-          <OALogo height={80} />
-        </Grid>
-        <Grid item style={{ textAlign: "left" }} flexGrow={1}>
-          <Typography variant="overline">Kick started by</Typography>
-          <Typography variant="h3" style={{fontStyle:'italic'}}>Objects / Actions</Typography>
-          <Typography variant="h2" >Spreadsheets to Full Stack</Typography>
+        <Grid item style={{ textAlign: "left" }}>
+          <Typography variant="overline" style={{ fontSize: 10 }}>Kick started by</Typography>
+          <Grid container alignContent={"center"} alignItems={"flex-end"} gap={1}>
+            <Grid item>
+              <OALogo height={90} />
+            </Grid>
+            <Grid item>
+              <Typography variant="h3" style={{ fontStyle: "italic" }}>Objects / Actions</Typography>
+              <Typography variant="h2">Spreadsheets to Full Stack</Typography>
+            </Grid>
+          </Grid>
           <Link to={"/oa/readme"}>
             <TightButton
-              style={{ marginTop: 20 }}
+              style={{ marginTop: 10 }}
               startIcon={<LocalLibraryIcon />}
+              fullWidth={true}
               color={"primary"}
               size={"small"}
               variant={"contained"}
             >
-              Documentation
+              Open Source Documentation
             </TightButton>
 
           </Link>

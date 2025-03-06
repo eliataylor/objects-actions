@@ -12,7 +12,7 @@ interface PermissionProps {
 
 export const NavBarItem: React.FC<PermissionProps> = (props) => {
   const location = useLocation();
-  const isActive = location.pathname.startsWith(props.to);
+  const isActive = location.pathname === props.to;
   return props.to.indexOf("http://") === 0 ||
   props.to.indexOf("https://") === 0 ? (
     <ListItemButton dense={true} selected={isActive} alignItems={"center"}>
@@ -121,12 +121,12 @@ export default function AuthMenu() {
       </React.Fragment> : <React.Fragment>
         <NavBarItem
           to="/account/login"
-          icon={<Login fontSize={"small"} />}
+          icon={<Login fontSize={"small"} color={'secondary'} />}
           name="Sign In"
         />
         <NavBarItem
           to="/account/signup"
-          icon={<AppRegistration fontSize={"small"} />}
+          icon={<AppRegistration color={'secondary'} fontSize={"small"} />}
           name="Sign Up"
         />
       </React.Fragment>}

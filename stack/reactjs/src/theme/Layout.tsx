@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { AppBar, Box, Grid } from "@mui/material";
+import { AppBar, Box, Divider, Fab, Grid, List, Popover } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { styled } from "@mui/material/styles";
 import Logo from "./Logo";
 import { useNavDrawer } from "../NavDrawerProvider";
-import NavMenu from "../components/NavMenu";
 import Snackbar from "@mui/material/Snackbar";
 import OALogo from "../object-actions/docs/OALogo";
-import TrackingConsent from "../components/TrackingConsent";
+// import TrackingConsent from "../components/TrackingConsent"; // enable this if your publishing features in an area that require a cookie consent
 import { StyledDrawer } from "./StyledFields";
-import FirstVisit from "../object-actions/components/FirstVisit";
+import OaMenu from "../object-actions/docs/OaMenu";
+import ContentMenu from "../components/ContentMenu";
+import AuthMenu, { NavBarItem } from "../components/AuthMenu";
+import AllMenus from "../components/AllMenus";
+// import FirstVisit from "../object-actions/components/FirstVisit";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -23,8 +26,20 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const Layout: React.FC = () => {
   const location = useLocation();
-  const { navDrawerWidth, setNavDrawerWidth, isMounted } = useNavDrawer();
+  const { navDrawerWidth, setNavDrawerWidth, isMobile } = useNavDrawer();
   const [snack, showSnackBar] = React.useState("");
+
+  const [oaAnchorEl, setOAAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+  const handleOAClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setOAAnchorEl(event.currentTarget);
+  };
+
+  const handleOAClose = () => {
+    setOAAnchorEl(null);
+  };
+
+  const openOAMenu = Boolean(oaAnchorEl);
 
   const closeSnackbar = (
     event: React.SyntheticEvent | Event,
@@ -45,37 +60,15 @@ const Layout: React.FC = () => {
     setNavDrawerWidth(0);
   };
 
-  const MainLogo = location.pathname.indexOf("/oa/") === 0 ? OALogo : Logo;
+  function isOaPage(): boolean {
+    return location.pathname.indexOf("/oa/") === 0 || location.pathname === "/";
+  }
 
-  const appBar = (
-    <AppBar position="fixed" color={"default"}>
-      <Grid
-        container
-        justifyContent={"space-between"}
-        alignItems={"center"}
-        padding={1}
-        spacing={2}
-      >
-        {location.pathname.length > 1 && (
-          <Grid item>
-            <Link to={"/"}>
-              <MainLogo height={50} />
-            </Link>
-          </Grid>
-        )}
-        <Grid item style={{ flexGrow: 1 }}></Grid>
-        <Grid item>
-          <IconButton
-            size={"large"}
-            aria-label="Open Drawer"
-            onClick={handleDrawerOpen}
-          >
-            <MenuIcon color={"secondary"} />
-          </IconButton>
-        </Grid>
-      </Grid>
-    </AppBar>
-  );
+  useEffect(() => {
+    handleOAClose();
+  }, [location.pathname]);
+
+  const MainLogo = isOaPage() ? OALogo : Logo;
 
   return (
     <React.Fragment>
@@ -85,25 +78,112 @@ const Layout: React.FC = () => {
         onClose={closeSnackbar}
         message={snack}
       />
+
+      {/* enable this if your publishing features in an area that require a cookie consent
       <TrackingConsent />
+      */}
 
       <Grid container justifyContent={"space-around"} flexWrap={"nowrap"}>
-        {isMounted === true && (
-          <Grid
-            item
-            sx={{ ml: 2, mt: 3 }}
-            style={{ maxWidth: 240, minWidth: 140 }}
-          >
-            {location.pathname.length > 1 && <Logo height={45} />}
-            <NavMenu />
-          </Grid>
-        )}
+        {isMobile === false && (
+          <React.Fragment>
+            <Fab
+              aria-label={"Menu Context Popup"}
+              aria-describedby={"OA Menu Popup"}
+              onClick={handleOAClick}
+              color="primary"
+              size="small"
+              sx={{ position: "fixed", backgroundColor: "background.paper", padding: .2, left: 8, bottom: 8 }}
+            >
+              {isOaPage() ? <Logo /> : <OALogo filter={"none"} />}
+
+            </Fab>
+            <Popover
+              id={"OA Menu Popup"}
+              open={openOAMenu}
+              anchorEl={oaAnchorEl}
+              onClose={handleOAClose}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              transformOrigin={{
+                vertical: "bottom",
+                horizontal: "left"
+              }}
+            >
+              <Box p={1}>
+                {!isOaPage() ? <OaMenu handleClick={() => null} /> : <ContentMenu />}
+              </Box>
+
+            </Popover>
+            <Grid
+              aria-label={"Menu Mounted"}
+              item
+              sx={{ ml: 2, mt: 3 }}
+              style={{ maxWidth: 240, minWidth: 180 }}
+            >
+              {isOaPage() ?
+                <NavBarItem
+                  to={`/`}
+                  icon={<OALogo height={20} />}
+                  name="Objects / Actions"
+                />
+                :
+
+                <NavBarItem
+                  to={`/content`}
+                  icon={<Logo height={20} />}
+                  name="Your Content"
+                />
+              }
+
+              <AuthMenu />
+
+              <Divider
+                sx={{
+                  marginTop: 1,
+                  backgroundColor: "primary.dark"
+                }}
+              />
+
+              <List dense={true}>
+                {isOaPage() ? <OaMenu handleClick={() => null} /> : <ContentMenu />}
+              </List>
+            </Grid>
+          </React.Fragment>)
+        }
+
         <Grid item flexGrow={1}>
-          {isMounted === false && appBar}
+          {isMobile === true &&
+            <AppBar position="fixed" color={"default"}>
+              <Grid
+                container
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                padding={1}
+                spacing={2}
+              >
+                <Grid item>
+                  <Link to={"/"}>
+                    <MainLogo height={35} />
+                  </Link>
+                </Grid>
+                <Grid item style={{ flexGrow: 1 }}></Grid>
+                <Grid item>
+                  <IconButton
+                    size={"large"}
+                    aria-label="Open Drawer"
+                    onClick={handleDrawerOpen}
+                  >
+                    <MenuIcon color={"secondary"} />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            </AppBar>}
           <Box
             style={{
               width: "100%",
-              margin: `${isMounted ? 0 : "100px"} auto 0 auto`,
+              margin: `${!isMobile ? 0 : "100px"} auto 0 auto`,
               padding: "1%",
               maxWidth: 1224
             }}
@@ -113,29 +193,33 @@ const Layout: React.FC = () => {
         </Grid>
       </Grid>
 
-      <StyledDrawer
-        anchor="right"
-        variant="temporary"
-        open={!isMounted && navDrawerWidth > 0}
-        ModalProps={{
-          keepMounted: isMounted
-        }}
-        onClose={handleDrawerClose}
-        sx={{
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: navDrawerWidth
-          }
-        }}
-      >
-        <DrawerHeader>
-          <Logo height={80} />
-          <IconButton aria-label={"Close Drawer"} onClick={handleDrawerClose}>
-            <ChevronRightIcon />
-          </IconButton>
-        </DrawerHeader>
-          <NavMenu />
-      </StyledDrawer>
+      {isMobile === true &&
+        <StyledDrawer
+          id={"MobileDrawer"}
+          anchor="right"
+          variant="temporary"
+          open={navDrawerWidth > 0}
+          ModalProps={{
+            keepMounted: !isMobile
+          }}
+          onClose={handleDrawerClose}
+          sx={{
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: navDrawerWidth
+            }
+          }}
+        >
+          <DrawerHeader>
+            <MainLogo height={34} />
+            <IconButton aria-label={"Close Drawer"} onClick={handleDrawerClose}>
+              <ChevronRightIcon />
+            </IconButton>
+          </DrawerHeader>
+          <AllMenus />
+        </StyledDrawer>
+      }
+
     </React.Fragment>
   );
 };

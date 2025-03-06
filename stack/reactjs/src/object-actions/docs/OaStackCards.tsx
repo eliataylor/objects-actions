@@ -24,7 +24,7 @@ const OaStackCards: React.FC = () => {
       alignContent={'flex-start'}
       alignItems={'flex-start'}
     >
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} data-label={'CypressIO'}>
         <Card sx={{ position: 'relative' }} variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
@@ -76,8 +76,7 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
-
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} data-label={'ReactWebApp'}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
@@ -125,7 +124,56 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} data-label={'OpenAIAgent'}>
+        <Card variant="outlined">
+          <CardHeader
+            sx={{ mb: 0, p: 1 }}
+            avatar={<LightDarkImg
+                    light={'/oa-assets/openai-icon-black.svg'}
+                    dark={'/oa-assets/openai-icon-white.svg'}
+                    styles={{ height: 30 }}
+                  />}
+            title={'AI Agent'}
+            subheader={'OpenAI'}
+          />
+           <CardMedia sx={{ height: mediaHeight, position: 'relative' }}>
+            <video
+              autoPlay
+              playsInline={true}
+              muted
+              loop={true}
+              style={{ width: '100%' }}
+              controls={true}
+            >
+              <source src={'/oa-assets/openai-demo.mp4'} type="video/mp4" />
+            </video>
+          </CardMedia>
+          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
+            <a
+              href={
+                'https://github.com/eliataylor/objects-actions/tree/main/stack/django/oasheets_app'
+              }
+              target={'_blank'}
+            >
+              <TightButton
+                size={'small'}
+                variant={'outlined'}
+                startIcon={
+                  <LightDarkImg
+                    light={'/oa-assets/github-mark.svg'}
+                    dark={'/oa-assets/github-mark-white.svg'}
+                    styles={{ height: 20 }}
+                  />
+                }
+              >
+                View Source
+              </TightButton>
+            </a>
+          </Box>
+        </Card>
+      </Grid>
+
+      <Grid item xs={12} sm={6} data-label={"DjangoAdmin"}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
@@ -167,7 +215,7 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} data-label={'DjangoDRF'}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
@@ -208,7 +256,7 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} data-label={'Databuilder'}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
@@ -248,6 +296,7 @@ const OaStackCards: React.FC = () => {
           </Box>
         </Card>
       </Grid>
+
     </Grid>
   );
 };

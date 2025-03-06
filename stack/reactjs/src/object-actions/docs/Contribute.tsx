@@ -1,9 +1,12 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Button } from "@mui/material";
 import { StyledPaper, StyledTypography } from '../components/StyledComponents';
 import Typography from '@mui/material/Typography';
 import SponsorIcon from '@mui/icons-material/MonetizationOn';
 import { TightButton } from '../../theme/StyledFields';
+import { Link } from "react-router-dom";
+import { LiveHelp } from "@mui/icons-material";
+import { NeedHelp } from "./NeedHelp";
 
 const Contribute: React.FC = () => {
   return (

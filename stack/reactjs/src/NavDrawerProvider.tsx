@@ -10,8 +10,8 @@ import React, {
 interface NavDrawerContextType {
   navDrawerWidth: number;
   setNavDrawerWidth: (width: number) => void;
-  isMounted: boolean;
-  setMounting: (isOpen: boolean) => void;
+  isMobile: boolean;
+  setIsMobile: (isOpen: boolean) => void;
   keyword: string;
   setKeyword: (keyword: string) => void;
 }
@@ -39,13 +39,13 @@ interface NavDrawerProviderProps {
 export const NavDrawerProvider: React.FC<NavDrawerProviderProps> = ({
   children,
 }) => {
-  const [navDrawerWidth, setNavDrawerWidth] = useState<number>(135); // default width
-  const [isMounted, setMounting] = useState<boolean>(window.innerWidth > 600);
+  const [navDrawerWidth, setNavDrawerWidth] = useState<number>(155); // default width
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 600);
   const [keyword, setKeyword] = useState<string>('');
 
   useEffect(() => {
     const handleResize = () => {
-      setMounting(window.innerWidth > 600);
+      setIsMobile(window.innerWidth < 600);
     };
 
     window.addEventListener('resize', handleResize);
@@ -60,8 +60,8 @@ export const NavDrawerProvider: React.FC<NavDrawerProviderProps> = ({
       value={{
         navDrawerWidth,
         setNavDrawerWidth,
-        isMounted,
-        setMounting,
+        isMobile,
+        setIsMobile,
         keyword,
         setKeyword,
       }}

@@ -132,7 +132,10 @@ const NewSchemaForm: React.FC = () => {
       <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
         <Grid item>
           <Typography variant="h5" component="h1">
-            Generate schema recommendations for any app idea
+            Generate the spreadsheet to document your app idea.
+          </Typography>
+          <Typography variant="subtitle2" component="h2">
+           A trained AI agent will offer reasoning and structured tables for use with Objects/Actions
           </Typography>
         </Grid>
         <Grid item>
@@ -142,7 +145,7 @@ const NewSchemaForm: React.FC = () => {
                   size={"small"}
                   color={"secondary"}
                   endIcon={<ListAlt />}>
-            View App Schemas
+            App Ideas
           </Button>
         </Grid>
       </Grid>
@@ -154,7 +157,7 @@ const NewSchemaForm: React.FC = () => {
           name={"app_idea"}
           multiline={true}
           rows={5}
-          label="Describe who your app is for and what it is supposed to do"
+          label="Describe your app idea."
           placeholder="e.x., My app is a Task List tool that includes deadline dates and priorities and prerequisites"
           value={promptInput}
           onChange={(e) => setPromptInput(e.target.value)}
@@ -214,7 +217,7 @@ const NewSchemaForm: React.FC = () => {
           <Fab
             color="primary"
             size="small"
-            sx={{ position: "fixed", backgroundColor:'transparent', left: 20, bottom: 20 }}
+            sx={{ position: "fixed", backgroundColor:'transparent', right: 20, bottom: 20 }}
           >
             <CircularProgress color={!loading ? 'primary' : 'secondary'} />
           </Fab>

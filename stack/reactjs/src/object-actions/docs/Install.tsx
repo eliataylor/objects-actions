@@ -4,6 +4,7 @@ import { Command, StyledPaper, StyledTypography } from "../components/StyledComp
 import { useEnvContext } from "../forming/EnvProvider";
 import OutputLinks from "./OutputLinks";
 import EnvBuilder from "../forming/EnvBuilder";
+import { NeedHelp } from "./NeedHelp";
 
 const Install: React.FC = () => {
   const { envConfig } = useEnvContext();
@@ -76,6 +77,9 @@ const Install: React.FC = () => {
         </StyledTypography>
       </div>
 
+      <Box sx={{ mt: 8, mb: 8, textAlign: "right" }}>
+        <NeedHelp />
+      </Box>
 
     </Box>
   );

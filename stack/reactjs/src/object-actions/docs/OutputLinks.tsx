@@ -54,6 +54,22 @@ const Install: React.FC = () => {
           }
         />
 
+        <CardHeader
+          style={{ textDecoration: "none" }}
+          avatar={<LightDarkImg
+                    light={'/oa-assets/openai-icon-black.svg'}
+                    dark={'/oa-assets/openai-icon-white.svg'}
+                    styles={{ height: 20 }}
+                  />}
+          subheader={"AI Agent"}
+          title={
+            <Typography variant={"subtitle1"} style={{ wordBreak: "break-word" }}>
+              {`${envConfig.REACT_APP_API_HOST}/api/schema/swagger#/api/api_worksheets_generate_create`}
+            </Typography>
+          }
+        />
+
+
         <StyledTypography variant="subtitle2">
           And you can use these tools in the terminal to generate data and run
           end-to-end permissions tests:

@@ -1,13 +1,14 @@
-import React from 'react';
-import { Box, Grid, List, ListItem, ListItemText, Typography } from '@mui/material';
-import { CheckBoxOutlined, CheckCircleOutline } from '@mui/icons-material';
-import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
-import { TightButton } from '../../theme/StyledFields';
-import Avatar from '@mui/material/Avatar';
-import LightDarkImg from '../../components/LightDarkImg';
-import OaStackCards from './OaStackCards';
-import SpreadsheetCards from './SpreadsheetCards';
+import React from "react";
+import { Box, Button, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { CheckBoxOutlined, CheckCircleOutline, LiveHelp } from "@mui/icons-material";
+import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
+import { TightButton } from "../../theme/StyledFields";
+import Avatar from "@mui/material/Avatar";
+import LightDarkImg from "../../components/LightDarkImg";
+import OaStackCards from "./OaStackCards";
+import SpreadsheetCards from "./SpreadsheetCards";
 import { Link } from "react-router-dom";
+import { NeedHelp } from "./NeedHelp";
 
 const ReadMe: React.FC = () => {
   const mediaHeight = 250;
@@ -20,14 +21,14 @@ const ReadMe: React.FC = () => {
             item
             xs={12}
             container
-            justifyContent={'space-between'}
-            alignItems={'center'}
+            justifyContent={"space-between"}
+            alignItems={"center"}
             sx={{ mb: 3 }}
-            wrap={'nowrap'}
+            wrap={"nowrap"}
           >
             <Grid item>
-              <Typography variant={'caption'} style={{ fontStyle: 'italic' }}>
-                {' '}
+              <Typography variant={"caption"} style={{ fontStyle: "italic" }}>
+                {" "}
                 Objects/Actions
               </Typography>
               <Typography variant="h1">
@@ -36,16 +37,16 @@ const ReadMe: React.FC = () => {
             </Grid>
             <Grid item>
               <a
-                href={'https://github.com/eliataylor/objects-actions'}
-                target={'_blank'}
+                href={"https://github.com/eliataylor/objects-actions"}
+                target={"_blank"}
               >
                 <TightButton
-                  size={'small'}
-                  variant={'contained'}
+                  size={"small"}
+                  variant={"contained"}
                   startIcon={
                     <LightDarkImg
-                      light={'/oa-assets/github-mark-white.svg'}
-                      dark={'/oa-assets/github-mark-white.svg'}
+                      light={"/oa-assets/github-mark-white.svg"}
+                      dark={"/oa-assets/github-mark-white.svg"}
                       styles={{ height: 20 }}
                     />
                   }
@@ -64,26 +65,26 @@ const ReadMe: React.FC = () => {
             <List dense={true} sx={{ p: 0, m: 0 }}>
               <ListItem sx={{ p: 0 }}>
                 <CheckBoxOutlined
-                  fontSize={'small'}
+                  fontSize={"small"}
                   style={{ marginRight: 5, fontSize: 16 }}
                 />
-                <ListItemText primary={'Document your Idea and Database'} />
+                <ListItemText primary={"Document your Idea and Database"} />
               </ListItem>
 
               <ListItem sx={{ p: 0 }}>
                 <CheckBoxOutlined
-                  fontSize={'small'}
+                  fontSize={"small"}
                   style={{ marginRight: 5, fontSize: 16 }}
                 />
                 <ListItemText
-                  primary={'Quickly scaffold scalable Apps & APIs. Including:'}
+                  primary={"Quickly scaffold scalable Apps & APIs. Including:"}
                 />
               </ListItem>
               <ListItem sx={{ p: 0, pl: 3.5 }}>
                 <CheckCircleOutline style={{ marginRight: 5, fontSize: 14 }} />
                 <ListItemText
                   primary={
-                    'Authentication with Email, SMS, and nearly every social network'
+                    "Authentication with Email, SMS, and nearly every social network"
                   }
                 />
               </ListItem>
@@ -91,25 +92,25 @@ const ReadMe: React.FC = () => {
                 <CheckCircleOutline style={{ marginRight: 5, fontSize: 14 }} />
                 <ListItemText
                   primary={
-                    'Access Controls for User Groups and content ownership context'
+                    "Access Controls for User Groups and content ownership context"
                   }
                 />
               </ListItem>
               <ListItem sx={{ p: 0, pl: 3.5 }}>
                 <CheckCircleOutline style={{ marginRight: 5, fontSize: 14 }} />
-                <ListItemText primary={'Content Management Systems'} />
+                <ListItemText primary={"Content Management Systems"} />
               </ListItem>
               <ListItem sx={{ p: 0, pl: 3.5 }}>
                 <CheckCircleOutline style={{ marginRight: 5, fontSize: 14 }} />
                 <ListItemText
-                  primary={'Web App interface with API connectivity'}
+                  primary={"Web App interface with API connectivity"}
                 />
               </ListItem>
               <ListItem sx={{ p: 0, pl: 3.5 }}>
                 <CheckCircleOutline style={{ marginRight: 5, fontSize: 14 }} />
                 <ListItemText
                   primary={
-                    'Complete End-To-End tests for functionality and content permissions'
+                    "Complete End-To-End tests for functionality and content permissions"
                   }
                 />
               </ListItem>
@@ -117,7 +118,7 @@ const ReadMe: React.FC = () => {
                 <CheckCircleOutline style={{ marginRight: 5, fontSize: 14 }} />
                 <ListItemText
                   primary={
-                    'Data generator to create unlimited content data to test and prototype, and the base data for your Cypress tests'
+                    "Data generator to create unlimited content data to test and prototype, and the base data for your Cypress tests"
                   }
                 />
               </ListItem>
@@ -137,23 +138,23 @@ const ReadMe: React.FC = () => {
             <ListItem sx={{ p: 0, m: 0 }}>
               <Avatar style={{ marginRight: 8 }}>
                 <img
-                  src={'/oa-assets/Google_Sheets_2020_Logo.svg'}
+                  src={"/oa-assets/Google_Sheets_2020_Logo.svg"}
                   height={25}
                 />
               </Avatar>
               <ListItemText
-                primary={'Fill out your Objects/Actions worksheets'}
+                primary={"Fill out your Objects/Actions worksheets"}
                 secondary={
-                  'This becomes your database schema and clear documentation for your team and contracts.'
+                  "This becomes your database schema and clear documentation for your team and contracts."
                 }
               />
             </ListItem>
-            <ListItem sx={{ p: 0, m: 0 }} component={Link} to={'/oa/schemas/add'}>
+            <ListItem sx={{ p: 0, m: 0 }} component={Link} to={"/oa/schemas/add"}>
               <Avatar style={{ marginRight: 8 }}>
-                <LightDarkImg light={'/oa-assets/openai-icon-black.svg'} dark={'/oa-assets/openai-icon-white.svg'} styles={{height:25}} />
+                <LightDarkImg light={"/oa-assets/openai-icon-black.svg"} dark={"/oa-assets/openai-icon-white.svg"} styles={{ height: 25 }} />
               </Avatar>
               <ListItemText
-                primary={'Get help with this pre-trained AI assistant.'}
+                primary={"Get help with this pre-trained AI assistant."}
               />
             </ListItem>
           </Grid>
@@ -162,17 +163,21 @@ const ReadMe: React.FC = () => {
         <SpreadsheetCards />
       </Box>
 
-      <Box p={0} mt={2} mb={2} sx={{ textAlign: 'center' }}>
+      <Box p={0} mt={2} mb={2} sx={{ textAlign: "center" }}>
         <ArrowCircleDownIcon />
-        <Typography variant={'body2'}>
+        <Typography variant={"body2"}>
           <code>docker-compose up --build</code>
         </Typography>
-        <Typography variant={'h6'}>Generates this whole stack:</Typography>
+        <Typography variant={"h6"}>Generates this whole stack:</Typography>
         <ArrowCircleDownIcon />
       </Box>
 
       <Box>
         <OaStackCards />
+      </Box>
+
+      <Box sx={{ mt: 5, mb: 5, textAlign: "right" }}>
+        <NeedHelp />
       </Box>
     </>
   );
