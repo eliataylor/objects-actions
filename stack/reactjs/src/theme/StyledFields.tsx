@@ -23,11 +23,19 @@ export const TightButton = styled(Button)(({ theme }) => ({
 
 export const GradientButton = styled(IconButton)(({ theme }) => ({
   textTransform: "none",
-  transition: "all 1s",
-  background: `linear-gradient(165deg, ${theme.palette.secondary.main}80, ${theme.palette.background.default}, ${theme.palette.background.default}, ${theme.palette.primary.main}80)`,
+  transition: "all .5s",
+  background:
+    theme.palette.mode === "dark" ?
+      `linear-gradient(165deg, ${theme.palette.secondary.main}80, ${theme.palette.background.default} 45%, ${theme.palette.background.default} 55%, ${theme.palette.primary.main}80)`
+      :
+      `linear-gradient(145deg, ${theme.palette.secondary.light},  ${theme.palette.background.paper}, ${theme.palette.primary.light})`,
   color: theme.palette.text.primary,
   "&:hover": {
-    background: `linear-gradient(150deg, ${theme.palette.secondary.main}, ${theme.palette.background.default}, ${theme.palette.primary.main})`,
+    transform: 'rotate(34.5deg)',
+    background: theme.palette.mode === "dark" ?
+      `linear-gradient(165deg, ${theme.palette.secondary.main}80, ${theme.palette.background.default} 45%, ${theme.palette.background.default} 55%, ${theme.palette.primary.main}80)`
+      :
+      `linear-gradient(145deg, ${theme.palette.secondary.dark},  ${theme.palette.background.paper}, ${theme.palette.primary.dark})`,
   }
 }));
 

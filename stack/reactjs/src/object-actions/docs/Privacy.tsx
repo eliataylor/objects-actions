@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Typography } from '@mui/material';
-import Logo from './OALogo'
+import OALogo from './OALogo'
 
 interface PrivacyProps {
   section?: string;
@@ -10,7 +10,7 @@ const Privacy: React.FC<PrivacyProps> = ({ section = 'privacy' }) => {
   return (
     <Grid id={'OAPrivacyScreen'} container direction={'column'}>
       <Grid item>
-        <Logo height={80} />
+        <OALogo height={80} />
       </Grid>
       <Grid item>
         <Typography variant={'h4'}>Objects / Actions</Typography>

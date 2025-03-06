@@ -10,8 +10,8 @@ export const NeedHelp: React.FC = () => {
       component={Link}
       to={"/oa/consulting"}
       variant={"text"}
-      startIcon={<LiveHelp fontSize={"small"} />}
+      endIcon={<LiveHelp fontSize={"small"} />}
     >
-      Need Help?
+      Need Help
     </Button>);
 };
