@@ -42,7 +42,10 @@ const FontSelector: React.FC = () => {
       label={"Font"}
       variant={"outlined"}
       value={fontFamily}
-      onChange={(e) => setFamily(e.target.value)}
+      onChange={(e) => {
+        window.localStorage.setItem('themeFont', e.target.value)
+        setFamily(e.target.value)
+      }}
       fullWidth
       InputProps={{
         startAdornment: (

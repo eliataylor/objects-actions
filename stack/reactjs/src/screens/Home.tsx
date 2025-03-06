@@ -28,13 +28,13 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
       }}
     >
       <Grid item>
-        <Typography variant="h1" style={{ fontWeight: 100 }}>
+        <Typography variant="h2" component={'h1'} >
           Your Brand
         </Typography>
         <Grid sx={{ width: 300, margin: "auto", marginTop: 3, marginBottom: 3 }}>
           <Logo height={60} />
         </Grid>
-        <Typography variant="h2" component={Link} to={"/content"} style={{ fontWeight: 100 }}>
+        <Typography variant="h2" component={Link} to={"/content"} >
           Your Content
         </Typography>
       </Grid>

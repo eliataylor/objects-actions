@@ -4,14 +4,18 @@ import { createTheme, responsiveFontSizes, ThemeProvider as MuiThemeProvider } f
 import CssBaseline from "@mui/material/CssBaseline";
 import { green, orange } from "@mui/material/colors";
 
-import GlobalStyles from "./GlobalStyles"; // Import the global styles
+import GlobalStyles from "./GlobalStyles";
+
 const ThemeContext = createContext();
 
 const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
+    localStorage.getItem("themeMode") ? localStorage.getItem("themeMode") !== 'false' :
+      window.matchMedia("(prefers-color-scheme: dark)").matches
   );
-  const [fontFamily, setFamily] = useState("Jost");
+  const [fontFamily, setFamily] = useState(
+    localStorage.getItem("themeFont") ? localStorage.getItem("themeFont") :
+      "Jost");
 
   const theme = useMemo(() => {
     const plt = {

@@ -14,7 +14,10 @@ const ThemeSwitcher = () => {
       label={"Theme"}
       variant={"outlined"}
       value={darkMode}
-      onChange={(e) => setDarkMode(e.target.value)}
+      onChange={(e) => {
+        window.localStorage.setItem("themeMode", e.target.value)
+        setDarkMode(e.target.value)
+      }}
       fullWidth
       InputProps={{
         startAdornment: (
