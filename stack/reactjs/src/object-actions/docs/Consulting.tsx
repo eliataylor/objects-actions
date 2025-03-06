@@ -166,10 +166,10 @@ const Consulting: React.FC = () => {
             margin: "10px auto"
           } : {}}>
             <Typography variant={"overline"} style={{lineHeight:0}}>Free Consult with</Typography>
-            <Typography variant={"h3"} gutterBottom><a href={"https://taylormadetraffic.com/taylormade"} >Eli Taylor</a></Typography>
+            <Typography variant={"h3"} gutterBottom><a target="_blank"  href={"https://taylormadetraffic.com/brands"} >Eli Taylor</a></Typography>
             <Grid container={true} gap={3} alignItems={"center"} alignContent={"center"}>
               <Grid item>
-                <a target="_blank" href="https://taylormadetraffic.com/taylormade" className="nolink">
+                <a target="_blank" href="https://taylormadetraffic.com/brands" className="nolink">
                   <img height="30" title="Taylor Made Traffic" src="/oa-assets/tmt-corner.png" />
                 </a>
               </Grid>

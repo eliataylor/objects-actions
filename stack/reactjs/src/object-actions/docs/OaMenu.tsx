@@ -6,8 +6,9 @@ import ExtendIcon from "@mui/icons-material/Extension";
 import ContributeIcon from "@mui/icons-material/VolunteerActivism";
 import { NavBarItem } from "../../components/AuthMenu";
 import LightDarkImg from "../../components/LightDarkImg";
-import { Box } from "@mui/material";
+import { Box, Divider } from "@mui/material";
 import ThemeSwitcher from "../../theme/ThemeSwitcher";
+import FontSelector from "../../theme/FontSelector";
 
 const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick = undefined }) => {
 
@@ -63,9 +64,15 @@ const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick = undefined
         name={"Open Source"}
       />
 
-      <Box p={1} ml={2} style={{ textAlign: "center" }}>
+      <Divider sx={{ margin: "20px 0" }} />
+
+      <Box mt={2} mb={2}>
         <ThemeSwitcher />
       </Box>
+      <Box mt={2} mb={2}>
+        <FontSelector />
+      </Box>
+
     </React.Fragment>
   );
 };
