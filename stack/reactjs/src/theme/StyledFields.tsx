@@ -3,6 +3,7 @@ import { alpha, darken, styled } from "@mui/material/styles";
 import { Button, ButtonProps, Drawer } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
 
 export const ButtonPill = styled((props: ButtonProps & { to?: string }) => {
   return <Button {...props} />;
@@ -20,8 +21,7 @@ export const TightButton = styled(Button)(({ theme }) => ({
   margin: "auto"
 }));
 
-export const GradientButton = styled(Button)(({ theme }) => ({
-  borderRadius: 4,
+export const GradientButton = styled(IconButton)(({ theme }) => ({
   textTransform: "none",
   transition: "all 1s",
   background: `linear-gradient(165deg, ${theme.palette.secondary.main}80, ${theme.palette.background.default}, ${theme.palette.background.default}, ${theme.palette.primary.main}80)`,
@@ -30,6 +30,7 @@ export const GradientButton = styled(Button)(({ theme }) => ({
     background: `linear-gradient(150deg, ${theme.palette.secondary.main}, ${theme.palette.background.default}, ${theme.palette.primary.main})`,
   }
 }));
+
 
 export const FadedPaper = styled(Paper)(({ theme }) => ({
   background: `linear-gradient(

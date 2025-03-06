@@ -12,7 +12,7 @@ interface PermissionProps {
 
 export const NavBarItem: React.FC<PermissionProps> = (props) => {
   const location = useLocation();
-  const isActive = location.pathname.startsWith(props.to);
+  const isActive = location.pathname === props.to;
   return props.to.indexOf("http://") === 0 ||
   props.to.indexOf("https://") === 0 ? (
     <ListItemButton dense={true} selected={isActive} alignItems={"center"}>

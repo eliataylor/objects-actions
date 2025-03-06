@@ -32,7 +32,7 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
           Your Brand
         </Typography>
         <Grid sx={{ width: 300, margin: "auto", marginTop: 3, marginBottom: 3 }}>
-          <Logo height={120} />
+          <Logo height={60} />
         </Grid>
         <Typography variant="h2" component={Link} to={"/content"} style={{ fontWeight: 100 }}>
           Your Content

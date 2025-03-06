@@ -13,7 +13,7 @@ import OALogo from "../object-actions/docs/OALogo";
 import { StyledDrawer } from "./StyledFields";
 import OaMenu from "../object-actions/docs/OaMenu";
 import ContentMenu from "../components/ContentMenu";
-import AuthMenu from "../components/AuthMenu";
+import AuthMenu, { NavBarItem } from "../components/AuthMenu";
 import AllMenus from "../components/AllMenus";
 // import FirstVisit from "../object-actions/components/FirstVisit";
 
@@ -69,7 +69,6 @@ const Layout: React.FC = () => {
   }, [location.pathname]);
 
   const MainLogo = isOaPage() ? OALogo : Logo;
-  const MainMenu = isOaPage() ? OaMenu : ContentMenu;
 
   return (
     <React.Fragment>
@@ -123,6 +122,21 @@ const Layout: React.FC = () => {
               sx={{ ml: 2, mt: 3 }}
               style={{ maxWidth: 240, minWidth: 180 }}
             >
+              {isOaPage() ?
+                <NavBarItem
+                  to={`/`}
+                  icon={<OALogo height={20} />}
+                  name="Objects / Actions"
+                />
+                :
+
+                <NavBarItem
+                  to={`/content`}
+                  icon={<Logo height={20} />}
+                  name="Your Content"
+                />
+              }
+
               <AuthMenu />
 
               <Divider
