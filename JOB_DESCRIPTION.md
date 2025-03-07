@@ -1,20 +1,39 @@
-# Full Stack Engineer – Social Media Application
+# Seeking Full Stack Engineer
+
+## About Us/Me
+
+Cross Connect is ....
+
+## About our Tech Stack
+We have this functional project containerized with Docker and ready to deploy:
+- Django API & Admin: [stack/django](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django)
+- ReactJS Web App: [stack/reactjs](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/reactjs)
+- Cypress Test Suite: [stack/cypress](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/cypress)
+- Fake data Generator: [stack/databuilder](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/databuilder)
+- Everything containzered with Docker: [docker-compose.yml](https://github.com/eliataylor/objects-actions/tree/crossconnect/docker-compose.yml)
+- Deploy scripts to Google Cloud Platform: [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy) and [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy)
+
+
+## What we need
+1.  Design & implement a creative new User Experience.
+2.  Implement Contextual Permissions and error handling to guide users what they need to do.
 
 ## About the Role
 
-We are seeking a **Full Stack Engineer** to join our team and help complete a **social media application** built with **Django (Python & MySQL) and ReactJS (TypeScript)**. You will play a crucial role in developing, optimizing, and deploying new features while ensuring a seamless and high-performing user experience.
+We are seeking a **Full Stack Engineer** familiar with **Django (Python & MySQL), ReactJS (TypeScript)** and Docker. 
+You will play a crucial role in developing, optimizing, and deploying new features while ensuring a seamless and high-performing user experience.
 
 ### Responsibilities
 
-- Develop, enhance, and maintain the **Django backend (Python, MySQL)**
-- Build and optimize the **ReactJS frontend (TypeScript)**
-- Implement and maintain authentication flows, including **AllAuth / OAuth**
+- Develop, enhance, and maintain the **Django backend (Python, MySQL)** 
+  - See [stack/django](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django)
+- Build and optimize the **ReactJS frontend (TypeScript)**, with theming using **MUI**
+  - See [stack/reactjs](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/reactjs)
 - Work with **RESTful APIs** to ensure smooth data flow between backend and frontend
 - Write efficient, reusable, and scalable code following best practices
 - Debug and resolve performance bottlenecks across the stack
-- Ensure high test coverage using tools like **Cypress.io**
-- Collaborate with designers and other engineers to improve UX and application performance
 - Deploy and maintain infrastructure using **Docker (nice to have)**
+  - See [docker-compose.yml](https://github.com/eliataylor/objects-actions/tree/crossconnect/docker-compose.yml)
 
 ### Requirements
 
@@ -23,22 +42,20 @@ We are seeking a **Full Stack Engineer** to join our team and help complete a **
 - Strong knowledge of **ReactJS and TypeScript**
 - Experience working with **REST APIs** and integrating frontend with backend
 - Understanding of authentication and authorization flows (**AllAuth, OAuth, JWT**)
-- Familiarity with writing unit and end-to-end tests
 - Strong debugging and optimization skills
 
 ### Nice to Have
 
 - Experience with **Docker** for containerization and deployment
-- Hands-on experience with **Cypress.io** for automated testing
+- Familiarity with writing end-to-end tests with **Cypress.io**
+  - See [stack/cypress](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/cypress)
 - Hands-on experience with **Flutter** for publishing the web app in a WebView
 - Previous work on social media or high-traffic web applications
 - Experience with cloud services like Google Cloud Platform
+  - See [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy) and [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy)
 
 ### Why Join Us?
 
-- Work on a **cutting-edge social media application**
-- Opportunity to **shape product decisions and architecture**
-- Flexible remote work environment
-- Competitive salary and benefits
+ - Because we're awesome...
 
 If you're passionate about building scalable applications and want to work on an exciting social media product, **apply now!** 🚀
