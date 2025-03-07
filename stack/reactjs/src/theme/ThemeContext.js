@@ -59,7 +59,7 @@ const ThemeProvider = ({ children }) => {
         typography: {
           fontFamily: fontFamily,
           fontSize: 15,
-          h1: { fontSize: "3.5rem", fontWeight: 100 },
+          h1: { fontSize: "3.5rem", fontWeight: fontFamily === "Jost" ? 200 : 100 },
           h2: { fontSize: "3.0rem", fontWeight: 200 },
           h3: { fontSize: "2.5rem", fontWeight: 300 },
           h4: { fontSize: "2.0rem", fontWeight: 400 },

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Card, CardContent, Grid, SvgIcon, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid, SvgIcon, Typography } from "@mui/material";
 import { CheckCircleOutline, DoNotDisturb } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import { TightButton } from "../../theme/StyledFields";
@@ -7,6 +7,7 @@ import LightDarkImg from "../../components/LightDarkImg";
 import { ReactComponent as Linkedin } from "../../allauth/logos/linkedin.svg";
 import { Link } from "react-router-dom";
 import { useNavDrawer } from "../../NavDrawerProvider";
+import SponsorIcon from "@mui/icons-material/MonetizationOn";
 
 
 const pricingOptions = [
@@ -165,8 +166,8 @@ const Consulting: React.FC = () => {
             width: "154px",
             margin: "10px auto"
           } : {}}>
-            <Typography variant={"overline"} style={{lineHeight:0}}>Free Consult with</Typography>
-            <Typography variant={"h3"} gutterBottom><a target="_blank"  href={"https://taylormadetraffic.com/brands"} >Eli Taylor</a></Typography>
+            <Typography variant={"overline"} style={{ lineHeight: 0 }}>Free Consult with</Typography>
+            <Typography variant={"h3"} gutterBottom><a target="_blank" href={"https://taylormadetraffic.com/brands"}>Eli Taylor</a></Typography>
             <Grid container={true} gap={3} alignItems={"center"} alignContent={"center"}>
               <Grid item>
                 <a target="_blank" href="https://taylormadetraffic.com/brands" className="nolink">
@@ -190,37 +191,58 @@ const Consulting: React.FC = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} md={6} style={{textAlign:'center'}}>
-            <a
-              href={"https://calendar.app.google/N9RfLgwx62TqJRqs5"}
-              target={"_blank"}
+        <Grid item xs={12} md={6} style={{ textAlign: "center" }}>
+          <a
+            href={"https://calendar.app.google/N9RfLgwx62TqJRqs5"}
+            target={"_blank"}
+          >
+            <TightButton
+              size={"small"}
+              style={{ width: "247px", marginBottom: 14 }}
+              variant={"contained"}
+              startIcon={
+                <LightDarkImg
+                  light={"/oa-assets/google-calendar.svg"}
+                  dark={"/oa-assets/google-calendar.svg"}
+                  styles={{ height: 20 }}
+                />
+              }
             >
-              <TightButton
-                size={"small"}
-                style={{width:'247px', marginBottom:14}}
-                variant={"contained"}
-                startIcon={
-                  <LightDarkImg
-                    light={"/oa-assets/google-calendar.svg"}
-                    dark={"/oa-assets/google-calendar.svg"}
-                    styles={{ height: 20 }}
-                  />
-                }
-              >
-                Book Free 20 minute Consult
-              </TightButton>
-            </a>
+              Book Free 20 minute Consult
+            </TightButton>
+          </a>
 
           <Typography align={"center"}>
 
             or email
-            <Typography component={'span'} color={'primary'}
+            <Typography component={"span"} color={"primary"}
                         style={{ marginLeft: 10 }}
                         onClick={handleCopy}>Help <span style={{ margin: "0 2px" }}>@</span> OAExample.com</Typography>
 
           </Typography>
 
         </Grid>
+
+
+        <Grid item xs={12} sx={{ mb: 3, mt: 10, textAlign: "center" }} alignItems={"center"} alignContent={"center "}>
+          <Typography variant="h6" gutterBottom={true}>
+            If you just want to fast track our development
+          </Typography>
+          <a
+            href={"https://github.com/sponsors/eliataylor"}
+            target={"_blank"}
+            rel="noopener noreferrer"
+          >
+            <TightButton
+              variant={"contained"}
+              size={"small"}
+              startIcon={<SponsorIcon fontSize={"small"} />}
+            >
+              Sponsor O/A
+            </TightButton>
+          </a>
+        </Grid>
+
       </Grid>
 
 

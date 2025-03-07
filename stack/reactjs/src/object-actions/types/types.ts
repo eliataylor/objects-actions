@@ -1,23 +1,40 @@
 //---OBJECT-ACTIONS-API-RESP-STARTS---//
-export type ModelName = "Users" | "Topics" | "ResourceTypes" | "MeetingTypes" | "States" | "Parties" | "Stakeholders" | "Resources" | "Cities" | "Officials" | "Rallies" | "ActionPlans" | "Meetings" | "Invites" | "Subscriptions" | "Rooms" | "Attendees";
+export type ModelName =
+  "Users"
+  | "Topics"
+  | "ResourceTypes"
+  | "MeetingTypes"
+  | "States"
+  | "Parties"
+  | "Stakeholders"
+  | "Resources"
+  | "Cities"
+  | "Officials"
+  | "Rallies"
+  | "ActionPlans"
+  | "Meetings"
+  | "Invites"
+  | "Subscriptions"
+  | "Rooms"
+  | "Attendees";
 
-export type ModelType<T extends ModelName> = T extends 'Users' ? Users : 
-T extends 'Topics' ? Topics :
-T extends 'ResourceTypes' ? ResourceTypes :
-T extends 'MeetingTypes' ? MeetingTypes :
-T extends 'States' ? States :
-T extends 'Parties' ? Parties :
-T extends 'Stakeholders' ? Stakeholders :
-T extends 'Resources' ? Resources :
-T extends 'Cities' ? Cities :
-T extends 'Officials' ? Officials :
-T extends 'Rallies' ? Rallies :
-T extends 'ActionPlans' ? ActionPlans :
-T extends 'Meetings' ? Meetings :
-T extends 'Invites' ? Invites :
-T extends 'Subscriptions' ? Subscriptions :
-T extends 'Rooms' ? Rooms :
-T extends 'Attendees' ? Attendees : never
+export type ModelType<T extends ModelName> = T extends "Users" ? Users :
+  T extends "Topics" ? Topics :
+    T extends "ResourceTypes" ? ResourceTypes :
+      T extends "MeetingTypes" ? MeetingTypes :
+        T extends "States" ? States :
+          T extends "Parties" ? Parties :
+            T extends "Stakeholders" ? Stakeholders :
+              T extends "Resources" ? Resources :
+                T extends "Cities" ? Cities :
+                  T extends "Officials" ? Officials :
+                    T extends "Rallies" ? Rallies :
+                      T extends "ActionPlans" ? ActionPlans :
+                        T extends "Meetings" ? Meetings :
+                          T extends "Invites" ? Invites :
+                            T extends "Subscriptions" ? Subscriptions :
+                              T extends "Rooms" ? Rooms :
+                                T extends "Attendees" ? Attendees : never
 
 export interface RelEntity<T extends ModelName = ModelName> {
   id: string | number;
@@ -34,12 +51,12 @@ export type ITypeFieldSchema = {
 }
 
 export interface ApiListResponse<T extends ModelName> {
-    count: number;
-    offset: number;
-    limit: number;
-    meta: any;
-    error: string | null;
-    results: Array<ModelType<T>>
+  count: number;
+  offset: number;
+  limit: number;
+  meta: any;
+  error: string | null;
+  results: Array<ModelType<T>>;
 }
 
 export function getProp<T extends ModelName, K extends keyof ModelType<T>>(
@@ -60,7 +77,7 @@ export function restructureAsAllEntities<T extends ModelName>(
   Object.entries(schema).forEach(([key, field]) => {
     const value = (entity as any)[key];
 
-    if (field.data_type === 'RelEntity') {
+    if (field.data_type === "RelEntity") {
       if (!value) {
         // Skip undefined values
       } else if (Array.isArray(value)) {
@@ -82,22 +99,23 @@ export function restructureAsAllEntities<T extends ModelName>(
   });
   return result as ModelType<T>;
 }
+
 //---OBJECT-ACTIONS-API-RESP-ENDS---//
 
 
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-STARTS---//
 export interface FieldTypeDefinition {
-    machine: string;
-    singular: string;
-    plural: string;
-    data_type: 'string' | 'number' | 'boolean' | 'object' | 'RelEntity';
-    field_type: string;
-    cardinality: number | typeof Infinity;
-    relationship?: ModelName;
-    required: boolean;
-    default: string;
-    example: string;
-    options?: Array<{ label: string; id: string; }>;
+  machine: string;
+  singular: string;
+  plural: string;
+  data_type: "string" | "number" | "boolean" | "object" | "RelEntity";
+  field_type: string;
+  cardinality: number | typeof Infinity;
+  relationship?: ModelName;
+  required: boolean;
+  default: string;
+  example: string;
+  options?: Array<{ label: string; id: string; }>;
 }
 
 export const TypeFieldSchema: ITypeFieldSchema = {
@@ -1397,169 +1415,185 @@ export const TypeFieldSchema: ITypeFieldSchema = {
       "example": ""
     }
   }
-}
+};
 //---OBJECT-ACTIONS-TYPE-CONSTANTS-ENDS---//
 
 //---OBJECT-ACTIONS-TYPE-SCHEMA-STARTS---//
 export interface SuperModel {
-    readonly id: number | string; 
-    author: RelEntity<'Users'>;
-    created_at: string;
-    modified_at: string;
-    _type: ModelName;
+  readonly id: number | string;
+  author: RelEntity<"Users">;
+  created_at: string;
+  modified_at: string;
+  _type: ModelName;
 }
 
 export interface Topics extends SuperModel {
-	name?: string | null;
-	icon?: string | null;
-	photo?: string | null;
+  name?: string | null;
+  icon?: string | null;
+  photo?: string | null;
 }
-export interface ResourceTypes extends SuperModel {
-	name?: string | null;
-}
-export interface MeetingTypes extends SuperModel {
-	name?: string | null;
-}
-export interface States extends SuperModel {
-	name?: string | null;
-	website?: string | null;
-	icon?: string | null;
-}
-export interface Parties extends SuperModel {
-	name?: string | null;
-	logo?: string | null;
-	website?: string | null;
-}
-export interface Stakeholders extends SuperModel {
-	name?: string | null;
-	image?: string | null;
-}
-export interface Resources extends SuperModel {
-	title: string;
-	description_html: string;
-	image: string;
-	postal_address?: string | null;
-	price_ccoin: number;
-	resource_type: RelEntity<"ResourceTypes">[];
-}
-export interface Users {
-	readonly id: number | string
-	_type: string
-	is_active?: boolean
-	is_staff?: boolean
-	last_login?: string
-	date_joined?: string
-	username?: string
-	first_name?: string
-	last_name?: string
-	groups?: string[]
-	email?: string | null;
-	phone?: string | null;
-	website?: string | null;
-	bio?: string | null;
-	picture?: string | null;
-	cover_photo?: string | null;
-	resources?: RelEntity<"Resources">[] | null;
-}
-export interface Cities extends SuperModel {
-	name: string;
-	description?: string | null;
-	postal_address?: string | null;
-	picture?: string | null;
-	cover_photo?: string | null;
-	sponsors?: RelEntity<"Users">[] | null;
-	website?: string[] | null;
-	population?: number | null;
-	altitude?: number | null;
-	county?: string | null;
-	state_id?: RelEntity<"States"> | null;
-	officials?: RelEntity<"Users">[] | null;
-	land_area?: number | null;
-	water_area?: number | null;
-	total_area?: number | null;
-	density?: number | null;
-	timezone?: string | null;
-}
-export interface Officials extends SuperModel {
-	title: string;
-	office_phone?: string | null;
-	office_email?: string | null;
-	social_links?: string[] | null;
-	party_affiliation?: RelEntity<"Parties"> | null;
-	city: RelEntity<"Cities">[];
-}
-export interface Rallies extends SuperModel {
-	title: string;
-	description: string;
-	media?: string[] | null;
-	topics: RelEntity<"Topics">[];
-	comments?: string[] | null;
-}
-export interface ActionPlans extends SuperModel {
-	title?: string | null;
-	recommendation?: string | null;
-	exe_summary?: string | null;
-	analysis?: string | null;
-	background?: string | null;
-	coauthors?: RelEntity<"Users">[] | null;
-	pro_argument?: string | null;
-	con_argument?: string | null;
-	prerequisites: string;
-	timeline?: string | null;
-	rally?: RelEntity<"Rallies"> | null;
-}
-export interface Meetings extends SuperModel {
-	title?: string | null;
-	rally?: RelEntity<"Rallies"> | null;
-	meeting_type: RelEntity<"MeetingTypes">;
-	speakers: RelEntity<"Users">[];
-	moderators: RelEntity<"Users">[];
-	sponsors?: RelEntity<"Users">[] | null;
-	address?: string | null;
-	start: string;
-	end: string;
-	agenda_json?: object | null;
-	duration?: number | null;
-	privacy?: number | null;
-}
-export interface Invites extends SuperModel {
-	meeting: RelEntity<"Meetings">;
-	user: RelEntity<"Users">;
-	invited_by: RelEntity<"Users">;
-	status: string;
-}
-export interface Subscriptions extends SuperModel {
-	subscriber: RelEntity<"Users">;
-	rally: RelEntity<"Rallies">;
-	meeting?: RelEntity<"Meetings"> | null;
-	status: string;
-}
-export interface Rooms extends SuperModel {
-	author: RelEntity<"Users">;
-	start: string;
-	end: string;
-	rally?: RelEntity<"Rallies"> | null;
-	meeting?: RelEntity<"Meetings"> | null;
-	privacy?: string | null;
-	status?: string | null;
-	chat_thread?: string[] | null;
-	recording?: string | null;
-}
-export interface Attendees extends SuperModel {
-	room_id: RelEntity<"Rooms">;
-	display_name?: string | null;
-	display_bg?: string | null;
-	role: string;
-	stream?: string | null;
-	is_muted?: boolean | null;
-	sharing_video?: boolean | null;
-	sharing_audio?: boolean | null;
-	sharing_screen?: boolean | null;
-	hand_raised?: boolean | null;
-	is_typing?: boolean | null;
-}
-//---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
 
+export interface ResourceTypes extends SuperModel {
+  name?: string | null;
+}
+
+export interface MeetingTypes extends SuperModel {
+  name?: string | null;
+}
+
+export interface States extends SuperModel {
+  name?: string | null;
+  website?: string | null;
+  icon?: string | null;
+}
+
+export interface Parties extends SuperModel {
+  name?: string | null;
+  logo?: string | null;
+  website?: string | null;
+}
+
+export interface Stakeholders extends SuperModel {
+  name?: string | null;
+  image?: string | null;
+}
+
+export interface Resources extends SuperModel {
+  title: string;
+  description_html: string;
+  image: string;
+  postal_address?: string | null;
+  price_ccoin: number;
+  resource_type: RelEntity<"ResourceTypes">[];
+}
+
+export interface Users {
+  readonly id: number | string;
+  _type: string;
+  is_active?: boolean;
+  is_staff?: boolean;
+  last_login?: string;
+  date_joined?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  groups?: string[];
+  email?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  bio?: string | null;
+  picture?: string | null;
+  cover_photo?: string | null;
+  resources?: RelEntity<"Resources">[] | null;
+}
+
+export interface Cities extends SuperModel {
+  name: string;
+  description?: string | null;
+  postal_address?: string | null;
+  picture?: string | null;
+  cover_photo?: string | null;
+  sponsors?: RelEntity<"Users">[] | null;
+  website?: string[] | null;
+  population?: number | null;
+  altitude?: number | null;
+  county?: string | null;
+  state_id?: RelEntity<"States"> | null;
+  officials?: RelEntity<"Users">[] | null;
+  land_area?: number | null;
+  water_area?: number | null;
+  total_area?: number | null;
+  density?: number | null;
+  timezone?: string | null;
+}
+
+export interface Officials extends SuperModel {
+  title: string;
+  office_phone?: string | null;
+  office_email?: string | null;
+  social_links?: string[] | null;
+  party_affiliation?: RelEntity<"Parties"> | null;
+  city: RelEntity<"Cities">[];
+}
+
+export interface Rallies extends SuperModel {
+  title: string;
+  description: string;
+  media?: string[] | null;
+  topics: RelEntity<"Topics">[];
+  comments?: string[] | null;
+}
+
+export interface ActionPlans extends SuperModel {
+  title?: string | null;
+  recommendation?: string | null;
+  exe_summary?: string | null;
+  analysis?: string | null;
+  background?: string | null;
+  coauthors?: RelEntity<"Users">[] | null;
+  pro_argument?: string | null;
+  con_argument?: string | null;
+  prerequisites: string;
+  timeline?: string | null;
+  rally?: RelEntity<"Rallies"> | null;
+}
+
+export interface Meetings extends SuperModel {
+  title?: string | null;
+  rally?: RelEntity<"Rallies"> | null;
+  meeting_type: RelEntity<"MeetingTypes">;
+  speakers: RelEntity<"Users">[];
+  moderators: RelEntity<"Users">[];
+  sponsors?: RelEntity<"Users">[] | null;
+  address?: string | null;
+  start: string;
+  end: string;
+  agenda_json?: object | null;
+  duration?: number | null;
+  privacy?: number | null;
+}
+
+export interface Invites extends SuperModel {
+  meeting: RelEntity<"Meetings">;
+  user: RelEntity<"Users">;
+  invited_by: RelEntity<"Users">;
+  status: string;
+}
+
+export interface Subscriptions extends SuperModel {
+  subscriber: RelEntity<"Users">;
+  rally: RelEntity<"Rallies">;
+  meeting?: RelEntity<"Meetings"> | null;
+  status: string;
+}
+
+export interface Rooms extends SuperModel {
+  author: RelEntity<"Users">;
+  start: string;
+  end: string;
+  rally?: RelEntity<"Rallies"> | null;
+  meeting?: RelEntity<"Meetings"> | null;
+  privacy?: string | null;
+  status?: string | null;
+  chat_thread?: string[] | null;
+  recording?: string | null;
+}
+
+export interface Attendees extends SuperModel {
+  room_id: RelEntity<"Rooms">;
+  display_name?: string | null;
+  display_bg?: string | null;
+  role: string;
+  stream?: string | null;
+  is_muted?: boolean | null;
+  sharing_video?: boolean | null;
+  sharing_audio?: boolean | null;
+  sharing_screen?: boolean | null;
+  hand_raised?: boolean | null;
+  is_typing?: boolean | null;
+}
+
+//---OBJECT-ACTIONS-TYPE-SCHEMA-ENDS---//
 
 
 //---OBJECT-ACTIONS-NAV-ITEMS-STARTS---//
@@ -1570,7 +1604,7 @@ export interface NavItem<T extends ModelName = ModelName> {
   api: string;
   icon?: string;
   type: T;
-  model_type?: 'vocabulary' | string;
+  model_type?: "vocabulary" | string;
   search_fields: string[];
 }
 
@@ -1581,10 +1615,9 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Topics",
     "segment": "topics",
     "api": "/api/topics",
-    "search_fields": [
-      "name"
-    ],
-    "model_type": "vocabulary"
+    "search_fields": ["name"],
+    "model_type": "vocabulary",
+    "icon": "Category"
   },
   {
     "singular": "Resource Type",
@@ -1592,10 +1625,9 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "ResourceTypes",
     "segment": "resource-types",
     "api": "/api/resource-types",
-    "search_fields": [
-      "name"
-    ],
-    "model_type": "vocabulary"
+    "search_fields": ["name"],
+    "model_type": "vocabulary",
+    "icon": "Inventory"
   },
   {
     "singular": "Meeting Type",
@@ -1603,10 +1635,9 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "MeetingTypes",
     "segment": "meeting-types",
     "api": "/api/meeting-types",
-    "search_fields": [
-      "name"
-    ],
-    "model_type": "vocabulary"
+    "search_fields": ["name"],
+    "model_type": "vocabulary",
+    "icon": "Event"
   },
   {
     "singular": "State",
@@ -1614,10 +1645,9 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "States",
     "segment": "states",
     "api": "/api/states",
-    "search_fields": [
-      "name"
-    ],
-    "model_type": "vocabulary"
+    "search_fields": ["name"],
+    "model_type": "vocabulary",
+    "icon": "Flag"
   },
   {
     "singular": "Party",
@@ -1625,10 +1655,9 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Parties",
     "segment": "parties",
     "api": "/api/parties",
-    "search_fields": [
-      "name"
-    ],
-    "model_type": "vocabulary"
+    "search_fields": ["name"],
+    "model_type": "vocabulary",
+    "icon": "Groups"
   },
   {
     "singular": "Stakeholder",
@@ -1636,10 +1665,9 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Stakeholders",
     "segment": "stakeholders",
     "api": "/api/stakeholders",
-    "search_fields": [
-      "name"
-    ],
-    "model_type": "vocabulary"
+    "search_fields": ["name"],
+    "model_type": "vocabulary",
+    "icon": "Business"
   },
   {
     "singular": "Resource",
@@ -1647,9 +1675,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Resources",
     "segment": "resources",
     "api": "/api/resources",
-    "search_fields": [
-      "title"
-    ]
+    "search_fields": ["title"],
+    "icon": "Description"
   },
   {
     "singular": "User",
@@ -1657,10 +1684,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Users",
     "segment": "users",
     "api": "/api/users",
-    "search_fields": [
-      "first_name",
-      "last_name"
-    ]
+    "search_fields": ["first_name", "last_name"],
+    "icon": "Person"
   },
   {
     "singular": "City",
@@ -1668,9 +1693,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Cities",
     "segment": "cities",
     "api": "/api/cities",
-    "search_fields": [
-      "name"
-    ]
+    "search_fields": ["name"],
+    "icon": "LocationCity"
   },
   {
     "singular": "Official",
@@ -1678,9 +1702,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Officials",
     "segment": "officials",
     "api": "/api/officials",
-    "search_fields": [
-      "title"
-    ]
+    "search_fields": ["title"],
+    "icon": "Gavel"
   },
   {
     "singular": "Rally",
@@ -1688,9 +1711,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Rallies",
     "segment": "rallies",
     "api": "/api/rallies",
-    "search_fields": [
-      "title"
-    ]
+    "search_fields": ["title"],
+    "icon": "Campaign"
   },
   {
     "singular": "Action Plan",
@@ -1698,9 +1720,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "ActionPlans",
     "segment": "action-plans",
     "api": "/api/action-plans",
-    "search_fields": [
-      "title"
-    ]
+    "search_fields": ["title"],
+    "icon": "Checklist"
   },
   {
     "singular": "Meeting",
@@ -1708,9 +1729,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Meetings",
     "segment": "meetings",
     "api": "/api/meetings",
-    "search_fields": [
-      "title"
-    ]
+    "search_fields": ["title"],
+    "icon": "VideoCall"
   },
   {
     "singular": "Invite",
@@ -1718,9 +1738,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Invites",
     "segment": "invites",
     "api": "/api/invites",
-    "search_fields": [
-      "meeting__title"
-    ]
+    "search_fields": ["meeting__title"],
+    "icon": "MailOutline"
   },
   {
     "singular": "Subscription",
@@ -1728,10 +1747,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Subscriptions",
     "segment": "subscriptions",
     "api": "/api/subscriptions",
-    "search_fields": [
-      "rally__title",
-      "meeting__title"
-    ]
+    "search_fields": ["rally__title", "meeting__title"],
+    "icon": "Subscriptions"
   },
   {
     "singular": "Room",
@@ -1739,10 +1756,8 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Rooms",
     "segment": "rooms",
     "api": "/api/rooms",
-    "search_fields": [
-      "rally__title",
-      "meeting__title"
-    ]
+    "search_fields": ["rally__title", "meeting__title"],
+    "icon": "MeetingRoom"
   },
   {
     "singular": "Attendee",
@@ -1750,7 +1765,9 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "type": "Attendees",
     "segment": "attendees",
     "api": "/api/attendees",
-    "search_fields": []
+    "search_fields": [],
+    "icon": "People"
   }
-]
+];
+
 //---OBJECT-ACTIONS-NAV-ITEMS-ENDS---//
