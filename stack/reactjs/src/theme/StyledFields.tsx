@@ -18,7 +18,9 @@ export const TightButton = styled(Button)(({ theme }) => ({
   borderRadius: 4,
   textTransform: "none",
   color: theme.palette.mode === "dark" ? theme.palette.text.primary : "",
-  margin: "auto"
+  margin: "auto",
+  minWidth: "auto",
+  padding: "0 3px"
 }));
 
 export const GradientButton = styled(IconButton)(({ theme }) => ({
@@ -31,11 +33,11 @@ export const GradientButton = styled(IconButton)(({ theme }) => ({
       `linear-gradient(145deg, ${theme.palette.secondary.light},  ${theme.palette.background.paper}, ${theme.palette.primary.light})`,
   color: theme.palette.text.primary,
   "&:hover": {
-    transform: 'rotate(34.5deg)',
+    transform: "rotate(34.5deg)",
     background: theme.palette.mode === "dark" ?
       `linear-gradient(165deg, ${theme.palette.secondary.main}80, ${theme.palette.background.default} 45%, ${theme.palette.background.default} 55%, ${theme.palette.primary.main}80)`
       :
-      `linear-gradient(145deg, ${theme.palette.secondary.dark},  ${theme.palette.background.paper}, ${theme.palette.primary.dark})`,
+      `linear-gradient(145deg, ${theme.palette.secondary.dark},  ${theme.palette.background.paper}, ${theme.palette.primary.dark})`
   }
 }));
 
