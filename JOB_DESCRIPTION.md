@@ -10,7 +10,7 @@ We have this functional project containerized with Docker and ready to deploy:
 - ReactJS Web App: [stack/reactjs](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/reactjs)
 - Cypress Test Suite: [stack/cypress](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/cypress)
 - Fake data Generator: [stack/databuilder](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/databuilder)
-- Everything containzered with Docker: [docker-compose.yml](https://github.com/eliataylor/objects-actions/tree/crossconnect/docker-compose.yml)
+- Everything containerized with Docker: [docker-compose.yml](https://github.com/eliataylor/objects-actions/tree/crossconnect/docker-compose.yml)
 - Deploy scripts to Google Cloud Platform: [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy) and [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy)
 
 
@@ -57,5 +57,3 @@ You will play a crucial role in developing, optimizing, and deploying new featur
 ### Why Join Us?
 
  - Because we're awesome...
-
-If you're passionate about building scalable applications and want to work on an exciting social media product, **apply now!** 🚀
