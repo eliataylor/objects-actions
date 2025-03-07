@@ -2,23 +2,17 @@
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ManyToManyField
-from .models import Topics
-from .models import ResourceTypes
-from .models import MeetingTypes
-from .models import States
-from .models import Parties
-from .models import Stakeholders
-from .models import Resources
+from .models import PostType
+from .models import Denomination
 from .models import Users
-from .models import Cities
-from .models import Officials
-from .models import Rallies
-from .models import ActionPlans
-from .models import Meetings
-from .models import Invites
-from .models import Subscriptions
-from .models import Rooms
-from .models import Attendees
+from .models import Churches
+from .models import Post
+from .models import Events
+from .models import Services
+from .models import RequestedResources
+from .models import Annoucements
+from .models import Messages
+from .models import Groups
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
 
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
@@ -100,73 +94,49 @@ class CustomSerializer(serializers.ModelSerializer):
                         } for related in related_instances
                     ]
         return representation
-class TopicsSerializer(CustomSerializer):
+class PostTypeSerializer(CustomSerializer):
     class Meta:
-        model = Topics
+        model = PostType
         fields = '__all__'
-class ResourceTypesSerializer(CustomSerializer):
+class DenominationSerializer(CustomSerializer):
     class Meta:
-        model = ResourceTypes
-        fields = '__all__'
-class MeetingTypesSerializer(CustomSerializer):
-    class Meta:
-        model = MeetingTypes
-        fields = '__all__'
-class StatesSerializer(CustomSerializer):
-    class Meta:
-        model = States
-        fields = '__all__'
-class PartiesSerializer(CustomSerializer):
-    class Meta:
-        model = Parties
-        fields = '__all__'
-class StakeholdersSerializer(CustomSerializer):
-    class Meta:
-        model = Stakeholders
-        fields = '__all__'
-class ResourcesSerializer(CustomSerializer):
-    class Meta:
-        model = Resources
+        model = Denomination
         fields = '__all__'
 class UsersSerializer(CustomUsersSerializer):
     class Meta:
         model = Users
         exclude = ('password', 'email', 'is_active', 'is_staff', 'is_superuser')
-class CitiesSerializer(CustomSerializer):
+class ChurchesSerializer(CustomSerializer):
     class Meta:
-        model = Cities
+        model = Churches
         fields = '__all__'
-class OfficialsSerializer(CustomSerializer):
+class PostSerializer(CustomSerializer):
     class Meta:
-        model = Officials
+        model = Post
         fields = '__all__'
-class RalliesSerializer(CustomSerializer):
+class EventsSerializer(CustomSerializer):
     class Meta:
-        model = Rallies
+        model = Events
         fields = '__all__'
-class ActionPlansSerializer(CustomSerializer):
+class ServicesSerializer(CustomSerializer):
     class Meta:
-        model = ActionPlans
+        model = Services
         fields = '__all__'
-class MeetingsSerializer(CustomSerializer):
+class RequestedResourcesSerializer(CustomSerializer):
     class Meta:
-        model = Meetings
+        model = RequestedResources
         fields = '__all__'
-class InvitesSerializer(CustomSerializer):
+class AnnoucementsSerializer(CustomSerializer):
     class Meta:
-        model = Invites
+        model = Annoucements
         fields = '__all__'
-class SubscriptionsSerializer(CustomSerializer):
+class MessagesSerializer(CustomSerializer):
     class Meta:
-        model = Subscriptions
+        model = Messages
         fields = '__all__'
-class RoomsSerializer(CustomSerializer):
+class GroupsSerializer(CustomSerializer):
     class Meta:
-        model = Rooms
-        fields = '__all__'
-class AttendeesSerializer(CustomSerializer):
-    class Meta:
-        model = Attendees
+        model = Groups
         fields = '__all__'
 ####OBJECT-ACTIONS-SERIALIZERS-ENDS####
 

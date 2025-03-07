@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormStates: React.FC<OAFormProps<"States">> = ({ onSuccess }) => {
+export const OAFormMessages: React.FC<OAFormProps<"Messages">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"States">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Messages">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormStates: React.FC<OAFormProps<"States">> = ({ onSuccess }) => 
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`States saved`);
+      enqueueSnackbar(`Messages saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormStates: React.FC<OAFormProps<"States">> = ({ onSuccess }) => 
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`States saved`);
+      enqueueSnackbar(`Messages saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,13 +39,13 @@ export const OAFormStates: React.FC<OAFormProps<"States">> = ({ onSuccess }) => 
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["States"]["name"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Messages"]["sender"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["States"]["website"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Messages"]["recipeint"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["States"]["icon"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Messages"]["text"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -70,5 +70,5 @@ export const OAFormStates: React.FC<OAFormProps<"States">> = ({ onSuccess }) => 
 
 };
 
-export default OAFormStates;
+export default OAFormMessages;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

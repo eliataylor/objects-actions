@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormMeetings: React.FC<OAFormProps<"Meetings">> = ({ onSuccess }) => {
+export const OAFormRequestedResources: React.FC<OAFormProps<"RequestedResources">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Meetings">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"RequestedResources">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormMeetings: React.FC<OAFormProps<"Meetings">> = ({ onSuccess })
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`Meetings saved`);
+      enqueueSnackbar(`RequestedResources saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormMeetings: React.FC<OAFormProps<"Meetings">> = ({ onSuccess })
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`Meetings saved`);
+      enqueueSnackbar(`RequestedResources saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,40 +39,13 @@ export const OAFormMeetings: React.FC<OAFormProps<"Meetings">> = ({ onSuccess })
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["title"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["RequestedResources"]["title"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["rally"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["RequestedResources"]["description"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["meeting_type"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["speakers"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["moderators"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["sponsors"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["address"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["start"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["end"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["agenda_json"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["duration"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["privacy"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["RequestedResources"]["severity"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -97,5 +70,5 @@ export const OAFormMeetings: React.FC<OAFormProps<"Meetings">> = ({ onSuccess })
 
 };
 
-export default OAFormMeetings;
+export default OAFormRequestedResources;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

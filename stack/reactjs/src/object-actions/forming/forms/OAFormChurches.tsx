@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
+export const OAFormChurches: React.FC<OAFormProps<"Churches">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Rooms">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Churches">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`Rooms saved`);
+      enqueueSnackbar(`Churches saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`Rooms saved`);
+      enqueueSnackbar(`Churches saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,31 +39,13 @@ export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["author"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Churches"]["name"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["start"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Churches"]["pastors"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["end"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["rally"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["meeting"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["privacy"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["status"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["chat_thread"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rooms"]["recording"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Churches"]["address"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -88,5 +70,5 @@ export const OAFormRooms: React.FC<OAFormProps<"Rooms">> = ({ onSuccess }) => {
 
 };
 
-export default OAFormRooms;
+export default OAFormChurches;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//
