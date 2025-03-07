@@ -20,7 +20,7 @@ export const TightButton = styled(Button)(({ theme }) => ({
   color: theme.palette.mode === "dark" ? theme.palette.text.primary : "",
   margin: "auto",
   minWidth: "auto",
-  padding: "0 3px"
+  padding: "3px 5px"
 }));
 
 export const GradientButton = styled(IconButton)(({ theme }) => ({
