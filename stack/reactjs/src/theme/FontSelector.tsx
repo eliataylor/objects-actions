@@ -48,9 +48,10 @@ const FontSelector: React.FC = () => {
       }}
       fullWidth
       InputProps={{
+        sx: { fontSize:12 },
         startAdornment: (
           <InputAdornment position="start">
-            <img height={17} src={"/oa-assets/google-fonts.svg"} />
+            <img height={15} src={"/oa-assets/google-fonts.svg"} />
           </InputAdornment>
         )
       }}

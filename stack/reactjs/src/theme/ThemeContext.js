@@ -15,7 +15,7 @@ const ThemeProvider = ({ children }) => {
   );
   const [fontFamily, setFamily] = useState(
     localStorage.getItem("themeFont") ? localStorage.getItem("themeFont") :
-      "Jost");
+      "Merienda");
 
   const theme = useMemo(() => {
     const plt = {

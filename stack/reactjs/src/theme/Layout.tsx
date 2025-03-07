@@ -120,7 +120,7 @@ const Layout: React.FC = () => {
               aria-label={"Menu Mounted"}
               item
               sx={{ ml: 2, mt: 3 }}
-              style={{ maxWidth: 240, minWidth: 180 }}
+              style={{ maxWidth: 240, minWidth: 181 }}
             >
               {isOaPage() ?
                 <NavBarItem
