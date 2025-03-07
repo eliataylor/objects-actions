@@ -5,14 +5,13 @@
 Cross Connect is ....
 
 ## About our Tech Stack
-We have this functional project containerized with Docker and ready to deploy:
+We have this functional prototype containerized with Docker and ready to deploy:
 - Django API & Admin: [stack/django](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django)
 - ReactJS Web App: [stack/reactjs](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/reactjs)
 - Cypress Test Suite: [stack/cypress](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/cypress)
 - Fake data Generator: [stack/databuilder](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/databuilder)
 - Everything containerized with Docker: [docker-compose.yml](https://github.com/eliataylor/objects-actions/tree/crossconnect/docker-compose.yml)
 - Deploy scripts to Google Cloud Platform: [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy) and [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy)
-
 
 ## What we need
 1. Review and redefine our [Content Types and Fields](https://docs.google.com/spreadsheets/d/1--h2pvtXbUr2LHj-HvRevCc3gK-be5i0bR17QBThvlk/edit?gid=845262387#gid=845262387) to ensure they support our immediate and long term goals
