@@ -1,6 +1,6 @@
 # Seeking Full Stack Engineer
 
-## About Us/Me
+## About Us
 
 Cross Connect is ....
 
@@ -15,15 +15,17 @@ We have this functional project containerized with Docker and ready to deploy:
 
 
 ## What we need
-1.  Design & implement a creative new User Experience.
-2.  Implement Contextual Permissions and error handling to guide users what they need to do.
+1. Review and redefine our [Content Types and Fields](https://docs.google.com/spreadsheets/d/1--h2pvtXbUr2LHj-HvRevCc3gK-be5i0bR17QBThvlk/edit?gid=845262387#gid=845262387) to ensure they support our immediate and long term goals
+2. Review and redefine our [Permissions Matrix](https://docs.google.com/spreadsheets/d/1--h2pvtXbUr2LHj-HvRevCc3gK-be5i0bR17QBThvlk/edit?gid=1619189607#gid=1619189607) to ensure they support our immediate and long term goals
+3. Design & implement a creative new User Experience.
+4. Implement Contextual Permissions and error handling to guide users what they need to do.
 
 ## About the Role
 
 We are seeking a **Full Stack Engineer** familiar with **Django (Python & MySQL), ReactJS (TypeScript)** and Docker. 
 You will play a crucial role in developing, optimizing, and deploying new features while ensuring a seamless and high-performing user experience.
 
-### Responsibilities
+## Responsibilities
 
 - Develop, enhance, and maintain the **Django backend (Python, MySQL)** 
   - See [stack/django](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django)
@@ -35,7 +37,7 @@ You will play a crucial role in developing, optimizing, and deploying new featur
 - Deploy and maintain infrastructure using **Docker (nice to have)**
   - See [docker-compose.yml](https://github.com/eliataylor/objects-actions/tree/crossconnect/docker-compose.yml)
 
-### Requirements
+## Requirements
 
 - **2+ years** of professional experience as a Full Stack Engineer
 - Proficiency in **Django (Python) and MySQL**
@@ -44,7 +46,7 @@ You will play a crucial role in developing, optimizing, and deploying new featur
 - Understanding of authentication and authorization flows (**AllAuth, OAuth, JWT**)
 - Strong debugging and optimization skills
 
-### Nice to Have
+## Nice to Have
 
 - Experience with **Docker** for containerization and deployment
 - Familiarity with writing end-to-end tests with **Cypress.io**
@@ -54,6 +56,6 @@ You will play a crucial role in developing, optimizing, and deploying new featur
 - Experience with cloud services like Google Cloud Platform
   - See [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy) and [stack/reactjs/deploy](https://github.com/eliataylor/objects-actions/tree/crossconnect/stack/django/deploy)
 
-### Why Join Us?
+## Why Join Us?
 
  - Because we're awesome...
