@@ -188,7 +188,8 @@ class TypesBuilder:
                     if "relationship" in field_js:
                         field_def += f'<"{field_js['relationship']}">'
                     else:
-                        field_def += f'<ModelName>'
+                        logger.warning(f"No relationship defined for {field_name}. Assuming Users")
+                        field_def += f'<"Users">'
 
                 if field_type == 'enum':
                     field_js = create_options(field_js)

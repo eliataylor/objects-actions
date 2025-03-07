@@ -21,7 +21,7 @@ echo "$FILES" | while IFS=: read -r target source; do
       echo "Warning: Source file $source does not exist. Skipping $target."
     fi
   else
-    echo "Skipping $target, already exists."
+    echo "$target already exists. continue."
   fi
 done
 
