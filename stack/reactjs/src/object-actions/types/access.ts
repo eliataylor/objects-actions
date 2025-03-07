@@ -13,16 +13,16 @@ export interface MySession {
 
 //---OBJECT-ACTIONS-PERMS-VERBS-STARTS---//
 
-export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | '' | 'view' | 'subscribe' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject' | 'user' | 'rooms';
+export type CRUDVerb = 'view' | 'add' | 'edit' | 'delete';
 //---OBJECT-ACTIONS-PERMS-VERBS-ENDS---//
 
 
 
 //---OBJECT-ACTIONS-PERMS-ROLES-STARTS---//
 
-export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'AllowAny';
+export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'IsAuthenticatedOrReadOnly';
 
-export type PermRoles = 'anonymous' | 'authenticated' | 'verified' | 'paid user' | 'admin' | 'rally attendee' | 'city sponsor' | 'city official' | 'rally speaker' | 'rally moderator';
+export type PermRoles = 'anonymous' | 'authenticated' | 'verified';
 //---OBJECT-ACTIONS-PERMS-ROLES-ENDS---//
 
 

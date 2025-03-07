@@ -21,7 +21,7 @@ echo "$FILES" | while IFS=: read -r target source; do
       echo "Warning: Source file $source does not exist. Skipping $target."
     fi
   else
-    echo "Skipping $target, already exists."
+    echo "$target already exists. continue."
   fi
 done
 
@@ -89,7 +89,7 @@ update_env_file() {
   fi
 
   mv "$TMP_FILE" "$FILE"
-  echo "Updated $VAR in $FILE"
+  echo "Updated $VAR to $ROOT_VALUE in $FILE"
 }
 
 # Function to update JSON files manually

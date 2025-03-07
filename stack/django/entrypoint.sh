@@ -57,7 +57,7 @@ PORT=$(echo "$REACT_APP_API_HOST" | sed -E 's|^https?://[^:/]+:?([0-9]*)/?|\1|')
 
 # Default to 8080 if no port is extracted
 if [[ -z "$PORT" || ! "$PORT" =~ ^[0-9]+$ ]]; then
-    PORT=8080
+    PORT=8085
 fi
 
 echo "[OADJANGO] Using PORT: $PORT"

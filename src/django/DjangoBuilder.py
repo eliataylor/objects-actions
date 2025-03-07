@@ -69,7 +69,7 @@ class DjangoBuilder:
         # TODO: personalize the CustomPagination class
 
     def build_django(self, types_path, default_perm):
-        if types_path is None or not os.path.exists(types_path):
+        if os.path.exists(types_path):
             self.json = build_types_from_csv(types_path)
             self.build_models()
             self.build_serializers()
@@ -82,7 +82,7 @@ class DjangoBuilder:
 
     # python generate.py chatbot --types=examples/object-fields-demo.csv --output_dir=../stack/django/oasheets_app/fixtures
     def build_chatbot_structures(self, types_path):
-        if types_path is None or not os.path.exists(types_path):
+        if os.path.exists(types_path):
             logger.warning(f'Cannot find Object Types {types_path}')
             sys.exit(0)
 

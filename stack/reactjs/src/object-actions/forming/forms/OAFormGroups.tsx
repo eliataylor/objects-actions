@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormOfficials: React.FC<OAFormProps<"Officials">> = ({ onSuccess }) => {
+export const OAFormGroups: React.FC<OAFormProps<"Groups">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Officials">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Groups">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormOfficials: React.FC<OAFormProps<"Officials">> = ({ onSuccess 
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`Officials saved`);
+      enqueueSnackbar(`Groups saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormOfficials: React.FC<OAFormProps<"Officials">> = ({ onSuccess 
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`Officials saved`);
+      enqueueSnackbar(`Groups saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,22 +39,13 @@ export const OAFormOfficials: React.FC<OAFormProps<"Officials">> = ({ onSuccess 
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["title"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Groups"]["title"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["office_phone"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Groups"]["description"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["office_email"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["social_links"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["party_affiliation"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["city"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Groups"]["author"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -79,5 +70,5 @@ export const OAFormOfficials: React.FC<OAFormProps<"Officials">> = ({ onSuccess 
 
 };
 
-export default OAFormOfficials;
+export default OAFormGroups;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

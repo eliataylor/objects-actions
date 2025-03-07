@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormAttendees: React.FC<OAFormProps<"Attendees">> = ({ onSuccess }) => {
+export const OAFormServices: React.FC<OAFormProps<"Services">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Attendees">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Services">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormAttendees: React.FC<OAFormProps<"Attendees">> = ({ onSuccess 
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`Attendees saved`);
+      enqueueSnackbar(`Services saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormAttendees: React.FC<OAFormProps<"Attendees">> = ({ onSuccess 
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`Attendees saved`);
+      enqueueSnackbar(`Services saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,37 +39,7 @@ export const OAFormAttendees: React.FC<OAFormProps<"Attendees">> = ({ onSuccess 
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["room_id"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["display_name"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["display_bg"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["role"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["stream"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["is_muted"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["sharing_video"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["sharing_audio"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["sharing_screen"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["hand_raised"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Attendees"]["is_typing"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Services"]["promo_link"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -94,5 +64,5 @@ export const OAFormAttendees: React.FC<OAFormProps<"Attendees">> = ({ onSuccess 
 
 };
 
-export default OAFormAttendees;
+export default OAFormServices;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

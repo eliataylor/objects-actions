@@ -10,7 +10,7 @@ services:
       - mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: localdb
+      MYSQL_DATABASE: crossconnectdb
       MYSQL_USER: localuser
       MYSQL_PASSWORD: localpassword
     healthcheck:
@@ -35,9 +35,9 @@ services:
       mysqlv8:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "8085:8085"
     extra_hosts:
-      - "localapi.oaexample.com:127.0.0.1"
+      - "localapi.crossconnect.com:127.0.0.1"
 
   # ReactJS Frontend Service
   reactjs:
@@ -52,9 +52,9 @@ services:
       django:
         condition: service_started
     ports:
-      - "3000:3000"
+      - "3005:3005"
     extra_hosts:
-      - "localhost.oaexample.com:127.0.0.1"
+      - "localhost.crossconnect.com:127.0.0.1"
 
   # Fake data generator
   databuilder:
@@ -68,7 +68,7 @@ services:
       django:
         condition: service_started
     extra_hosts:
-      - "localapi.oaexample.com:127.0.0.1"
+      - "localapi.crossconnect.com:127.0.0.1"
 
   # Front-end end-to-end testing
   cypress:
@@ -85,12 +85,12 @@ services:
       reactjs:
         condition: service_started
     extra_hosts:
-      - "localapi.oaexample.com:127.0.0.1"
-      - "localhost.oaexample.com:127.0.0.1"
+      - "localapi.crossconnect.com:127.0.0.1"
+      - "localhost.crossconnect.com:127.0.0.1"
 
 networks:
   default:
-    name: my_oaexample_network
+    name: my_crossconnect_network
 
 volumes:
   mysql-data:

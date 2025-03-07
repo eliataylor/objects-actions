@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormStakeholders: React.FC<OAFormProps<"Stakeholders">> = ({ onSuccess }) => {
+export const OAFormPostType: React.FC<OAFormProps<"PostType">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Stakeholders">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"PostType">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormStakeholders: React.FC<OAFormProps<"Stakeholders">> = ({ onSu
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`Stakeholders saved`);
+      enqueueSnackbar(`PostType saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormStakeholders: React.FC<OAFormProps<"Stakeholders">> = ({ onSu
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`Stakeholders saved`);
+      enqueueSnackbar(`PostType saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,10 +39,10 @@ export const OAFormStakeholders: React.FC<OAFormProps<"Stakeholders">> = ({ onSu
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Stakeholders"]["name"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["PostType"]["name"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Stakeholders"]["image"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["PostType"]["icon"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -67,5 +67,5 @@ export const OAFormStakeholders: React.FC<OAFormProps<"Stakeholders">> = ({ onSu
 
 };
 
-export default OAFormStakeholders;
+export default OAFormPostType;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

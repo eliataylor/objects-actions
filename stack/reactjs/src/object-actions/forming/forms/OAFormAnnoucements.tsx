@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormRallies: React.FC<OAFormProps<"Rallies">> = ({ onSuccess }) => {
+export const OAFormAnnoucements: React.FC<OAFormProps<"Annoucements">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Rallies">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Annoucements">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormRallies: React.FC<OAFormProps<"Rallies">> = ({ onSuccess }) =
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`Rallies saved`);
+      enqueueSnackbar(`Annoucements saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormRallies: React.FC<OAFormProps<"Rallies">> = ({ onSuccess }) =
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`Rallies saved`);
+      enqueueSnackbar(`Annoucements saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,19 +39,10 @@ export const OAFormRallies: React.FC<OAFormProps<"Rallies">> = ({ onSuccess }) =
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rallies"]["title"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Annoucements"]["title"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rallies"]["description"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rallies"]["media"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rallies"]["topics"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Rallies"]["comments"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Annoucements"]["description"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -76,5 +67,5 @@ export const OAFormRallies: React.FC<OAFormProps<"Rallies">> = ({ onSuccess }) =
 
 };
 
-export default OAFormRallies;
+export default OAFormAnnoucements;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

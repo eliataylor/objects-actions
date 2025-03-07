@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormResources: React.FC<OAFormProps<"Resources">> = ({ onSuccess }) => {
+export const OAFormDenomination: React.FC<OAFormProps<"Denomination">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Resources">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Denomination">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormResources: React.FC<OAFormProps<"Resources">> = ({ onSuccess 
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`Resources saved`);
+      enqueueSnackbar(`Denomination saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormResources: React.FC<OAFormProps<"Resources">> = ({ onSuccess 
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`Resources saved`);
+      enqueueSnackbar(`Denomination saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,22 +39,10 @@ export const OAFormResources: React.FC<OAFormProps<"Resources">> = ({ onSuccess 
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Resources"]["title"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Denomination"]["name"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Resources"]["description_html"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Resources"]["image"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Resources"]["postal_address"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Resources"]["price_ccoin"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Resources"]["resource_type"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Denomination"]["icon"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -79,5 +67,5 @@ export const OAFormResources: React.FC<OAFormProps<"Resources">> = ({ onSuccess 
 
 };
 
-export default OAFormResources;
+export default OAFormDenomination;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//

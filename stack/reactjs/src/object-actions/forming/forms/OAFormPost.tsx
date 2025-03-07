@@ -7,9 +7,9 @@ import { useSnackbar } from "notistack";
 import { AlternatingList } from "../../../theme/StyledFields";
 import { useNavigate } from "react-router-dom";
 
-export const OAFormInvites: React.FC<OAFormProps<"Invites">> = ({ onSuccess }) => {
+export const OAFormPost: React.FC<OAFormProps<"Post">> = ({ onSuccess }) => {
 
-  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Invites">();
+  const { renderField, handleSubmit, handleDelete, errors, navItem, entity, syncing } = useForm<"Post">();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export const OAFormInvites: React.FC<OAFormProps<"Invites">> = ({ onSuccess }) =
       } else {
         navigate(`/${navItem.segment}/${newentity.id}`);
       }
-      enqueueSnackbar(`Invites saved`);
+      enqueueSnackbar(`Post saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Save failed");
@@ -29,7 +29,7 @@ export const OAFormInvites: React.FC<OAFormProps<"Invites">> = ({ onSuccess }) =
 
   function deleteEntity() {
     handleDelete().then((msg) => {
-      enqueueSnackbar(`Invites saved`);
+      enqueueSnackbar(`Post saved`);
     }).catch(error => {
       console.error(error);
       enqueueSnackbar("Delete failed");
@@ -39,16 +39,37 @@ export const OAFormInvites: React.FC<OAFormProps<"Invites">> = ({ onSuccess }) =
   return (
     <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
       			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Invites"]["meeting"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Post"]["title"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Invites"]["user"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Post"]["description"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Invites"]["invited_by"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Post"]["post_type"], 0, {fullWidth:true})}
 			</Grid>
 			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Invites"]["status"], 0, {fullWidth:true})}
+				{renderField(TypeFieldSchema["Post"]["published"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} >
+				{renderField(TypeFieldSchema["Post"]["html_content"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} >
+				{renderField(TypeFieldSchema["Post"]["start_time"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} >
+				{renderField(TypeFieldSchema["Post"]["end_time"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} >
+				{renderField(TypeFieldSchema["Post"]["image"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} >
+				{renderField(TypeFieldSchema["Post"]["video"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} >
+				{renderField(TypeFieldSchema["Post"]["promo_link"], 0, {fullWidth:true})}
+			</Grid>
+			<Grid item xs={12} >
+				{renderField(TypeFieldSchema["Post"]["severity"], 0, {fullWidth:true})}
 			</Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
@@ -73,5 +94,5 @@ export const OAFormInvites: React.FC<OAFormProps<"Invites">> = ({ onSuccess }) =
 
 };
 
-export default OAFormInvites;
+export default OAFormPost;
 //---OBJECT-ACTIONS-OAFORM-ENDS---//
