@@ -13,9 +13,9 @@ const ALLFONTS: GoogleFont[] = [
   { family: "Jost", variants: "Jost:ital,wght@0,100..900;1,100..900" },
   { family: "Noto Serif", variants: "Noto+Serif:ital,wght@0,100..900;1,100..900" },
   { family: "Merienda", variants: "Merienda:wght@300..900" },
-  { family: "The Nautigal", variants: "The+Nautigal:wght@400;700" },
-  { family: "Mea Culpa", variants: "Mea+Culpa" },
-  { family: "The Nautigal", variants: "Italianno" },
+//  { family: "The Nautigal", variants: "The+Nautigal:wght@400;700" },
+//  { family: "Mea Culpa", variants: "Mea+Culpa" },
+//  { family: "The Nautigal", variants: "Italianno" },
   { family: "IBM Plex Serif", variants: "IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700" }
 ];
 
