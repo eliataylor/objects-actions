@@ -42,6 +42,12 @@ const Customize: React.FC = () => {
         />
       </StyledPaper>
 
+      <StyledPaper>
+        <Typography variant="h6">4. Rebuild all containers:</Typography>
+        <Command
+          command="docker-compose up --build -d"
+        />
+      </StyledPaper>
 
 
 

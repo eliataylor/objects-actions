@@ -1,7 +1,7 @@
 _Objects/Actions_ :: **From Spreadsheets to Full Stack**
 
 
-# Interactive Documentation and Demo Site: [oaexample.com/oa/readme](https://oaexample.com/oa/readme)
+## Interactive Docs & Demo Site: [oaexample.com/oa/readme](https://oaexample.com/oa/readme)
 
 ![readme.png](docs/images/readme.png)
 
@@ -23,7 +23,7 @@ Offer Sign-in / Sign-up from any of these [AllAuth Providers](https://docs.allau
 
 
 # TO RUN:
-Follow [oaexample.com/oa/install](https://oaexample.com/oa/install)
+Follow [oaexample.com/oa/run](https://oaexample.com/oa/install)
 
 # TO CUSTOMIZE:
 Follow [oaexample.com/oa/customize](https://oaexample.com/oa/customize)
@@ -36,3 +36,11 @@ Follow [oaexample.com/oa/contribute](https://oaexample.com/oa/contribute)
 
 # TO SPONSOR:
 Donate [github.com/sponsors/eliataylor](https://github.com/sponsors/eliataylor)
+
+# TO GET AI HELP:
+Use [oaexample.com/oa/schemas/add](https://oaexample.com/oa/contribute)
+
+# TO GET HUMAN HELP:
+Pick options at [oaexample.com/oa/consulting](https://oaexample.com/oa/contribute)
+
+

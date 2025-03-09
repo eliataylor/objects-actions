@@ -23,7 +23,7 @@ const defaultEnvConfig: EnvConfig = {
   REACT_APP_API_HOST: process.env.REACT_APP_API_HOST || 'https://localapi.oaexample.com:8080',
   REACT_APP_APP_HOST: process.env.REACT_APP_APP_HOST || 'https://localhost.oaexample.com:3000',
   REACT_APP_LOGIN_EMAIL: process.env.REACT_APP_LOGIN_EMAIL || 'info@oaexample.com',
-  REACT_APP_LOGIN_PASS: process.env.REACT_APP_LOGIN_PASS || 'APasswordYouShouldChange',
+  REACT_APP_LOGIN_PASS: process.env.NODE_ENV === 'development' ? process.env.REACT_APP_LOGIN_PASS || 'APasswordYouShouldChange' : 'APasswordYouShouldChange',
   DEFAULT_PERMS: process.env.REACT_APP_DEFAULT_PERMS || 'IsAuthenticatedOrReadOnly',
   OA_ENV_DB: 'docker',
   OA_ENV_EMAIL: 'console',

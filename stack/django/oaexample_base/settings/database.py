@@ -27,8 +27,8 @@ DATABASES = {
 if OA_ENV_DB == 'local':
     DATABASES["default"]["HOST"] = "127.0.0.1"
 elif OA_ENV_DB == 'docker':
-    # DATABASES["default"]["HOST"] = "mysqlv8" # when running django and mysql inside bridged docker containers
-    DATABASES["default"]["HOST"] = "127.0.0.1"  # when running mysql in docker and django on host
+    DATABASES["default"]["HOST"] = "mysqlv8" # when running django and mysql inside bridged docker containers
+    # DATABASES["default"]["HOST"] = "127.0.0.1"  # when running mysql in docker and django on host
 elif OA_ENV_DB == 'gcp':
     DATABASES["default"]["NAME"] = myEnv("MYSQL_DATABASE", "localdb")
     DATABASES["default"]["USER"] = myEnv("MYSQL_USER", "localuser")
