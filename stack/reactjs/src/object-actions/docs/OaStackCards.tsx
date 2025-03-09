@@ -24,6 +24,55 @@ const OaStackCards: React.FC = () => {
       alignContent={'flex-start'}
       alignItems={'flex-start'}
     >
+
+      <Grid item xs={12} sm={6} data-label={'ReactWebApp'}>
+        <Card variant="outlined">
+          <CardHeader
+            sx={{ mb: 0, p: 1 }}
+            avatar={<img src={'/oa-assets/logo-react.svg'} height={30} />}
+            title={'This Web App'}
+            subheader={'React.JS'}
+          />
+
+          <CardMedia sx={{ height: mediaHeight, position: 'relative' }} >
+            <video
+              autoPlay
+              muted
+              playsInline={true}
+              loop={true}
+              poster={'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png'}
+              style={{ width: '100%' }}
+              controls={true}
+            >
+              <source src={'/oa-assets/walkthrough.mp4'} type="video/mp4" />
+            </video>
+          </CardMedia>
+
+          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
+            <a
+              href={
+                'https://github.com/eliataylor/objects-actions/blob/main/stack/reactjs/src/theme/ThemeContext.js'
+              }
+              target={'_blank'}
+            >
+              <TightButton
+                size={'small'}
+                variant={'outlined'}
+                startIcon={
+                  <LightDarkImg
+                    light={'/oa-assets/github-mark.svg'}
+                    dark={'/oa-assets/github-mark-white.svg'}
+                    styles={{ height: 20 }}
+                  />
+                }
+              >
+                View Source
+              </TightButton>
+            </a>
+          </Box>
+        </Card>
+      </Grid>
+
       <Grid item xs={12} sm={6} data-label={'CypressIO'}>
         <Card sx={{ position: 'relative' }} variant="outlined">
           <CardHeader
@@ -55,54 +104,6 @@ const OaStackCards: React.FC = () => {
             <a
               href={
                 'https://github.com/eliataylor/objects-actions/blob/main/stack/cypress/cypress/e2e/read-only/load-form.cy.ts#L20'
-              }
-              target={'_blank'}
-            >
-              <TightButton
-                size={'small'}
-                variant={'outlined'}
-                startIcon={
-                  <LightDarkImg
-                    light={'/oa-assets/github-mark.svg'}
-                    dark={'/oa-assets/github-mark-white.svg'}
-                    styles={{ height: 20 }}
-                  />
-                }
-              >
-                View Source
-              </TightButton>
-            </a>
-          </Box>
-        </Card>
-      </Grid>
-
-      <Grid item xs={12} sm={6} data-label={'ReactWebApp'}>
-        <Card variant="outlined">
-          <CardHeader
-            sx={{ mb: 0, p: 1 }}
-            avatar={<img src={'/oa-assets/logo-react.svg'} height={30} />}
-            title={'This Web App'}
-            subheader={'React.JS'}
-          />
-
-          <CardMedia sx={{ height: mediaHeight, position: 'relative' }} >
-            <video
-              autoPlay
-              muted
-              playsInline={true}
-              loop={true}
-              poster={'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png'}
-              style={{ width: '100%' }}
-              controls={true}
-            >
-              <source src={'/oa-assets/walkthrough.mp4'} type="video/mp4" />
-            </video>
-          </CardMedia>
-
-          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
-            <a
-              href={
-                'https://github.com/eliataylor/objects-actions/blob/main/stack/reactjs/src/theme/ThemeContext.js'
               }
               target={'_blank'}
             >

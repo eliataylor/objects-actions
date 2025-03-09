@@ -37,12 +37,12 @@ const Contribute: React.FC = () => {
           New Frontends
         </Typography>
         <Typography variant="body1" component={"li"} gutterBottom={true}>
-          This just means rebuilding in web app in NextJS, Vue, Angular, Svelt, or maybe just replacing MUI with Tailwind, SCSS, Bootstrap.
-          Whatever the case, the site should be entirely driven by these constants and TypeScript definitions: <a
+          This just mean building a web app entirely driven by these constants and TypeScript definitions: <a
           href="https://github.com/eliataylor/objects-actions/tree/main/stack/reactjs/src/object-actions/types"
           target="_blank"
           rel="noopener noreferrer"
         >github.com/eliataylor/objects-actions/tree/main/stack/reactjs/src/object-actions/types</a>.
+          NextJS, Vue, Angular, Svelt would all be great alternatives. And/or just replacing MUI with Tailwind, SCSS, Bootstrap, or another CSS framework.
         </Typography>
       </StyledPaper>
 

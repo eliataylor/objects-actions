@@ -28,13 +28,13 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
       }}
     >
       <Grid item>
-        <Typography variant="h2" component={'h1'} >
+        <Typography variant="h2" component={"h1"}>
           Your Brand
         </Typography>
         <Grid sx={{ width: 300, margin: "auto", marginTop: 3, marginBottom: 3 }}>
           <Logo height={60} />
         </Grid>
-        <Typography variant="h2" component={Link} to={"/content"} >
+        <Typography variant="h2" component={Link} to={"/content"} style={{textDecorationThickness:1}} >
           Your Content
         </Typography>
       </Grid>
@@ -47,6 +47,10 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
         </Grid>
       )}
 
+      <Typography variant="h2" component={"a"} style={{textDecorationThickness:1}} href={"https://github.com/eliataylor/objects-actions"} target={"_blank"}>
+        Your CodeBase
+      </Typography>
+
       <Grid
         container
         wrap={"nowrap"}
@@ -55,6 +59,7 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
         alignContent={"center"}
       >
         <Grid item style={{ textAlign: "left" }}>
+
           <Typography variant="overline" style={{ fontSize: 10 }}>Kick started by</Typography>
           <Grid container alignContent={"center"} alignItems={"flex-end"} gap={1}>
             <Grid item>
