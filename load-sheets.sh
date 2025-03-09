@@ -54,3 +54,5 @@ echo "creating access.ts and permissions.json with $permissions_arg"
 python -m generate permissions-ts $permissions_arg --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/types"
 python -m generate permissions-ts $permissions_arg --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/databuilder/src/"
 python -m generate permissions-ts $permissions_arg --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/cypress/cypress/support/"
+
+echo "****DONE: If this isn't your first run, you need to delete $STACK_PATH/stack/django/${MACHINE_NAME}_app/migrations and rebuild the Django and ReactJS containers****"

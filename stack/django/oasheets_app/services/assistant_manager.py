@@ -179,6 +179,9 @@ When responding to a prompt, you will:
    - Set the `relationship` property with the model_name of the related content type.
    - Set the `cardinality` property number of entries a field can have for each item and use -1 for infinity.
    - When an `enum` field is needed, set the list of options in the `example` property.
+   - The main authentication Users model should always be have a reserved machine name of "Users".
+   - The field describing ownership of a content item should be named "author" and have a relationship property value of "Users"  
+   - All models automatically have "author", "created_at", and "modified_at" properties so it is not necessary to list them unless part of your reasoning.
    - Do NOT waste tokens including the full JSON in your reasoning, but use the tool function `validate_schema` to return the structured JSON as your last step."""}
 
             # Create the assistant
