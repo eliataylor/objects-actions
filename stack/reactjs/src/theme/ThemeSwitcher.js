@@ -20,9 +20,10 @@ const ThemeSwitcher = () => {
       }}
       fullWidth
       InputProps={{
+        sx: { fontSize:12 },
         startAdornment: (
           <InputAdornment position="start">
-            <SettingsBrightnessIcon />
+            <SettingsBrightnessIcon size={'small'} />
           </InputAdornment>
         )
       }}

@@ -71,6 +71,7 @@ else
     exec gunicorn oaexample_base.wsgi:application \
         --bind 0.0.0.0:$PORT \
         --workers 3 \
+        --timeout 300 \
         --capture-output \
         --log-level debug \
         --access-logfile '-' \

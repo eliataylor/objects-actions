@@ -21,7 +21,7 @@ echo "$FILES" | while IFS=: read -r target source; do
       echo "Warning: Source file $source does not exist. Skipping $target."
     fi
   else
-    echo "Skipping $target, already exists."
+    echo "$target already exists. continue."
   fi
 done
 
@@ -44,6 +44,7 @@ stack/django/.env:REACT_APP_API_HOST:REACT_APP_API_HOST
 stack/django/.env:OA_ENV_STORAGE:OA_ENV_STORAGE
 stack/django/.env:OA_ENV_EMAIL:OA_ENV_EMAIL
 stack/django/.env:OA_ENV_DB:OA_ENV_DB
+stack/django/.env:MYSQL_DATABASE:MYSQL_DATABASE
 
 stack/databuilder/.env:REACT_APP_API_HOST:REACT_APP_API_HOST
 stack/databuilder/.env:REACT_APP_APP_HOST:REACT_APP_APP_HOST

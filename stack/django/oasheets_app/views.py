@@ -79,7 +79,6 @@ class SchemaVersionsViewSet(PaginatedViewSet):
             version = None
 
         generator = SchemaGenerator(prompt_data, request.user, version)
-
         response_generator = generator.start_stream(prompt_data['prompt'])
         response = StreamingHttpResponse(response_generator, content_type="application/json")
         response["Cache-Control"] = "no-cache"

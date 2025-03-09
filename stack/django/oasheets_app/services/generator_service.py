@@ -80,7 +80,7 @@ class SchemaGenerator:
 
         for response in response_stream:
             if time.time() - last_keepalive >= 10:
-                yield "\n"  # Send keep-alive every 10 seconds, mostly in case an extra .request call is needed
+                yield json.dumps({"type": "keep_alive"}) + "||JSON_END||"
                 last_keepalive = time.time()
 
             if "run_id" in response:

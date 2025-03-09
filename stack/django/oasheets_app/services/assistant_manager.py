@@ -1,5 +1,6 @@
 import json
 import os
+from asyncio import Timeout
 from typing import List
 import asyncio
 import openai
@@ -135,7 +136,7 @@ class OpenAIPromptManager:
 
     def __init__(self):
         self.version = None
-        self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY, max_retries=5, timeout=300)
         self.ids = {"thread_id":None, "message_id": None, "run_id":None, "assistant_id":None}
 
     # required
