@@ -6,7 +6,7 @@ This is a **fictitious** job description for hiring a developer to take over thi
 
 ## About Us
 
-Our brand is ....
+Seremein is ....
 
 ## About our Tech Stack
 We have this functional prototype containerized with Docker and ready to deploy:
