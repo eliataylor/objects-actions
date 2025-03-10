@@ -10,7 +10,7 @@ services:
       - mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: localdb
+      MYSQL_DATABASE: seremeindb
       MYSQL_USER: localuser
       MYSQL_PASSWORD: localpassword
     healthcheck:

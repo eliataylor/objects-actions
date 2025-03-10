@@ -16,40 +16,18 @@ import random
 import re
 import os
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-from .serializers import TopicsSerializer
-from .models import Topics
-from .serializers import ResourceTypesSerializer
-from .models import ResourceTypes
-from .serializers import MeetingTypesSerializer
-from .models import MeetingTypes
-from .serializers import StatesSerializer
-from .models import States
-from .serializers import PartiesSerializer
-from .models import Parties
-from .serializers import StakeholdersSerializer
-from .models import Stakeholders
-from .serializers import ResourcesSerializer
-from .models import Resources
+from .serializers import LanguagesSerializer
+from .models import Languages
 from .serializers import UsersSerializer
 from .models import Users
-from .serializers import CitiesSerializer
-from .models import Cities
-from .serializers import OfficialsSerializer
-from .models import Officials
-from .serializers import RalliesSerializer
-from .models import Rallies
-from .serializers import ActionPlansSerializer
-from .models import ActionPlans
-from .serializers import MeetingsSerializer
-from .models import Meetings
-from .serializers import InvitesSerializer
-from .models import Invites
-from .serializers import SubscriptionsSerializer
-from .models import Subscriptions
-from .serializers import RoomsSerializer
-from .models import Rooms
-from .serializers import AttendeesSerializer
-from .models import Attendees
+from .serializers import CoursesSerializer
+from .models import Courses
+from .serializers import QuestionsSerializer
+from .models import Questions
+from .serializers import ResponsesSerializer
+from .models import Responses
+from .serializers import CertificatesSerializer
+from .models import Certificates
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
 
@@ -111,60 +89,12 @@ class PaginatedViewSet(viewsets.ModelViewSet):
 
 
 ####OBJECT-ACTIONS-VIEWSETS-STARTS####
-class TopicsViewSet(viewsets.ModelViewSet):
-    queryset = Topics.objects.all().order_by('id')
-    serializer_class = TopicsSerializer
+class LanguagesViewSet(viewsets.ModelViewSet):
+    queryset = Languages.objects.all().order_by('id')
+    serializer_class = LanguagesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
-
-    
-class ResourceTypesViewSet(viewsets.ModelViewSet):
-    queryset = ResourceTypes.objects.all().order_by('id')
-    serializer_class = ResourceTypesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-
-    
-class MeetingTypesViewSet(viewsets.ModelViewSet):
-    queryset = MeetingTypes.objects.all().order_by('id')
-    serializer_class = MeetingTypesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-
-    
-class StatesViewSet(viewsets.ModelViewSet):
-    queryset = States.objects.all().order_by('id')
-    serializer_class = StatesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-
-    
-class PartiesViewSet(viewsets.ModelViewSet):
-    queryset = Parties.objects.all().order_by('id')
-    serializer_class = PartiesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-
-    
-class StakeholdersViewSet(viewsets.ModelViewSet):
-    queryset = Stakeholders.objects.all().order_by('id')
-    serializer_class = StakeholdersSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-
-    
-class ResourcesViewSet(viewsets.ModelViewSet):
-    queryset = Resources.objects.all().order_by('id')
-    serializer_class = ResourcesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title']
 
     
 class UsersViewSet(viewsets.ModelViewSet):
@@ -175,75 +105,33 @@ class UsersViewSet(viewsets.ModelViewSet):
     search_fields = ['first_name', 'last_name']
 
     
-class CitiesViewSet(viewsets.ModelViewSet):
-    queryset = Cities.objects.all().order_by('id')
-    serializer_class = CitiesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-
-    
-class OfficialsViewSet(viewsets.ModelViewSet):
-    queryset = Officials.objects.all().order_by('id')
-    serializer_class = OfficialsSerializer
+class CoursesViewSet(viewsets.ModelViewSet):
+    queryset = Courses.objects.all().order_by('id')
+    serializer_class = CoursesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
     
-class RalliesViewSet(viewsets.ModelViewSet):
-    queryset = Rallies.objects.all().order_by('id')
-    serializer_class = RalliesSerializer
+class QuestionsViewSet(viewsets.ModelViewSet):
+    queryset = Questions.objects.all().order_by('id')
+    serializer_class = QuestionsSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    
+class ResponsesViewSet(viewsets.ModelViewSet):
+    queryset = Responses.objects.all().order_by('id')
+    serializer_class = ResponsesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    
+class CertificatesViewSet(viewsets.ModelViewSet):
+    queryset = Certificates.objects.all().order_by('id')
+    serializer_class = CertificatesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-    
-class ActionPlansViewSet(viewsets.ModelViewSet):
-    queryset = ActionPlans.objects.all().order_by('id')
-    serializer_class = ActionPlansSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title']
-
-    
-class MeetingsViewSet(viewsets.ModelViewSet):
-    queryset = Meetings.objects.all().order_by('id')
-    serializer_class = MeetingsSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title']
-
-    
-class InvitesViewSet(viewsets.ModelViewSet):
-    queryset = Invites.objects.all().order_by('id')
-    serializer_class = InvitesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['meeting__title']
-
-    
-class SubscriptionsViewSet(viewsets.ModelViewSet):
-    queryset = Subscriptions.objects.all().order_by('id')
-    serializer_class = SubscriptionsSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['rally__title', 'meeting__title']
-
-    
-class RoomsViewSet(viewsets.ModelViewSet):
-    queryset = Rooms.objects.all().order_by('id')
-    serializer_class = RoomsSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['rally__title', 'meeting__title']
-
-    
-class AttendeesViewSet(viewsets.ModelViewSet):
-    queryset = Attendees.objects.all().order_by('id')
-    serializer_class = AttendeesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
     
 ####OBJECT-ACTIONS-VIEWSETS-ENDS####
 
@@ -255,61 +143,24 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 SEARCH_FIELDS_MAPPING = {
-  "Topics": [
+  "Languages": [
     "name"
-  ],
-  "ResourceTypes": [
-    "name"
-  ],
-  "MeetingTypes": [
-    "name"
-  ],
-  "States": [
-    "name"
-  ],
-  "Parties": [
-    "name"
-  ],
-  "Stakeholders": [
-    "name"
-  ],
-  "Resources": [
-    "title"
   ],
   "Users": [
     "first_name",
     "last_name"
   ],
-  "Cities": [
-    "name"
-  ],
-  "Officials": [
+  "Courses": [
     "title"
   ],
-  "Rallies": [
+  "Questions": [],
+  "Responses": [],
+  "Certificates": [
     "title"
-  ],
-  "ActionPlans": [
-    "title"
-  ],
-  "Meetings": [
-    "title"
-  ],
-  "Invites": [
-    "meeting__title"
-  ],
-  "Subscriptions": [
-    "rally__title",
-    "meeting__title"
-  ],
-  "Rooms": [
-    "rally__title",
-    "meeting__title"
-  ],
-  "Attendees": []
+  ]
 }
 
-SERIALZE_MODEL_MAP = { "Topics": TopicsSerializer,"ResourceTypes": ResourceTypesSerializer,"MeetingTypes": MeetingTypesSerializer,"States": StatesSerializer,"Parties": PartiesSerializer,"Stakeholders": StakeholdersSerializer,"Resources": ResourcesSerializer,"Users": UsersSerializer,"Cities": CitiesSerializer,"Officials": OfficialsSerializer,"Rallies": RalliesSerializer,"ActionPlans": ActionPlansSerializer,"Meetings": MeetingsSerializer,"Invites": InvitesSerializer,"Subscriptions": SubscriptionsSerializer,"Rooms": RoomsSerializer,"Attendees": AttendeesSerializer }
+SERIALZE_MODEL_MAP = { "Languages": LanguagesSerializer,"Users": UsersSerializer,"Courses": CoursesSerializer,"Questions": QuestionsSerializer,"Responses": ResponsesSerializer,"Certificates": CertificatesSerializer }
 
 class UserStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
