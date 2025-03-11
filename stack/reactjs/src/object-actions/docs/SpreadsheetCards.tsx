@@ -62,7 +62,7 @@ const SpreadsheetCards: React.FC = () => {
               </a>
 
               <a
-                href="https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?gid=12324120#gid=12324120"
+                href="https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?gid=1461137270#gid=1461137270"
                 target="_blank"
                 rel="noopener noreferrer"
               >

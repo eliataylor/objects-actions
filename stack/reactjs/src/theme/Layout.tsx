@@ -64,8 +64,27 @@ const Layout: React.FC = () => {
     return location.pathname.indexOf("/oa/") === 0 || location.pathname === "/";
   }
 
+  function formatPathnameToDocTitle(pathname:string) {
+    // Remove leading and trailing slashes, then split by remaining slashes
+    const segments = pathname.replace(/^\/|\/$/g, "").split("/");
+
+    // Capitalize each segment
+    const capitalizedSegments = segments.map(segment => {
+      if (!segment) return "";
+      return segment.charAt(0).toUpperCase() + segment.slice(1);
+    });
+
+    // Reverse the order and join with spaces
+    return capitalizedSegments.reverse().join(" ").trim();
+  }
+
   useEffect(() => {
     handleOAClose();
+    if (isOaPage() === true) {
+      document.title = `O/A ${formatPathnameToDocTitle(location.pathname.replace("/oa", ""))}`;
+    } else {
+      document.title = formatPathnameToDocTitle(location.pathname);
+    }
   }, [location.pathname]);
 
   const MainLogo = isOaPage() ? OALogo : Logo;
