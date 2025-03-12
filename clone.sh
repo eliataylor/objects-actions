@@ -57,7 +57,7 @@ for dir in "${STACK_DIRS[@]}"; do
                 echo "Deleted Generated Files in $dir"
                 ;;
             "k6")
-                rm -rf "$STACK_PATH"/stack/k6/results/*
+                rm -rf "$STACK_PATH"/stack/k6/test-results/*
                 echo "Deleted Generated Files in $dir"
                 ;;
             "reactjs")

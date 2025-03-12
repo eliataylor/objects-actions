@@ -39,7 +39,7 @@ class SchemaVersionSerializer(CustomSerializer):
         def build_tree(schema):
             children = SchemaVersions.objects.filter(parent=schema)
 
-            # TODO: filter by privacy!
+            # TODO: filter by privacy! / status
 
             return {
                 "id": schema.id,

@@ -34,5 +34,5 @@ By default 5 of each object type will be created. You can change the numbers and
 
 ### Test your API with K6
 `sh test-backend.sh --project "newproject"`
-By default the load testing runs for 30 seconds. You can change the settings here [newproject/k6/localhost.js](stack/k6/localhost.js#L4)
+By default the load testing runs for 30 seconds. You can change the settings here [newproject/k6/run.sh](stack/k6/run.sh)
 
