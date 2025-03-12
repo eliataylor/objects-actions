@@ -268,13 +268,13 @@ const OaStackCards: React.FC = () => {
             component={"img"}
             alt={"Databuilder"}
             src={
-              "https://github.com/eliataylor/objects-actions/raw/main/docs/images/databuilder.png"
+              "https://github.com/eliataylor/objects-actions/raw/eli/docs/images/databuilder.png"
             }
           />
           <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
-                "https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder/src/main.ts"
+                "https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder"
               }
               target={"_blank"}
             >
