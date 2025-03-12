@@ -12,6 +12,8 @@ const COOKIE = '${__ENV.COOKIE}'; // Cookie value for authenticated requests
 // Custom metrics
 const errorRate = new Rate('error_rate');
 const responseTime = new Trend('response_time');
+const validJsonRate = new Rate('valid_json_rate');
+const validResultsRate = new Rate('valid_results_rate');
 
 // Create trend metrics for different test types
 const baseEndpointTrend = new Trend('base_endpoint_response_time');
@@ -41,6 +43,8 @@ export const options = {
   thresholds: {
     'error_rate': ['rate<0.1'], // Error rate under 10%
     'http_req_duration': ['p(95)<3000'], // 95% of requests should be below 3s
+    'valid_json_rate': ['rate>0.95'], // Valid JSON rate should be >95%
+    'valid_results_rate': ['rate>0.95'], // Valid results array rate should be >95%
   }
 };
 
@@ -65,6 +69,23 @@ export function setup() {
   };
 }
 
+// Helper function to validate JSON response
+function validateJsonResponse(body) {
+  try {
+    const data = JSON.parse(body);
+    const hasResults = data.hasOwnProperty('results') && Array.isArray(data.results);
+    return {
+      isValidJson: true,
+      hasValidResults: hasResults
+    };
+  } catch (e) {
+    return {
+      isValidJson: false,
+      hasValidResults: false
+    };
+  }
+}
+
 // Helper function to make requests
 function makeRequest(url, headers, metricName, itemTrend) {
   const response = http.get(url, { headers });
@@ -82,10 +103,16 @@ function makeRequest(url, headers, metricName, itemTrend) {
     itemTrend.add(response.timings.duration);
   }
 
+  // Validate JSON and results array
+  const validation = validateJsonResponse(response.body);
+  validJsonRate.add(validation.isValidJson);
+  validResultsRate.add(validation.hasValidResults);
+
   // Check if the request was successful
   const success = check(response, {
     'status is 200': (r) => r.status === 200,
-    'response has data': (r) => r.body.includes('data') || r.body.includes('results'),
+    'response is valid JSON': (r) => validation.isValidJson,
+    'response has results array': (r) => validation.hasValidResults
   });
 
   // Record errors
@@ -94,6 +121,11 @@ function makeRequest(url, headers, metricName, itemTrend) {
   // Log detailed information for failed requests
   if (!success) {
     console.log(`Failed request to ${url}: Status ${response.status}, Body: ${response.body.substring(0, 100)}...`);
+    if (!validation.isValidJson) {
+      console.log('Response is not valid JSON');
+    } else if (!validation.hasValidResults) {
+      console.log('Response does not contain a results array');
+    }
   }
 
   return response;
@@ -145,15 +177,7 @@ export default function(data) {
 }
 
 // Helper function to summarize results for reporting
-
-// Helper function to summarize results for reporting
 export function handleSummary(data) {
-  /* Create timestamp for filenames
-  const timestamp = new Date().toISOString()
-    .replace(/:/g, '-')
-    .replace(/\..+/, '')
-    .replace('T', '_');
-  */
   const timestamp = new Date().toISOString().split("T")[0];
 
   // Ensure results directory exists
@@ -186,16 +210,28 @@ function generateHtmlReport(data) {
   const endpointMetrics = {};
 
   NAVITEMS.forEach(item => {
-    const name = item.segment;
+    const name = item.type.toLowerCase();
     const baseMetric = data.metrics[`${name}_base_response_time`];
     const paginationMetric = data.metrics[`${name}_pagination_response_time`];
     const searchMetric = data.metrics[`${name}_search_response_time`];
 
     endpointMetrics[name] = {
       endpoint: item.api,
-      baseResponse: baseMetric ? baseMetric.values.avg : 'N/A',
-      paginationResponse: paginationMetric ? paginationMetric.values.avg : 'N/A',
-      searchResponse: searchMetric ? searchMetric.values.avg : 'N/A',
+      baseResponse: baseMetric ? {
+        avg: baseMetric.values.avg,
+        min: baseMetric.values.min,
+        max: baseMetric.values.max
+      } : 'N/A',
+      paginationResponse: paginationMetric ? {
+        avg: paginationMetric.values.avg,
+        min: paginationMetric.values.min,
+        max: paginationMetric.values.max
+      } : 'N/A',
+      searchResponse: searchMetric ? {
+        avg: searchMetric.values.avg,
+        min: searchMetric.values.min,
+        max: searchMetric.values.max
+      } : 'N/A',
     };
   });
 
@@ -213,6 +249,9 @@ function generateHtmlReport(data) {
       tr:nth-child(even) { background-color: #f9f9f9; }
       .summary { margin-bottom: 30px; }
       .header { background-color: #333; color: white; padding: 10px; margin-bottom: 20px; }
+      .metric-cell { display: flex; flex-direction: column; }
+      .metric-item { margin: 2px 0; }
+      .metric-label { font-weight: bold; display: inline-block; width: 40px; }
     </style>
   </head>
   <body>
@@ -226,7 +265,11 @@ function generateHtmlReport(data) {
       <h2>Summary</h2>
       <p>Total requests: ${data.metrics.http_reqs.values.count}</p>
       <p>Error rate: ${(data.metrics.error_rate.values.rate * 100).toFixed(2)}%</p>
+      <p>Valid JSON rate: ${(data.metrics.valid_json_rate.values.rate * 100).toFixed(2)}%</p>
+      <p>Valid results array rate: ${(data.metrics.valid_results_rate.values.rate * 100).toFixed(2)}%</p>
       <p>Average response time: ${data.metrics.http_req_duration.values.avg.toFixed(2)}ms</p>
+      <p>Min response time: ${data.metrics.http_req_duration.values.min.toFixed(2)}ms</p>
+      <p>Max response time: ${data.metrics.http_req_duration.values.max.toFixed(2)}ms</p>
       <p>95th percentile: ${data.metrics.http_req_duration.values["p(95)"].toFixed(2)}ms</p>
     </div>
     
@@ -241,15 +284,41 @@ function generateHtmlReport(data) {
       ${Object.values(endpointMetrics).map(metric => `
         <tr>
           <td>${metric.endpoint}</td>
-          <td>${typeof metric.baseResponse === 'number' ? metric.baseResponse.toFixed(2) : metric.baseResponse}</td>
-          <td>${typeof metric.paginationResponse === 'number' ? metric.paginationResponse.toFixed(2) : metric.paginationResponse}</td>
-          <td>${typeof metric.searchResponse === 'number' ? metric.searchResponse.toFixed(2) : metric.searchResponse}</td>
+          <td>
+            ${typeof metric.baseResponse === 'object' ? `
+              <div class="metric-cell">
+                <div class="metric-item"><span class="metric-label">Avg:</span> ${metric.baseResponse.avg.toFixed(2)}</div>
+                <div class="metric-item"><span class="metric-label">Min:</span> ${metric.baseResponse.min.toFixed(2)}</div>
+                <div class="metric-item"><span class="metric-label">Max:</span> ${metric.baseResponse.max.toFixed(2)}</div>
+              </div>
+            ` : metric.baseResponse}
+          </td>
+          <td>
+            ${typeof metric.paginationResponse === 'object' ? `
+              <div class="metric-cell">
+                <div class="metric-item"><span class="metric-label">Avg:</span> ${metric.paginationResponse.avg.toFixed(2)}</div>
+                <div class="metric-item"><span class="metric-label">Min:</span> ${metric.paginationResponse.min.toFixed(2)}</div>
+                <div class="metric-item"><span class="metric-label">Max:</span> ${metric.paginationResponse.max.toFixed(2)}</div>
+              </div>
+            ` : metric.paginationResponse}
+          </td>
+          <td>
+            ${typeof metric.searchResponse === 'object' ? `
+              <div class="metric-cell">
+                <div class="metric-item"><span class="metric-label">Avg:</span> ${metric.searchResponse.avg.toFixed(2)}</div>
+                <div class="metric-item"><span class="metric-label">Min:</span> ${metric.searchResponse.min.toFixed(2)}</div>
+                <div class="metric-item"><span class="metric-label">Max:</span> ${metric.searchResponse.max.toFixed(2)}</div>
+              </div>
+            ` : metric.searchResponse}
+          </td>
         </tr>
       `).join('')}
     </table>
     
     <h2>Test Configuration</h2>
     <p>Base URL: ${BASE_URL}</p>
+    <p>Virtual Users: 5</p>
+    <p>Iterations per VU: 1</p>
   </body>
   </html>
   `;
