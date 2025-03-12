@@ -180,15 +180,15 @@ const OaStackCards: React.FC = () => {
             title={"Backend Content Manager"}
             subheader={"Django Admin"}
           />
-          <CardMedia
-            height={mediaHeight}
-            sx={{ position: "relative" }}
-            component={"img"}
-            alt={"Backend API"}
-            src={
-              "https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_admin.png"
-            }
-          />
+          <div style={{ overflow: "hidden", height: mediaHeight }}>
+            <img
+              style={{ width: "100%" }}
+              alt={"Backend API"}
+              src={
+                "https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_admin.png"
+              }
+            />
+          </div>
           <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
@@ -222,14 +222,15 @@ const OaStackCards: React.FC = () => {
             title={"Backend API"}
             subheader={"Django DRF"}
           />
-          <CardMedia
-            height={mediaHeight}
-            component={"img"}
-            alt={"Backend API"}
-            src={
-              "https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_swagger.png"
-            }
-          />
+          <div style={{ overflow: "hidden", height: mediaHeight }}>
+            <img
+              style={{ width: "100%" }}
+              alt={"Backend API"}
+              src={
+                "https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_swagger.png"
+              }
+            />
+          </div>
           <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
@@ -263,14 +264,15 @@ const OaStackCards: React.FC = () => {
             title={"Fake Data Generator"}
             subheader={"NodeJS"}
           />
-          <CardMedia
-            height={mediaHeight}
-            component={"img"}
-            alt={"Databuilder"}
-            src={
-              "https://github.com/eliataylor/objects-actions/raw/eli/docs/images/databuilder.png"
-            }
-          />
+          <div style={{ overflow: "hidden", height: mediaHeight }}>
+            <img
+              style={{ width: "100%" }}
+              alt={"Databuilder"}
+              src={
+                "https://github.com/eliataylor/objects-actions/raw/eli/docs/images/databuilder.png"
+              }
+            />
+          </div>
           <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
@@ -304,14 +306,15 @@ const OaStackCards: React.FC = () => {
             title={"API Speed Tests"}
             subheader={"K6"}
           />
-          <CardMedia
-            height={mediaHeight}
-            component={"img"}
-            alt={"K6 Test Results"}
-            src={
-              "https://github.com/eliataylor/objects-actions/raw/eli/docs/images/k6-speed-test.png"
-            }
-          />
+          <div style={{ overflow: "hidden", height: mediaHeight }}>
+            <img
+              style={{ width: "100%" }}
+              alt={"K6 Test Results"}
+              src={
+                "https://github.com/eliataylor/objects-actions/raw/eli/docs/images/k6-speed-test.png"
+              }
+            />
+          </div>
           <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
