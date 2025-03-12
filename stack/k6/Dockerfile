@@ -22,7 +22,7 @@ COPY . .
 # Compile TypeScript files to JavaScript
 RUN tsc
 
-# Update the `types` import in `localhost.js` to use `.js` extension
+# Update the `types` import in `api-speed-tests.js` to use `.js` extension
 RUN sed -i 's/from "\.\/types"/from "\.\/types.js"/' api-speed-tests.js
 
 # Remove the original .ts file after compilation

@@ -5,4 +5,4 @@
 - `brew install k6`
 
 ### To Run:
-- `sh localhost.sh`
+- `sh run.sh`

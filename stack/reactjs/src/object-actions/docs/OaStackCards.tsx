@@ -1,12 +1,12 @@
-import React, { useEffect, useRef }  from 'react';
-import { Box, Card, CardHeader, CardMedia, Grid } from '@mui/material';
-import { TightButton } from '../../theme/StyledFields';
-import LightDarkImg from '../../components/LightDarkImg';
+import React, { useEffect, useRef } from "react";
+import { Box, Card, CardHeader, CardMedia, Grid } from "@mui/material";
+import { TightButton } from "../../theme/StyledFields";
+import LightDarkImg from "../../components/LightDarkImg";
 
 const OaStackCards: React.FC = () => {
   const mediaHeight = 250;
 
-    // Create a ref for the video element
+  // Create a ref for the video element
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Set the playbackRate when the component mounts
@@ -20,48 +20,46 @@ const OaStackCards: React.FC = () => {
     <Grid
       container
       spacing={1}
-      justifyContent={'space-between'}
-      alignContent={'flex-start'}
-      alignItems={'flex-start'}
+      justifyContent={"space-between"}
+      alignContent={"flex-start"}
+      alignItems={"flex-start"}
     >
 
-      <Grid item xs={12} sm={6} data-label={'ReactWebApp'}>
+      <Grid item xs={12} sm={6} data-label={"ReactWebApp"}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img src={'/oa-assets/logo-react.svg'} height={30} />}
-            title={'This Web App'}
-            subheader={'React.JS'}
+            avatar={<img src={"/oa-assets/logo-react.svg"} height={30} />}
+            title={"This Web App"}
+            subheader={"React.JS"}
           />
-
-          <CardMedia sx={{ height: mediaHeight, position: 'relative' }} >
+          <CardMedia sx={{ height: mediaHeight, position: "relative", overflowY: "hidden" }}>
             <video
               autoPlay
               muted
               playsInline={true}
               loop={true}
-              poster={'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png'}
-              style={{ width: '100%' }}
+              poster={"https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-reactjs.png"}
+              style={{ width: "100%" }}
               controls={true}
             >
-              <source src={'/oa-assets/walkthrough.mp4'} type="video/mp4" />
+              <source src={"/oa-assets/walkthrough.mp4"} type="video/mp4" />
             </video>
           </CardMedia>
-
-          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
+          <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
-                'https://github.com/eliataylor/objects-actions/blob/main/stack/reactjs/src/theme/ThemeContext.js'
+                "https://github.com/eliataylor/objects-actions/tree/main/stack/reactjs"
               }
-              target={'_blank'}
+              target={"_blank"}
             >
               <TightButton
-                size={'small'}
-                variant={'outlined'}
+                size={"small"}
+                variant={"outlined"}
                 startIcon={
                   <LightDarkImg
-                    light={'/oa-assets/github-mark.svg'}
-                    dark={'/oa-assets/github-mark-white.svg'}
+                    light={"/oa-assets/github-mark.svg"}
+                    dark={"/oa-assets/github-mark-white.svg"}
                     styles={{ height: 20 }}
                   />
                 }
@@ -73,47 +71,47 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6} data-label={'CypressIO'}>
-        <Card sx={{ position: 'relative' }} variant="outlined">
+      <Grid item xs={12} sm={6} data-label={"CypressIO"}>
+        <Card sx={{ position: "relative" }} variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={
               <LightDarkImg
-                light={'/oa-assets/Cypress_Logomark_Dark-Color.svg'}
-                dark={'/oa-assets/Cypress_Logomark_White-Color.svg'}
+                light={"/oa-assets/Cypress_Logomark_Dark-Color.svg"}
+                dark={"/oa-assets/Cypress_Logomark_White-Color.svg"}
                 styles={{ height: 30 }}
               />
             }
-            subheader={'Cypress.io'}
-            title={'End-To-End Test Suite'}
+            subheader={"Cypress.io"}
+            title={"End-To-End Test Suite"}
           />
-          <CardMedia sx={{ height: mediaHeight, position: 'relative' }}>
+          <CardMedia sx={{ height: mediaHeight, position: "relative", overflowY: "hidden" }}>
             <video
               ref={videoRef} // Attach the ref to the video element
               autoPlay
               playsInline={true}
               muted
               loop={true}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               controls={true}
             >
-              <source src={'/oa-assets/cypress-demo.mp4'} type="video/mp4" />
+              <source src={"/oa-assets/cypress-demo.mp4"} type="video/mp4" />
             </video>
           </CardMedia>
-          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
+          <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
-                'https://github.com/eliataylor/objects-actions/blob/main/stack/cypress/cypress/e2e/read-only/load-form.cy.ts#L20'
+                "https://github.com/eliataylor/objects-actions/blob/main/stack/cypress/cypress/e2e/read-only/load-form.cy.ts#L20"
               }
-              target={'_blank'}
+              target={"_blank"}
             >
               <TightButton
-                size={'small'}
-                variant={'outlined'}
+                size={"small"}
+                variant={"outlined"}
                 startIcon={
                   <LightDarkImg
-                    light={'/oa-assets/github-mark.svg'}
-                    dark={'/oa-assets/github-mark-white.svg'}
+                    light={"/oa-assets/github-mark.svg"}
+                    dark={"/oa-assets/github-mark-white.svg"}
                     styles={{ height: 20 }}
                   />
                 }
@@ -125,44 +123,44 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6} data-label={'OpenAIAgent'}>
+      <Grid item xs={12} sm={6} data-label={"OpenAIAgent"}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={<LightDarkImg
-                    light={'/oa-assets/openai-icon-black.svg'}
-                    dark={'/oa-assets/openai-icon-white.svg'}
-                    styles={{ height: 30 }}
-                  />}
-            title={'AI Agent'}
-            subheader={'OpenAI'}
+              light={"/oa-assets/openai-icon-black.svg"}
+              dark={"/oa-assets/openai-icon-white.svg"}
+              styles={{ height: 30 }}
+            />}
+            title={"AI Agent"}
+            subheader={"OpenAI"}
           />
-           <CardMedia sx={{ height: mediaHeight, position: 'relative' }}>
+          <CardMedia sx={{ height: mediaHeight, position: "relative", overflowY: "hidden" }}>
             <video
               autoPlay
               playsInline={true}
               muted
               loop={true}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               controls={true}
             >
-              <source src={'/oa-assets/openai-demo.mp4'} type="video/mp4" />
+              <source src={"/oa-assets/openai-demo.mp4"} type="video/mp4" />
             </video>
           </CardMedia>
-          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
+          <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
-                'https://github.com/eliataylor/objects-actions/tree/main/stack/django/oasheets_app'
+                "https://github.com/eliataylor/objects-actions/tree/main/stack/django/oasheets_app"
               }
-              target={'_blank'}
+              target={"_blank"}
             >
               <TightButton
-                size={'small'}
-                variant={'outlined'}
+                size={"small"}
+                variant={"outlined"}
                 startIcon={
                   <LightDarkImg
-                    light={'/oa-assets/github-mark.svg'}
-                    dark={'/oa-assets/github-mark-white.svg'}
+                    light={"/oa-assets/github-mark.svg"}
+                    dark={"/oa-assets/github-mark-white.svg"}
                     styles={{ height: 20 }}
                   />
                 }
@@ -178,33 +176,33 @@ const OaStackCards: React.FC = () => {
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img src={'/oa-assets/logo-django.svg'} height={30} />}
-            title={'Backend Content Manager'}
-            subheader={'Django Admin'}
+            avatar={<img src={"/oa-assets/logo-django.svg"} height={30} />}
+            title={"Backend Content Manager"}
+            subheader={"Django Admin"}
           />
           <CardMedia
             height={mediaHeight}
-            sx={{ position: 'relative' }}
-            component={'img'}
-            alt={'Backend API'}
+            sx={{ position: "relative" }}
+            component={"img"}
+            alt={"Backend API"}
             src={
-              'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_admin.png'
+              "https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_admin.png"
             }
           />
-          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
+          <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
-                'https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/admin.py'
+                "https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/admin.py"
               }
-              target={'_blank'}
+              target={"_blank"}
             >
               <TightButton
-                size={'small'}
-                variant={'outlined'}
+                size={"small"}
+                variant={"outlined"}
                 startIcon={
                   <LightDarkImg
-                    light={'/oa-assets/github-mark.svg'}
-                    dark={'/oa-assets/github-mark-white.svg'}
+                    light={"/oa-assets/github-mark.svg"}
+                    dark={"/oa-assets/github-mark-white.svg"}
                     styles={{ height: 20 }}
                   />
                 }
@@ -216,36 +214,36 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6} data-label={'DjangoDRF'}>
+      <Grid item xs={12} sm={6} data-label={"DjangoDRF"}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img src={'/oa-assets/logo-drf.png'} height={30} />}
-            title={'Backend API'}
-            subheader={'Django DRF'}
+            avatar={<img src={"/oa-assets/logo-drf.png"} height={30} />}
+            title={"Backend API"}
+            subheader={"Django DRF"}
           />
           <CardMedia
             height={mediaHeight}
-            component={'img'}
-            alt={'Backend API'}
+            component={"img"}
+            alt={"Backend API"}
             src={
-              'https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_swagger.png'
+              "https://github.com/eliataylor/objects-actions/raw/main/docs/images/demo-backend_swagger.png"
             }
           />
-          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
+          <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
-                'https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/urls.py'
+                "https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/urls.py"
               }
-              target={'_blank'}
+              target={"_blank"}
             >
               <TightButton
-                size={'small'}
-                variant={'outlined'}
+                size={"small"}
+                variant={"outlined"}
                 startIcon={
                   <LightDarkImg
-                    light={'/oa-assets/github-mark.svg'}
-                    dark={'/oa-assets/github-mark-white.svg'}
+                    light={"/oa-assets/github-mark.svg"}
+                    dark={"/oa-assets/github-mark-white.svg"}
                     styles={{ height: 20 }}
                   />
                 }
@@ -257,36 +255,77 @@ const OaStackCards: React.FC = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6} data-label={'Databuilder'}>
+      <Grid item xs={12} sm={6} data-label={"Databuilder"}>
         <Card variant="outlined">
           <CardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img src={'/oa-assets/logo-typescript.svg'} height={30} />}
-            title={'Fake Data Generator'}
-            subheader={'NodeJS'}
+            avatar={<img src={"/oa-assets/logo-typescript.svg"} height={30} />}
+            title={"Fake Data Generator"}
+            subheader={"NodeJS"}
           />
           <CardMedia
             height={mediaHeight}
-            component={'img'}
-            alt={'Databuilder'}
+            component={"img"}
+            alt={"Databuilder"}
             src={
-              'https://github.com/eliataylor/objects-actions/raw/main/docs/images/databuilder.png'
+              "https://github.com/eliataylor/objects-actions/raw/main/docs/images/databuilder.png"
             }
           />
-          <Box sx={{ textAlign: 'right', p: 1, alignContent: 'flex-end' }}>
+          <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
             <a
               href={
-                'https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder/src/main.ts'
+                "https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder/src/main.ts"
               }
-              target={'_blank'}
+              target={"_blank"}
             >
               <TightButton
-                size={'small'}
-                variant={'outlined'}
+                size={"small"}
+                variant={"outlined"}
                 startIcon={
                   <LightDarkImg
-                    light={'/oa-assets/github-mark.svg'}
-                    dark={'/oa-assets/github-mark-white.svg'}
+                    light={"/oa-assets/github-mark.svg"}
+                    dark={"/oa-assets/github-mark-white.svg"}
+                    styles={{ height: 20 }}
+                  />
+                }
+              >
+                View Source
+              </TightButton>
+            </a>
+          </Box>
+        </Card>
+      </Grid>
+
+      <Grid item xs={12} sm={6} data-label={"K6Tester"}>
+        <Card variant="outlined">
+          <CardHeader
+            sx={{ mb: 0, p: 1 }}
+            avatar={<img src={"/oa-assets/k6-logo.svg"} height={30} />}
+            title={"API Speed Tests"}
+            subheader={"K6"}
+          />
+          <CardMedia
+            height={mediaHeight}
+            component={"img"}
+            alt={"K6 Test Results"}
+            src={
+              "https://github.com/eliataylor/objects-actions/blob/eli/docs/images/k6-speed-test.png"
+            }
+          />
+          <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
+            <a
+              href={
+                "https://github.com/eliataylor/objects-actions/tree/main/stack/k6"
+              }
+              target={"_blank"}
+            >
+              <TightButton
+                size={"small"}
+                variant={"outlined"}
+                startIcon={
+                  <LightDarkImg
+                    light={"/oa-assets/github-mark.svg"}
+                    dark={"/oa-assets/github-mark-white.svg"}
                     styles={{ height: 20 }}
                   />
                 }
