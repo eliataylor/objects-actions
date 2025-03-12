@@ -1,7 +1,7 @@
 ## This Django App prompts OpenAI for schema suggestions on any app idea.
 
 - Responses are stored by Django in **two parts**: __Reasoning__ and __Schema__ both are fields in the [SchemaVersions](https://github.com/eliataylor/objects-actions/blob/main/stack/django/oasheets_app/models.py#L24) model. 
-- You can adjust the Assistant's instructions in the [assistant_manager.py](https://github.com/eliataylor/objects-actions/blob/main/stack/django/oasheets_app/services/assistant_manager.py#L167) or in the OpenAI playground once it's been created after your first run.
+- You can adjust the Assistant's instructions in the [assistant_manager.py](https://github.com/eliataylor/objects-actions/blob/main/stack/django/oasheets_app/services/assistant_manager.py#L167) or in the OpenAI playground once it's been created after your first run. https://platform.openai.com/assistants/thread_YOURTHREADID
 
 ---
 
