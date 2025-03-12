@@ -23,11 +23,11 @@ COPY . .
 RUN tsc
 
 # Update the `types` import in `localhost.js` to use `.js` extension
-RUN sed -i 's/from "\.\/types"/from "\.\/types.js"/' localhost.js
+RUN sed -i 's/from "\.\/types"/from "\.\/types.js"/' api-speed-tests.js
 
 # Remove the original .ts file after compilation
 RUN rm -f types.ts
 
 # Default command (can be overridden in docker-compose)
 ENTRYPOINT ["k6"]
-CMD ["run", "/app/k6/localhost.js"]
+CMD ["run", "/app/k6/run.sh"]

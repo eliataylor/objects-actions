@@ -181,7 +181,7 @@ export function handleSummary(data) {
   const timestamp = new Date().toISOString().split("T")[0];
 
   // Ensure results directory exists
-  const resultsDir = 'results';
+  const resultsDir = 'test-results';
   if (__ENV.K6_JS_HOME) {
     const fs = require('fs');
     if (!fs.existsSync(resultsDir)) {

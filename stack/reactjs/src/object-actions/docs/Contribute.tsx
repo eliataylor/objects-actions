@@ -117,11 +117,11 @@ const Contribute: React.FC = () => {
           Finish K6 load tests in order to benchmark API performance changes
           against our releases. Start around{" "}
           <a
-            href="https://github.com/eliataylor/object-actions/blob/main/stack/k6/localhost.js"
+            href="https://github.com/eliataylor/object-actions/blob/main/stack/k6/run.sh"
             target="_blank"
             rel="noopener noreferrer"
           >
-            stack/k6/localhost.js
+            stack/k6/run.sh
           </a>.
         </Typography>
         <Typography variant="body1" component={"li"} gutterBottom={true}>
