@@ -14,6 +14,7 @@ from .models import SchemaVersions
 from .serializers import SchemaVersionSerializer, PostedPromptSerializer
 from .services.generator_service import SchemaGenerator
 
+
 class SchemaVersionsViewSet(PaginatedViewSet):
     queryset = SchemaVersions.objects.all()
     serializer_class = SchemaVersionSerializer
@@ -74,7 +75,8 @@ class SchemaVersionsViewSet(PaginatedViewSet):
 
         prompt_data = serializer.validated_data
         if "version_id" in prompt_data:
-            version = SchemaVersions.objects.filter(pk=prompt_data["version_id"]).first()  # it's ok if it's been deleted or inactivated
+            version = SchemaVersions.objects.filter(
+                pk=prompt_data["version_id"]).first()  # it's ok if it's been deleted or inactivated
         else:
             version = None
 
@@ -90,7 +92,7 @@ class SchemaVersionsViewSet(PaginatedViewSet):
         version = self.get_object()
 
         if request.user is None and version.privacy not in [SchemaVersions.PrivacyChoices.public,
-                                                           SchemaVersions.PrivacyChoices.unlisted]:
+                                                            SchemaVersions.PrivacyChoices.unlisted]:
             return Response({"error": "Login to view this schema."},
                             status=status.HTTP_403_FORBIDDEN)
 
@@ -153,7 +155,6 @@ class SchemaVersionsViewSet(PaginatedViewSet):
                     field.get('default', '') or '',
                     field.get('example', '') or '',
                 ])
-
 
         # Generate CSV response
         response = HttpResponse(content_type='text/csv')

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from oaexample_app.serializers import CustomSerializer
 from .models import SchemaVersions
 
+
 class PostedPromptSerializer(serializers.Serializer):
     prompt = serializers.CharField(required=True)
     privacy = serializers.ChoiceField(choices=SchemaVersions.PrivacyChoices.choices,

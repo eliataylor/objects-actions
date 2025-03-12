@@ -1,9 +1,11 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-from .utils import sanitize_json
+from django.db import models
 from django.utils.timezone import now
 
+from .utils import sanitize_json
+
 User = get_user_model()
+
 
 # Model to track assistant creation
 class ProjectSchema(models.Model):
@@ -21,6 +23,7 @@ class ProjectSchema(models.Model):
         self.modified_at = now()
         super().save(*args, **kwargs)
 
+
 class SchemaVersions(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -35,17 +38,19 @@ class SchemaVersions(models.Model):
         authusers = ("authusers", "Authenticated Users")
         onlyme = ("onlyme", "Only Me")
         archived = ("archived", "archived")
-    privacy = models.CharField(max_length=10, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True, default=PrivacyChoices.onlyme)
+
+    privacy = models.CharField(max_length=10, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True,
+                               null=True, default=PrivacyChoices.onlyme)
 
     # OpenAI ids
-    assistant_id = models.CharField(max_length=100, null=False, blank=False) # REQUIRED!
+    assistant_id = models.CharField(max_length=100, null=False, blank=False)  # REQUIRED!
     thread_id = models.CharField(max_length=100, null=True, blank=True)
     message_id = models.CharField(max_length=100, null=True, blank=True)
     run_id = models.CharField(max_length=100, null=True, blank=True)
     openai_model = models.CharField(max_length=100, null=True, blank=True)
 
     reasoning = models.TextField(blank=True, null=True)
-    schema = models.JSONField(blank=True, null=True) # validated and parsed schema
+    schema = models.JSONField(blank=True, null=True)  # validated and parsed schema
 
     # Version tracking fields
     versions_count = models.PositiveIntegerField(default=0, editable=False)

@@ -1,14 +1,15 @@
+import asyncio
 import json
 import os
-from asyncio import Timeout
 from typing import List
-import asyncio
+
 import openai
 from django.conf import settings
 from openai import OpenAIError
 from pydantic import BaseModel
 
 from .schema_validator import SchemaValidator
+
 
 class FieldSchema(BaseModel):
     label: str
@@ -132,12 +133,13 @@ def build_tools():
 
     return tools
 
+
 class OpenAIPromptManager:
 
     def __init__(self):
         self.version = None
         self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY, max_retries=5, timeout=300)
-        self.ids = {"thread_id":None, "message_id": None, "run_id":None, "assistant_id":None}
+        self.ids = {"thread_id": None, "message_id": None, "run_id": None, "assistant_id": None}
 
     # required
     def set_assistant_id(self, vid):
@@ -161,6 +163,7 @@ class OpenAIPromptManager:
             return None
 
     """Only called when there is no other version with an active assistant ID"""
+
     def create_assistant(self):
         try:
 
@@ -210,7 +213,6 @@ When responding to a prompt, you will:
         if thread is None:
             thread = self.client.beta.threads.create()
             self.ids["thread_id"] = thread.id
-
 
         # Step 1: Send the initial user message
         message = self.client.beta.threads.messages.create(
