@@ -131,7 +131,7 @@ const NewSchemaForm: React.FC = () => {
     <Box>
       <Grid container justifyContent={"space-between"} wrap={"nowrap"} alignItems={"center"}>
         <Grid item>
-          <Typography variant="h5" component="h1">
+          <Typography variant="h4" component="h1">
             Generate the spreadsheet to document your app idea.
           </Typography>
           <Typography variant="subtitle2" component="h2">
