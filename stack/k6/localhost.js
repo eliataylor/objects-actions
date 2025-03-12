@@ -1,71 +1,256 @@
-const http = require("k6/http");
-const { check } = require("k6");
-const { NAVITEMS } = require("./types.js");
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+import { Rate, Trend } from 'k6/metrics';
+import { NAVITEMS } from './navitems.js';
 
+// Configuration
+const BASE_URL = 'https://api.oaexample.com'; // Update with your actual base URL
+const AUTH_TOKEN = '${__ENV.AUTH_TOKEN}'; // Pass token via environment variable
+const CSRF_TOKEN = '${__ENV.CSRF_TOKEN}'; // CSRF token for requests
+const COOKIE = '${__ENV.COOKIE}'; // Cookie value for authenticated requests
+
+// Custom metrics
+const errorRate = new Rate('error_rate');
+const responseTime = new Trend('response_time');
+
+// Create trend metrics for different test types
+const baseEndpointTrend = new Trend('base_endpoint_response_time');
+const paginationTrend = new Trend('pagination_response_time');
+const searchTrend = new Trend('search_response_time');
+
+// Create endpoint-specific metrics
+NAVITEMS.forEach(item => {
+  const name = item.type.toLowerCase();
+  item.trends = {
+    base: new Trend(`${name}_base_response_time`),
+    pagination: new Trend(`${name}_pagination_response_time`),
+    search: new Trend(`${name}_search_response_time`)
+  };
+});
+
+// Test options
 export const options = {
-  // A number specifying the number of VUs to run concurrently.
-  vus: 1,
-  duration: "30s",
-  maxRedirects: 2
-};
-
-const MY_ENV = {
-  host: "https://api.oaexample.com",
-  token: "CHANGEME"
-};
-
-const BASE_REQUEST = {
-  method: "GET",
-  headers: {
-    authority: "api.oaexample.com",
-    accept: "application/json, text/plain, */*",
-    "accept-language": "es-MX,es;q=0.9,en-US;q=0.8,en;q=0.7,es-419;q=0.6",
-    authorization: `Bearer ${MY_ENV.token}`,
-    "Cache-Control": "no-cache, no-store, must-revalidate",  // Prevents caching
-    "Pragma": "no-cache",  // HTTP/1.0 backward compatibility
-    "Expires": "0",  // Forces an expired date to prevent caching
-    origin: "https://oaexample.com",
-    referer: "https://oaexample.com/"
+  scenarios: {
+    endpoint_tests: {
+      executor: 'per-vu-iterations',
+      vus: 5,
+      iterations: 1,
+      maxDuration: '5m',
+    }
+  },
+  thresholds: {
+    'error_rate': ['rate<0.1'], // Error rate under 10%
+    'http_req_duration': ['p(95)<3000'], // 95% of requests should be below 3s
   }
 };
 
-function validateResponse (response, name) {
-
-  if (response.timings.duration > 2000) {
-    console.log(`Request took over 2 seconds to complete: ${response.timings.duration}ms`);
-    console.log(`Request URL: ${response.request.url}`);
-    console.log(`Response status: ${response.status}`);
+// Setup function (runs once per VU)
+export function setup() {
+  // Create results directory if it doesn't exist
+  if (__ENV.K6_JS_HOME) {
+    const fs = require('fs');
+    if (!fs.existsSync('results')) {
+      fs.mkdirSync('results');
+    }
+  } else {
+    console.log('Note: Results directory will be created by k6 if it does not exist');
   }
 
-  const validationRules = [
-//        ['is status 200', (r) => r.status === 200],
-//        ['Response is JSON', (r) => r.headers['Content-Type'] === 'application/json'],
-    ["Response has correct data property", (r) => r.json().hasOwnProperty("rows") || r.json().hasOwnProperty("canvassers") || Array.isArray(r.json())]
-  ];
+  // You can perform setup operations here, like getting an auth token
+  // if you're not passing it as an environment variable
+  return {
+    token: AUTH_TOKEN,
+    csrfToken: CSRF_TOKEN,
+    cookie: COOKIE
+  };
+}
 
-  const slashIndex = response.request.url.indexOf("/", response.request.url.indexOf("://") + 3);
-  const basepath = response.request.url.substring(slashIndex, response.request.url.indexOf("?"));
+// Helper function to make requests
+function makeRequest(url, headers, metricName, itemTrend) {
+  const response = http.get(url, { headers });
 
-  check(response, {
-    [`${name} - ${basepath}: status code ${response.status}`]: (r) => r.status === 200
+  // Add to general metric
+  responseTime.add(response.timings.duration);
+
+  // Add to specific test type metric
+  if (metricName) {
+    metricName.add(response.timings.duration);
+  }
+
+  // Add to endpoint-specific metric
+  if (itemTrend) {
+    itemTrend.add(response.timings.duration);
+  }
+
+  // Check if the request was successful
+  const success = check(response, {
+    'status is 200': (r) => r.status === 200,
+    'response has data': (r) => r.body.includes('data') || r.body.includes('results'),
   });
 
-  // TODO: can we take the first object ID and test requests by ID? maybe even form access?
+  // Record errors
+  errorRate.add(!success);
 
-  // Iterate over validation rules and apply checks dynamically
-  for (let [description, condition] of validationRules) {
-    check(response, {
-      [`${name} - ${basepath}: ${description}`]: condition
-    });
+  // Log detailed information for failed requests
+  if (!success) {
+    console.log(`Failed request to ${url}: Status ${response.status}, Body: ${response.body.substring(0, 100)}...`);
+  }
+
+  return response;
+}
+
+// Main function
+export default function(data) {
+  // Common headers for all requests
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-CSRFToken': CSRF_TOKEN,
+    'Cookie': COOKIE,
+  };
+
+  // Add authorization if token is available
+  if (data.token) {
+    headers['Authorization'] = `Bearer ${data.token}`;
+  }
+
+  // Loop through each NAVITEM and run three tests for each
+  for (const item of NAVITEMS) {
+    const endpointBase = `${BASE_URL}${item.api}`;
+
+    // Test 1: Base endpoint request
+    console.log(`Testing base endpoint: ${endpointBase}`);
+    makeRequest(endpointBase, headers, baseEndpointTrend, item.trends.base);
+    sleep(1); // Short pause between requests
+
+    // Test 2: Paginated request
+    const paginatedUrl = `${endpointBase}?offset=10&limit=10`;
+    console.log(`Testing pagination: ${paginatedUrl}`);
+    makeRequest(paginatedUrl, headers, paginationTrend, item.trends.pagination);
+    sleep(1); // Short pause between requests
+
+    // Test 3: Search request (if search fields are available)
+    if (item.search_fields && item.search_fields.length > 0) {
+      const searchUrl = `${endpointBase}?search=a`;
+      console.log(`Testing search: ${searchUrl}`);
+      makeRequest(searchUrl, headers, searchTrend, item.trends.search);
+      sleep(1); // Short pause between requests
+    } else {
+      console.log(`Skipping search test for ${item.api} - no search fields defined`);
+    }
+
+    // Sleep between testing different endpoints
+    sleep(2);
   }
 }
 
-export default function() {
+// Helper function to summarize results for reporting
 
-  for (let navItem of NAVITEMS) {
-    let url = `${MY_ENV.host}/${navItem.segment}`;
-    const response = http.request(BASE_REQUEST.method, url, null, { headers: BASE_REQUEST.headers });
-    validateResponse(response, request.name);
+// Helper function to summarize results for reporting
+export function handleSummary(data) {
+  /* Create timestamp for filenames
+  const timestamp = new Date().toISOString()
+    .replace(/:/g, '-')
+    .replace(/\..+/, '')
+    .replace('T', '_');
+  */
+  const timestamp = new Date().toISOString().split("T")[0];
+
+  // Ensure results directory exists
+  const resultsDir = 'results';
+  if (__ENV.K6_JS_HOME) {
+    const fs = require('fs');
+    if (!fs.existsSync(resultsDir)) {
+      fs.mkdirSync(resultsDir);
+    }
   }
 
+  // Create a summary object with timestamped filenames
+  const summary = {};
+
+  // JSON report
+  summary[`${resultsDir}/test-${timestamp}.json`] = JSON.stringify({
+    metrics: data.metrics,
+    root_group: data.root_group,
+  }, null, 2);
+
+  // HTML report
+  summary[`${resultsDir}/test-${timestamp}.html`] = generateHtmlReport(data);
+
+  return summary;
+}
+
+// Generate a simple HTML report
+function generateHtmlReport(data) {
+  // Group metrics by endpoint
+  const endpointMetrics = {};
+
+  NAVITEMS.forEach(item => {
+    const name = item.segment;
+    const baseMetric = data.metrics[`${name}_base_response_time`];
+    const paginationMetric = data.metrics[`${name}_pagination_response_time`];
+    const searchMetric = data.metrics[`${name}_search_response_time`];
+
+    endpointMetrics[name] = {
+      endpoint: item.api,
+      baseResponse: baseMetric ? baseMetric.values.avg : 'N/A',
+      paginationResponse: paginationMetric ? paginationMetric.values.avg : 'N/A',
+      searchResponse: searchMetric ? searchMetric.values.avg : 'N/A',
+    };
+  });
+
+  // Create a simple HTML report
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>API Endpoint Performance Test Report</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+      th { background-color: #f2f2f2; }
+      tr:nth-child(even) { background-color: #f9f9f9; }
+      .summary { margin-bottom: 30px; }
+      .header { background-color: #333; color: white; padding: 10px; margin-bottom: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>API Endpoint Performance Test Report</h1>
+      <p>Generated: ${new Date().toISOString()}</p>
+      <p>Base URL: ${BASE_URL}</p>
+    </div>
+    
+    <div class="summary">
+      <h2>Summary</h2>
+      <p>Total requests: ${data.metrics.http_reqs.values.count}</p>
+      <p>Error rate: ${(data.metrics.error_rate.values.rate * 100).toFixed(2)}%</p>
+      <p>Average response time: ${data.metrics.http_req_duration.values.avg.toFixed(2)}ms</p>
+      <p>95th percentile: ${data.metrics.http_req_duration.values["p(95)"].toFixed(2)}ms</p>
+    </div>
+    
+    <h2>Endpoint Performance</h2>
+    <table>
+      <tr>
+        <th>Endpoint</th>
+        <th>Base Response (ms)</th>
+        <th>Pagination Response (ms)</th>
+        <th>Search Response (ms)</th>
+      </tr>
+      ${Object.values(endpointMetrics).map(metric => `
+        <tr>
+          <td>${metric.endpoint}</td>
+          <td>${typeof metric.baseResponse === 'number' ? metric.baseResponse.toFixed(2) : metric.baseResponse}</td>
+          <td>${typeof metric.paginationResponse === 'number' ? metric.paginationResponse.toFixed(2) : metric.paginationResponse}</td>
+          <td>${typeof metric.searchResponse === 'number' ? metric.searchResponse.toFixed(2) : metric.searchResponse}</td>
+        </tr>
+      `).join('')}
+    </table>
+    
+    <h2>Test Configuration</h2>
+    <p>Base URL: ${BASE_URL}</p>
+  </body>
+  </html>
+  `;
 }
