@@ -309,7 +309,7 @@ const OaStackCards: React.FC = () => {
             component={"img"}
             alt={"K6 Test Results"}
             src={
-              "https://github.com/eliataylor/objects-actions/blob/eli/docs/images/k6-speed-test.png"
+              "https://github.com/eliataylor/objects-actions/raw/eli/docs/images/k6-speed-test.png"
             }
           />
           <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
