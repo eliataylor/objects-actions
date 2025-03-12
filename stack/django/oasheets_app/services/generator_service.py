@@ -1,9 +1,11 @@
 import json
+import threading
 import time
+
 from ..models import SchemaVersions
 from ..serializers import SchemaVersionSerializer
 from ..services.assistant_manager import OpenAIPromptManager
-import threading
+
 
 class SchemaGenerator:
     def __init__(self, prompt_data, user, last_version=None):
@@ -11,9 +13,9 @@ class SchemaGenerator:
         self.assistant_manager = OpenAIPromptManager()
 
         self.assistant = None
-        if last_version is not None: # if a specific version was passed in to inherit
+        if last_version is not None:  # if a specific version was passed in to inherit
             self.assistant = self.assistant_manager.retrieve_assistant(last_version.assistant_id)
-        else: # else just use the latest version's assistant since they're all the same
+        else:  # else just use the latest version's assistant since they're all the same
             assistant_id = SchemaVersions.objects.order_by("-id").values_list("assistant_id", flat=True).first()
             if assistant_id:
                 self.assistant = self.assistant_manager.retrieve_assistant(assistant_id)

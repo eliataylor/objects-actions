@@ -1,6 +1,8 @@
 import json
 import os
+
 from django.conf import settings
+
 
 class SchemaValidator:
     """Validates schemas for completeness and correctness"""
@@ -26,7 +28,7 @@ class SchemaValidator:
             schema = json.loads(schema)
 
         if isinstance(schema, dict) and "schema" in schema:
-            schema = schema["schema"] # only via openai functions parameters
+            schema = schema["schema"]  # only via openai functions parameters
 
         errors = []
         corrected_schema = {"content_types": []}
@@ -81,4 +83,3 @@ class SchemaValidator:
             "errors": errors,
             "corrected_schema": corrected_schema if errors else schema
         }
-
