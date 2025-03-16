@@ -527,76 +527,138 @@ urlpatterns += [
 
         # Generate get_permissions methods for views
         view_permission_methods = {}
+        perform_create_methods = {}
+
         for model_name, actions in self.view_permissions.items():
             if not actions:
                 continue
 
-            method_code = "def get_permissions(self):\n"
+            # Generate get_permissions method code
+            method_code = "def get_permissions(self):"
 
             # Handle standard actions with if-elif chain for proper control flow
-            method_code += "\tif self.action == 'list':\n"
+            method_code += "\n        if self.action == 'list':"
             if "list" in actions:
-                method_code += f"\t\t\tpermission_classes = [{actions['list']}]\n"
+                method_code += f"\n            permission_classes = [{actions['list']}]"
             else:
-                method_code += f"\t\t\tpermission_classes = [permissions.{self.default_perm}]\n"
+                method_code += f"\n            permission_classes = [permissions.{self.default_perm}]"
 
-            method_code += "\telif self.action == 'retrieve':\n"
+            method_code += "\n        elif self.action == 'retrieve':"
             if "retrieve" in actions:
-                method_code += f"\t\t\tpermission_classes = [{actions['retrieve']}]\n"
+                method_code += f"\n            permission_classes = [{actions['retrieve']}]"
             else:
-                method_code += f"\t\t\tpermission_classes = [permissions.{self.default_perm}]\n"
+                method_code += f"\n            permission_classes = [permissions.{self.default_perm}]"
 
-            method_code += "\telif self.action == 'create':\n"
+            method_code += "\n        elif self.action == 'create':"
             if "create" in actions:
-                method_code += f"\t\t\tpermission_classes = [{actions['create']}]\n"
+                method_code += f"\n            permission_classes = [{actions['create']}]"
             else:
-                method_code += f"\t\t\tpermission_classes = [permissions.{self.default_perm}]\n"
+                method_code += f"\n            permission_classes = [permissions.{self.default_perm}]"
 
-            method_code += "\telif self.action in ['update', 'partial_update']:\n"
+            method_code += "\n        elif self.action in ['update', 'partial_update']:"
             if "update" in actions:
-                method_code += f"\t\t\tpermission_classes = [{actions['update']}]\n"
+                method_code += f"\n            permission_classes = [{actions['update']}]"
             else:
-                method_code += f"\t\t\tpermission_classes = [permissions.{self.default_perm}]\n"
+                method_code += f"\n            permission_classes = [permissions.{self.default_perm}]"
 
-            method_code += "\telif self.action == 'destroy':\n"
+            method_code += "\n        elif self.action == 'destroy':"
             if "destroy" in actions:
-                method_code += f"\t\t\tpermission_classes = [{actions['destroy']}]\n"
+                method_code += f"\n            permission_classes = [{actions['destroy']}]"
             else:
-                method_code += f"\t\t\tpermission_classes = [permissions.{self.default_perm}]\n"
+                method_code += f"\n            permission_classes = [permissions.{self.default_perm}]"
 
             # Handle any custom actions like 'block'
             if "block" in actions:
-                method_code += "\telif self.action == 'block':\n"
-                method_code += f"\t\t\tpermission_classes = [{actions['block']}]\n"
+                method_code += "\n        elif self.action == 'block':"
+                method_code += f"\n            permission_classes = [{actions['block']}]"
 
             # Default case
-            method_code += "\telse:\n"
-            method_code += f"\t\t\tpermission_classes = [permissions.{self.default_perm}]\n"
-            method_code += "\treturn [permission() for permission in permission_classes]"
+            method_code += "\n        else:"
+            method_code += f"\n            permission_classes = [permissions.{self.default_perm}]"
+            method_code += "\n        return [permission() for permission in permission_classes]"
 
             view_permission_methods[model_name] = method_code
+
+            # Check if we should add perform_create method - determine if 'create' action has ownership constraints
+            if "create" in actions and model_name != "Users":  # Skip for Users model
+                # Find the original permission rule to check ownership
+                create_rule = None
+                create_rule_others = None
+
+                for perm_group in self.matrix['permissions']:
+                    context_key = "-".join(perm_group['context'])
+                    if context_key == model_name and perm_group['verb'] == 'add':
+                        if perm_group.get('ownership') == 'own':
+                            create_rule = perm_group
+                        elif perm_group.get('ownership') == 'others':
+                            create_rule_others = perm_group
+
+                # Get allowed roles for others (for admin check)
+                admin_roles = []
+                if create_rule_others and create_rule_others.get('roles'):
+                    admin_roles = create_rule_others.get('roles', [])
+
+                # Construct the admin check based on roles
+                admin_checks = []
+                for role in admin_roles:
+                    if role == "admin":
+                        admin_checks.append("self.request.user.groups.filter(name='IsAdmin').exists()")
+                    elif role != "anonymous" and role != "authenticated":
+                        # Convert snake_case or space-separated roles to CamelCase with "Is" prefix
+                        group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
+                        admin_checks.append(f"self.request.user.groups.filter(name='Is{group_name}').exists()")
+
+                admin_check_str = " or ".join(
+                    admin_checks) if admin_checks else "self.request.user.groups.filter(name='IsAdmin').exists()"
+
+                # Need to enforce author ownership
+                perform_create_code = f'''def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = {admin_check_str}
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)'''
+
+                perform_create_methods[model_name] = perform_create_code
 
         # Update viewsets in views.py file
         views_file_path = os.path.join(self.output_dir, 'views.py')
 
-        # Add imports for permission classes
+        # Add imports for permission classes and other required imports
         permission_imports = []
         for model_name, actions in self.view_permissions.items():
             permission_classes = list(actions.values())
             if permission_classes:
                 permission_imports.extend(permission_classes)
 
+        # Add required imports
+        if perform_create_methods:
+            self.append_import("views", "from django.shortcuts import get_object_or_404")
+            self.append_import("views", "from django.contrib.auth import get_user_model")
+
         if permission_imports:
             permission_import_str = ", ".join(set(permission_imports))
             self.append_import("views", f"from .permissions import {permission_import_str}")
             inject_generated_code(views_file_path, '\n'.join(self.imports["views"]), 'VIEWSET-IMPORTS')
 
-        # Read the entire views file
+        # Read the entire views file to analyze its indentation style
         with open(views_file_path, 'r') as file:
             views_content = file.read()
 
+        # Keep track of modified viewsets to add extra spacing between them
+        modified_viewsets = []
+
         # Process each viewset class
-        for model_name, method_code in view_permission_methods.items():
+        for model_name in view_permission_methods:
             viewset_name = f"{model_name}ViewSet"
 
             # Find the viewset class
@@ -619,56 +681,136 @@ urlpatterns += [
             # Extract class content
             class_content = views_content[class_start_pos:class_end_pos]
 
-            # Check if get_permissions already exists
-            existing_method_match = re.search(r"\n\s*def\s+get_permissions\s*\(\s*self\s*\)\s*:", class_content)
+            new_views_content = views_content
 
-            # Add one more tab level of indentation to method body
-            indented_method_code = method_code.replace("\tif", "\t\tif").replace("\telif", "\t\telif").replace("\telse",
-                                                                                                               "\t\telse").replace(
-                "\treturn", "\t\treturn")
+            # Add/replace get_permissions method
+            if model_name in view_permission_methods:
+                method_code = view_permission_methods[model_name]
 
-            # Prepare new class content
-            if existing_method_match:
-                # Find the end of the existing method
-                method_start_pos = class_start_pos + existing_method_match.start()
+                # Check if get_permissions already exists
+                existing_method_match = re.search(r"\n\s*def\s+get_permissions\s*\(\s*self\s*\)\s*:", class_content)
 
-                # Find the next method or class definition to determine the end of the current method
-                next_method_match = re.search(r"\n\s*def\s+[^(]+\(", class_content[existing_method_match.end():])
-                if next_method_match:
-                    method_end_pos = class_start_pos + existing_method_match.end() + next_method_match.start()
+                if existing_method_match:
+                    # Find the end of the existing method
+                    method_start_pos = class_start_pos + existing_method_match.start()
+
+                    # Find the next method or class definition to determine the end of the current method
+                    next_method_match = re.search(r"\n\s*def\s+[^(]+\(", class_content[existing_method_match.end():])
+                    if next_method_match:
+                        method_end_pos = class_start_pos + existing_method_match.end() + next_method_match.start()
+                    else:
+                        method_end_pos = class_end_pos
+
+                    # Replace the existing method
+                    indented_method = f"\n\n    {method_code}\n"
+                    new_views_content = new_views_content[:method_start_pos] + indented_method + new_views_content[
+                                                                                                 method_end_pos:]
                 else:
-                    method_end_pos = class_end_pos
+                    # Insert new method after the last class property
+                    # Look for pattern: last property line followed by empty line or another def
 
-                # Replace the existing method
-                indented_method = "\n\n\tdef get_permissions(self):\n" + \
-                                  indented_method_code.split("def get_permissions(self):\n")[1] + "\n\n"
-                new_views_content = views_content[:method_start_pos] + indented_method + views_content[method_end_pos:]
-            else:
-                # Insert new method after the last class property
-                # Look for pattern: last property line followed by empty line or another def
+                    # First find all property assignments
+                    properties_pattern = r"\n\s+\w+\s*=.*?(?=\n\s*\n|\n\s*def|\Z)"
+                    properties_matches = list(re.finditer(properties_pattern, class_content, re.DOTALL))
 
-                # First find all property assignments (lines with self.XXX or ending with ,)
-                properties_pattern = r"\n\s+\w+\s*=.*?(?=\n\s*\n|\n\s*def|\Z)"
-                properties_matches = list(re.finditer(properties_pattern, class_content, re.DOTALL))
+                    if properties_matches:
+                        # Insert after the last property
+                        last_prop_end = class_start_pos + properties_matches[-1].end()
+                        indented_method = f"\n\n    {method_code}\n"
+                        new_views_content = new_views_content[:last_prop_end] + indented_method + new_views_content[
+                                                                                                  last_prop_end:]
+                    else:
+                        # No properties found, insert right after class definition
+                        indented_method = f"\n    {method_code}\n"
+                        new_views_content = new_views_content[:class_start_pos] + indented_method + new_views_content[
+                                                                                                    class_start_pos:]
 
-                if properties_matches:
-                    # Insert after the last property
-                    last_prop_end = class_start_pos + properties_matches[-1].end()
-                    indented_method = "\n\n\tdef get_permissions(self):\n" + \
-                                      indented_method_code.split("def get_permissions(self):\n")[1] + "\n\n"
-                    new_views_content = views_content[:last_prop_end] + indented_method + views_content[last_prop_end:]
+                # Update views_content for next operations
+                views_content = new_views_content
+
+                # Re-extract class content with updated positions
+                if next_class_match:
+                    class_end_pos = class_start_pos + re.search(r"class\s+\w+\(.*?\):",
+                                                                views_content[class_start_pos:]).start()
                 else:
-                    # No properties found, insert right after class definition
-                    indented_method = "\n\n\tdef get_permissions(self):\n" + \
-                                      indented_method_code.split("def get_permissions(self):\n")[1] + "\n\n"
-                    new_views_content = views_content[:class_start_pos] + indented_method + views_content[
-                                                                                            class_start_pos:]
+                    class_end_pos = len(views_content)
+                class_content = views_content[class_start_pos:class_end_pos]
 
-            # Update the views content for the next iteration
-            views_content = new_views_content
+                # Mark this viewset as modified
+                modified_viewsets.append(viewset_name)
+
+            # Add perform_create method if needed
+            if model_name in perform_create_methods:
+                perform_code = perform_create_methods[model_name]
+
+                # Check if perform_create already exists
+                existing_method_match = re.search(r"\n\s*def\s+perform_create\s*\(\s*self\s*,\s*serializer\s*\)\s*:",
+                                                  class_content)
+
+                if existing_method_match:
+                    # Find the end of the existing method
+                    method_start_pos = class_start_pos + existing_method_match.start()
+
+                    # Find the next method or class definition to determine the end of the current method
+                    next_method_match = re.search(r"\n\s*def\s+[^(]+\(", class_content[existing_method_match.end():])
+                    if next_method_match:
+                        method_end_pos = class_start_pos + existing_method_match.end() + next_method_match.start()
+                    else:
+                        method_end_pos = class_end_pos
+
+                    # Replace the existing method
+                    indented_method = f"\n\n    {perform_code}\n"
+                    views_content = views_content[:method_start_pos] + indented_method + views_content[method_end_pos:]
+                else:
+                    # Find a good position to insert the method, preferably after get_permissions
+                    get_perms_match = re.search(r"\n\s*def\s+get_permissions\s*\(\s*self\s*\)\s*:", class_content)
+
+                    if get_perms_match:
+                        # Find the end of get_permissions method
+                        perms_start_pos = class_start_pos + get_perms_match.start()
+
+                        # Find the next method or class definition to determine the end
+                        next_method_match = re.search(r"\n\s*def\s+[^(]+\(", class_content[get_perms_match.end():])
+                        if next_method_match:
+                            perms_end_pos = class_start_pos + get_perms_match.end() + next_method_match.start()
+
+                            # Insert after get_permissions
+                            indented_method = f"\n\n    {perform_code}\n"
+                            views_content = views_content[:perms_end_pos] + indented_method + views_content[
+                                                                                              perms_end_pos:]
+                        else:
+                            # No next method, insert at end of class
+                            indented_method = f"\n\n    {perform_code}\n"
+                            views_content = views_content[:class_end_pos] + indented_method + views_content[
+                                                                                              class_end_pos:]
+                    else:
+                        # No get_permissions, insert at end of class
+                        indented_method = f"\n\n    {perform_code}\n"
+                        views_content = views_content[:class_end_pos] + indented_method + views_content[class_end_pos:]
+
+                # Mark this viewset as modified
+                if viewset_name not in modified_viewsets:
+                    modified_viewsets.append(viewset_name)
+
+        # Add extra newlines between modified viewsets for readability
+        for viewset_name in modified_viewsets:
+            class_pattern = f"class {viewset_name}\\(.*?\\):"
+            class_match = re.search(class_pattern, views_content)
+
+            if class_match and class_match.start() > 0:
+                # Add extra newlines before the class definition
+                # First, check if there's already enough space
+                spaces_before = views_content[:class_match.start()].rstrip()
+                newline_count = len(views_content[len(spaces_before):class_match.start()])
+
+                if newline_count < 3:  # We want at least 3 newlines for separation
+                    # Replace existing newlines with 3 newlines
+                    views_content = spaces_before + "\n\n\n" + views_content[class_match.start():]
 
         # Write the updated content back to the file
         with open(views_file_path, 'w') as file:
             file.write(views_content)
 
         logger.info(f"Viewset permissions updated for {len(view_permission_methods)} viewsets.")
+        if perform_create_methods:
+            logger.info(f"Added perform_create methods to {len(perform_create_methods)} viewsets to enforce ownership.")
