@@ -15,7 +15,7 @@ const ContentMenu: React.FC<ContentTypesHomeProps> = ({ showLine2 = undefined })
 
   return (<div id={"OAMenuListItems"}>
       {NAVITEMS.map((item) => {
-        const type = item.model_type || "contenttype";
+        const type = item.model_type ? item.model_type : "contenttype";
         if (navModelTypes.indexOf(type) === -1) return null;
         return (
           <ListItemButton

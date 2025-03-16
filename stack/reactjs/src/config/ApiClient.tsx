@@ -176,6 +176,34 @@ class ApiClient {
   private extractErrorMessage(error: any): string {
     if (typeof error === "string") return error;
 
+    // Handle enhanced permission error responses
+    if (error.message) {
+      return error.message
+    } else if (error.permission_context) {
+      const context = error.permission_context;
+      const userRoles = context.user_roles?.join(", ") || "anonymous";
+      const objectType = context.context?.[0] || "resource";
+      const verb = context.verb || "access";
+      const ownership = context.ownership || "others";
+
+      // Create an error message similar to what canDo returns in access.ts
+      let errMsg = `You have ${userRoles}, but must `;
+
+      const requiredRoles = context.required_roles?.[ownership] || [];
+      if (requiredRoles.length === 1) {
+        errMsg += ` be ${requiredRoles[0]}`;
+      } else if (requiredRoles.length > 1) {
+        errMsg += ` have one of these roles - ${requiredRoles.join(", ")} - `;
+      } else {
+        errMsg += " have appropriate permissions";
+      }
+
+      errMsg += ` to ${verb} ${ownership === "own" ? "your own" : "someone else's"} ${objectType}`;
+
+      return errMsg;
+    }
+
+    // Standard error handling
     const errorSource = error.error || error.detail || error;
     if (typeof errorSource === "object") {
       return Object.entries(errorSource)

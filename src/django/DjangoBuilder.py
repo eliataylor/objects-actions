@@ -299,7 +299,7 @@ urlpatterns += [
         self.build_viewset_permissions()
 
     def build_permission_classes(self):
-        """Generate permission classes in permissions.py file"""
+        """Generate permission classes in permissions.py file with metadata for the exception handler"""
         if not self.matrix or 'permissions' not in self.matrix:
             return
 
@@ -372,7 +372,45 @@ urlpatterns += [
 
             # Create base permission class
             perm_code = f"class {class_name}(BasePermission):\n"
-            perm_code += "\tdef has_permission(self, request, view):\n"
+
+            # Add class docstring with metadata for oa_exception_handler
+            perm_code += f'''    """
+        Permission class for {verb} operations on {model_name}.
+    '''
+            if own_perm and own_perm['roles']:
+                own_roles_str = ", ".join(own_perm['roles'])
+                perm_code += f'    Own content: Allows {own_roles_str}\n'
+            if others_perm and others_perm['roles']:
+                others_roles_str = ", ".join(others_perm['roles'])
+                perm_code += f'    Others\' content: Allows {others_roles_str}\n'
+            perm_code += f'    """\n'
+
+            # Add metadata for own permissions - used by oa_exception_handler
+            if own_perm and own_perm['roles']:
+                own_roles_str = repr(own_perm['roles'])
+                perm_code += f"    required_roles_own = {own_roles_str}\n"
+            else:
+                perm_code += f"    required_roles_own = []\n"
+
+            # Add metadata for others permissions
+            if others_perm and others_perm['roles']:
+                others_roles_str = repr(others_perm['roles'])
+                perm_code += f"    required_roles_others = {others_roles_str}\n"
+            else:
+                perm_code += f"    required_roles_others = []\n"
+
+            # Add help text if available
+            if own_perm and 'help' in own_perm:
+                help_text = own_perm['help'].replace("'", "\\'")
+                perm_code += f"    help_text = '{help_text}'\n"
+            elif others_perm and 'help' in others_perm:
+                help_text = others_perm['help'].replace("'", "\\'")
+                perm_code += f"    help_text = '{help_text}'\n"
+
+            # Add context information
+            perm_code += f"    context_info = {{'context': {repr(context)}, 'verb': '{verb}'}}\n"
+
+            perm_code += "    def has_permission(self, request, view):\n"
 
             # Combine roles from own and others for general permission check
             all_roles = set()
@@ -383,8 +421,8 @@ urlpatterns += [
 
             # Add authentication check if needed
             if "anonymous" not in all_roles:
-                perm_code += "\t\tif not request.user or not request.user.is_authenticated:\n"
-                perm_code += "\t\t\treturn False\n"
+                perm_code += "        if not request.user or not request.user.is_authenticated:\n"
+                perm_code += "            return False\n"
 
             # Add role checks if needed
             if all_roles and "anonymous" not in all_roles:
@@ -398,25 +436,25 @@ urlpatterns += [
                         role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
 
                 if role_checks:
-                    perm_code += f"\t\treturn {' or '.join(role_checks)}\n"
+                    perm_code += f"        return {' or '.join(role_checks)}\n"
                 else:
-                    perm_code += "\t\treturn True\n"
+                    perm_code += "        return True\n"
             else:
-                perm_code += "\t\treturn True\n"
+                perm_code += "        return True\n"
 
             # Add object permission check if needed
             if needs_object_check:
-                perm_code += "\n\tdef has_object_permission(self, request, view, obj):\n"
+                perm_code += "\n    def has_object_permission(self, request, view, obj):\n"
 
                 # Check if the object belongs to the user
                 if context[0] == "Users":
-                    perm_code += "\t\tis_own = request.user.id == obj.id\n"
+                    perm_code += "        is_own = request.user.id == obj.id\n"
                 else:
-                    perm_code += "\t\tis_own = hasattr(obj, 'author') and request.user.id == obj.author.id\n"
+                    perm_code += "        is_own = hasattr(obj, 'author') and request.user.id == obj.author.id\n"
 
                 # Handle object permissions based on ownership
                 if own_perm and others_perm:
-                    perm_code += "\t\tif is_own:\n"
+                    perm_code += "        if is_own:\n"
 
                     # Add role checks for own objects
                     own_role_checks = []
@@ -430,11 +468,11 @@ urlpatterns += [
                             own_role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
 
                     if own_role_checks:
-                        perm_code += f"\t\t\treturn {' or '.join(own_role_checks)}\n"
+                        perm_code += f"            return {' or '.join(own_role_checks)}\n"
                     else:
-                        perm_code += "\t\t\treturn True\n"
+                        perm_code += "            return True\n"
 
-                    perm_code += "\t\telse:\n"
+                    perm_code += "        else:\n"
 
                     # Add role checks for others' objects
                     other_role_checks = []
@@ -448,12 +486,12 @@ urlpatterns += [
                             other_role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
 
                     if other_role_checks:
-                        perm_code += f"\t\t\treturn {' or '.join(other_role_checks)}\n"
+                        perm_code += f"            return {' or '.join(other_role_checks)}\n"
                     else:
-                        perm_code += "\t\t\treturn False\n"
+                        perm_code += "            return False\n"
 
                 elif own_perm:
-                    perm_code += "\t\tif is_own:\n"
+                    perm_code += "        if is_own:\n"
 
                     # Add role checks for own objects
                     own_role_checks = []
@@ -467,15 +505,15 @@ urlpatterns += [
                             own_role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
 
                     if own_role_checks:
-                        perm_code += f"\t\t\treturn {' or '.join(own_role_checks)}\n"
+                        perm_code += f"            return {' or '.join(own_role_checks)}\n"
                     else:
-                        perm_code += "\t\t\treturn True\n"
+                        perm_code += "            return True\n"
 
-                    perm_code += "\t\telse:\n"
-                    perm_code += "\t\t\treturn False  # Others not allowed\n"
+                    perm_code += "        else:\n"
+                    perm_code += "            return False  # Others not allowed\n"
 
                 elif others_perm:
-                    perm_code += "\t\tif not is_own:\n"
+                    perm_code += "        if not is_own:\n"
 
                     # Add role checks for others' objects
                     other_role_checks = []
@@ -489,12 +527,12 @@ urlpatterns += [
                             other_role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
 
                     if other_role_checks:
-                        perm_code += f"\t\t\treturn {' or '.join(other_role_checks)}\n"
+                        perm_code += f"            return {' or '.join(other_role_checks)}\n"
                     else:
-                        perm_code += "\t\t\treturn False\n"
+                        perm_code += "            return False\n"
 
-                    perm_code += "\t\telse:\n"
-                    perm_code += "\t\t\treturn False  # Own not allowed\n"
+                    perm_code += "        else:\n"
+                    perm_code += "            return False  # Own not allowed\n"
 
             permission_classes.append(perm_code)
 
@@ -515,6 +553,27 @@ urlpatterns += [
 
         # Write permissions.py file
         permissions_content = "\n\n".join(permission_classes)
+
+        # Add a comment explaining generated permissions
+        permissions_header = '''"""
+    This file contains permission classes generated from the permissions matrix.
+    These classes are used by the DRF viewsets to control access to API endpoints.
+
+    Each permission class contains metadata used by the oa_exception_handler to create detailed error messages:
+    - required_roles_own: List of roles that can access their own content
+    - required_roles_others: List of roles that can access content owned by others
+    - context_info: Contains context (model) and verb information
+    - help_text: (Optional) Additional explanation about the permission
+
+    The oa_exception_handler constructs error messages based on this metadata,
+    adapting to the current user's authentication status and roles.
+    """
+
+    '''
+
+        # Include the permissions header in the content
+        permissions_content = permissions_header + permissions_content
+
         inject_generated_code(permissions_file_path, '\n'.join(self.imports["permissions"]), 'PERMISSIONS-IMPORTS')
         inject_generated_code(permissions_file_path, permissions_content, 'PERMISSIONS')
 

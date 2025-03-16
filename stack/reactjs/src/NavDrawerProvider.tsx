@@ -37,7 +37,7 @@ export const NavDrawerProvider: React.FC<NavDrawerProviderProps> = ({
   const [navDrawerWidth, setNavDrawerWidth] = useState<number>(155); // default width
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 600);
   const [keyword, setKeyword] = useState<string>("");
-  const [navModelTypes, setNavModelTypes] = useState<string[]>(process.env.NAV_MODEL_TYPES ? process.env.NAV_MODEL_TYPES.split(',') : ['contenttype'])
+  const [navModelTypes, setNavModelTypes] = useState<string[]>(process.env.REACT_APP_NAV_MODEL_TYPES ? process.env.REACT_APP_NAV_MODEL_TYPES.split(',') : ['contenttype'])
 
   useEffect(() => {
     const handleResize = () => {
