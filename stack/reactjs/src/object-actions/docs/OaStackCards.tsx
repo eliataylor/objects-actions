@@ -1,7 +1,17 @@
 import React, { useEffect, useRef } from "react";
-import { Box, Card, CardHeader, CardMedia, Grid } from "@mui/material";
+import { Box, Card, CardHeader, CardMedia, Grid, styled } from "@mui/material";
 import { TightButton } from "../../theme/StyledFields";
 import LightDarkImg from "../../components/LightDarkImg";
+
+const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
+  '& .MuiCardHeader-title': {
+    fontSize: '1.5rem', // Custom title font size
+  },
+  '& .MuiCardHeader-subheader': {
+    fontSize: '1rem', // Custom subheader font size
+    fontWeight: 600,
+  },
+}));
 
 const OaStackCards: React.FC = () => {
   const mediaHeight = 250;
@@ -27,7 +37,7 @@ const OaStackCards: React.FC = () => {
 
       <Grid item xs={12} sm={6} data-label={"ReactWebApp"}>
         <Card variant="outlined">
-          <CardHeader
+          <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={<img alt={'react logo'} src={"/oa-assets/logo-react.svg"} height={30} />}
             title={"This Web App"}
@@ -73,7 +83,7 @@ const OaStackCards: React.FC = () => {
 
       <Grid item xs={12} sm={6} data-label={"CypressIO"}>
         <Card sx={{ position: "relative" }} variant="outlined">
-          <CardHeader
+          <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={
               <LightDarkImg
@@ -125,7 +135,7 @@ const OaStackCards: React.FC = () => {
 
       <Grid item xs={12} sm={6} data-label={"OpenAIAgent"}>
         <Card variant="outlined">
-          <CardHeader
+          <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={<LightDarkImg
               light={"/oa-assets/openai-icon-black.svg"}
@@ -174,7 +184,7 @@ const OaStackCards: React.FC = () => {
 
       <Grid item xs={12} sm={6} data-label={"DjangoAdmin"}>
         <Card variant="outlined">
-          <CardHeader
+          <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={<img alt={'django logo'} src={"/oa-assets/logo-django.svg"} height={30} />}
             title={"Backend Content Manager"}
@@ -216,7 +226,7 @@ const OaStackCards: React.FC = () => {
 
       <Grid item xs={12} sm={6} data-label={"DjangoDRF"}>
         <Card variant="outlined">
-          <CardHeader
+          <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={<img alt={'django drf logo'}  src={"/oa-assets/logo-drf.png"} height={30} />}
             title={"Backend API"}
@@ -258,7 +268,7 @@ const OaStackCards: React.FC = () => {
 
       <Grid item xs={12} sm={6} data-label={"Databuilder"}>
         <Card variant="outlined">
-          <CardHeader
+          <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={<img alt={'typescript logo'} src={"/oa-assets/logo-typescript.svg"} height={30} />}
             title={"Fake Data Generator"}
@@ -300,7 +310,7 @@ const OaStackCards: React.FC = () => {
 
       <Grid item xs={12} sm={6} data-label={"K6Tester"}>
         <Card variant="outlined">
-          <CardHeader
+          <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
             avatar={<img alt={'k6 logo'} src={"/oa-assets/k6-logo.svg"} height={30} />}
             title={"API Speed Tests"}

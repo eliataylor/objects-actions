@@ -30,9 +30,14 @@ python -m generate <command> --types=<csv_path> [options]
 
 ## Examples
 
-Generate Django backend:
+Generate Django Basic Backend (no permissions):
 ```bash
 python -m generate django --types=objects.csv --output_dir=myapp/
+```
+
+Generate Django Basic Backend (with permissions):
+```bash
+python -m generate django --types=examples/object-feilds-demo.csv --types=examples/permissions-matrix-demo.csv --output_dir=myapp/
 ```
 
 Generate TypeScript types:

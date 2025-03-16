@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ListItemAvatar, ListItemButton, ListItemText } from "@mui/material";
 import { NAVITEMS } from "../object-actions/types/types";
 import MuiIcon from "./MuiIcon";
+import { useNavDrawer } from "../NavDrawerProvider";
 
 interface ContentTypesHomeProps {
   showLine2?: boolean;
@@ -10,10 +11,12 @@ interface ContentTypesHomeProps {
 
 const ContentMenu: React.FC<ContentTypesHomeProps> = ({ showLine2 = undefined }) => {
   const location = useLocation();
+  const { navModelTypes } = useNavDrawer();
 
   return (<div id={"OAMenuListItems"}>
       {NAVITEMS.map((item) => {
-//               if (item.model_type === 'vocabulary') return null
+        const type = item.model_type || "contenttype";
+        if (navModelTypes.indexOf(type) === -1) return null;
         return (
           <ListItemButton
             key={`ContentMenu-${item.segment}`}

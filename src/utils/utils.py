@@ -60,10 +60,10 @@ def parse_relative_url(url: str, object_types):
         previous = segments[i-1] if i > 0 else ''
 
         # If the ID is already set, this segment is the verb
-        if 'verb' not in context and previous == ':id':
-            context['verb'] = segment
-        elif segment in verbstomatch and 'verb' not in context:
-            context['verb'] = segment
+        if 'verb-path' not in context and previous == ':id':
+            context['verb-path'] = segment
+        elif segment in verbstomatch and 'verb-path' not in context:
+            context['verb-path'] = segment
         elif segment.isdigit():
             if "id_index" not in context:
                 context['id_index'] = i
@@ -144,7 +144,7 @@ def build_permissions_from_csv(csv_path, object_types):
 
         # If we are capturing permissions, process the relevant data
         if capturing_permissions:
-            # Extract CRUD verb (e.g., "Read", "Create", "Update")
+            # Name column should at least include a verb ['view', 'view list', 'view profile', 'read', 'add', 'create', 'insert', 'edit', 'update', 'delete', 'remove', 'destroy', 'block']
             verb_name = row.iloc[1].strip() if pd.notna(row.iloc[1]) else ""
 
             # Extract the context (own/any)
@@ -161,11 +161,9 @@ def build_permissions_from_csv(csv_path, object_types):
                 all_roles[i] for i in range(len(all_roles)) if row.iloc[roles_start_idx + i] == 'TRUE'
             ]
 
-            if "verb" not in segments:
-                segments['verb'] = create_machine_name(verb_name)
+            segments['verb'] = create_machine_name(verb_name) # segments will include an `verb-path` prop parsed from endpoint. not currently used but could be useful downstream
 
             all_verbs[segments['verb']] = True
-
 
             permission_dict = {
                 **segments,

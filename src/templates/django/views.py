@@ -85,7 +85,7 @@ class RenderFrontendIndex(APIView):
             html_content = file.read()
 
         modified_html = html_content
-        frontend_url = settings.FRONTEND_URL
+        frontend_url = os.getenv('FRONTEND_URL', 'https://localhost.oaexample.com:3000')
 
         # Prepend the host to all relative URLs
         def prepend_host(match):

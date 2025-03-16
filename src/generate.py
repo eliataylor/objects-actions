@@ -43,7 +43,7 @@ if __name__ == "__main__":
         builder.build_chatbot_structures(types_path)
     elif command == 'django':
         builder = DjangoBuilder(output_dir)
-        builder.build_django(types_path, default_perm)
+        builder.build_django(types_path, matrix_path, default_perm)
         if os.path.exists(matrix_path):
             builder.build_permissions(matrix_path, default_perm)
     elif command == 'permissions-ts':
