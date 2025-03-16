@@ -1,14 +1,14 @@
-import { Link, Navigate } from 'react-router-dom';
-import { pathForFlow } from '../auth';
-import { AuthenticatorType, Flows } from '../lib/allauth';
-import { useAuthInfo } from '../auth/hooks';
+import { Link, Navigate } from "react-router-dom";
+import { pathForFlow } from "../auth";
+import { AuthenticatorType, Flows } from "../lib/allauth";
+import { useAuthInfo } from "../auth/hooks";
 
 const labels = {};
-labels[AuthenticatorType.TOTP] = 'Use your authenticator app';
-labels[AuthenticatorType.RECOVERY_CODES] = 'Use a recovery code';
-labels[AuthenticatorType.WEBAUTHN] = 'Use security key';
+labels[AuthenticatorType.TOTP] = "Use your authenticator app";
+labels[AuthenticatorType.RECOVERY_CODES] = "Use a recovery code";
+labels[AuthenticatorType.WEBAUTHN] = "Use security key";
 
-export default function AuthenticateFlow(props) {
+export default function AuthenticateFlow (props) {
   const authInfo = useAuthInfo();
 
   if (authInfo?.pendingFlow?.id !== Flows.MFA_AUTHENTICATE) {

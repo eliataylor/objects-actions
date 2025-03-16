@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import FormErrors from '../components/FormErrors';
-import { signUp } from '../lib/allauth';
-import { Link } from 'react-router-dom';
-import { useConfig } from '../auth';
-import ProviderList from '../socialaccount/ProviderList';
-import { Box, Button, Grid, TextField, Typography } from '@mui/material';
-import { Phone } from '@mui/icons-material';
+import React, { useState } from "react";
+import FormErrors from "../components/FormErrors";
+import { signUp } from "../lib/allauth";
+import { Link } from "react-router-dom";
+import { useConfig } from "../auth";
+import ProviderList from "../socialaccount/ProviderList";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import { Phone } from "@mui/icons-material";
 
-export default function Signup() {
-  const [email, setEmail] = useState('');
-  const [password1, setPassword1] = useState('');
-  const [password2, setPassword2] = useState('');
+export default function Signup () {
+  const [email, setEmail] = useState("");
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
   const [password2Errors, setPassword2Errors] = useState([]);
   const [response, setResponse] = useState({ fetching: false, content: null });
   const config = useConfig();
   const hasProviders = config.data.socialaccount?.providers?.length > 0;
 
-  function submit() {
+  function submit () {
     if (password2 !== password1) {
       setPassword2Errors([
-        { param: 'password2', message: 'Password does not match.' },
+        { param: "password2", message: "Password does not match." }
       ]);
       return;
     }
@@ -65,7 +65,7 @@ export default function Signup() {
       </Grid>
       <FormErrors errors={response.content?.errors} />
 
-      <Grid container direction={'column'} gap={1}>
+      <Grid container direction={"column"} gap={1}>
         <Grid item>
           <TextField
             fullWidth
@@ -102,9 +102,9 @@ export default function Signup() {
         </Grid>
 
         <Button
-          variant={'contained'}
+          variant={"contained"}
           disabled={
-            email.indexOf('@') < 1 ||
+            email.indexOf("@") < 1 ||
             password1.length === 0 ||
             password2.length === 0 ||
             response.fetching
@@ -125,11 +125,11 @@ export default function Signup() {
       <Grid mt={2}>
         <Button
           component={Link}
-          to={'/account/sms'}
+          to={"/account/sms"}
           startIcon={<Phone />}
           fullWidth
-          variant={'outlined'}
-          color={'inherit'}
+          variant={"outlined"}
+          color={"inherit"}
         >
           SMS
         </Button>

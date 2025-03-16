@@ -1,10 +1,8 @@
-import React from 'react';
-import { Box, Button, FormHelperText, Typography } from "@mui/material";
-import { Command, StyledPaper, StyledTypography } from '../components/StyledComponents';
-import EnvBuilder from '../forming/EnvBuilder';
-import SpreadsheetCards from './SpreadsheetCards';
-import { Link } from "react-router-dom";
-import { LiveHelp } from "@mui/icons-material";
+import React from "react";
+import { Box, FormHelperText, Typography } from "@mui/material";
+import { Command, StyledPaper, StyledTypography } from "../components/StyledComponents";
+import EnvBuilder from "../forming/EnvBuilder";
+import SpreadsheetCards from "./SpreadsheetCards";
 import { NeedHelp } from "./NeedHelp";
 
 const Customize: React.FC = () => {
@@ -29,10 +27,10 @@ const Customize: React.FC = () => {
       </StyledPaper>
 
       <StyledPaper>
-        <Typography variant="h6" sx={{marginBottom:2}} >
+        <Typography variant="h6" sx={{ marginBottom: 2 }}>
           2. Adjust the settings below, then click "Copy Settings"
         </Typography>
-        <EnvBuilder  displayProperties={['TYPES_PATH', 'PERMISSIONS_PATH']} />
+        <EnvBuilder displayProperties={["TYPES_PATH", "PERMISSIONS_PATH"]} />
       </StyledPaper>
 
       <StyledPaper>
@@ -48,7 +46,6 @@ const Customize: React.FC = () => {
           command="docker-compose up --build -d"
         />
       </StyledPaper>
-
 
 
       <Box sx={{ mt: 5, mb: 5, textAlign: "right" }}>

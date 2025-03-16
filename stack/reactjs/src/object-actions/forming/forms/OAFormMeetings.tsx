@@ -37,43 +37,43 @@ export const OAFormMeetings: React.FC<OAFormProps<"Meetings">> = ({ onSuccess })
   }
 
   return (
-    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
-      			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["title"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["rally"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["meeting_type"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["speakers"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["moderators"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["sponsors"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["address"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["start"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["end"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["agenda_json"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["duration"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Meetings"]["privacy"], 0, {fullWidth:true})}
-			</Grid>
+    <AlternatingList container spacing={4} p={1} justifyContent={"space-between"} wrap={"wrap"}>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["title"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["rally"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["meeting_type"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["speakers"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["moderators"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["sponsors"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["address"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["start"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["end"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["agenda_json"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["duration"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Meetings"]["privacy"], 0, { fullWidth: true })}
+      </Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
 

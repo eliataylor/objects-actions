@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import GenericForm from "../object-actions/forming/GenericForm";
 import { Box, CircularProgress, Grid, Typography } from "@mui/material";
-import { ModelName, ModelType, NAVITEMS, NavItem, TypeFieldSchema } from "../object-actions/types/types";
+import { ModelName, ModelType, NavItem, NAVITEMS, TypeFieldSchema } from "../object-actions/types/types";
 import { canDo } from "../object-actions/types/access";
 import { useLocation, useParams } from "react-router-dom";
 import ApiClient from "../config/ApiClient";
@@ -45,7 +45,7 @@ const EntityForm = () => {
         _type: navItem.type
       });
     }
-  }, [id, model, location.search]);
+  }, [id, model, navItem, location.search]);
 
   if (!navItem) {
     return <Typography variant="h6">Invalid URL pattern for {model}</Typography>;

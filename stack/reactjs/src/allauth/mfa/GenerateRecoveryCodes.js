@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import { Navigate, useLoaderData } from 'react-router-dom';
-import FormErrors from '../components/FormErrors';
-import { Button } from '@mui/material';
+import { useState } from "react";
+import { Navigate, useLoaderData } from "react-router-dom";
+import FormErrors from "../components/FormErrors";
+import { Button } from "@mui/material";
 
-import * as allauth from '../lib/allauth';
+import * as allauth from "../lib/allauth";
 
-export async function loader({ params }) {
+export async function loader ({ params }) {
   const resp = await allauth.getRecoveryCodes();
   return { recoveryCodes: resp };
 }
 
-export default function GenerateRecoveryCodes() {
+export default function GenerateRecoveryCodes () {
   const { recoveryCodes } = useLoaderData();
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     allauth
       .generateRecoveryCodes()
@@ -46,7 +46,7 @@ export default function GenerateRecoveryCodes() {
 
       <p>
         You are about to generate a new set of recovery codes for your account.
-        {hasCodes ? 'This action will invalidate your existing codes.' : ''} Are
+        {hasCodes ? "This action will invalidate your existing codes." : ""} Are
         you sure?
       </p>
 

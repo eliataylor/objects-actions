@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import FormErrors from '../components/FormErrors';
-import { mfaReauthenticate } from '../lib/allauth';
-import ReauthenticateFlow from '../account/ReauthenticateFlow';
-import { Button } from '@mui/material';
+import { useState } from "react";
+import FormErrors from "../components/FormErrors";
+import { mfaReauthenticate } from "../lib/allauth";
+import ReauthenticateFlow from "../account/ReauthenticateFlow";
+import { Button } from "@mui/material";
 
-export default function ReauthenticateCode(props) {
-  const [code, setCode] = useState('');
+export default function ReauthenticateCode (props) {
+  const [code, setCode] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     mfaReauthenticate(code)
       .then((content) => {
@@ -35,7 +35,7 @@ export default function ReauthenticateCode(props) {
 
       <div>
         <label>
-          Code:{' '}
+          Code:{" "}
           <input
             value={code}
             onChange={(e) => setCode(e.target.value)}

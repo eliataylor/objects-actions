@@ -1,6 +1,6 @@
-import React from 'react';
-import { CircularProgress, Grid, SvgIcon } from '@mui/material';
-import { ReactComponent as LOGO } from '../logo.svg';
+import React from "react";
+import { CircularProgress, Grid, SvgIcon } from "@mui/material";
+import { ReactComponent as LOGO } from "../logo.svg";
 
 interface SplashScreenProps {
   loading?: string;
@@ -9,24 +9,24 @@ interface SplashScreenProps {
 const SplashScreen: React.FC<SplashScreenProps> = ({ loading = undefined }) => {
   const toPass = {
     sx: {
-      height: 'auto!important',
+      height: "auto!important",
       filter: `drop-shadow(0 2px 2px rgba(114, 134, 71, 0.6))`,
-      fontSize: 100,
-    },
+      fontSize: 100
+    }
   };
 
   return (
     <Grid
-      id={'SplashScreen'}
+      id={"SplashScreen"}
       container
-      direction={'column'}
+      direction={"column"}
       gap={4}
-      justifyContent={'space-around'}
+      justifyContent={"space-around"}
       sx={{
-        textAlign: 'center',
-        height: '100vh',
+        textAlign: "center",
+        height: "100vh",
         maxWidth: 400,
-        margin: '0 auto',
+        margin: "0 auto"
       }}
     >
       <Grid item>{loading}</Grid>

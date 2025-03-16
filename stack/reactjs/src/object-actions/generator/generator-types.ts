@@ -34,11 +34,11 @@ export interface WorksheetListResponse {
 export type ProjectSchema = {
   id: number;
   title?: string;
-  author?: RelEntity<'Users'>;
+  author?: RelEntity<"Users">;
   created_at: string; // ISO 8601 date string
   modifiedAt: string; // ISO 8601 date string
   active: boolean;
-  collaborators: RelEntity<'Users'>[];
+  collaborators: RelEntity<"Users">[];
 };
 
 type PrivacyChoices =
@@ -51,7 +51,7 @@ type PrivacyChoices =
 
 export type SchemaVersions = {
   id: number;
-  author?: RelEntity<'Users'>;
+  author?: RelEntity<"Users">;
   created_at: string; // ISO 8601 date string
   project?: ProjectSchema;
   prompt: string;

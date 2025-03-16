@@ -9,14 +9,59 @@ import inflect
 import ast
 import re
 
+
+def normalize_headers(headers):
+    """Normalize CSV headers to lowercase and standardize format."""
+    return [h.strip().lower() for h in headers]
+
+
+def normalize_row(row, headers):
+    """Create a normalized version of a row with case-insensitive access."""
+    normalized = {}
+    for original_key in row.keys():
+        normalized_key = original_key.strip().lower()
+        normalized[normalized_key] = row[original_key]
+    return normalized
+
+
+def get_value(row, key, fallback=None):
+    """Get a value from a row using case-insensitive key matching."""
+    key = key.lower().strip()
+
+    # Direct match
+    if key in row:
+        return row[key]
+
+    # Case-insensitive match
+    for k in row:
+        if k.lower().strip() == key:
+            return row[k]
+
+    return fallback
+
+
 def find_model_details(csv_file, model_name):
     with open(csv_file, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            obj_type = row['Types'] # TODO: lighten case sensitivity
-            if obj_type == model_name:
-                if row['Field Type'].lower() == 'vocabulary':
-                    return {'model_type': 'vocabulary', 'example': row['Example']}
+            normalized_row = normalize_row(row, reader.fieldnames)
+            obj_type = get_value(normalized_row, 'types')  # Case-insensitive access
+
+            if obj_type and obj_type.lower() == model_name.lower():
+                field_type = get_value(normalized_row, 'field type', '').lower()
+                result = {}
+
+                if field_type == 'vocabulary':
+                    result['model_type'] = 'vocabulary'
+                    result['example'] = get_value(normalized_row, 'example', '')
+
+                # Add icon property if Field Label has a value
+                icon_name = get_value(normalized_row, 'default')
+                if icon_name and icon_name.strip():
+                    result['icon'] = icon_name
+
+                if result:
+                    return result
 
     return None
 
@@ -38,18 +83,19 @@ def normalize_crud_verb(crud_verb):
         if crud_verb in variations:
             return normalized_verb
 
-    # If no match is found, return the original crud_verb (optional: raise error if invalid)
+    # If no match is found, return the original crud_verb
     return crud_verb
+
 
 def parse_relative_url(url: str, object_types):
     # Remove leading/trailing slashes
     url = url.strip("/")
-    pattern = r"\[(id|[a-zA-Z_]+)\]|\{(id|[a-zA-Z_]+)\}|\:(id|[a-zA-Z_]+)" # [pid], {pid}, :pid
+    pattern = r"\[(id|[a-zA-Z_]+)\]|\{(id|[a-zA-Z_]+)\}|\:(id|[a-zA-Z_]+)"  # [pid], {pid}, :pid
     url = re.sub(pattern, ":id", url)
 
     segments = url.split("/")
 
-    context = {"context":[], "endpoint":url}
+    context = {"context": [], "endpoint": url}
 
     verbstomatch = ['view', 'read', 'add', 'create', 'insert', 'edit', 'update', 'delete', 'remove', 'destroy', 'block']
 
@@ -57,13 +103,13 @@ def parse_relative_url(url: str, object_types):
     for i in range(len(segments) - 1, -1, -1):
         segment = segments[i]
 
-        previous = segments[i-1] if i > 0 else ''
+        previous = segments[i - 1] if i > 0 else ''
 
         # If the ID is already set, this segment is the verb
-        if 'verb' not in context and previous == ':id':
-            context['verb'] = segment
-        elif segment in verbstomatch and 'verb' not in context:
-            context['verb'] = segment
+        if 'verb-path' not in context and previous == ':id':
+            context['verb-path'] = segment
+        elif segment in verbstomatch and 'verb-path' not in context:
+            context['verb-path'] = segment
         elif segment.isdigit():
             if "id_index" not in context:
                 context['id_index'] = i
@@ -86,7 +132,7 @@ def findObjectClassByPathSegment(segment: str, object_types):
 
     segment = re.sub(r'[^a-zA-Z0-9\s]', ' ', segment).strip().lower()
 
-    singular = pluralizer.plural(segment,1)
+    singular = pluralizer.plural(segment, 1)
     plural = pluralizer.plural(segment, 2)
 
     for object_type in object_types:
@@ -106,18 +152,30 @@ def findObjectClassByPathSegment(segment: str, object_types):
 
 def build_permissions_from_csv(csv_path, object_types):
     try:
+        # Read the CSV with case-insensitive headers
         df = pd.read_csv(csv_path)
+        df.columns = [col.strip().lower() for col in df.columns]
     except Exception as e:
-        logger.error(e)
+        logger.error(f"Error reading permissions CSV: {e}")
         return None
 
-    # Find the position of the "ROLES" column
-    roles_start_idx = df.columns.get_loc('ROLES')
+    # Find the position of the "roles" column (case-insensitive)
+    roles_col = next((col for col in df.columns if col.lower() == 'roles'), None)
+    if not roles_col:
+        logger.error("Unable to find 'ROLES' column in permissions CSV")
+        return None
 
-    # Find the position of the "STEPS" column
-    steps_idx = df.columns.get_loc('EXPLANATIONS')
+    roles_start_idx = df.columns.get_loc(roles_col)
 
-    # Extract the roles from row 2, between "ROLES" and "EXPLANATIONS", dynamically
+    # Find the position of the "explanations" column (case-insensitive)
+    steps_col = next((col for col in df.columns if col.lower() == 'explanations'), None)
+    if not steps_col:
+        logger.error("Unable to find 'EXPLANATIONS' column in permissions CSV")
+        return None
+
+    steps_idx = df.columns.get_loc(steps_col)
+
+    # Extract the roles from row 0, between "ROLES" and "EXPLANATIONS"
     all_roles = df.iloc[0, roles_start_idx:steps_idx].dropna().tolist()
 
     # Initialize the final permissions dictionary
@@ -129,58 +187,62 @@ def build_permissions_from_csv(csv_path, object_types):
 
     # Iterate through each object type provided in the input
     for idx, row in df.iterrows():
+        row_values = row.to_dict()
+        first_col_value = row.iloc[0]
 
-        if row.iloc[0] in object_types:
-            object_type = row.iloc[0]
+        # Check if this row defines an object type (case insensitive)
+        matching_object_type = None
+        if first_col_value is not None and isinstance(first_col_value, str):
+            for ot in object_types:
+                if ot.lower() == first_col_value.lower():
+                    matching_object_type = ot
+                    break
+
+        if matching_object_type:
+            object_type = matching_object_type
             print(f"Processing object type: {object_type}")
+            capturing_permissions = True
+            continue  # Skip the object type row itself
 
         if object_type is False:
             continue
 
-        # If the row contains the object type, we start capturing permissions
-        if row.iloc[0] == object_type:
-            capturing_permissions = True
-            continue  # Skip the object type row itself
-
         # If we are capturing permissions, process the relevant data
         if capturing_permissions:
-            # Extract CRUD verb (e.g., "Read", "Create", "Update")
+            # Get values using case-insensitive column access
             verb_name = row.iloc[1].strip() if pd.notna(row.iloc[1]) else ""
-
-            # Extract the context (own/any)
             ownership = row.iloc[2].strip() if pd.notna(row.iloc[2]) else ""
 
             # Extract the endpoint from the "EXPLANATIONS" column
-            endpoint = row.iloc[steps_idx-1] if pd.notna(row.iloc[steps_idx-1]) else f"/{object_type}"
+            endpoint_idx = steps_idx - 1  # Column before explanations
+            endpoint = row.iloc[endpoint_idx] if pd.notna(row.iloc[endpoint_idx]) else f"/{object_type}"
             helpText = row.iloc[steps_idx] if pd.notna(row.iloc[steps_idx]) else ""
 
             segments = parse_relative_url(endpoint, object_types)
 
-            # Identify roles with "TRUE" permissions
-            allowed_roles = [
-                all_roles[i] for i in range(len(all_roles)) if row.iloc[roles_start_idx + i] == 'TRUE'
-            ]
+            # Identify roles with "TRUE" permissions (case-insensitive)
+            allowed_roles = []
+            for i in range(len(all_roles)):
+                col_value = row.iloc[roles_start_idx + i]
+                if pd.notna(col_value) and str(col_value).upper() == 'TRUE':
+                    allowed_roles.append(all_roles[i])
 
-            if "verb" not in segments:
-                segments['verb'] = create_machine_name(verb_name)
-
+            segments['verb'] = create_machine_name(verb_name)
             all_verbs[segments['verb']] = True
-
 
             permission_dict = {
                 **segments,
                 "ownership": ownership,
                 "roles": allowed_roles,
             }
+
             if helpText:
                 permission_dict["help"] = helpText
 
             if permission_dict['verb'] is not None and permission_dict['verb'] != '':
                 permissions.append(permission_dict)
-            else:
-                pass
 
-    return {'all_roles': all_roles, 'all_verbs': all_verbs, 'permissions':permissions}
+    return {'all_roles': all_roles, 'all_verbs': list(all_verbs.keys()), 'permissions': permissions}
 
 
 def build_types_from_csv(csv_file):
@@ -191,54 +253,76 @@ def build_types_from_csv(csv_file):
     with open(csv_file, 'r') as csvfile:
         # Create a CSV reader object
         reader = csv.DictReader(csvfile)
+        # Normalize header names
+        headers = normalize_headers(reader.fieldnames)
 
         cur_type = None
         # Iterate over each row in the CSV
         for row in reader:
+            # Normalize the row for case-insensitive access
+            norm_row = normalize_row(row, headers)
+
             # Extract the type from the row
-            obj_type = row['Types']
+            obj_type = get_value(norm_row, 'types')
+
             if obj_type is not None and obj_type != '':
-                if row['Field Name'].lower() == 'user':
+                if get_value(norm_row, 'field name', '').lower() == 'user' or get_value(norm_row, 'field name', '').lower() == 'users':
                     logger.info(f'making {obj_type} the internal auth user model')
-                    cur_type = 'User'
+                    cur_type = 'Users'
                 else:
                     cur_type = obj_type
 
-            if row['Field Type'] is None or row['Field Type'] == '' or row['Field Label'] is None or row['Field Label'] == '':
+            field_type = get_value(norm_row, 'field type')
+            field_label = get_value(norm_row, 'field label')
+
+            if field_type is None or field_type == '' or field_label is None or field_label == '':
                 continue
 
-            if row['Field Name'] is None or row['Field Name'] == '':
-                row['Field Name'] = create_machine_name(row['Field Label'], True)
+            field_name = get_value(norm_row, 'field name')
+            if field_name is None or field_name == '':
+                field_name = create_machine_name(field_label, True)
             else:
-                row['Field Name'] = create_machine_name(row['Field Name'], True)
+                field_name = create_machine_name(field_name, True)
 
             if cur_type is None:
                 continue
 
-            row['Default'] = row['Default'].strip()
+            # Create a normalized row for output
+            output_row = {
+                'Field Type': field_type,
+                'Field Label': field_label,
+                'Field Name': field_name,
+                'Default': get_value(norm_row, 'default', '').strip(),
+                'Relationship': get_value(norm_row, 'relationship', ''),
+                'Example': get_value(norm_row, 'example', '')
+            }
 
-            # Remove 'Type' from the row since we don't need it in the JSON object
-            del row['Types']
-
-            if row['HowMany'] == '' or row['HowMany'] == '1':
-                row['HowMany'] = 1
-            elif row['HowMany'].strip() == 'unlimited':
-                row['HowMany'] = float('inf')
+            # Process HowMany
+            how_many = get_value(norm_row, 'howmany', '')
+            if how_many == '' or how_many == '1':
+                output_row['HowMany'] = 1
+            elif how_many.strip() == 'unlimited':
+                output_row['HowMany'] = float('inf')
             else:
-                row['HowMany'] = int(row['HowMany'])
+                try:
+                    output_row['HowMany'] = int(how_many)
+                except ValueError:
+                    output_row['HowMany'] = 1
 
-            if row['Required'].isdigit():
-                row['Required'] = True if int(row['Required']) > 0 else False
+            # Process Required
+            required = get_value(norm_row, 'required', '')
+            if required and str(required).isdigit():
+                output_row['Required'] = True if int(required) > 0 else False
             else:
-                row['Required'] = False
+                output_row['Required'] = False if required in ('', 'False', 'false', '0') else bool(required)
 
             # Check if the type already exists in the JSON object
             if cur_type in json_data:
                 # Append the row to the existing array
-                json_data[cur_type].append(row)
+                json_data[cur_type].append(output_row)
             else:
                 # Create a new array with the row as its first element
-                json_data[cur_type] = [row]
+                json_data[cur_type] = [output_row]
 
     return json_data
 
@@ -246,18 +330,38 @@ def build_types_from_csv(csv_file):
 def find_object_by_key_value(fields, prop, value):
     """
     Finds the first object in the list with the specified key-value pair.
+    Uses case-insensitive matching for the key and value.
 
     Parameters:
-    objects (list): A list of dictionaries.
-    key (str): The key to search for.
+    fields (list): A list of dictionaries.
+    prop (str): The key to search for.
     value: The value to match.
 
     Returns:
     dict: The first dictionary that matches the key-value pair, or None if no match is found.
     """
+    prop_lower = prop.lower()
+    if isinstance(value, str):
+        value_lower = value.lower()
+    else:
+        value_lower = value
+
     for obj in fields:
+        # Check for direct match (original case)
         if prop in obj and obj[prop] == value:
             return obj
+
+        # Check for case-insensitive key match
+        for key in obj:
+            if key.lower() == prop_lower:
+                # Check for case-insensitive value match if the value is a string
+                obj_value = obj[key]
+                if isinstance(obj_value, str) and obj_value.lower() == value_lower:
+                    return obj
+                # For non-string values, just do a direct comparison
+                elif obj_value == value:
+                    return obj
+
     return None
 
 
@@ -278,7 +382,6 @@ def inject_generated_code(output_file_path, code, prefix):
     if output_file_path == "" or os.path.isfile(output_file_path) is False:
         html = start_delim + "\n" + code + "\n" + end_delim
     else:
-
         with open(output_file_path, 'r') as file:
             html = file.read().strip()
 
@@ -332,11 +435,13 @@ def addArgs(target, new_args):
 
 
 def infer_field_datatype(field_type):
+    field_type = field_type.lower().strip()
+
     if field_type == 'user_account':
         return 'RelEntity'
     elif field_type == 'user_profile':
         return "RelEntity"
-    elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
+    elif field_type == "vocabulary_reference" or field_type == "type_reference":
         return "RelEntity"
     elif field_type == "text" or field_type == "string":
         return "string"
@@ -397,6 +502,7 @@ def infer_field_datatype(field_type):
 def capitalize(string):
     return string[:1].upper() + string[1:] if string else string
 
+
 def create_object_name(label):
     return re.sub(r'[^a-zA-Z0-9_\s]', '', label).replace(' ', '')
 
@@ -411,25 +517,36 @@ def create_machine_name(label, lower=True, punctuation='_'):
         machine_name = machine_name.lower()
     return machine_name
 
+
 def create_options(field_js):
-    list = field_js['example'].strip()
-    if list == '':
+    list_str = field_js['example'].strip()
+    if list_str == '':
         logger.warning(
             f"Field {field_js['machine']} has no list of structure of choices. Please list them as a flat json array.")
+        return field_js
+
     try:
-        if list[0] == '[':
-            list = ast.literal_eval(list)
+        if list_str[0] == '[':
+            list_values = ast.literal_eval(list_str)
         else:
-            list = list.split(',')
+            list_values = list_str.split(',')
+
         field_js['options'] = []
-        for name in list:
-            name = re.sub("[\"\']", "", name)
-            if name is None or name == '':
-                continue
-            field_js['options'].append({
-                "label": capitalize(name),
-                "id": create_machine_name(name, True)
-            })
+        for name in list_values:
+            if isinstance(name, str):
+                name = re.sub("[\"\']", "", name.strip())
+                if name is None or name == '':
+                    continue
+                field_js['options'].append({
+                    "label": capitalize(name),
+                    "id": create_machine_name(name, True)
+                })
+            else:
+                # Handle non-string values
+                field_js['options'].append({
+                    "label": str(name),
+                    "id": create_machine_name(str(name), True)
+                })
     except Exception as e:
         logger.warning(
             f"{field_js['machine']} has invalid structure of choices: {field_js['example']}  \nPlease list them as a flat json array. {str(e)}")
@@ -439,29 +556,44 @@ def create_options(field_js):
 
 def find_search_fields(json_data, class_name):
     search_fields = []
-    if class_name == "Users":
+
+    # Handle Users model specially
+    if class_name.lower() == "users":
         search_fields.append('first_name')
         search_fields.append('last_name')
-    elif find_object_by_key_value(json_data[class_name], "Field Name", "title") is not None:
+        return search_fields
+
+    # Check for common searchable fields
+    title_field = find_object_by_key_value(json_data[class_name], "Field Name", "title")
+    name_field = find_object_by_key_value(json_data[class_name], "Field Name", "name")
+
+    if title_field is not None:
         search_fields.append('title')
-    elif find_object_by_key_value(json_data[class_name], "Field Name", "name") is not None:
+    elif name_field is not None:
         search_fields.append('name')
     else:
+        # Check relationship fields
         for obj in json_data[class_name]:
-            if obj['Field Type'] in ["vocabulary reference", "type reference", "user profile"]:
+            field_type = get_value(obj, 'field type', '').lower()
 
-                if obj['Relationship'] is None or obj['Relationship'] not in json_data:
+            if field_type in ["vocabulary reference", "type reference", "user profile"]:
+                relationship = get_value(obj, 'relationship')
+
+                if not relationship or relationship not in json_data:
                     logger.critical(f"MISSING {class_name} RELATIONSHIP: {json.dumps(obj)}")
                     sys.exit()
 
-                rel_model = json_data[obj['Relationship']]
-                if find_object_by_key_value(rel_model, "Field Name", "title") is not None:
-                    search_fields.append(f"{obj['Field Name']}__title")
-                elif find_object_by_key_value(rel_model, "Field Name", "name") is not None:
-                    search_fields.append(f"{obj['Field Name']}__name")
+                rel_model = json_data[relationship]
+                field_name = get_value(obj, 'field name')
 
-            elif obj['Field Type'] == "user_account":
-                search_fields.append(f"{obj['Field Name']}__first_name")
-                search_fields.append(f"{obj['Field Name']}__last_name")
+                if find_object_by_key_value(rel_model, "Field Name", "title") is not None:
+                    search_fields.append(f"{field_name}__title")
+                elif find_object_by_key_value(rel_model, "Field Name", "name") is not None:
+                    search_fields.append(f"{field_name}__name")
+
+            elif field_type == "user_account":
+                field_name = get_value(obj, 'field name')
+                search_fields.append(f"{field_name}__first_name")
+                search_fields.append(f"{field_name}__last_name")
 
     return search_fields

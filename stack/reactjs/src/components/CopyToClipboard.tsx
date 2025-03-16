@@ -1,6 +1,6 @@
-import React from 'react';
-import { IconButton } from '@mui/material';
-import { useSnackbar } from 'notistack';
+import React from "react";
+import { IconButton } from "@mui/material";
+import { useSnackbar } from "notistack";
 
 interface CopyToClipboardProps {
   textToCopy: string;
@@ -10,28 +10,28 @@ interface CopyToClipboardProps {
 }
 
 const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
-  textToCopy,
-  children,
-  copiedMessage = 'Copied to clipboard',
-  onCopied
-}) => {
+                                                           textToCopy,
+                                                           children,
+                                                           copiedMessage = "Copied to clipboard",
+                                                           onCopied
+                                                         }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleCopy = async () => {
     if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(textToCopy);
-        enqueueSnackbar(copiedMessage, { variant: 'success' });
+        enqueueSnackbar(copiedMessage, { variant: "success" });
         if (onCopied) {
-          onCopied()
+          onCopied();
         }
       } catch (error) {
-        console.error('Failed to copy text: ', error);
-        enqueueSnackbar('Failed to copy text', { variant: 'error' });
+        console.error("Failed to copy text: ", error);
+        enqueueSnackbar("Failed to copy text", { variant: "error" });
       }
     } else {
       alert(
-        'Clipboard API is not available. Please copy manually: ' + textToCopy,
+        "Clipboard API is not available. Please copy manually: " + textToCopy
       );
     }
   };

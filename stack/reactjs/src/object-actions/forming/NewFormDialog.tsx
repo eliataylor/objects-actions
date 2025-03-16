@@ -9,13 +9,13 @@ import * as MyForms from "./forms";
 import { MyFormsKeys } from "./forms";
 import PermissionError from "../../components/PermissionError";
 
-interface NewFormDialog<T extends ModelName> {
+interface NewFormDialogProps<T extends ModelName> {
   entity: ModelType<T>;
   onClose: () => void;
   onCreated: (newentity: ModelType<T>) => void;
 }
 
-const NewFormDialog = <T extends ModelName>({ entity, onClose, onCreated }: NewFormDialog<T>) => {
+const NewFormDialog = <T extends ModelName>({ entity, onClose, onCreated }: NewFormDialogProps<T>) => {
   const me = useAuth()?.data?.user;
 
   const onSuccess = (entity: ModelType<T>) => {

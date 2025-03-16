@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import FormErrors from '../components/FormErrors';
-import { providerSignup } from '../lib/allauth';
-import { Box, Button } from '@mui/material';
+import { useState } from "react";
+import FormErrors from "../components/FormErrors";
+import { providerSignup } from "../lib/allauth";
+import { Box, Button } from "@mui/material";
 
-export default function ProviderSignup() {
-  const [email, setEmail] = useState('');
+export default function ProviderSignup () {
+  const [email, setEmail] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     providerSignup({ email })
       .then((content) => {
@@ -35,7 +35,7 @@ export default function ProviderSignup() {
 
       <div style={{ marginBottom: 10 }}>
         <label>
-          Email{' '}
+          Email{" "}
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -46,7 +46,7 @@ export default function ProviderSignup() {
         <FormErrors param="email" errors={response.content?.errors} />
       </div>
       <Button
-        variant={'contained'}
+        variant={"contained"}
         disabled={response.fetching}
         onClick={() => submit()}
       >

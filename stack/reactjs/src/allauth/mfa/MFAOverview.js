@@ -1,25 +1,25 @@
-import { Link, useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData } from "react-router-dom";
 
-import * as allauth from '../lib/allauth';
-import { Box } from '@mui/material';
+import * as allauth from "../lib/allauth";
+import { Box } from "@mui/material";
 
-export async function loader({ params }) {
+export async function loader ({ params }) {
   const resp = await allauth.getAuthenticators();
   return { authenticators: resp.data };
 }
 
-export default function MFAOverview(props) {
+export default function MFAOverview (props) {
   const { authenticators } = useLoaderData();
   const totp = authenticators.find(
-    (authenticator) => authenticator.type === allauth.AuthenticatorType.TOTP,
+    (authenticator) => authenticator.type === allauth.AuthenticatorType.TOTP
   );
   const webauthn = authenticators.filter(
     (authenticator) =>
-      authenticator.type === allauth.AuthenticatorType.WEBAUTHN,
+      authenticator.type === allauth.AuthenticatorType.WEBAUTHN
   );
   const recoveryCodes = authenticators.find(
     (authenticator) =>
-      authenticator.type === allauth.AuthenticatorType.RECOVERY_CODES,
+      authenticator.type === allauth.AuthenticatorType.RECOVERY_CODES
   );
   return (
     <Box p={1}>
@@ -63,7 +63,7 @@ export default function MFAOverview(props) {
       ) : (
         <>
           <p>
-            There are {recoveryCodes.unused_code_count} out of{' '}
+            There are {recoveryCodes.unused_code_count} out of{" "}
             {recoveryCodes.total_code_count} recovery codes available.
           </p>
           <Link to="/account/2fa/recovery-codes">View</Link>

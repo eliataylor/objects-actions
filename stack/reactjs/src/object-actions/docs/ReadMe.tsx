@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Button, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
-import { CheckBoxOutlined, CheckCircleOutline, LiveHelp } from "@mui/icons-material";
+import { Box, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { CheckBoxOutlined, CheckCircleOutline } from "@mui/icons-material";
 import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
 import { TightButton } from "../../theme/StyledFields";
 import Avatar from "@mui/material/Avatar";
@@ -11,8 +11,6 @@ import { Link } from "react-router-dom";
 import { NeedHelp } from "./NeedHelp";
 
 const ReadMe: React.FC = () => {
-  const mediaHeight = 250;
-
   return (
     <>
       <Box>
@@ -38,7 +36,7 @@ const ReadMe: React.FC = () => {
             <Grid item>
               <a
                 href={"https://github.com/eliataylor/objects-actions"}
-                target={"_blank"}
+                target="_blank" rel="noreferrer"
               >
                 <TightButton
                   size={"small"}
@@ -138,6 +136,7 @@ const ReadMe: React.FC = () => {
             <ListItem sx={{ p: 0, m: 0 }}>
               <Avatar style={{ marginRight: 8 }}>
                 <img
+                  alt={'google sheets logo'}
                   src={"/oa-assets/Google_Sheets_2020_Logo.svg"}
                   height={25}
                 />

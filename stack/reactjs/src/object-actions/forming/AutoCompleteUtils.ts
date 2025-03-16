@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { ModelName, ModelType, RelEntity, NavItem, NAVITEMS, ApiListResponse } from "../types/types";
+import { ApiListResponse, ModelName, ModelType, NavItem, NAVITEMS, RelEntity } from "../types/types";
 
 export interface AcOption {
   label: string;
@@ -58,10 +58,10 @@ export function createBaseEntity<T extends ModelName>(type: T) {
 
 // Custom hook for handling autocomplete state and API calls
 export function useAutocomplete<T extends ModelName>({
-  type,
-  search_fields,
-  image_field,
-}: BaseAcFieldProps<T>) {
+                                                       type,
+                                                       search_fields,
+                                                       image_field
+                                                     }: BaseAcFieldProps<T>) {
   const [options, setOptions] = useState<AcOption[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,7 +72,7 @@ export function useAutocomplete<T extends ModelName>({
   const fetchOptions = async (search: string) => {
     setLoading(true);
     try {
-      const response:HttpResponse<ApiListResponse<T>>  = await ApiClient.get(`${basePath}?search=${search}`);
+      const response: HttpResponse<ApiListResponse<T>> = await ApiClient.get(`${basePath}?search=${search}`);
       if (response.success && response.data?.results) {
         const options = Api2Options(response.data.results, search_fields, image_field);
         setOptions(options);
@@ -87,16 +87,27 @@ export function useAutocomplete<T extends ModelName>({
 
   const debounceFetch = useMemo(
     () => debounce((search: string) => fetchOptions(search), 300),
-    [fetchOptions]
+    // Remove the dependency on fetchOptions which changes on every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [basePath]
   );
 
   useEffect(() => {
+    // Only fetch if inputValue is not empty
     if (inputValue.trim() !== "") {
       debounceFetch(inputValue);
     } else {
+      // Clear options when input is empty without making an API call
       setOptions([]);
     }
-  }, [inputValue, debounceFetch]);
+    // This effect should only run when inputValue changes, not on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue]);
+
+  // Wrapper function to update inputValue
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+  };
 
   const setNestedEntity = () => {
     setNestedForm(createBaseEntity(type));
@@ -107,7 +118,7 @@ export function useAutocomplete<T extends ModelName>({
     inputValue,
     loading,
     nestedForm,
-    setInputValue,
+    setInputValue: handleInputChange,
     setNestedForm,
     setNestedEntity,
     setOptions

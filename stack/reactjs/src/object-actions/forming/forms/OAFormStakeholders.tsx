@@ -37,13 +37,13 @@ export const OAFormStakeholders: React.FC<OAFormProps<"Stakeholders">> = ({ onSu
   }
 
   return (
-    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
-      			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Stakeholders"]["name"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Stakeholders"]["image"], 0, {fullWidth:true})}
-			</Grid>
+    <AlternatingList container spacing={4} p={1} justifyContent={"space-between"} wrap={"wrap"}>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Stakeholders"]["name"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Stakeholders"]["image"], 0, { fullWidth: true })}
+      </Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
 

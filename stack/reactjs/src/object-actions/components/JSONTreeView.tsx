@@ -1,5 +1,5 @@
 import React from "react";
-import { SimpleTreeView, TreeItem } from "@mui/x-tree-view"
+import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 
 interface JSONTreeViewProps {
   data: Record<string, any>;

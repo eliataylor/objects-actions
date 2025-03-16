@@ -127,10 +127,12 @@ class TypesBuilder:
                        }
 
             model_type = find_model_details(self.field_csv, class_name)
-            if model_type is not None and  "model_type" in model_type:
-                navItem['model_type'] = model_type['model_type']
-                # if "example" in model_type: # todo make options list!
-                # navItem.examples = model_type.model_type
+            if model_type is not None:
+                if "model_type" in model_type:
+                    navItem['model_type'] = model_type['model_type']
+                if "icon" in model_type:
+                    navItem['icon'] = model_type['icon']
+
 
             urlItems.append(navItem)
 

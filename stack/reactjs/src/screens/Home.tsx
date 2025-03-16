@@ -34,7 +34,7 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
         <Grid sx={{ width: 300, margin: "auto", marginTop: 3, marginBottom: 3 }}>
           <Logo height={60} />
         </Grid>
-        <Typography variant="h2" component={Link} to={"/content"} style={{textDecorationThickness:1}} >
+        <Typography variant="h2" component={Link} to={"/content"} style={{ textDecorationThickness: 1 }}>
           Your Content
         </Typography>
       </Grid>
@@ -47,7 +47,8 @@ const Home: React.FC<HomeProps> = ({ loading = false }) => {
         </Grid>
       )}
 
-      <Typography variant="h2" component={"a"} style={{textDecorationThickness:1}} href={"https://github.com/eliataylor/objects-actions"} target={"_blank"}>
+      <Typography variant="h2" component={"a"} style={{ textDecorationThickness: 1 }} href={"https://github.com/eliataylor/objects-actions"}
+                  target="_blank" rel="noreferrer">
         Your CodeBase
       </Typography>
 

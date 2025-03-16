@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import * as allauth from '../lib/allauth';
-import { Navigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { useState } from "react";
+import * as allauth from "../lib/allauth";
+import { Navigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
-export default function DeactivateTOTP(props) {
+export default function DeactivateTOTP (props) {
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     allauth
       .deactivateTOTPAuthenticator()

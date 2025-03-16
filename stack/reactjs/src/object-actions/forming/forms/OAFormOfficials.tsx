@@ -37,25 +37,25 @@ export const OAFormOfficials: React.FC<OAFormProps<"Officials">> = ({ onSuccess 
   }
 
   return (
-    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
-      			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["title"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["office_phone"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["office_email"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["social_links"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["party_affiliation"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Officials"]["city"], 0, {fullWidth:true})}
-			</Grid>
+    <AlternatingList container spacing={4} p={1} justifyContent={"space-between"} wrap={"wrap"}>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Officials"]["title"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Officials"]["office_phone"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Officials"]["office_email"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Officials"]["social_links"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Officials"]["party_affiliation"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Officials"]["city"], 0, { fullWidth: true })}
+      </Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
 

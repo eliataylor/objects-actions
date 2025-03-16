@@ -1,8 +1,8 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import { ModelName, ModelType, RelEntity } from "../types/types";
-import { BaseAcFieldProps, AcOption, useAutocomplete, Api2Options } from "./AutoCompleteUtils";
-import { renderOption, renderInputAdornments } from "./AutoCompleteElements";
+import { AcOption, Api2Options, BaseAcFieldProps, useAutocomplete } from "./AutoCompleteUtils";
+import { renderInputAdornments, renderOption } from "./AutoCompleteElements";
 import NewFormDialog from "./NewFormDialog";
 
 interface SingleAcFieldProps<T extends ModelName> extends BaseAcFieldProps<T> {
@@ -11,14 +11,14 @@ interface SingleAcFieldProps<T extends ModelName> extends BaseAcFieldProps<T> {
 }
 
 export default function AutocompleteField<T extends ModelName>({
-  type,
-  search_fields,
-  image_field,
-  field_name,
-  onSelect,
-  selected,
-  field_label = "Search"
-}: SingleAcFieldProps<T>) {
+                                                                 type,
+                                                                 search_fields,
+                                                                 image_field,
+                                                                 field_name,
+                                                                 onSelect,
+                                                                 selected,
+                                                                 field_label = "Search"
+                                                               }: SingleAcFieldProps<T>) {
   const {
     options,
     inputValue,
@@ -32,10 +32,10 @@ export default function AutocompleteField<T extends ModelName>({
   const [selectedOption, setSelectedOption] = useState<AcOption | null>(
     selected
       ? {
-          value: selected.id,
-          label: selected.str,
-          image: selected.img
-        }
+        value: selected.id,
+        label: selected.str,
+        image: selected.img
+      }
       : null
   );
 

@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import * as allauth from '../lib/allauth';
-import { Navigate, useLoaderData } from 'react-router-dom';
-import FormErrors from '../components/FormErrors';
-import { Button, TextField } from '@mui/material';
+import { useState } from "react";
+import * as allauth from "../lib/allauth";
+import { Navigate, useLoaderData } from "react-router-dom";
+import FormErrors from "../components/FormErrors";
+import { Button, TextField } from "@mui/material";
 
-export async function loader({ params }) {
+export async function loader ({ params }) {
   const resp = await allauth.getTOTPAuthenticator();
   return { totp: resp };
 }
 
-export default function ActivateTOTP(props) {
+export default function ActivateTOTP (props) {
   const { totp } = useLoaderData();
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     allauth
       .activateTOTPAuthenticator(code)

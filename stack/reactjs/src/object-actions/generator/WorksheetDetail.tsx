@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
-import { Alert, Box, Button, CircularProgress, Fab, LinearProgress } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Fab } from "@mui/material";
 import WorksheetHeader from "./WorksheetHeader";
 import SchemaContent from "./SchemaContent";
-import { AiSchemaResponse, StreamChunk, SchemaVersions } from "./generator-types";
+import { AiSchemaResponse, SchemaVersions, StreamChunk } from "./generator-types";
 import { Link, useNavigate } from "react-router-dom";
 import ApiClient from "../../config/ApiClient";
 import ReactMarkdown from "react-markdown";
@@ -150,13 +150,13 @@ const WorksheetDetail: React.FC<WorksheetDetailProps> = ({ worksheet }) => {
       </ReactMarkdown>}
 
       {(loading || loadingSchema) &&
-       <Fab
-            color="primary"
-            size="small"
-            sx={{ position: "fixed", backgroundColor:'transparent', right: 20, bottom: 20 }}
-          >
-            <CircularProgress color={!loading ? 'primary' : 'secondary'} />
-          </Fab>
+        <Fab
+          color="primary"
+          size="small"
+          sx={{ position: "fixed", backgroundColor: "transparent", right: 20, bottom: 20 }}
+        >
+          <CircularProgress color={!loading ? "primary" : "secondary"} />
+        </Fab>
       }
 
       {schema?.content_types?.map((w) =>

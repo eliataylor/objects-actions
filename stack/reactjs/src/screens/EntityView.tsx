@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import { ModelName, ModelType, NavItem, NAVITEMS } from '../object-actions/types/types';
-import EntityCard from '../object-actions/components/EntityCard';
-import ApiClient from '../config/ApiClient';
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { ModelName, ModelType, NavItem, NAVITEMS } from "../object-actions/types/types";
+import EntityCard from "../object-actions/components/EntityCard";
+import ApiClient from "../config/ApiClient";
 
 const EntityView = () => {
   const location = useLocation();
@@ -20,7 +20,7 @@ const EntityView = () => {
     if (hasUrl) {
       setModelType(hasUrl.type);
       const fetchData = async () => {
-        let apiUrl = '/api';
+        let apiUrl = "/api";
         if (id && parseInt(id) > 0) {
           apiUrl += `${location.pathname}${location.search}`;
         } else {
@@ -35,7 +35,7 @@ const EntityView = () => {
             updateData({ data: response.data as ModelType<ModelName> });
           }
         } catch (error) {
-          updateData(error instanceof Error ? error.message : 'Unknown error occurred');
+          updateData(error instanceof Error ? error.message : "Unknown error occurred");
         }
       };
 
@@ -47,7 +47,7 @@ const EntityView = () => {
     return <div>Loading...</div>;
   }
 
-  if (typeof entityData === 'string') {
+  if (typeof entityData === "string") {
     return <div>{entityData}</div>;
   }
 

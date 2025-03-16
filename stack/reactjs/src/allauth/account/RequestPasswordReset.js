@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import FormErrors from '../components/FormErrors';
-import { requestPasswordReset } from '../lib/allauth';
-import { Link } from 'react-router-dom';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { useState } from "react";
+import FormErrors from "../components/FormErrors";
+import { requestPasswordReset } from "../lib/allauth";
+import { Link } from "react-router-dom";
+import { Box, Button, TextField, Typography } from "@mui/material";
 
-export default function RequestPasswordReset() {
-  const [email, setEmail] = useState('');
+export default function RequestPasswordReset () {
+  const [email, setEmail] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     requestPasswordReset(email)
       .then((content) => {

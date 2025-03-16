@@ -37,16 +37,16 @@ export const OAFormTopics: React.FC<OAFormProps<"Topics">> = ({ onSuccess }) => 
   }
 
   return (
-    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
-      			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Topics"]["name"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Topics"]["icon"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Topics"]["photo"], 0, {fullWidth:true})}
-			</Grid>
+    <AlternatingList container spacing={4} p={1} justifyContent={"space-between"} wrap={"wrap"}>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Topics"]["name"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Topics"]["icon"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Topics"]["photo"], 0, { fullWidth: true })}
+      </Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
 

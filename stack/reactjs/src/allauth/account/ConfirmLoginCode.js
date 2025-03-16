@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import FormErrors from '../components/FormErrors';
-import { confirmLoginCode, Flows } from '../lib/allauth';
-import { Navigate } from 'react-router-dom';
-import { Box, Button, TextField, Typography } from '@mui/material';
-import { useAuthStatus } from '../auth';
+import { useState } from "react";
+import FormErrors from "../components/FormErrors";
+import { confirmLoginCode, Flows } from "../lib/allauth";
+import { Navigate } from "react-router-dom";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { useAuthStatus } from "../auth";
 
-export default function ConfirmLoginCode() {
+export default function ConfirmLoginCode () {
   const [, authInfo] = useAuthStatus();
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     confirmLoginCode(code)
       .then((content) => {

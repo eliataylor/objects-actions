@@ -1,6 +1,6 @@
-import ReauthenticateCode from './ReauthenticateCode';
+import ReauthenticateCode from "./ReauthenticateCode";
 
-export default function ReauthenticateRecoveryCodes(props) {
+export default function ReauthenticateRecoveryCodes (props) {
   return (
     <ReauthenticateCode>
       <p>Please enter a recovery code:</p>

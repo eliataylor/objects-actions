@@ -46,12 +46,13 @@ const SpreadsheetCards: React.FC = () => {
                 href={
                   "https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?gid=845262387#gid=845262387"
                 }
-                target={"_blank"}
+                target="_blank" rel="noreferrer"
               >
                 <TightButton
                   size={"small"}
                   startIcon={
                     <img
+                      alt={'google sheets logo'}
                       src={"/oa-assets/Google_Sheets_2020_Logo.svg"}
                       height={20}
                     />
@@ -63,13 +64,13 @@ const SpreadsheetCards: React.FC = () => {
 
               <a
                 href="https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?gid=1461137270#gid=1461137270"
-                target="_blank"
-                rel="noopener noreferrer"
+                target="_blank" rel="noreferrer"
               >
                 <TightButton
                   size={"small"}
                   startIcon={
                     <img
+                      alt={'google sheets logo'}
                       src={"/oa-assets/Google_Sheets_2020_Logo.svg"}
                       height={20}
                     />
@@ -108,12 +109,13 @@ const SpreadsheetCards: React.FC = () => {
                 href={
                   "https://docs.google.com/spreadsheets/d/14Ej7lu4g3i85BWJdHbi4JK2jM2xS5uDSgfzm3rIhx4o/edit?gid=1619189607#gid=1619189607"
                 }
-                target={"_blank"}
+                target="_blank" rel="noreferrer"
               >
                 <TightButton
                   size={"small"}
                   startIcon={
                     <img
+                      alt={'google sheets logo'}
                       src={"/oa-assets/Google_Sheets_2020_Logo.svg"}
                       height={20}
                     />
@@ -125,13 +127,13 @@ const SpreadsheetCards: React.FC = () => {
 
               <a
                 href="https://docs.google.com/spreadsheets/d/1Jm15OeR6mS6vbJd7atHErOwBgq2SwKAagb4MH0D1aIw/edit?gid=12324120#gid=12324120"
-                target="_blank"
-                rel="noopener noreferrer"
+                target="_blank" rel="noreferrer"
               >
                 <TightButton
                   size={"small"}
                   startIcon={
                     <img
+                      alt={'google sheets logo'}
                       src={"/oa-assets/Google_Sheets_2020_Logo.svg"}
                       height={20}
                     />
@@ -148,7 +150,7 @@ const SpreadsheetCards: React.FC = () => {
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogContent sx={{ position: "relative", p: 0 }}>
           <IconButton
-            size={'small'}
+            size={"small"}
             onClick={handleClose}
             color="primary"
             sx={{

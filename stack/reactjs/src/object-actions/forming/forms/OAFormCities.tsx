@@ -37,58 +37,58 @@ export const OAFormCities: React.FC<OAFormProps<"Cities">> = ({ onSuccess }) => 
   }
 
   return (
-    <AlternatingList container spacing={4} p={1} justifyContent={'space-between'} wrap={"wrap"} >
-      			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["name"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["description"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["postal_address"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["picture"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["cover_photo"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["sponsors"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["website"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["population"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["altitude"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["county"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["state_id"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["officials"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["land_area"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["water_area"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["total_area"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["density"], 0, {fullWidth:true})}
-			</Grid>
-			<Grid item xs={12} >
-				{renderField(TypeFieldSchema["Cities"]["timezone"], 0, {fullWidth:true})}
-			</Grid>
+    <AlternatingList container spacing={4} p={1} justifyContent={"space-between"} wrap={"wrap"}>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["name"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["description"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["postal_address"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["picture"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["cover_photo"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["sponsors"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["website"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["population"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["altitude"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["county"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["state_id"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["officials"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["land_area"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["water_area"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["total_area"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["density"], 0, { fullWidth: true })}
+      </Grid>
+      <Grid item xs={12}>
+        {renderField(TypeFieldSchema["Cities"]["timezone"], 0, { fullWidth: true })}
+      </Grid>
 
       {errors["general"] && <Typography variant={"body1"} color={"error"}>{errors["general"]}</Typography>}
 

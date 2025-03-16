@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { Flows, getWebAuthnRequestOptionsForReauthentication, reauthenticateUsingWebAuthn } from '../lib/allauth';
-import ReauthenticateFlow from '../account/ReauthenticateFlow';
-import { Button } from '@mui/material';
-import { get, parseRequestOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
+import { useState } from "react";
+import { Flows, getWebAuthnRequestOptionsForReauthentication, reauthenticateUsingWebAuthn } from "../lib/allauth";
+import ReauthenticateFlow from "../account/ReauthenticateFlow";
+import { Button } from "@mui/material";
+import { get, parseRequestOptionsFromJSON } from "@github/webauthn-json/browser-ponyfill";
 
-export default function ReauthenticateWebAuthn() {
+export default function ReauthenticateWebAuthn () {
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  async function submit() {
+  async function submit () {
     setResponse({ ...response, fetching: true });
     try {
       const optResp = await getWebAuthnRequestOptionsForReauthentication();

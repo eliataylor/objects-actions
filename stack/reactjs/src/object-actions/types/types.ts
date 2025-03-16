@@ -1676,7 +1676,7 @@ export const NAVITEMS: { [K in ModelName]: NavItem<K> }[ModelName][] = [
     "segment": "resources",
     "api": "/api/resources",
     "search_fields": ["title"],
-    "icon": "Description"
+    "icon": "SupportAgent"
   },
   {
     "singular": "User",

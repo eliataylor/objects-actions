@@ -69,11 +69,11 @@ const Install: React.FC = () => {
         <StyledTypography variant="subtitle2">
           All tools will be mounted locally, so you can make edits and test your changes immediately. For example, you can reskin the web app starting with your <a
           href={"https://github.com/eliataylor/objects-actions/blob/0426b1d48a5d59f0776a38a453a854a6c415a38f/stack/reactjs/src/theme/ThemeContext.js#L15"}
-          target={"_blank"}>stack/reactjs/src/theme/ThemeContext.js</a>.
+          target="_blank" rel="noreferrer">stack/reactjs/src/theme/ThemeContext.js</a>.
 
           Or you can change the default API permissions for any view starting here <a
           href={"https://github.com/eliataylor/objects-actions/blob/0fb527b9a8899cc5a5b42cf81d027b4b0a4a094f/stack/django/oaexample_app/views.py#L117"}
-          target={"_blank"}>stack/django/oaexample_app/views.py#L117</a>
+          target="_blank" rel="noreferrer">stack/django/oaexample_app/views.py#L117</a>
         </StyledTypography>
       </div>
 

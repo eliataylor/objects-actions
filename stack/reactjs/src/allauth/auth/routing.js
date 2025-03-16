@@ -1,38 +1,38 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { AuthChangeEvent, useAuthChange, useAuthStatus } from './hooks';
-import { AuthenticatorType, Flows } from '../lib/allauth';
-import { Box } from '@mui/material';
+import { Navigate, useLocation } from "react-router-dom";
+import { AuthChangeEvent, useAuthChange, useAuthStatus } from "./hooks";
+import { AuthenticatorType, Flows } from "../lib/allauth";
+import { Box } from "@mui/material";
 
 export const URLs = Object.freeze({
-  LOGIN_URL: '/account/login',
-  COMPLETE_USER_PROFILE: '/',
-  LOGIN_REDIRECT_URL: '/',
-  LOGOUT_REDIRECT_URL: '/',
+  LOGIN_URL: "/account/login",
+  COMPLETE_USER_PROFILE: "/",
+  LOGIN_REDIRECT_URL: "/",
+  LOGOUT_REDIRECT_URL: "/"
 });
 
 const flow2path = {};
-flow2path[Flows.LOGIN] = '/account/login';
-flow2path[Flows.LOGIN_BY_CODE] = '/account/login/code/confirm';
-flow2path[Flows.SIGNUP] = '/account/signup';
-flow2path[Flows.VERIFY_EMAIL] = '/account/verify-email';
-flow2path[Flows.PROVIDER_SIGNUP] = '/account/provider/signup';
-flow2path[Flows.REAUTHENTICATE] = '/account/reauthenticate';
+flow2path[Flows.LOGIN] = "/account/login";
+flow2path[Flows.LOGIN_BY_CODE] = "/account/login/code/confirm";
+flow2path[Flows.SIGNUP] = "/account/signup";
+flow2path[Flows.VERIFY_EMAIL] = "/account/verify-email";
+flow2path[Flows.PROVIDER_SIGNUP] = "/account/provider/signup";
+flow2path[Flows.REAUTHENTICATE] = "/account/reauthenticate";
 flow2path[`${Flows.MFA_AUTHENTICATE}:${AuthenticatorType.TOTP}`] =
-  '/account/authenticate/totp';
+  "/account/authenticate/totp";
 flow2path[`${Flows.MFA_AUTHENTICATE}:${AuthenticatorType.RECOVERY_CODES}`] =
-  '/account/authenticate/recovery-codes';
+  "/account/authenticate/recovery-codes";
 flow2path[`${Flows.MFA_AUTHENTICATE}:${AuthenticatorType.WEBAUTHN}`] =
-  '/account/authenticate/webauthn';
+  "/account/authenticate/webauthn";
 flow2path[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.TOTP}`] =
-  '/account/reauthenticate/totp';
+  "/account/reauthenticate/totp";
 flow2path[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.RECOVERY_CODES}`] =
-  '/account/reauthenticate/recovery-codes';
+  "/account/reauthenticate/recovery-codes";
 flow2path[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.WEBAUTHN}`] =
-  '/account/reauthenticate/webauthn';
+  "/account/reauthenticate/webauthn";
 
-export function pathForFlow(flow, typ) {
+export function pathForFlow (flow, typ) {
   let key = flow.id;
-  if (typeof flow.types !== 'undefined') {
+  if (typeof flow.types !== "undefined") {
     typ = typ ?? flow.types[0];
     key = `${key}:${typ}`;
   }
@@ -43,7 +43,7 @@ export function pathForFlow(flow, typ) {
   return path;
 }
 
-export function pathForPendingFlow(auth) {
+export function pathForPendingFlow (auth) {
   const flow = auth.data.flows.find((flow) => flow.is_pending);
   if (flow) {
     return pathForFlow(flow);
@@ -51,7 +51,7 @@ export function pathForPendingFlow(auth) {
   return null;
 }
 
-function navigateToPendingFlow(auth) {
+function navigateToPendingFlow (auth) {
   const path = pathForPendingFlow(auth);
   if (path) {
     return <Navigate to={path} />;
@@ -59,7 +59,7 @@ function navigateToPendingFlow(auth) {
   return null;
 }
 
-export function AuthenticatedRoute({ children }) {
+export function AuthenticatedRoute ({ children }) {
   const location = useLocation();
   const [, status] = useAuthStatus();
   const next = `next=${encodeURIComponent(location.pathname + location.search)}`;
@@ -70,7 +70,7 @@ export function AuthenticatedRoute({ children }) {
   }
 }
 
-export function AnonymousRoute({ children }) {
+export function AnonymousRoute ({ children }) {
   const [, status] = useAuthStatus();
   if (!status.isAuthenticated) {
     return <Box p={2}> {children}</Box>;
@@ -79,7 +79,7 @@ export function AnonymousRoute({ children }) {
   }
 }
 
-export function AuthChangeRedirector({ children }) {
+export function AuthChangeRedirector ({ children }) {
   const [auth, event] = useAuthChange();
   const location = useLocation();
   switch (event) {
@@ -88,7 +88,7 @@ export function AuthChangeRedirector({ children }) {
     case AuthChangeEvent.LOGGED_IN:
       return <Navigate to={URLs.LOGIN_REDIRECT_URL} />;
     case AuthChangeEvent.REAUTHENTICATED: {
-      const next = new URLSearchParams(location.search).get('next') || '/';
+      const next = new URLSearchParams(location.search).get("next") || "/";
       return <Navigate to={next} />;
     }
     case AuthChangeEvent.REAUTHENTICATION_REQUIRED: {

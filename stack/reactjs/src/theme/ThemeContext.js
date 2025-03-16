@@ -10,7 +10,7 @@ const ThemeContext = createContext();
 
 const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("themeMode") ? localStorage.getItem("themeMode") !== 'false' :
+    localStorage.getItem("themeMode") ? localStorage.getItem("themeMode") !== "false" :
       window.matchMedia("(prefers-color-scheme: dark)").matches
   );
   const [fontFamily, setFamily] = useState(

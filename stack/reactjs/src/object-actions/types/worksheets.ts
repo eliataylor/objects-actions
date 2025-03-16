@@ -18,7 +18,7 @@ export interface ObjectField {
 export interface PermissionRule {
   id: number;
   objectName: string;
-  action: 'create' | 'read' | 'update' | 'delete';
+  action: "create" | "read" | "update" | "delete";
   role: string;
   isAllowed: boolean;
   conditions?: string;
@@ -86,7 +86,7 @@ export interface WorksheetFormValues {
   }[];
   permissions: {
     objectName: string;
-    action: 'create' | 'read' | 'update' | 'delete';
+    action: "create" | "read" | "update" | "delete";
     role: string;
     isAllowed: boolean;
     conditions?: string;

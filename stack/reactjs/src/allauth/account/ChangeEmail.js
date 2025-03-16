@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import * as allauth from '../lib/allauth';
-import FormErrors from '../components/FormErrors';
-import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import React, { useEffect, useState } from "react";
+import * as allauth from "../lib/allauth";
+import FormErrors from "../components/FormErrors";
+import { Box, Button, InputAdornment, TextField, Typography } from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
-export default function ChangeEmail() {
-  const [email, setEmail] = useState('');
+export default function ChangeEmail () {
+  const [email, setEmail] = useState("");
   const [emailAddresses, setEmailAddresses] = useState([]);
   const [response, setResponse] = useState({
     fetching: false,
-    content: { status: 200, data: [] },
+    content: { status: 200, data: [] }
   });
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function ChangeEmail() {
       });
   }, []);
 
-  function addEmail() {
+  function addEmail () {
     setResponse({ ...response, fetching: true });
     allauth
       .addEmail(email)
@@ -44,7 +44,7 @@ export default function ChangeEmail() {
         });
         if (resp.status === 200) {
           setEmailAddresses(resp.data);
-          setEmail('');
+          setEmail("");
         }
       })
       .catch((e) => {
@@ -58,7 +58,7 @@ export default function ChangeEmail() {
       });
   }
 
-  function requestEmailVerification(email) {
+  function requestEmailVerification (email) {
     setResponse({ ...response, fetching: true });
     allauth
       .requestEmailVerification(email)
@@ -73,7 +73,7 @@ export default function ChangeEmail() {
       });
   }
 
-  function deleteEmail(email) {
+  function deleteEmail (email) {
     setResponse({ ...response, fetching: true });
     allauth
       .deleteEmail(email)
@@ -96,7 +96,7 @@ export default function ChangeEmail() {
       });
   }
 
-  function markAsPrimary(email) {
+  function markAsPrimary (email) {
     setResponse({ ...response, fetching: true });
     allauth
       .markEmailAsPrimary(email)
@@ -137,11 +137,11 @@ export default function ChangeEmail() {
             return (
               <TableRow key={ea.email}>
                 <TableCell>
-                  {ea.email.indexOf('@sms-placeholder.com') > -1
-                    ? ea.email.split('@')[0]
+                  {ea.email.indexOf("@sms-placeholder.com") > -1
+                    ? ea.email.split("@")[0]
                     : ea.email}
                 </TableCell>
-                <TableCell>{ea.verified ? '✅' : '❌'}</TableCell>
+                <TableCell>{ea.verified ? "✅" : "❌"}</TableCell>
                 <TableCell>
                   <input
                     onChange={() => markAsPrimary(ea.email)}
@@ -151,7 +151,7 @@ export default function ChangeEmail() {
                 </TableCell>
                 <TableCell>
                   {ea.verified ? (
-                    ''
+                    ""
                   ) : (
                     <Button
                       onClick={() => requestEmailVerification(ea.email)}
@@ -161,7 +161,7 @@ export default function ChangeEmail() {
                     </Button>
                   )}
                   {ea.primary ? (
-                    ''
+                    ""
                   ) : (
                     <Button
                       onClick={() => deleteEmail(ea.email)}

@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
 import CardHeader from "@mui/material/CardHeader";
 import LightDarkImg from "../../components/LightDarkImg";
 import { StyledTypography } from "../components/StyledComponents";
@@ -25,7 +24,7 @@ const Install: React.FC = () => {
       <Box>
         <CardHeader
           style={{ textDecoration: "none" }}
-          avatar={<img src={"/oa-assets/logo-react.svg"} height={30} />}
+          avatar={<img alt={'react logo'} src={"/oa-assets/logo-react.svg"} height={30} />}
           subheader={"ReactJS + Material-UI Frontend"}
           title={
             <Typography variant={"subtitle1"} style={{ wordBreak: "break-word" }}>
@@ -34,7 +33,7 @@ const Install: React.FC = () => {
 
         <CardHeader
           style={{ textDecoration: "none" }}
-          avatar={<img src={"/oa-assets/logo-django.svg"} height={15} />}
+          avatar={<img alt={'django logo'} src={"/oa-assets/logo-django.svg"} height={15} />}
           subheader={"Backend Content Manager"}
           title={
             <Typography variant={"subtitle1"} style={{ wordBreak: "break-word" }}>
@@ -45,7 +44,7 @@ const Install: React.FC = () => {
 
         <CardHeader
           style={{ textDecoration: "none" }}
-          avatar={<img src={"/oa-assets/logo-drf.png"} height={20} />}
+          avatar={<img alt={'drf logo'}  src={"/oa-assets/logo-drf.png"} height={20} />}
           subheader={"Backend API"}
           title={
             <Typography variant={"subtitle1"} style={{ wordBreak: "break-word" }}>
@@ -57,10 +56,10 @@ const Install: React.FC = () => {
         <CardHeader
           style={{ textDecoration: "none" }}
           avatar={<LightDarkImg
-                    light={'/oa-assets/openai-icon-black.svg'}
-                    dark={'/oa-assets/openai-icon-white.svg'}
-                    styles={{ height: 20 }}
-                  />}
+            light={"/oa-assets/openai-icon-black.svg"}
+            dark={"/oa-assets/openai-icon-white.svg"}
+            styles={{ height: 20 }}
+          />}
           subheader={"AI Agent"}
           title={
             <Typography variant={"subtitle1"} style={{ wordBreak: "break-word" }}>
@@ -76,9 +75,10 @@ const Install: React.FC = () => {
         </StyledTypography>
 
         <CardHeader
-          avatar={<img src={"/oa-assets/logo-typescript.svg"} height={30} />}
+          avatar={<img alt={'typescript logo'}  src={"/oa-assets/logo-typescript.svg"} height={30} />}
           title={<Typography variant={"subtitle1"} style={{ wordBreak: "break-word" }}>Fake Data Generator</Typography>}
-          subheader={<a href="https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder/README.md" target="_blank">README</a>}
+          subheader={<a href="https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder/README.md"
+                        target="_blank" rel="noreferrer">README</a>}
         />
 
         <CardHeader
@@ -89,7 +89,8 @@ const Install: React.FC = () => {
               styles={{ height: 30 }}
             />
           }
-          subheader={<a href={"https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder/README.md"} target={"_blank"}>README</a>}
+          subheader={<a href={"https://github.com/eliataylor/objects-actions/blob/main/stack/databuilder/README.md"}
+                        target="_blank" rel="noreferrer">README</a>}
           title={<Typography variant={"subtitle1"} style={{ wordBreak: "break-word" }}>Frontend Test Suite</Typography>}
         />
       </Box>

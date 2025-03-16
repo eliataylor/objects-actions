@@ -1,23 +1,23 @@
-import { useState } from 'react';
-import { Link, Navigate, useLoaderData } from 'react-router-dom';
-import { Button } from '@mui/material';
-import * as allauth from '../lib/allauth';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import { useState } from "react";
+import { Link, Navigate, useLoaderData } from "react-router-dom";
+import { Button } from "@mui/material";
+import * as allauth from "../lib/allauth";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
-export async function loader({ params }) {
+export async function loader ({ params }) {
   const resp = await allauth.getAuthenticators();
   return { authenticators: resp.data };
 }
 
-function Authenticator(props) {
+function Authenticator (props) {
   const [name, setName] = useState(props.authenticator.name);
   const { authenticator } = props;
 
-  function onSubmit(e) {
+  function onSubmit (e) {
     e.preventDefault();
     props.onSave(name);
   }
@@ -33,23 +33,23 @@ function Authenticator(props) {
               type="text"
             />
             <Button type="button" onClick={() => props.onCancel()}>
-              {' '}
+              {" "}
               Cancel
             </Button>
           </form>
         </TableCell>
       ) : (
         <TableCell>
-          {authenticator.name}{' '}
+          {authenticator.name}{" "}
           <Button onClick={() => props.onEdit()}> Edit</Button>
         </TableCell>
       )}
       <TableCell>
-        {typeof authenticator.is_passwordless === 'undefined'
-          ? 'Type unspecified'
+        {typeof authenticator.is_passwordless === "undefined"
+          ? "Type unspecified"
           : authenticator.is_passwordless
-            ? 'Passkey'
-            : 'Security key'}
+            ? "Passkey"
+            : "Security key"}
       </TableCell>
       <TableCell>
         {new Date(authenticator.created_at * 1000).toLocaleString()}
@@ -57,7 +57,7 @@ function Authenticator(props) {
       <TableCell>
         {authenticator.last_used_at
           ? new Date(authenticator.last_used_at * 1000).toLocaleString()
-          : 'Unused'}
+          : "Unused"}
       </TableCell>
       <TableCell>
         <Button onClick={() => props.onDelete()}>Delete</Button>
@@ -66,18 +66,18 @@ function Authenticator(props) {
   );
 }
 
-export default function ListWebAuthn(props) {
+export default function ListWebAuthn (props) {
   const { authenticators } = useLoaderData();
   const [editId, setEditId] = useState(null);
   const [keys, setKeys] = useState(() =>
     authenticators.filter(
       (authenticator) =>
-        authenticator.type === allauth.AuthenticatorType.WEBAUTHN,
-    ),
+        authenticator.type === allauth.AuthenticatorType.WEBAUTHN
+    )
   );
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  async function optimisticSetKeys(newKeys, op) {
+  async function optimisticSetKeys (newKeys, op) {
     setResponse({ ...response, fetching: true });
     const oldKeys = keys;
     setEditId(null);
@@ -97,7 +97,7 @@ export default function ListWebAuthn(props) {
     });
   }
 
-  async function deleteKey(key) {
+  async function deleteKey (key) {
     const newKeys = keys.filter((k) => k.id !== key.id);
     await optimisticSetKeys(newKeys, async () => {
       const resp = await allauth.deleteWebAuthnCredential([key.id]);
@@ -105,7 +105,7 @@ export default function ListWebAuthn(props) {
     });
   }
 
-  async function onSave(key, name) {
+  async function onSave (key, name) {
     const newKeys = keys.filter((k) => k.id !== key.id);
     newKeys.push({ ...key, name });
     await optimisticSetKeys(newKeys, async () => {

@@ -1,37 +1,37 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-import { AuthContext } from './AuthContext';
+import { useContext, useEffect, useRef, useState } from "react";
+import { AuthContext } from "./AuthContext";
 
-export function useAuth() {
+export function useAuth () {
   return useContext(AuthContext)?.auth;
 }
 
-export function useConfig() {
+export function useConfig () {
   return useContext(AuthContext)?.config;
 }
 
-export function useUser() {
+export function useUser () {
   const auth = useContext(AuthContext)?.auth;
   return authInfo(auth).user;
 }
 
-export function useAuthInfo() {
+export function useAuthInfo () {
   const auth = useContext(AuthContext)?.auth;
   return authInfo(auth);
 }
 
-export function useProviderToken(provider_id) {
+export function useProviderToken (provider_id) {
   const providers = useContext(AuthContext)?.auth;
   if (!providers?.data?.methods?.length) {
     return null;
   }
   const connected = providers?.data?.methods.find(
-    (a) => a.provider === provider_id,
+    (a) => a.provider === provider_id
   );
   if (!connected) return null;
   return connected;
 }
 
-function authInfo(auth) {
+function authInfo (auth) {
   const isAuthenticated =
     auth.status === 200 || (auth.status === 401 && auth.meta.is_authenticated);
   const requiresReauthentication = isAuthenticated && auth.status === 401;
@@ -40,19 +40,19 @@ function authInfo(auth) {
     isAuthenticated,
     requiresReauthentication,
     user: isAuthenticated ? auth.data.user : null,
-    pendingFlow,
+    pendingFlow
   };
 }
 
 export const AuthChangeEvent = Object.freeze({
-  LOGGED_OUT: 'LOGGED_OUT',
-  LOGGED_IN: 'LOGGED_IN',
-  REAUTHENTICATED: 'REAUTHENTICATED',
-  REAUTHENTICATION_REQUIRED: 'REAUTHENTICATION_REQUIRED',
-  FLOW_UPDATED: 'FLOW_UPDATED',
+  LOGGED_OUT: "LOGGED_OUT",
+  LOGGED_IN: "LOGGED_IN",
+  REAUTHENTICATED: "REAUTHENTICATED",
+  REAUTHENTICATION_REQUIRED: "REAUTHENTICATION_REQUIRED",
+  FLOW_UPDATED: "FLOW_UPDATED"
 });
 
-function determineAuthChangeEvent(fromAuth, toAuth) {
+function determineAuthChangeEvent (fromAuth, toAuth) {
   let fromInfo = authInfo(fromAuth);
   const toInfo = authInfo(toAuth);
   if (toAuth.status === 410) {
@@ -63,7 +63,7 @@ function determineAuthChangeEvent(fromAuth, toAuth) {
     fromInfo = {
       isAuthenticated: false,
       requiresReauthentication: false,
-      user: null,
+      user: null
     };
   }
   if (!fromInfo.isAuthenticated && toInfo.isAuthenticated) {
@@ -93,7 +93,7 @@ function determineAuthChangeEvent(fromAuth, toAuth) {
   return null;
 }
 
-export function useAuthChange() {
+export function useAuthChange () {
   const auth = useAuth();
   const ref = useRef({ prevAuth: auth, event: null, didChange: false });
   const [, setForcedUpdate] = useState(0);
@@ -120,7 +120,7 @@ export function useAuthChange() {
   return [auth, event];
 }
 
-export function useAuthStatus() {
+export function useAuthStatus () {
   const auth = useAuth();
   return [auth, authInfo(auth)];
 }

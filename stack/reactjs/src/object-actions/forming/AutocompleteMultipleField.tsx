@@ -1,8 +1,8 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import { ModelName, ModelType, RelEntity } from "../types/types";
-import { BaseAcFieldProps, AcOption, useAutocomplete, Api2Options } from "./AutoCompleteUtils";
-import { renderOption, renderInputAdornments } from "./AutoCompleteElements";
+import { AcOption, Api2Options, BaseAcFieldProps, useAutocomplete } from "./AutoCompleteUtils";
+import { renderInputAdornments, renderOption } from "./AutoCompleteElements";
 import NewFormDialog from "./NewFormDialog";
 
 
@@ -12,14 +12,14 @@ interface MultiAcFieldProps<T extends ModelName> extends BaseAcFieldProps<T> {
 }
 
 export default function AutocompleteMultipleField<T extends ModelName>({
-  type,
-  image_field,
-  search_fields,
-  field_name,
-  onSelect,
-  selected,
-  field_label = "Search"
-}: MultiAcFieldProps<T>) {
+                                                                         type,
+                                                                         image_field,
+                                                                         search_fields,
+                                                                         field_name,
+                                                                         onSelect,
+                                                                         selected,
+                                                                         field_label = "Search"
+                                                                       }: MultiAcFieldProps<T>) {
   const {
     options,
     inputValue,

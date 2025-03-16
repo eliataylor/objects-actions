@@ -12,17 +12,41 @@ export interface MySession {
 }
 
 //---OBJECT-ACTIONS-PERMS-VERBS-STARTS---//
-
-export type CRUDVerb = 'view_list' | 'view_profile' | 'add' | 'edit' | 'delete' | 'block' | '' | 'view' | 'subscribe' | 'meeting' | 'comment' | 'sponsor' | 'apply-to-speak' | 'approve' | 'reject' | 'user' | 'rooms';
+export type CRUDVerb =
+  "view_list"
+  | "view_profile"
+  | "add"
+  | "edit"
+  | "delete"
+  | "block"
+  | ""
+  | "view"
+  | "subscribe"
+  | "meeting"
+  | "comment"
+  | "sponsor"
+  | "apply-to-speak"
+  | "approve"
+  | "reject"
+  | "user"
+  | "rooms";
 //---OBJECT-ACTIONS-PERMS-VERBS-ENDS---//
 
 
-
 //---OBJECT-ACTIONS-PERMS-ROLES-STARTS---//
+export const DEFAULT_PERM: "AllowAny" | "IsAuthenticated" | "IsAuthenticatedOrReadOnly" = "AllowAny";
+export type PermRoles =
+  "anonymous"
+  | "authenticated"
+  | "verified"
+  | "paid user"
+  | "admin"
+  | "rally attendee"
+  | "city sponsor"
+  | "city official"
+  | "rally speaker"
+  | "rally moderator";
 
-export const DEFAULT_PERM: 'AllowAny' | 'IsAuthenticated' | 'IsAuthenticatedOrReadOnly' = 'AllowAny';
-
-export type PermRoles = 'anonymous' | 'authenticated' | 'verified' | 'paid user' | 'admin' | 'rally attendee' | 'city sponsor' | 'city official' | 'rally speaker' | 'rally moderator';
 //---OBJECT-ACTIONS-PERMS-ROLES-ENDS---//
 
 
@@ -39,7 +63,7 @@ interface AccessPoint {
 function getPermsByTypeAndVerb(type: string, verb: string) {
   const matches = (permissions as unknown as AccessPoint[]).filter(
     (perms: AccessPoint) => {
-      return perms.context.join("-") === type && perms.verb === verb; // TODO: permissions.json needs built differently
+      return perms.context.join("-") === type && perms.verb.indexOf(verb) > -1; // WARN: indexOf meant to support verbs like `view_list` and `view_profile`
     }
   );
   return matches;

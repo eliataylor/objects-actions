@@ -223,8 +223,8 @@ const EnvEditor: React.FC<EnvEditorProps> = ({ displayProperties = [] }) => {
       )}
 
       {advancedFields.length > 0 && (
-        <Grid item xs={12} style={{paddingTop:0}}>
-          <Grid container justifyContent={"space-between"} alignItems={'center'}>
+        <Grid item xs={12} style={{ paddingTop: 0 }}>
+          <Grid container justifyContent={"space-between"} alignItems={"center"}>
             <Grid item>
               <CopyToClipboard
                 onCopied={() => setDidCopy(true)}

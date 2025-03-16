@@ -64,7 +64,7 @@ const Layout: React.FC = () => {
     return location.pathname.indexOf("/oa/") === 0 || location.pathname === "/";
   }
 
-  function formatPathnameToDocTitle(pathname:string) {
+  function formatPathnameToDocTitle(pathname: string) {
     // Remove leading and trailing slashes, then split by remaining slashes
     const segments = pathname.replace(/^\/|\/$/g, "").split("/");
 
