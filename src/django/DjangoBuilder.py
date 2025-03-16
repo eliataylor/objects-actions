@@ -319,9 +319,7 @@ urlpatterns += [
             if role != 'anonymous' and role != 'authenticated':  # Skip built-in roles
 
                 # Convert snake_case or space-separated roles to CamelCase with "Is" prefix
-                group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
-
-                group_creation_code = f"                Group.objects.get_or_create(name=\"Is{group_name}\")"
+                group_creation_code = f"                Group.objects.get_or_create(name=\"{role}\")"
                 group_commands.append(group_creation_code)
 
         new_apps = tpl.replace("__OA_PERM_ROLES__", "\n".join(group_commands))
@@ -494,8 +492,7 @@ urlpatterns += [
                         elif role == "anonymous":
                             own_role_checks.append("True")
                         else:
-                            group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
-                            own_role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
+                            own_role_checks.append(f"request.user.groups.filter(name='{role}').exists()")
 
                     if own_role_checks:
                         perm_code += f"            return {' or '.join(own_role_checks)}\n"
@@ -512,8 +509,7 @@ urlpatterns += [
                         elif role == "anonymous":
                             other_role_checks.append("True")
                         else:
-                            group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
-                            other_role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
+                            other_role_checks.append(f"request.user.groups.filter(name='{role}').exists()")
 
                     if other_role_checks:
                         perm_code += f"            return {' or '.join(other_role_checks)}\n"
@@ -531,8 +527,7 @@ urlpatterns += [
                         elif role == "anonymous":
                             own_role_checks.append("True")
                         else:
-                            group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
-                            own_role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
+                            own_role_checks.append(f"request.user.groups.filter(name='{role}').exists()")
 
                     if own_role_checks:
                         perm_code += f"            return {' or '.join(own_role_checks)}\n"
@@ -553,8 +548,7 @@ urlpatterns += [
                         elif role == "anonymous":
                             other_role_checks.append("True")
                         else:
-                            group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
-                            other_role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
+                            other_role_checks.append(f"request.user.groups.filter(name='{role}').exists()")
 
                     if other_role_checks:
                         perm_code += f"            return {' or '.join(other_role_checks)}\n"
@@ -691,8 +685,7 @@ adapting to the current user's authentication status and roles.
                         admin_checks.append("self.request.user.groups.filter(name='IsAdmin').exists()")
                     elif role != "anonymous" and role != "authenticated":
                         # Convert snake_case or space-separated roles to CamelCase with "Is" prefix
-                        group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
-                        admin_checks.append(f"self.request.user.groups.filter(name='Is{group_name}').exists()")
+                        admin_checks.append(f"self.request.user.groups.filter(name='{role}').exists()")
 
                 admin_check_str = " or ".join(
                     admin_checks) if admin_checks else "self.request.user.groups.filter(name='IsAdmin').exists()"

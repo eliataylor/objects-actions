@@ -52,7 +52,7 @@ from .serializers import AttendeesSerializer
 from .models import Attendees
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .permissions import can_delete_rallies, can_add_officials, can_edit_cities, can_delete_cities, can_view_invites, can_view_actionplans, can_view_list_resources, can_edit_meetings, can_edit_rooms, can_view_rallies, can_edit_officials, can_delete_meetings, can_edit_invites, can_view_meetings, can_view_list_users, can_delete_officials, can_add_rallies, can_delete_actionplans, can_view_officials, can_delete_subscriptions, can_edit_actionplans, can_delete_resources, can_view_resources, can_add_cities, can_add_resources, can_view_rooms, can_view_cities, can_view_profile_users, can_add_invites, can_view_subscriptions, can_add_subscriptions, can_edit_subscriptions, can_add_users, can_add_meetings, can_add_actionplans, can_edit_resources, can_add_rooms, can_delete_invites, can_delete_rooms, can_edit_rallies
+from .permissions import can_edit_subscriptions, can_view_cities, can_view_officials, can_add_resources, can_view_list_resources, can_edit_meetings, can_view_actionplans, can_add_cities, can_add_officials, can_add_actionplans, can_delete_meetings, can_edit_resources, can_delete_invites, can_view_meetings, can_view_rallies, can_delete_cities, can_delete_officials, can_add_meetings, can_edit_actionplans, can_edit_cities, can_view_rooms, can_add_subscriptions, can_delete_resources, can_view_subscriptions, can_delete_actionplans, can_add_rooms, can_edit_rallies, can_delete_rallies, can_view_invites, can_view_profile_users, can_edit_invites, can_add_users, can_add_invites, can_view_list_users, can_delete_rooms, can_view_resources, can_delete_subscriptions, can_edit_rooms, can_add_rallies, can_edit_officials
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
 
@@ -239,7 +239,7 @@ class CitiesViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
             # Check if user has role that allows creating for others
-            can_create_for_others = self.request.user.groups.filter(name='IsVerified').exists()
+            can_create_for_others = self.request.user.groups.filter(name='verified').exists()
 
             if not can_create_for_others:
                 # Force author to be current user
@@ -278,7 +278,7 @@ class OfficialsViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
             # Check if user has role that allows creating for others
-            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists() or self.request.user.groups.filter(name='IsCitySponsor').exists()
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists() or self.request.user.groups.filter(name='city sponsor').exists()
 
             if not can_create_for_others:
                 # Force author to be current user
