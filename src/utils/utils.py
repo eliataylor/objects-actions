@@ -56,9 +56,9 @@ def find_model_details(csv_file, model_name):
                     result['example'] = get_value(normalized_row, 'example', '')
 
                 # Add icon property if Field Label has a value
-                field_label = get_value(normalized_row, 'field label')
-                if field_label and field_label.strip():
-                    result['icon'] = field_label
+                icon_name = get_value(normalized_row, 'default')
+                if icon_name and icon_name.strip():
+                    result['icon'] = icon_name
 
                 if result:
                     return result
@@ -266,9 +266,9 @@ def build_types_from_csv(csv_file):
             obj_type = get_value(norm_row, 'types')
 
             if obj_type is not None and obj_type != '':
-                if get_value(norm_row, 'field name', '').lower() == 'user':
+                if get_value(norm_row, 'field name', '').lower() == 'user' or get_value(norm_row, 'field name', '').lower() == 'users':
                     logger.info(f'making {obj_type} the internal auth user model')
-                    cur_type = 'User'
+                    cur_type = 'Users'
                 else:
                     cur_type = obj_type
 

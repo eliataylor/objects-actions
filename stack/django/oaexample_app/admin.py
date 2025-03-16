@@ -84,6 +84,13 @@ admin.site.register(Stakeholders, StakeholdersAdmin)
 
 class ResourcesAdmin(admin.ModelAdmin):
 	readonly_fields = ('id',)
+	def image_tag(self, obj):
+		if obj.image:
+			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.image.url)
+		return "No Image"
+
+	list_display = ('id', 'image_tag')            
+
 
 admin.site.register(Resources, ResourcesAdmin)
 

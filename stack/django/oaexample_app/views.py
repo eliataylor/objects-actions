@@ -9,11 +9,12 @@ from django.http import JsonResponse
 from django.core.management import call_command
 from django.apps import apps
 from django.http import HttpResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.utils import timezone
 from .services import send_sms
 import random
 import re
+import os
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .serializers import TopicsSerializer
 from .models import Topics
@@ -49,10 +50,9 @@ from .serializers import RoomsSerializer
 from .models import Rooms
 from .serializers import AttendeesSerializer
 from .models import Attendees
-from .permissions import can_edit_cities, can_add_cities, can_view_cities, \
-    can_delete_cities, can_view_list_users, can_view_profile_users, can_add_users, can_edit_users, can_delete_users
-
-
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from .permissions import can_view_rallies, can_edit_cities, can_delete_meetings, can_add_subscriptions, can_delete_resources, can_delete_actionplans, can_view_rooms, can_view_resources, can_view_meetings, can_edit_actionplans, can_add_rooms, can_edit_rallies, can_view_list_resources, can_delete_officials, can_view_actionplans, can_view_invites, can_add_invites, can_add_rallies, can_delete_rooms, can_edit_rooms, can_edit_resources, can_add_users, can_add_cities, can_delete_rallies, can_add_resources, can_edit_officials, can_view_cities, can_add_actionplans, can_delete_cities, can_delete_subscriptions, can_add_meetings, can_edit_meetings, can_view_list_users, can_edit_subscriptions, can_add_officials, can_delete_invites, can_view_subscriptions, can_view_profile_users, can_view_officials, can_edit_invites
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
 
@@ -112,6 +112,7 @@ class TopicsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
+    
 class ResourceTypesViewSet(viewsets.ModelViewSet):
     queryset = ResourceTypes.objects.all().order_by('id')
     serializer_class = ResourceTypesSerializer
@@ -119,7 +120,7 @@ class ResourceTypesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class MeetingTypesViewSet(viewsets.ModelViewSet):
     queryset = MeetingTypes.objects.all().order_by('id')
     serializer_class = MeetingTypesSerializer
@@ -127,7 +128,7 @@ class MeetingTypesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class StatesViewSet(viewsets.ModelViewSet):
     queryset = States.objects.all().order_by('id')
     serializer_class = StatesSerializer
@@ -135,7 +136,7 @@ class StatesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class PartiesViewSet(viewsets.ModelViewSet):
     queryset = Parties.objects.all().order_by('id')
     serializer_class = PartiesSerializer
@@ -143,7 +144,7 @@ class PartiesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class StakeholdersViewSet(viewsets.ModelViewSet):
     queryset = Stakeholders.objects.all().order_by('id')
     serializer_class = StakeholdersSerializer
@@ -151,13 +152,44 @@ class StakeholdersViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-
+    
 class ResourcesViewSet(viewsets.ModelViewSet):
     queryset = Resources.objects.all().order_by('id')
     serializer_class = ResourcesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [can_view_list_resources]
+        elif self.action == 'retrieve':
+            permission_classes = [can_view_resources]
+        elif self.action == 'create':
+            permission_classes = [can_add_resources]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [can_edit_resources]
+        elif self.action == 'destroy':
+            permission_classes = [can_delete_resources]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists()
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -168,19 +200,20 @@ class UsersViewSet(viewsets.ModelViewSet):
     search_fields = ['first_name', 'last_name']
 
     def get_permissions(self):
-        if self.action == 'lista': # view_list
+        if self.action == 'list':
             permission_classes = [can_view_list_users]
-        elif self.action == 'retrieve': # view_profile, view, read
+        elif self.action == 'retrieve':
             permission_classes = [can_view_profile_users]
-        elif self.action == 'create':  # edit, update
+        elif self.action == 'create':
             permission_classes = [can_add_users]
-        elif self.action in ['update', 'partial_update']: # edit, update
-            permission_classes = [can_edit_users]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
         elif self.action == 'destroy':
-            permission_classes = [can_delete_users]
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
         else:
-            permission_classes = [permissions.IsAuthenticated]
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
         return [permission() for permission in permission_classes]
+
 
 class CitiesViewSet(viewsets.ModelViewSet):
     queryset = Cities.objects.all().order_by('id')
@@ -190,35 +223,35 @@ class CitiesViewSet(viewsets.ModelViewSet):
     search_fields = ['name']
 
     def get_permissions(self):
-        if self.action == 'list': # view_list
+        if self.action == 'list':
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        elif self.action == 'retrieve':
             permission_classes = [can_view_cities]
-        elif self.action == 'retrieve': # view_profile, view, read
-            permission_classes = [can_view_cities]
-        elif self.action == 'create':  # edit, update
+        elif self.action == 'create':
             permission_classes = [can_add_cities]
-        elif self.action in ['update', 'partial_update']: # edit, update
+        elif self.action in ['update', 'partial_update']:
             permission_classes = [can_edit_cities]
         elif self.action == 'destroy':
             permission_classes = [can_delete_cities]
         else:
-            permission_classes = [permissions.IsAuthenticated]
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
-        # If user is not admin, force author to be the current user
-        is_admin = self.request.user.groups.filter(name='IsAdmin').exists()
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsVerified').exists()
 
-        if not is_admin:
-            # Force author to be current user for non-admins
-            serializer.save(author=self.request.user)
-        else:
-            # Admins can specify any author or default to themselves
-            author_id = self.request.data.get('author')
-            if author_id:
-                author = get_object_or_404(get_user_model(), id=author_id)
-                serializer.save(author=author)
-            else:
+            if not can_create_for_others:
+                # Force author to be current user
                 serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
 
 
 class OfficialsViewSet(viewsets.ModelViewSet):
@@ -228,6 +261,37 @@ class OfficialsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        elif self.action == 'retrieve':
+            permission_classes = [can_view_officials]
+        elif self.action == 'create':
+            permission_classes = [can_add_officials]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [can_edit_officials]
+        elif self.action == 'destroy':
+            permission_classes = [can_delete_officials]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists() or self.request.user.groups.filter(name='IsCitySponsor').exists()
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
+
 
 class RalliesViewSet(viewsets.ModelViewSet):
     queryset = Rallies.objects.all().order_by('id')
@@ -235,6 +299,37 @@ class RalliesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        elif self.action == 'retrieve':
+            permission_classes = [can_view_rallies]
+        elif self.action == 'create':
+            permission_classes = [can_add_rallies]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [can_edit_rallies]
+        elif self.action == 'destroy':
+            permission_classes = [can_delete_rallies]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists()
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
 
 
 class ActionPlansViewSet(viewsets.ModelViewSet):
@@ -244,6 +339,37 @@ class ActionPlansViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        elif self.action == 'retrieve':
+            permission_classes = [can_view_actionplans]
+        elif self.action == 'create':
+            permission_classes = [can_add_actionplans]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [can_edit_actionplans]
+        elif self.action == 'destroy':
+            permission_classes = [can_delete_actionplans]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists()
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
+
 
 class MeetingsViewSet(viewsets.ModelViewSet):
     queryset = Meetings.objects.all().order_by('id')
@@ -251,6 +377,37 @@ class MeetingsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        elif self.action == 'retrieve':
+            permission_classes = [can_view_meetings]
+        elif self.action == 'create':
+            permission_classes = [can_add_meetings]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [can_edit_meetings]
+        elif self.action == 'destroy':
+            permission_classes = [can_delete_meetings]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists()
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
 
 
 class InvitesViewSet(viewsets.ModelViewSet):
@@ -260,6 +417,37 @@ class InvitesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['meeting__title']
 
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        elif self.action == 'retrieve':
+            permission_classes = [can_view_invites]
+        elif self.action == 'create':
+            permission_classes = [can_add_invites]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [can_edit_invites]
+        elif self.action == 'destroy':
+            permission_classes = [can_delete_invites]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists()
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
+
 
 class SubscriptionsViewSet(viewsets.ModelViewSet):
     queryset = Subscriptions.objects.all().order_by('id')
@@ -267,6 +455,37 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['rally__title', 'meeting__title']
+
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        elif self.action == 'retrieve':
+            permission_classes = [can_view_subscriptions]
+        elif self.action == 'create':
+            permission_classes = [can_add_subscriptions]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [can_edit_subscriptions]
+        elif self.action == 'destroy':
+            permission_classes = [can_delete_subscriptions]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists()
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
 
 
 class RoomsViewSet(viewsets.ModelViewSet):
@@ -276,13 +495,42 @@ class RoomsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['rally__title', 'meeting__title']
 
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        elif self.action == 'retrieve':
+            permission_classes = [can_view_rooms]
+        elif self.action == 'create':
+            permission_classes = [can_add_rooms]
+        elif self.action in ['update', 'partial_update']:
+            permission_classes = [can_edit_rooms]
+        elif self.action == 'destroy':
+            permission_classes = [can_delete_rooms]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
 
+    def perform_create(self, serializer):
+            # Check if user has role that allows creating for others
+            can_create_for_others = self.request.user.groups.filter(name='IsAdmin').exists()
+
+            if not can_create_for_others:
+                # Force author to be current user
+                serializer.save(author=self.request.user)
+            else:
+                # Users with appropriate roles can specify any author or default to themselves
+                author_id = self.request.data.get('author')
+                if author_id:
+                    author = get_object_or_404(get_user_model(), id=author_id)
+                    serializer.save(author=author)
+                else:
+                    serializer.save(author=self.request.user)
 class AttendeesViewSet(viewsets.ModelViewSet):
     queryset = Attendees.objects.all().order_by('id')
     serializer_class = AttendeesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
+    
+    
 ####OBJECT-ACTIONS-VIEWSETS-ENDS####
 
 
@@ -427,7 +675,7 @@ class RenderFrontendIndex(APIView):
             html_content = file.read()
 
         modified_html = html_content
-        frontend_url = settings.FRONTEND_URL
+        frontend_url = os.getenv('FRONTEND_URL', 'https://localhost.oaexample.com:3000')
 
         # Prepend the host to all relative URLs
         def prepend_host(match):
