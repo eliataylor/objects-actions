@@ -292,11 +292,42 @@ urlpatterns += [
         # Store matrix and prepare for permissions generation
         self.matrix = matrix
 
+        self.build_group_initialization()
+
         # Build the permissions.py file
         self.build_permission_classes()
 
         # Update the viewsets with get_permissions methods
         self.build_viewset_permissions()
+
+    def build_group_initialization(self):
+        """Generate code to initialize Django permission groups in apps.py"""
+        if self.matrix is None or 'all_roles' not in self.matrix:
+            logger.warning("Unable to extract roles from permission matrix")
+            return
+
+        # Get all unique roles from the matrix
+        all_roles = self.matrix['all_roles']
+        apps_file_path = os.path.join(self.output_dir, 'apps.py')
+
+        with open(self.templates_dir + '/apps.py', 'r') as fm:
+            tpl = fm.read().strip()
+
+        group_commands = []
+        # Format the roles for Django group names (convert to PascalCase with 'Is' prefix)
+        for role in all_roles:
+            if role != 'anonymous' and role != 'authenticated':  # Skip built-in roles
+
+                # Convert snake_case or space-separated roles to CamelCase with "Is" prefix
+                group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
+
+                group_creation_code = f"                Group.objects.get_or_create(name=\"Is{group_name}\")"
+                group_commands.append(group_creation_code)
+
+        new_apps = tpl.replace("__OA_PERM_ROLES__", "\n".join(group_commands))
+        inject_generated_code(apps_file_path, new_apps, 'PERMISSIONS-ROLE-GROUPS')
+
+        logger.info(f"Group initialization code added for all permission groups")
 
     def build_permission_classes(self):
         """Generate permission classes in permissions.py file with metadata for the exception handler"""
