@@ -273,31 +273,314 @@ urlpatterns += [
         inject_generated_code(outpath, "\n".join(parts), 'VIEWSETS')
 
     def build_permissions(self, matrix_path, default_perm):
-
-        return; # TODO: implement
-
-        matrix = build_permissions_from_csv(matrix_path, self.json)
+        matrix = build_permissions_from_csv(matrix_path, self.json) if matrix_path is not None else None
         if matrix is None or 'permissions' not in matrix:
-            return None
+            return
 
-        outpath = os.path.join(self.output_dir, 'permissions.py')
+        # Prepare output paths
+        permissions_file_path = os.path.join(self.output_dir, 'permissions.py')
 
-        with open(self.templates_dir + '/permission.py', 'r') as fm:
-            tpl = fm.read().strip()
+        # Read templates
         with open(self.templates_dir + '/permissions.py', 'r') as fm:
-            permissions_helpers = fm.read().strip()
+            perms_tpl = fm.read().strip()
 
-        parts = []
-        for role in matrix['all_roles']:
-            class_key = f"Is{create_object_name(capitalize(role))}User"
-            model_name = create_object_name(role)
+        # Initialize imports and code blocks
+        self.append_import("permissions", [
+            "from rest_framework import permissions",
+            "from rest_framework.permissions import BasePermission",
+            "from django.contrib.auth import get_user_model"
+        ])
 
-            code = tpl.replace('__ROLE_CLASS__', class_key)
-            code = code.replace('__ROLE_NAME__', role)
-            parts.append(code)
+        # Group permissions by context (model type)
+        context_perms = {}
+        for perm in matrix['permissions']:
+            context = "-".join(perm['context'])
+            if context not in context_perms:
+                context_perms[context] = []
+            context_perms[context].append(perm)
 
-            # import to Views to use??
-            self.append_import("views", f"from .models import {class_key}")
+        # Generate permission classes for each context
+        permission_classes = []
+        view_permissions = {}
 
-        inject_generated_code(outpath, '\n'.join(self.imports["permissions"]), 'PERMISSIONS-IMPORTS')
-        inject_generated_code(outpath, permissions_helpers + "\n" + "\n".join(parts), 'PERMISSIONS')
+        for context, perms in context_perms.items():
+            model_name = create_object_name(context)
+            view_permissions[model_name] = {}
+
+            for perm in perms:
+                verb = perm['verb']
+                ownership = perm['ownership']
+                roles = perm['roles']
+
+                # Create class name for permission
+                class_name = f"can_{verb}_{create_machine_name(model_name, True)}"
+
+                # Skip if class was already created
+                if class_name in [p.split('(')[0] for p in permission_classes]:
+                    continue
+
+                # Create permission class code
+                if ownership == "own" or ownership == "others":
+                    # Check if object permission is needed
+                    has_object_check = True
+
+                    # Create base permission class
+                    perm_code = f"class {class_name}(BasePermission):\n"
+                    perm_code += "    def has_permission(self, request, view):\n"
+
+                    # Add authentication check if needed
+                    if "anonymous" not in roles:
+                        perm_code += "        if not request.user or not request.user.is_authenticated:\n"
+                        perm_code += "            return False\n"
+
+                    # Add role checks if needed
+                    if roles and "anonymous" not in roles:
+                        role_checks = []
+                        for role in roles:
+                            if role == "authenticated":
+                                role_checks.append("request.user.is_authenticated")
+                            elif role == "verified":
+                                role_checks.append("request.user.groups.filter(name='IsVerified').exists()")
+                            elif role == "admin":
+                                role_checks.append("request.user.groups.filter(name='IsAdmin').exists()")
+                            elif role == "rally attendee":
+                                role_checks.append("request.user.groups.filter(name='IsRallyAttendee').exists()")
+                            elif role == "city sponsor":
+                                role_checks.append("request.user.groups.filter(name='IsCitySponsor').exists()")
+                            elif role == "city official":
+                                role_checks.append("request.user.groups.filter(name='IsCityOfficial').exists()")
+                            elif role == "rally speaker":
+                                role_checks.append("request.user.groups.filter(name='IsRallySpeaker').exists()")
+                            elif role == "rally moderator":
+                                role_checks.append("request.user.groups.filter(name='IsRallyModerator').exists()")
+                            elif role == "paid user":
+                                role_checks.append("request.user.groups.filter(name='IsPaidUser').exists()")
+
+                        if role_checks:
+                            perm_code += f"        return {' or '.join(role_checks)}\n"
+                        else:
+                            perm_code += "        return True\n"
+                    else:
+                        perm_code += "        return True\n"
+
+                    # Add object permission check
+                    if has_object_check:
+                        perm_code += "\n    def has_object_permission(self, request, view, obj):\n"
+
+                        if context == "Users":
+                            perm_code += "        if request.user.id != obj.id:\n"
+                        else:
+                            perm_code += "        if request.user.id != obj.author.id:\n"
+
+                        if ownership == "others":
+                            # Check roles for accessing others' objects
+                            other_role_checks = []
+                            for role in roles:
+                                if role == "verified":
+                                    other_role_checks.append("request.user.groups.filter(name='IsVerified').exists()")
+                                elif role == "admin":
+                                    other_role_checks.append("request.user.groups.filter(name='IsAdmin').exists()")
+                                elif role == "rally attendee":
+                                    other_role_checks.append(
+                                        "request.user.groups.filter(name='IsRallyAttendee').exists()")
+                                elif role == "city sponsor":
+                                    other_role_checks.append(
+                                        "request.user.groups.filter(name='IsCitySponsor').exists()")
+                                elif role == "city official":
+                                    other_role_checks.append(
+                                        "request.user.groups.filter(name='IsCityOfficial').exists()")
+                                elif role == "rally speaker":
+                                    other_role_checks.append(
+                                        "request.user.groups.filter(name='IsRallySpeaker').exists()")
+                                elif role == "rally moderator":
+                                    other_role_checks.append(
+                                        "request.user.groups.filter(name='IsRallyModerator').exists()")
+                                elif role == "paid user":
+                                    other_role_checks.append("request.user.groups.filter(name='IsPaidUser').exists()")
+
+                            if verb == "block" and context == "Users":
+                                perm_code += "            # You cannot block yourself\n"
+                                perm_code += "            return False\n"
+                                perm_code += "        else:\n"
+                                if other_role_checks:
+                                    perm_code += f"            # Others requires roles: {', '.join(roles)}\n"
+                                    perm_code += f"            return {' or '.join(other_role_checks)}\n"
+                                else:
+                                    perm_code += "            return True\n"
+                            else:
+                                if other_role_checks:
+                                    perm_code += f"            # Others requires roles: {', '.join(roles)}\n"
+                                    perm_code += f"            return {' or '.join(other_role_checks)}\n"
+                                else:
+                                    perm_code += "            return False\n"
+                                perm_code += "        else:\n"
+                                perm_code += "            return True\n"
+                        else:  # ownership == "own"
+                            # Own objects
+                            own_role_checks = []
+                            for role in roles:
+                                if role == "verified":
+                                    own_role_checks.append("request.user.groups.filter(name='IsVerified').exists()")
+                                elif role == "admin":
+                                    own_role_checks.append("request.user.groups.filter(name='IsAdmin').exists()")
+
+                            if own_role_checks:
+                                perm_code += f"            # Others not allowed\n"
+                                perm_code += "            return False\n"
+                                perm_code += "        else:\n"
+                                perm_code += f"            # Own requires roles: {', '.join(roles)}\n"
+                                perm_code += f"            return {' or '.join(own_role_checks)}\n"
+                            else:
+                                perm_code += "            return False\n"
+                                perm_code += "        else:\n"
+                                perm_code += "            return True\n"
+                else:
+                    # Simple permission class without object-level checks
+                    perm_code = f"class {class_name}(BasePermission):\n"
+                    perm_code += "    def has_permission(self, request, view):\n"
+
+                    # Add authentication check if needed
+                    if "anonymous" not in roles:
+                        perm_code += "        if not request.user or not request.user.is_authenticated:\n"
+                        perm_code += "            return False\n"
+
+                    # Add role checks
+                    if roles and "anonymous" not in roles:
+                        role_checks = []
+                        for role in roles:
+                            if role == "authenticated":
+                                role_checks.append("request.user.is_authenticated")
+                            elif role == "verified":
+                                role_checks.append("request.user.groups.filter(name='IsVerified').exists()")
+                            elif role == "admin":
+                                role_checks.append("request.user.groups.filter(name='IsAdmin').exists()")
+
+                        if role_checks:
+                            perm_code += f"        return {' or '.join(role_checks)}\n"
+                        else:
+                            perm_code += "        return True\n"
+                    else:
+                        perm_code += "        return True\n"
+
+                permission_classes.append(perm_code)
+
+                # Map actions to permission classes for views
+                action_map = {
+                    "view_list": "list",
+                    "view_profile": "retrieve",
+                    "view": "retrieve",
+                    "add": "create",
+                    "edit": "update",
+                    "delete": "destroy"
+                }
+
+                if verb in action_map:
+                    view_permissions[model_name][action_map[verb]] = class_name
+
+        # Generate get_permissions methods for views
+        view_permission_methods = []
+        for model_name, actions in view_permissions.items():
+            if not actions:
+                continue
+
+            method_code = f"def get_permissions(self):\n"
+            method_code += "    if self.action == 'list':\n"
+
+            if "list" in actions:
+                method_code += f"        permission_classes = [{actions['list']}]\n"
+            else:
+                method_code += f"        permission_classes = [permissions.{default_perm}]\n"
+
+            method_code += "    elif self.action == 'retrieve':\n"
+            if "retrieve" in actions:
+                method_code += f"        permission_classes = [{actions['retrieve']}]\n"
+            else:
+                method_code += f"        permission_classes = [permissions.{default_perm}]\n"
+
+            method_code += "    elif self.action == 'create':\n"
+            if "create" in actions:
+                method_code += f"        permission_classes = [{actions['create']}]\n"
+            else:
+                method_code += f"        permission_classes = [permissions.{default_perm}]\n"
+
+            method_code += "    elif self.action in ['update', 'partial_update']:\n"
+            if "update" in actions:
+                method_code += f"        permission_classes = [{actions['update']}]\n"
+            else:
+                method_code += f"        permission_classes = [permissions.{default_perm}]\n"
+
+            method_code += "    elif self.action == 'destroy':\n"
+            if "destroy" in actions:
+                method_code += f"        permission_classes = [{actions['destroy']}]\n"
+            else:
+                method_code += f"        permission_classes = [permissions.{default_perm}]\n"
+
+            method_code += "    else:\n"
+            method_code += f"        permission_classes = [permissions.{default_perm}]\n"
+            method_code += "    return [permission() for permission in permission_classes]"
+
+            view_permission_methods.append((model_name, method_code))
+
+        # Write permissions.py file
+        permissions_content = "\n\n".join(permission_classes)
+        inject_generated_code(permissions_file_path, '\n'.join(self.imports["permissions"]), 'PERMISSIONS-IMPORTS')
+        inject_generated_code(permissions_file_path, permissions_content, 'PERMISSIONS')
+
+        # Update viewsets in views.py file
+        views_file_path = os.path.join(self.output_dir, 'views.py')
+
+        # Add imports for permission classes
+        permission_imports = []
+        for model_name, _ in view_permission_methods:
+            actions = view_permissions[model_name]
+            permission_classes = list(actions.values())
+            if permission_classes:
+                permission_imports.extend(permission_classes)
+
+        if permission_imports:
+            permission_import_str = ", ".join(set(permission_imports))
+            self.append_import("views", f"from .permissions import {permission_import_str}")
+            inject_generated_code(views_file_path, '\n'.join(self.imports["views"]), 'VIEWSET-IMPORTS')
+
+        # Update the get_permissions methods in viewsets
+        for model_name, method_code in view_permission_methods:
+            viewset_name = f"{model_name}ViewSet"
+
+            # Look for the viewset class in views.py
+            with open(views_file_path, 'r') as file:
+                views_content = file.read()
+
+            viewset_pattern = f"class {viewset_name}\\(.*?\\):"
+            match = re.search(viewset_pattern, views_content)
+
+            if match:
+                viewset_start = match.start()
+
+                # Find existing get_permissions method or insert a new one
+                get_perms_pattern = f"def get_permissions\\(self\\):.*?(def |class |$)"
+                get_perms_match = re.search(get_perms_pattern, views_content[viewset_start:], re.DOTALL)
+
+                if get_perms_match:
+                    # Replace existing get_permissions
+                    start_idx = viewset_start + get_perms_match.start()
+                    end_idx = viewset_start + get_perms_match.end() - len(get_perms_match.group(1))
+
+                    new_content = views_content[:start_idx] + method_code + views_content[end_idx:]
+
+                    with open(views_file_path, 'w') as file:
+                        file.write(new_content)
+                else:
+                    # Insert new get_permissions method
+                    class_content_pattern = f"class {viewset_name}\\(.*?\\):.*?(def |class |$)"
+                    class_match = re.search(class_content_pattern, views_content[viewset_start:], re.DOTALL)
+
+                    if class_match:
+                        insert_idx = viewset_start + class_match.end() - len(class_match.group(1))
+
+                        indented_method = "\n    " + method_code.replace("\n", "\n    ") + "\n\n"
+                        new_content = views_content[:insert_idx] + indented_method + views_content[insert_idx:]
+
+                        with open(views_file_path, 'w') as file:
+                            file.write(new_content)
+
+        logger.info(f"Permissions built successfully for {len(permission_classes)} classes.")

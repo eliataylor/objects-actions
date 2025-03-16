@@ -44,7 +44,8 @@ if __name__ == "__main__":
     elif command == 'django':
         builder = DjangoBuilder(output_dir)
         builder.build_django(types_path, default_perm)
-        # builder.build_permissions(matrix_path, default_perm)
+        if os.path.exists(matrix_path):
+            builder.build_permissions(matrix_path, default_perm)
     elif command == 'permissions-ts':
         reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_permissions(default_perm)

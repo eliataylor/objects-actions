@@ -1,6 +1,3 @@
-from django.contrib.auth.decorators import permission_required
-# from allauth.account.models import EmailAddress
-# from django.core.exceptions import ObjectDoesNotExist
 # from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework import permissions
 
@@ -32,11 +29,11 @@ If verb has list or detail:
 """
 ###### USERS PERMISSIONS ######
 
-class can_view_list_users(permissions.BasePermission):
+class can_view_list_users(permissions):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated
 
-class can_view_profile_users(permissions.BasePermission):
+class can_view_profile_users(permissions):
     def has_permission(self, request, view):
         return True
 
@@ -48,12 +45,12 @@ class can_view_profile_users(permissions.BasePermission):
             allowed = True
         return allowed
 
-class can_add_users(permissions.BasePermission):
+class can_add_users(permissions):
     def has_permission(self, request, view):
         allowOwn = request.user is None or not request.user.is_authenticated
         return allowOwn
 
-class can_edit_users(permissions.BasePermission):
+class can_edit_users(permissions):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated
 
@@ -63,7 +60,7 @@ class can_edit_users(permissions.BasePermission):
         else:
             return False
 
-class can_delete_users(permissions.BasePermission):
+class can_delete_users(permissions):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated
 
@@ -73,7 +70,7 @@ class can_delete_users(permissions.BasePermission):
         else:
             return False
 
-class can_block_users(permissions.BasePermission):
+class can_block_users(permissions):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated
 
@@ -86,12 +83,12 @@ class can_block_users(permissions.BasePermission):
 ###### CITIES PERMISSIONS ######
 
 # authenticated and anonymous are checked
-class can_view_cities(permissions.BasePermission):
+class can_view_cities(permissions):
     def has_permission(self, request, view):
         return True
 
 # verified is checked
-class can_add_cities(permissions.BasePermission):
+class can_add_cities(permissions):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
@@ -107,7 +104,7 @@ class can_add_cities(permissions.BasePermission):
 
 
 # admin is required to edit someone else's city
-class can_edit_cities(permissions.BasePermission):
+class can_edit_cities(permissions):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
@@ -123,7 +120,7 @@ class can_edit_cities(permissions.BasePermission):
         return allowed
 
 # verified is checked
-class can_delete_cities(permissions.BasePermission):
+class can_delete_cities(permissions):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
@@ -138,7 +135,7 @@ class can_delete_cities(permissions.BasePermission):
             allowed = request.user.groups.filter(name='IsVerified').exists()
         return allowed
 
-class can_comment_cities(permissions.BasePermission):
+class can_comment_cities(permissions):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated
 
@@ -147,6 +144,6 @@ class can_comment_cities(permissions.BasePermission):
         return request.user.groups.filter(name='IsVerified').exists()
 
 
-class can_sponsor_cities(permissions.BasePermission):
+class can_sponsor_cities(permissions):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated
