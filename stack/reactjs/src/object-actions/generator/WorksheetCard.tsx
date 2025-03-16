@@ -10,8 +10,6 @@ interface WorksheetCardProps {
   worksheet: SchemaVersions;
 }
 
-const MAX_RESPONSE_LENGTH = 120;
-
 const WorksheetCard: React.FC<WorksheetCardProps> = ({ worksheet }) => {
 
   return (

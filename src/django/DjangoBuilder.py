@@ -314,11 +314,8 @@ urlpatterns += [
             tpl = fm.read().strip()
 
         group_commands = []
-        # Format the roles for Django group names (convert to PascalCase with 'Is' prefix)
         for role in all_roles:
             if role != 'anonymous' and role != 'authenticated':  # Skip built-in roles
-
-                # Convert snake_case or space-separated roles to CamelCase with "Is" prefix
                 group_creation_code = f"                Group.objects.get_or_create(name=\"{role}\")"
                 group_commands.append(group_creation_code)
 
@@ -459,9 +456,7 @@ urlpatterns += [
                     if role == "authenticated":
                         role_checks.append("request.user.is_authenticated")
                     else:
-                        # Convert snake_case or space-separated roles to CamelCase with "Is" prefix
-                        group_name = ''.join(word.capitalize() for word in role.replace('_', ' ').split())
-                        role_checks.append(f"request.user.groups.filter(name='Is{group_name}').exists()")
+                        role_checks.append(f"request.user.groups.filter(name='{role}').exists()")
 
                 if role_checks:
                     perm_code += f"        return {' or '.join(role_checks)}\n"
@@ -678,13 +673,10 @@ adapting to the current user's authentication status and roles.
                 if create_rule_others and create_rule_others.get('roles'):
                     admin_roles = create_rule_others.get('roles', [])
 
-                # Construct the admin check based on roles
+                # TODO: make dynamic
                 admin_checks = []
                 for role in admin_roles:
-                    if role == "admin":
-                        admin_checks.append("self.request.user.groups.filter(name='IsAdmin').exists()")
-                    elif role != "anonymous" and role != "authenticated":
-                        # Convert snake_case or space-separated roles to CamelCase with "Is" prefix
+                    if role != "anonymous" and role != "authenticated":
                         admin_checks.append(f"self.request.user.groups.filter(name='{role}').exists()")
 
                 admin_check_str = " or ".join(

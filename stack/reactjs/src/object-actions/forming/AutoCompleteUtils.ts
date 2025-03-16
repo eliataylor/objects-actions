@@ -87,16 +87,27 @@ export function useAutocomplete<T extends ModelName>({
 
   const debounceFetch = useMemo(
     () => debounce((search: string) => fetchOptions(search), 300),
-    [fetchOptions]
+    // Remove the dependency on fetchOptions which changes on every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [basePath]
   );
 
   useEffect(() => {
+    // Only fetch if inputValue is not empty
     if (inputValue.trim() !== "") {
       debounceFetch(inputValue);
     } else {
+      // Clear options when input is empty without making an API call
       setOptions([]);
     }
-  }, [inputValue, debounceFetch]);
+    // This effect should only run when inputValue changes, not on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue]);
+
+  // Wrapper function to update inputValue
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+  };
 
   const setNestedEntity = () => {
     setNestedForm(createBaseEntity(type));
@@ -107,7 +118,7 @@ export function useAutocomplete<T extends ModelName>({
     inputValue,
     loading,
     nestedForm,
-    setInputValue,
+    setInputValue: handleInputChange,
     setNestedForm,
     setNestedEntity,
     setOptions

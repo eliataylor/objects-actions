@@ -45,7 +45,7 @@ const EntityForm = () => {
         _type: navItem.type
       });
     }
-  }, [id, model, location.search]);
+  }, [id, model, navItem, location.search]);
 
   if (!navItem) {
     return <Typography variant="h6">Invalid URL pattern for {model}</Typography>;

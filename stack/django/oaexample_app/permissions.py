@@ -55,7 +55,7 @@ class can_view_list_users(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.is_authenticated
+        return request.user.groups.filter(name='city sponsor').exists() or request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
         is_own = request.user.id == obj.id
@@ -77,7 +77,7 @@ class can_view_profile_users(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.is_authenticated
+        return request.user.groups.filter(name='verified').exists() or request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
         is_own = request.user.id == obj.id
@@ -178,7 +178,7 @@ class can_block_user_users(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = request.user.id == obj.id
@@ -211,7 +211,7 @@ class can_add_cities(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
 
 class can_edit_cities(BasePermission):
@@ -225,7 +225,7 @@ class can_edit_cities(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='admin').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -246,7 +246,7 @@ class can_delete_cities(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='admin').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -266,7 +266,7 @@ class can_add_comment_cities(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -286,7 +286,7 @@ class can_edit_comment_cities(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -306,7 +306,7 @@ class can_delete_comment_cities(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -352,7 +352,7 @@ class can_add_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='rally speaker').exists() or request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -373,7 +373,7 @@ class can_edit_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='admin').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -394,7 +394,7 @@ class can_delete_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='admin').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -414,7 +414,7 @@ class can_subscribe_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -434,7 +434,7 @@ class can_edit_subscribe_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -454,7 +454,7 @@ class can_delete_subscription_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -474,7 +474,7 @@ class can_add_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='rally moderator').exists() or request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -494,7 +494,7 @@ class can_edit_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -515,7 +515,7 @@ class can_delete_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='rally moderator').exists() or request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='admin').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -548,7 +548,7 @@ class can_add_officials(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='city sponsor').exists() or request.user.groups.filter(name='admin').exists()
 
 
 class can_edit_officials(BasePermission):
@@ -562,7 +562,7 @@ class can_edit_officials(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='city sponsor').exists() or request.user.groups.filter(name='admin').exists()
 
 
 class can_delete_officials(BasePermission):
@@ -576,7 +576,7 @@ class can_delete_officials(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='city sponsor').exists() or request.user.groups.filter(name='admin').exists()
 
 
 class can_view_actionplans(BasePermission):
@@ -601,7 +601,7 @@ class can_add_actionplans(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -622,7 +622,7 @@ class can_edit_actionplans(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='admin').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -642,7 +642,7 @@ class can_delete_actionplans(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -662,7 +662,7 @@ class can_add_comment_actionplans(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -682,7 +682,7 @@ class can_edit_comment_actionplans(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -703,7 +703,7 @@ class can_delete_comment_actionplans(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='admin').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -723,7 +723,7 @@ class can_edit_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -744,7 +744,7 @@ class can_delete_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='admin').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -764,7 +764,7 @@ class can_add_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -784,7 +784,7 @@ class can_edit_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -805,7 +805,7 @@ class can_delete_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -826,7 +826,7 @@ class can_sponsor_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
 
 class can_apply_to_speak_rallies(BasePermission):
@@ -839,7 +839,7 @@ class can_apply_to_speak_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -859,7 +859,7 @@ class can_withdraw_application_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -879,7 +879,7 @@ class can_approve_speaker_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -899,7 +899,7 @@ class can_reject_speaker_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -919,7 +919,7 @@ class can_view_invites(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -939,7 +939,7 @@ class can_add_invites(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -959,7 +959,7 @@ class can_edit_invites(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -979,7 +979,7 @@ class can_delete_invites(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1000,7 +1000,7 @@ class can_view_meetings(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='admin').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1020,7 +1020,7 @@ class can_add_meetings(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1040,7 +1040,7 @@ class can_edit_meetings(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1060,7 +1060,7 @@ class can_delete_meetings(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1081,7 +1081,7 @@ class can_view_rooms(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCityOfficial').exists()
+        return request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='admin').exists() or request.user.groups.filter(name='city official').exists() or request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='city sponsor').exists() or request.user.groups.filter(name='rally speaker').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1101,7 +1101,7 @@ class can_add_rooms(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCityOfficial').exists()
+        return request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='admin').exists() or request.user.groups.filter(name='rally speaker').exists() or request.user.groups.filter(name='city official').exists() or request.user.groups.filter(name='city sponsor').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1121,7 +1121,7 @@ class can_edit_rooms(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1141,7 +1141,7 @@ class can_delete_rooms(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1162,7 +1162,7 @@ class can_view_subscriptions(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='admin').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1182,7 +1182,7 @@ class can_add_subscriptions(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1202,7 +1202,7 @@ class can_edit_subscriptions(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1222,7 +1222,7 @@ class can_delete_subscriptions(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='verified').exists() or request.user.groups.filter(name='rally attendee').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1242,7 +1242,7 @@ class can_view_list_resources(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1263,7 +1263,7 @@ class can_view_resources(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists()
+        return request.user.groups.filter(name='verified').exists()
 
 
 class can_add_resources(BasePermission):
@@ -1276,7 +1276,7 @@ class can_add_resources(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCityOfficial').exists()
+        return request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='paid user').exists() or request.user.groups.filter(name='rally speaker').exists() or request.user.groups.filter(name='city official').exists() or request.user.groups.filter(name='city sponsor').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1296,7 +1296,7 @@ class can_edit_resources(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCityOfficial').exists()
+        return request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='paid user').exists() or request.user.groups.filter(name='rally speaker').exists() or request.user.groups.filter(name='city official').exists() or request.user.groups.filter(name='city sponsor').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1316,7 +1316,7 @@ class can_delete_resources(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCityOfficial').exists()
+        return request.user.groups.filter(name='rally attendee').exists() or request.user.groups.filter(name='paid user').exists() or request.user.groups.filter(name='rally speaker').exists() or request.user.groups.filter(name='city official').exists() or request.user.groups.filter(name='city sponsor').exists() or request.user.groups.filter(name='rally moderator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
