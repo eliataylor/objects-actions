@@ -57,7 +57,7 @@ const TablePaginator: React.FC<PaginatorProps> = ({
       onPageChange={(event, newPage) => handlePageChange(event, newPage)}
       rowsPerPage={limit}
       onRowsPerPageChange={handlePageSizeChange}
-      rowsPerPageOptions={[5, 15, 25, 50]}
+      rowsPerPageOptions={[5, 10, 15, 25, 50]}
     />
   );
 };
