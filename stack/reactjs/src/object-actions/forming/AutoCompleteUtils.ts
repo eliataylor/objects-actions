@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { ModelName, ModelType, RelEntity, NavItem, NAVITEMS, ApiListResponse } from "../types/types";
+import { ApiListResponse, ModelName, ModelType, NavItem, NAVITEMS, RelEntity } from "../types/types";
 
 export interface AcOption {
   label: string;
@@ -58,10 +58,10 @@ export function createBaseEntity<T extends ModelName>(type: T) {
 
 // Custom hook for handling autocomplete state and API calls
 export function useAutocomplete<T extends ModelName>({
-  type,
-  search_fields,
-  image_field,
-}: BaseAcFieldProps<T>) {
+                                                       type,
+                                                       search_fields,
+                                                       image_field
+                                                     }: BaseAcFieldProps<T>) {
   const [options, setOptions] = useState<AcOption[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,7 +72,7 @@ export function useAutocomplete<T extends ModelName>({
   const fetchOptions = async (search: string) => {
     setLoading(true);
     try {
-      const response:HttpResponse<ApiListResponse<T>>  = await ApiClient.get(`${basePath}?search=${search}`);
+      const response: HttpResponse<ApiListResponse<T>> = await ApiClient.get(`${basePath}?search=${search}`);
       if (response.success && response.data?.results) {
         const options = Api2Options(response.data.results, search_fields, image_field);
         setOptions(options);

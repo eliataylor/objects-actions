@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import { Box } from '@mui/material';
-import { ModelType, NAVITEMS } from '../object-actions/types/types';
-import EntityCard from '../object-actions/components/EntityCard';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ApiClient from '../config/ApiClient';
-import EntityList from './EntityList';
-import Snackbar from '@mui/material/Snackbar';
+import React, { useEffect } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { Box } from "@mui/material";
+import { ModelType, NAVITEMS } from "../object-actions/types/types";
+import EntityCard from "../object-actions/components/EntityCard";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ApiClient from "../config/ApiClient";
+import EntityList from "./EntityList";
+import Snackbar from "@mui/material/Snackbar";
 import { canDo } from "../object-actions/types/access";
 import { useAuth } from "../allauth/auth";
 import PermissionError from "../components/PermissionError";
@@ -21,25 +21,25 @@ const UserView: React.FC = () => {
   const { uid } = useParams();
   const me = useAuth()?.data?.user;
   const [userProfile, updateUserProfile] = React.useState<ModelType<"Users"> | null>(
-    null,
+    null
   );
   const [stats, updateStats] = React.useState<{ [key: string]: number }>({});
-  const [snack, showSnackBar] = React.useState('');
+  const [snack, showSnackBar] = React.useState("");
   const closeSnackbar = (
     event: React.SyntheticEvent | Event,
-    reason?: string,
+    reason?: string
   ) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
-    showSnackBar('');
+    showSnackBar("");
   };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       const response = await ApiClient.get(
-        `/api/users/${uid}${location.search}`,
+        `/api/users/${uid}${location.search}`
       );
       if (response.error) {
         return showSnackBar(response.error);
@@ -55,7 +55,7 @@ const UserView: React.FC = () => {
     const newstats = { ...stats };
     const fetchStats = async (model: string) => {
       const response = await ApiClient.get(
-        `/api/users/${uid}/${model.toLowerCase()}/stats${location.search}`,
+        `/api/users/${uid}/${model.toLowerCase()}/stats${location.search}`
       );
       if (response.error) {
         return showSnackBar(response.error);
@@ -68,7 +68,7 @@ const UserView: React.FC = () => {
 
     const updateAllStats = async () => {
       const fetchPromises = NAVITEMS.map(async (item) => {
-        if (item.type === 'Users') return null;
+        if (item.type === "Users") return null;
         await fetchStats(item.type);
       });
 
@@ -79,7 +79,7 @@ const UserView: React.FC = () => {
 
     updateAllStats();
 
-    console.log('STATS', stats);
+    console.log("STATS", stats);
   }, []);
 
   if (!userProfile) return null;
@@ -94,7 +94,7 @@ const UserView: React.FC = () => {
   const canView = canDo("view", userProfile, me);
 
   if (typeof canView === "string") {
-    return <PermissionError error={canView} />
+    return <PermissionError error={canView} />;
   }
 
   return (
@@ -108,7 +108,7 @@ const UserView: React.FC = () => {
       <EntityCard entity={userProfile} />
 
       {NAVITEMS.map((item) => {
-        if (item.type === 'Users') return null;
+        if (item.type === "Users") return null;
         return (
           <Accordion
             expanded={expanded === item.type}
@@ -120,19 +120,19 @@ const UserView: React.FC = () => {
               aria-controls={`byusers-${item.type}-content`}
               id={`byusers-${item.type}-header`}
               sx={{
-                justifyContent: 'space-between',
-                alignContent: 'center',
-                alignItems: 'center',
-                display: 'flex',
+                justifyContent: "space-between",
+                alignContent: "center",
+                alignItems: "center",
+                display: "flex"
               }}
             >
-              {typeof stats[item.type] !== 'undefined' && (
-                <Typography variant={'subtitle2'} mr={2}>
+              {typeof stats[item.type] !== "undefined" && (
+                <Typography variant={"subtitle2"} mr={2}>
                   {stats[item.type]}
                 </Typography>
               )}
 
-              <Typography variant={'subtitle2'}>{item.plural}</Typography>
+              <Typography variant={"subtitle2"}>{item.plural}</Typography>
             </AccordionSummary>
             <AccordionDetails id={`byusers-${item.type}-content`}>
               <Typography>

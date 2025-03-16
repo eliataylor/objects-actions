@@ -1,14 +1,10 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Box, Collapse, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material";
-import { NAVITEMS } from "../object-actions/types/types";
+import { useLocation } from "react-router-dom";
+import { Collapse, Divider, List, ListItemButton, ListItemText } from "@mui/material";
 import AuthMenu from "../components/AuthMenu";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import OALogo from "../object-actions/docs/OALogo";
 import OaMenu from "../object-actions/docs/OaMenu";
-import ThemeSwitcher from "../theme/ThemeSwitcher";
 import ContentMenu from "./ContentMenu";
-import Logo from "../theme/Logo";
 
 const AllMenus = () => {
   const location = useLocation();
@@ -23,7 +19,7 @@ const AllMenus = () => {
 
   return (
     <React.Fragment>
-      <List id={"AllMenus"} dense={true} style={{marginBottom: 0, paddingBottom:0}}>
+      <List id={"AllMenus"} dense={true} style={{ marginBottom: 0, paddingBottom: 0 }}>
         <AuthMenu />
 
         <Divider
@@ -35,7 +31,7 @@ const AllMenus = () => {
 
         <ListItemButton
           dense={true}
-          id={'OAMenuButton'}
+          id={"OAMenuButton"}
           style={{ justifyContent: "space-between" }}
           onClick={handleClick}
         >
@@ -54,7 +50,7 @@ const AllMenus = () => {
       </List>
 
       <Divider
-        sx={{  backgroundColor: "primary.dark" }}
+        sx={{ backgroundColor: "primary.dark" }}
       />
 
       <List dense={true}>

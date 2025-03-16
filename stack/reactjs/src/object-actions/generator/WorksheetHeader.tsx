@@ -5,7 +5,6 @@ import { SchemaVersions } from "./generator-types";
 import WorksheetSelector from "./WorksheetSelector";
 import Grid from "@mui/material/Grid";
 import { useAuth } from "../../allauth/auth";
-import { TightButton } from "../../theme/StyledFields";
 import { Link } from "react-router-dom";
 
 interface WorksheetHeaderProps {
@@ -25,17 +24,17 @@ const WorksheetHeader: React.FC<WorksheetHeaderProps> = ({ worksheet, handleEnha
 
   return (
     <Box>
-      <Box style={{textAlign:'right', marginBottom:10}}>
-      <Button
-        color="secondary"
-        variant={"text"}
-        endIcon={<Add />}
-        component={Link}
-        to={`/oa/schemas/add`}
-        data-href={`/oa/schemas/add`}
-      >
-        Start a new Thread
-      </Button>
+      <Box style={{ textAlign: "right", marginBottom: 10 }}>
+        <Button
+          color="secondary"
+          variant={"text"}
+          endIcon={<Add />}
+          component={Link}
+          to={`/oa/schemas/add`}
+          data-href={`/oa/schemas/add`}
+        >
+          Start a new Thread
+        </Button>
       </Box>
       <WorksheetSelector worksheet={worksheet} />
       <Paper sx={{ p: 1, mb: 4 }}>

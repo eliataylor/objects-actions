@@ -1,6 +1,6 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography } from "@mui/material";
 
-export default function VerificationEmailSent() {
+export default function VerificationEmailSent () {
   return (
     <Box p={1} mt={8}>
       <Typography variant="h6">Confirm Email Address</Typography>

@@ -1,6 +1,6 @@
-import ReauthenticateCode from './ReauthenticateCode';
+import ReauthenticateCode from "./ReauthenticateCode";
 
-export default function ReauthenticateTOTP(props) {
+export default function ReauthenticateTOTP (props) {
   return (
     <ReauthenticateCode>
       <p>Please enter an authenticator code:</p>

@@ -1,5 +1,5 @@
 // autocompleteRender.tsx
-import { ListItem, ListItemAvatar, ListItemText, Avatar, CircularProgress } from "@mui/material";
+import { Avatar, CircularProgress, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { Add, Search } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import { AcOption } from "./AutoCompleteUtils";

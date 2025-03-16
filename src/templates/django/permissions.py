@@ -1,12 +1,7 @@
 from django.contrib.auth.decorators import permission_required
 from allauth.account.models import EmailAddress
 from django.core.exceptions import ObjectDoesNotExist
-
-
-@permission_required('.__VERB_____OBJECT__', raise_exception=True)
-def edit_post(request, post_id):
-    # View logic here
-    pass
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission
 
 
 class IsOwner(permissions.BasePermission):
@@ -16,6 +11,22 @@ class IsOwner(permissions.BasePermission):
     """
     def has_object_permission(self, request, view, obj):
         return hasattr(obj, 'author') and obj.author == request.user
+
+
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+    def get_permissions(self):
+        if self.action == 'list':
+            # Any authenticated user can list, but will be filtered in get_queryset
+            permission_classes = [IsAuthenticated]
+        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+            # Must be owner OR admin to access specific object
+            permission_classes = [IsAuthenticated & (IsOwner | IsAdminUser)]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
 
 def user_has_role(user, roles):

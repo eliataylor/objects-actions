@@ -1,13 +1,13 @@
-import { Link, Navigate, useLocation } from 'react-router-dom';
-import { pathForPendingFlow, URLs, useAuthStatus } from '../auth';
-import { Box } from '@mui/material';
+import { Link, Navigate, useLocation } from "react-router-dom";
+import { pathForPendingFlow, URLs, useAuthStatus } from "../auth";
+import { Box } from "@mui/material";
 
-export default function ProviderCallback() {
+export default function ProviderCallback () {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const error = params.get('error');
+  const error = params.get("error");
   const [auth, status] = useAuthStatus();
-  const providerName = params.provider ? params.provider : '';
+  const providerName = params.provider ? params.provider : "";
 
   let url = URLs.LOGIN_URL;
   if (status.isAuthenticated) {

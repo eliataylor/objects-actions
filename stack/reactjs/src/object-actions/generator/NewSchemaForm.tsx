@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { Alert, Box, Button, CircularProgress, Fab, LinearProgress, MenuItem, Paper, TextField, Typography } from "@mui/material";
-import { Add, FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
+import { Alert, Box, Button, CircularProgress, Fab, MenuItem, Paper, TextField, Typography } from "@mui/material";
+import { FormatQuote, ListAlt, Science as GenerateIcon } from "@mui/icons-material";
 import ApiClient from "../../config/ApiClient";
 import { AiSchemaResponse, SchemaVersions, StreamChunk } from "./generator-types";
 import Grid from "@mui/material/Grid";
@@ -135,7 +135,7 @@ const NewSchemaForm: React.FC = () => {
             Generate the spreadsheet to document your app idea.
           </Typography>
           <Typography variant="subtitle2" component="h2">
-           A trained AI agent will offer reasoning and structured tables for use with Objects/Actions
+            A trained AI agent will offer reasoning and structured tables for use with Objects/Actions
           </Typography>
         </Grid>
         <Grid item>
@@ -217,9 +217,9 @@ const NewSchemaForm: React.FC = () => {
           <Fab
             color="primary"
             size="small"
-            sx={{ position: "fixed", backgroundColor:'transparent', right: 20, bottom: 20 }}
+            sx={{ position: "fixed", backgroundColor: "transparent", right: 20, bottom: 20 }}
           >
-            <CircularProgress color={!loading ? 'primary' : 'secondary'} />
+            <CircularProgress color={!loading ? "primary" : "secondary"} />
           </Fab>
         </Box>
       }

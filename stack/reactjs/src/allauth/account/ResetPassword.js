@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import FormErrors from '../components/FormErrors';
-import { getPasswordReset, resetPassword } from '../lib/allauth';
-import { Link, Navigate, useLoaderData } from 'react-router-dom';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { useState } from "react";
+import FormErrors from "../components/FormErrors";
+import { getPasswordReset, resetPassword } from "../lib/allauth";
+import { Link, Navigate, useLoaderData } from "react-router-dom";
+import { Box, Button, TextField, Typography } from "@mui/material";
 
-export async function loader({ params }) {
+export async function loader ({ params }) {
   const key = params.key;
   const resp = await getPasswordReset(key);
   return { key, keyResponse: resp };
 }
 
-export default function ResetPassword() {
+export default function ResetPassword () {
   const { key, keyResponse } = useLoaderData();
 
-  const [password1, setPassword1] = useState('');
-  const [password2, setPassword2] = useState('');
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
   const [password2Errors, setPassword2Errors] = useState([]);
 
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     if (password2 !== password1) {
       setPassword2Errors([
-        { param: 'password2', message: 'Password does not match.' },
+        { param: "password2", message: "Password does not match." }
       ]);
       return;
     }

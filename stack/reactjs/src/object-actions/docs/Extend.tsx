@@ -1,10 +1,8 @@
-import React from 'react';
-import { Box, Button } from "@mui/material";
-import { Command, StyledPaper, StyledTypography } from '../components/StyledComponents';
-import EnvBuilder from '../forming/EnvBuilder';
-import { useEnvContext } from '../forming/EnvProvider';
-import { Link } from "react-router-dom";
-import { LiveHelp } from "@mui/icons-material";
+import React from "react";
+import { Box } from "@mui/material";
+import { Command, StyledPaper, StyledTypography } from "../components/StyledComponents";
+import EnvBuilder from "../forming/EnvBuilder";
+import { useEnvContext } from "../forming/EnvProvider";
 import { NeedHelp } from "./NeedHelp";
 
 interface Task {
@@ -26,7 +24,7 @@ const Extend: React.FC = () => {
         <StyledTypography variant="subtitle2" sx={{ mb: 3 }}>
           1. Name your project and any settings below, then click "Copy Settings"
         </StyledTypography>
-        <EnvBuilder displayProperties={['PROJECT_NAME', 'STACK_PATH', 'TYPES_PATH', 'PERMISSIONS_PATH']} />
+        <EnvBuilder displayProperties={["PROJECT_NAME", "STACK_PATH", "TYPES_PATH", "PERMISSIONS_PATH"]} />
       </StyledPaper>
 
       <StyledPaper>
@@ -36,7 +34,7 @@ const Extend: React.FC = () => {
         <Command command="bash clone.sh --env .env" />
       </StyledPaper>
 
-      {envConfig.STACK_PATH != '.' && (
+      {envConfig.STACK_PATH != "." && (
         <StyledPaper>
           <Command command={`cd ${envConfig.STACK_PATH}`} />
         </StyledPaper>
@@ -56,7 +54,6 @@ const Extend: React.FC = () => {
         </StyledTypography>
         <Command command="docker-compose up --build -d" />
       </StyledPaper>
-
 
 
       <Box sx={{ mt: 5, mb: 5, textAlign: "right" }}>

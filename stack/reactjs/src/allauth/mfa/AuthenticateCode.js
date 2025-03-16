@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import FormErrors from '../components/FormErrors';
-import * as allauth from '../lib/allauth';
-import { Button } from '@mui/material';
-import { useAuthInfo } from '../auth/hooks';
-import { Navigate } from 'react-router-dom';
-import AuthenticateFlow from './AuthenticateFlow';
+import { useState } from "react";
+import FormErrors from "../components/FormErrors";
+import * as allauth from "../lib/allauth";
+import { Button } from "@mui/material";
+import { useAuthInfo } from "../auth/hooks";
+import { Navigate } from "react-router-dom";
+import AuthenticateFlow from "./AuthenticateFlow";
 
-export default function AuthenticateCode(props) {
-  const [code, setCode] = useState('');
+export default function AuthenticateCode (props) {
+  const [code, setCode] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
   const authInfo = useAuthInfo();
 
@@ -15,7 +15,7 @@ export default function AuthenticateCode(props) {
     return <Navigate to="/" />;
   }
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     allauth
       .mfaAuthenticate(code)

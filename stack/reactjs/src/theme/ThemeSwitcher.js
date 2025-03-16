@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { InputAdornment, MenuItem, TextField } from "@mui/material";
-import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
+import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
 
 const ThemeSwitcher = () => {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
@@ -15,15 +15,15 @@ const ThemeSwitcher = () => {
       variant={"outlined"}
       value={darkMode}
       onChange={(e) => {
-        window.localStorage.setItem("themeMode", e.target.value)
-        setDarkMode(e.target.value)
+        window.localStorage.setItem("themeMode", e.target.value);
+        setDarkMode(e.target.value);
       }}
       fullWidth
       InputProps={{
-        sx: { fontSize:12 },
+        sx: { fontSize: 12 },
         startAdornment: (
           <InputAdornment position="start">
-            <SettingsBrightnessIcon size={'small'} />
+            <SettingsBrightnessIcon size={"small"} />
           </InputAdornment>
         )
       }}

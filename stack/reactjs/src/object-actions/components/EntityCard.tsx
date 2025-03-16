@@ -1,16 +1,16 @@
-import React from 'react';
-import { Card, CardContent, Grid, ListItem, ListItemAvatar, Typography } from '@mui/material';
-import { ModelName, ModelType, RelEntity, FieldTypeDefinition, NAVITEMS, TypeFieldSchema } from '../types/types';
-import ListItemText, { ListItemTextProps } from '@mui/material/ListItemText';
-import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader';
-import { Link, useNavigate } from 'react-router-dom';
-import Avatar from '@mui/material/Avatar';
-import { Edit, ReadMore } from '@mui/icons-material';
-import IconButton from '@mui/material/IconButton';
-import RelEntityHead from './RelEntityHead';
-import CardMedia from '@mui/material/CardMedia';
-import { humanize } from '../../utils';
-import { AlternatingList } from '../../theme/StyledFields';
+import React from "react";
+import { Card, CardContent, Grid, ListItem, ListItemAvatar, Typography } from "@mui/material";
+import { FieldTypeDefinition, ModelName, ModelType, NAVITEMS, RelEntity, TypeFieldSchema } from "../types/types";
+import ListItemText, { ListItemTextProps } from "@mui/material/ListItemText";
+import CardHeader, { CardHeaderProps } from "@mui/material/CardHeader";
+import { Link, useNavigate } from "react-router-dom";
+import Avatar from "@mui/material/Avatar";
+import { Edit, ReadMore } from "@mui/icons-material";
+import IconButton from "@mui/material/IconButton";
+import RelEntityHead from "./RelEntityHead";
+import CardMedia from "@mui/material/CardMedia";
+import { humanize } from "../../utils";
+import { AlternatingList } from "../../theme/StyledFields";
 import { canDo } from "../types/access";
 import { useAuth } from "../../allauth/auth";
 import PermissionError from "../../components/PermissionError";
@@ -37,7 +37,7 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
 
   const definitions = TypeFieldSchema[hasUrl.type];
   const imageField = Object.values(definitions).find(
-    (d): d is FieldTypeDefinition & { field_type: 'image' } => d.field_type === 'image'
+    (d): d is FieldTypeDefinition & { field_type: "image" } => d.field_type === "image"
   );
 
   if (imageField) {
@@ -52,7 +52,7 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
   }
 
   // Known possible title fields that should return string or number values
-  const titleFields = ['title', 'name', 'first_name', 'last_name', 'slug', 'id'] as const;
+  const titleFields = ["title", "name", "first_name", "last_name", "slug", "id"] as const;
 
   for (const key of titleFields) {
     if (key in entity) {
@@ -63,11 +63,11 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
     }
   }
 
-  if ('created_at' in entity) {
-    displayed.push('created_at');
-    headerProps.subheader = new Intl.DateTimeFormat('en-US', {
-      dateStyle: 'full',
-      timeStyle: 'long',
+  if ("created_at" in entity) {
+    displayed.push("created_at");
+    headerProps.subheader = new Intl.DateTimeFormat("en-US", {
+      dateStyle: "full",
+      timeStyle: "long"
     }).format(new Date(entity.created_at));
   }
 
@@ -95,8 +95,8 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
   Object.keys(entity).forEach((key, i) => {
     const typedKey = key as keyof typeof entity;
     let val: any = entity[typedKey];
-    if (typeof val === 'boolean') val = val.toString();
-    if (!val) val = '';
+    if (typeof val === "boolean") val = val.toString();
+    if (!val) val = "";
     if (displayed.includes(key)) {
       return true;
     }
@@ -105,13 +105,13 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
     const field = definitions[key];
 
     if (field) {
-      atts.primary = field.cardinality && (field.cardinality > 1 || field.field_type === 'integer')
+      atts.primary = field.cardinality && (field.cardinality > 1 || field.field_type === "integer")
         ? field.plural.toLowerCase()
         : field.singular.toLowerCase();
 
-      if (field.field_type === 'json') {
+      if (field.field_type === "json") {
         atts.secondary = JSON.stringify(val, null, 2);
-      } else if (val && typeof val === 'object') {
+      } else if (val && typeof val === "object") {
         atts.secondary = JSON.stringify(val, null, 2);
         if (Array.isArray(val)) {
           const list = val.map((v: RelEntity) => {
@@ -139,49 +139,49 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
               key={`prop${key}-${i}`}
               rel={val}
               label={field.singular}
-            />,
+            />
           );
           return true;
         }
       } else if (
-        key === 'modified_at' ||
-        field.field_type === 'date_time' ||
-        field.field_type === 'date'
+        key === "modified_at" ||
+        field.field_type === "date_time" ||
+        field.field_type === "date"
       ) {
-        atts.secondary = new Intl.DateTimeFormat('en-US', {
-          dateStyle: 'full',
-          timeStyle: 'long',
+        atts.secondary = new Intl.DateTimeFormat("en-US", {
+          dateStyle: "full",
+          timeStyle: "long"
         }).format(new Date(val));
-      } else if (field.field_type === 'slug') {
+      } else if (field.field_type === "slug") {
         atts.secondary = (
           <Link to={`/${entity._type.toLowerCase()}/${val}`}>{val}</Link>
         );
       }
-    } else if (typeof atts.secondary === 'object') {
-      if (key === 'author' && isRelEntity(val)) {
+    } else if (typeof atts.secondary === "object") {
+      if (key === "author" && isRelEntity(val)) {
         content.push(
-          <RelEntityHead key={`prop${key}-${i}`} rel={val} label="Author" />,
+          <RelEntityHead key={`prop${key}-${i}`} rel={val} label="Author" />
         );
         return true;
       } else {
         atts.secondary = (
-          <Typography sx={{ wordBreak: 'break-word' }} variant="body2">
+          <Typography sx={{ wordBreak: "break-word" }} variant="body2">
             {JSON.stringify(atts.secondary, null, 2)}
           </Typography>
         );
       }
     }
 
-    if (typeof atts.primary === 'string') {
+    if (typeof atts.primary === "string") {
       atts.primary = humanize(atts.primary);
     }
 
-    if (val === '') {
+    if (val === "") {
       // do nothing
-    } else if (field?.field_type === 'image') {
-      if (typeof atts.secondary === 'string') {
+    } else if (field?.field_type === "image") {
+      if (typeof atts.secondary === "string") {
         atts.secondary = (
-          <Typography sx={{ wordBreak: 'break-word' }} variant="body2">
+          <Typography sx={{ wordBreak: "break-word" }} variant="body2">
             {atts.secondary}
           </Typography>
         );
@@ -191,24 +191,24 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
           className="EntityImage"
           dense={true}
           key={`prop${key}-${i}`}
-          sx={{ maxWidth: '100%' }}
+          sx={{ maxWidth: "100%" }}
         >
           <ListItemAvatar>
             <Avatar src={val} />
           </ListItemAvatar>
           <ListItemText {...atts} />
-        </ListItem>,
+        </ListItem>
       );
-    } else if (field?.field_type === 'video') {
+    } else if (field?.field_type === "video") {
       content.push(
         <Card
           key={`prop${key}-${i}`}
-          sx={{ flexGrow: 1, position: 'relative' }}
+          sx={{ flexGrow: 1, position: "relative" }}
         >
           <CardMedia>
             <video
               width="100%"
-              style={{ maxWidth: '600' }}
+              style={{ maxWidth: "600" }}
               autoPlay
               muted
               controls={true}
@@ -219,13 +219,13 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
           <CardContent>
             <Typography>{atts.title}</Typography>
           </CardContent>
-        </Card>,
+        </Card>
       );
-    } else if (field?.field_type === 'audio') {
+    } else if (field?.field_type === "audio") {
       content.push(
         <Card
           key={`prop${key}-${i}`}
-          sx={{ flexGrow: 1, position: 'relative' }}
+          sx={{ flexGrow: 1, position: "relative" }}
         >
           <CardMedia>
             <audio controls={true}>
@@ -235,7 +235,7 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
           <CardContent>
             <Typography>{atts.title}</Typography>
           </CardContent>
-        </Card>,
+        </Card>
       );
     } else {
       content.push(<ListItemText key={`prop${key}-${i}`} {...atts} />);
@@ -258,10 +258,10 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
 function isRelEntity(value: any): value is RelEntity {
   return (
     value &&
-    typeof value === 'object' &&
-    'id' in value &&
-    '_type' in value &&
-    'str' in value
+    typeof value === "object" &&
+    "id" in value &&
+    "_type" in value &&
+    "str" in value
   );
 }
 

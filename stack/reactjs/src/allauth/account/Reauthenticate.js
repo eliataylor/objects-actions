@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import FormErrors from '../components/FormErrors';
-import { Flows, reauthenticate } from '../lib/allauth';
-import ReauthenticateFlow from './ReauthenticateFlow';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { useState } from "react";
+import FormErrors from "../components/FormErrors";
+import { Flows, reauthenticate } from "../lib/allauth";
+import ReauthenticateFlow from "./ReauthenticateFlow";
+import { Box, Button, TextField, Typography } from "@mui/material";
 
-export default function Reauthenticate() {
-  const [password, setPassword] = useState('');
+export default function Reauthenticate () {
+  const [password, setPassword] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     reauthenticate({ password })
       .then((content) => {

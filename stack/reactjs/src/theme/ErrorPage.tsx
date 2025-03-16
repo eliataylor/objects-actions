@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box } from '@mui/material';
+import React from "react";
+import { Box } from "@mui/material";
 
 interface ErrorPageProps {
   error?: Error;
@@ -15,11 +15,11 @@ interface ErrorPageProps {
 }
 
 const ErrorPage: React.FC<ErrorPageProps> = ({
-  error,
-  errorInfo,
-  globalError,
-  showDebugInfo = false,
-}) => {
+                                               error,
+                                               errorInfo,
+                                               globalError,
+                                               showDebugInfo = false
+                                             }) => {
   return (
     <Box p={2}>
       <h1>Oops! Something went wrong.</h1>
@@ -30,10 +30,10 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
       {showDebugInfo && (
         <div
           style={{
-            marginTop: '20px',
-            padding: '10px',
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
+            marginTop: "20px",
+            padding: "10px",
+            backgroundColor: "#f8d7da",
+            color: "#721c24"
           }}
         >
           <h2>Debugging Information</h2>

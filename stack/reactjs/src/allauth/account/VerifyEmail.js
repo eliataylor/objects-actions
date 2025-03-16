@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import { Navigate, useLoaderData } from 'react-router-dom';
-import { getEmailVerification, verifyEmail } from '../lib/allauth';
-import { Box, Button, Typography } from '@mui/material';
+import { useEffect, useState } from "react";
+import { Navigate, useLoaderData } from "react-router-dom";
+import { getEmailVerification, verifyEmail } from "../lib/allauth";
+import { Box, Button, Typography } from "@mui/material";
 
-export async function loader({ params }) {
+export async function loader ({ params }) {
   const key = params.key;
   const resp = await getEmailVerification(key);
   return { key, verification: resp };
 }
 
-export default function VerifyEmail() {
+export default function VerifyEmail () {
   const { key, verification } = useLoaderData();
   const [response, setResponse] = useState({ fetching: false, content: null });
 
@@ -17,7 +17,7 @@ export default function VerifyEmail() {
     submit();
   }, []);
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     verifyEmail(key)
       .then((content) => {
@@ -46,10 +46,10 @@ export default function VerifyEmail() {
     body = (
       <>
         <Typography variant="body1">
-          Please confirm that{' '}
-          <a href={'mailto:' + verification.data.email}>
+          Please confirm that{" "}
+          <a href={"mailto:" + verification.data.email}>
             {verification.data.email}
-          </a>{' '}
+          </a>{" "}
           is an email address for user {verification.data.user.str}.
         </Typography>
         <Button disabled={response.fetching} onClick={() => submit()}>
@@ -62,10 +62,10 @@ export default function VerifyEmail() {
   } else {
     body = (
       <Typography variant="body1">
-        Unable to confirm email{' '}
-        <a href={'mailto:' + verification.data.email}>
+        Unable to confirm email{" "}
+        <a href={"mailto:" + verification.data.email}>
           {verification.data.email}
-        </a>{' '}
+        </a>{" "}
         because it is already confirmed.
       </Typography>
     );

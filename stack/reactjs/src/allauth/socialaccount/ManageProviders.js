@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import * as allauth from '../lib/allauth';
-import ProviderList from './ProviderList';
-import FormErrors from '../components/FormErrors';
-import { Box, Button, Paper } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableContainer from '@mui/material/TableContainer';
+import { useEffect, useState } from "react";
+import * as allauth from "../lib/allauth";
+import ProviderList from "./ProviderList";
+import FormErrors from "../components/FormErrors";
+import { Box, Button, Paper } from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableContainer from "@mui/material/TableContainer";
 
-export default function ManageProviders() {
+export default function ManageProviders () {
   const [accounts, setAccounts] = useState([]);
   const [response, setResponse] = useState({
     fetching: false,
-    content: { status: 200, data: [] },
+    content: { status: 200, data: [] }
   });
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function ManageProviders() {
       });
   }, []);
 
-  function disconnect(account) {
+  function disconnect (account) {
     setResponse({ ...response, fetching: true });
     allauth
       .disconnectProviderAccount(account.provider.id, account.uid)
@@ -62,7 +62,7 @@ export default function ManageProviders() {
     <Box p={1}>
       <h2>My Auth Providers</h2>
       <TableContainer component={Paper}>
-        <Table size={'small'}>
+        <Table size={"small"}>
           <TableHead>
             <TableRow>
               <TableCell>UID</TableCell>
@@ -75,7 +75,7 @@ export default function ManageProviders() {
             {accounts.map((account) => {
               return (
                 <TableRow key={account.uid}>
-                  <TableCell style={{ wordBreak: 'break-all' }}>
+                  <TableCell style={{ wordBreak: "break-all" }}>
                     {account.uid}
                   </TableCell>
                   <TableCell>{account.display}</TableCell>

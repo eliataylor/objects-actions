@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { AppBar, Box, Fab, Grid, Typography } from "@mui/material";
-import { ApiListResponse, ModelName, NavItem, ModelType, NAVITEMS } from "../object-actions/types/types";
+import { AppBar, Box, Fab, Grid } from "@mui/material";
+import { ApiListResponse, ModelName, ModelType, NavItem, NAVITEMS } from "../object-actions/types/types";
 import EntityCard from "../object-actions/components/EntityCard";
 import TablePaginator from "../components/TablePaginator";
 import ApiClient from "../config/ApiClient";
@@ -17,10 +17,10 @@ interface EntityListProps<T extends ModelName = ModelName> {
 }
 
 const EntityList = <T extends ModelName>({
-  model,
-  author,
-  showFab = false
-}: EntityListProps<T>) => {
+                                           model,
+                                           author,
+                                           showFab = false
+                                         }: EntityListProps<T>) => {
   const location = useLocation();
   const navigate = useNavigate();
   const me = useAuth()?.data?.user;
@@ -88,7 +88,7 @@ const EntityList = <T extends ModelName>({
 
   if (!hasUrl) return <div>Invalid URL...</div>;
 
-  let allowAdd: boolean | string = true
+  let allowAdd: boolean | string = true;
   let content = null;
   if (!listData) {
     content = <div>Loading...</div>;
@@ -103,8 +103,8 @@ const EntityList = <T extends ModelName>({
       content = <PermissionError error={canView} />;
     } else {
       if (listData.results.length > 0) {
- //         allowAdd = true
-         allowAdd = canDo("add", listData.results[0], me);
+        //         allowAdd = true
+        allowAdd = canDo("add", listData.results[0], me);
       }
 
       content = (
@@ -138,7 +138,7 @@ const EntityList = <T extends ModelName>({
                */
               return <Grid xs={12} item key={`entitycard-${i}`}>
                 <EntityCard entity={obj} />
-              </Grid>
+              </Grid>;
             })}
           </Grid>
         </React.Fragment>

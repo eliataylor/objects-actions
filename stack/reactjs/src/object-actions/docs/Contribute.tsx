@@ -9,12 +9,10 @@ const Contribute: React.FC = () => {
       <StyledTypography variant="h1">Contribute</StyledTypography>
       <StyledTypography variant="subtitle1">
         Review our <a href="https://github.com/eliataylor/objects-actions/issues"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target="_blank" rel="noreferrer"
       >Issues on Github</a> or the Development Roadmap below and get in
         where you fit in.
       </StyledTypography>
-
 
       <StyledPaper>
         <Typography variant="h5" sx={{ mb: 1 }}>
@@ -23,8 +21,7 @@ const Contribute: React.FC = () => {
         <Typography variant="body1" component={"li"} gutterBottom={true}>
           Any framework worth using can be scaffolded from these Spreadsheets. You can follow <a
           href="https://github.com/eliataylor/objects-actions/tree/main/src"
-          target="_blank"
-          rel="noopener noreferrer"
+          target="_blank" rel="noreferrer"
         >these scripts</a> for how we do it for Django.
         </Typography>
         <Typography variant={"body2"}>
@@ -39,8 +36,7 @@ const Contribute: React.FC = () => {
         <Typography variant="body1" component={"li"} gutterBottom={true}>
           This just mean building a web app entirely driven by these constants and TypeScript definitions: <a
           href="https://github.com/eliataylor/objects-actions/tree/main/stack/reactjs/src/object-actions/types"
-          target="_blank"
-          rel="noopener noreferrer"
+          target="_blank" rel="noreferrer"
         >github.com/eliataylor/objects-actions/tree/main/stack/reactjs/src/object-actions/types</a>.
           NextJS, Vue, Angular, Svelt would all be great alternatives. And/or just replacing MUI with Tailwind, SCSS, Bootstrap, or another CSS framework.
         </Typography>
@@ -57,7 +53,7 @@ const Contribute: React.FC = () => {
             href={
               "https://github.com/eliataylor/objects-actions/tree/main/stack/reactjs/src/object-actions"
             }
-            target={"_blank"}
+            target="_blank" rel="noreferrer"
           >
             stack/reactjs/src/object-actions
           </a>.
@@ -66,8 +62,7 @@ const Contribute: React.FC = () => {
           Improve React render checks against permissions. Start around{" "}
           <a
             href="https://github.com/eliataylor/object-actions/blob/main/stack/reactjs/src/object-actions/types/access.tsx#L72"
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noreferrer"
           >
             stack/reactjs/src/object-actions/types/access.tsx#L72
           </a>.
@@ -78,7 +73,7 @@ const Contribute: React.FC = () => {
             href={
               "https://github.com/eliataylor/objects-actions/blob/main/stack/reactjs/src/screens/EntityList.tsx#L61"
             }
-            target={"_blank"}
+            target="_blank" rel="noreferrer"
           >
             stack/reactjs/src/screens/EntityList.tsx#L61
           </a>.
@@ -87,8 +82,7 @@ const Contribute: React.FC = () => {
           Improve CD pipeline for improving changelog and testing before releases. Start around{" "}
           <a
             href="https://github.com/eliataylor/objects-actions/blob/main/.github/workflows/release.yml"
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noreferrer"
           >
             .github/workflows/release.yml
           </a>.
@@ -97,8 +91,7 @@ const Contribute: React.FC = () => {
           Split Users from other Entity Types. Start around{" "}
           <a
             href="https://github.com/eliataylor/objects-actions/blob/main/src/typescript/TypesBuilder.py#L183"
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noreferrer"
           >
             src/typescript/TypesBuilder.py#L183
           </a>.
@@ -107,8 +100,7 @@ const Contribute: React.FC = () => {
           Implement Django User Groups and Permissions. Start around{" "}
           <a
             href="https://github.com/eliataylor/object-actions/blob/main/stack/django/oaexample_app/permissions.py"
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noreferrer"
           >
             stack/django/oaexample_app/permissions.py
           </a>.
@@ -118,8 +110,7 @@ const Contribute: React.FC = () => {
           against our releases. Start around{" "}
           <a
             href="https://github.com/eliataylor/object-actions/blob/main/stack/k6/run.sh"
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noreferrer"
           >
             stack/k6/run.sh
           </a>.
@@ -129,8 +120,7 @@ const Contribute: React.FC = () => {
           here{" "}
           <a
             href="https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_base/settings/allauth.py"
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noreferrer"
           >
             stack/django/oaexample_base/settings/allauth.py
           </a>.

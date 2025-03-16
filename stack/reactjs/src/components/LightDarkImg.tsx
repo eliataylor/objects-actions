@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { ThemeContext } from '../theme/ThemeContext';
+import React, { useContext } from "react";
+import { ThemeContext } from "../theme/ThemeContext";
 
 interface LightDarkImgProps {
   light: string;
@@ -10,8 +10,8 @@ interface LightDarkImgProps {
 const LightDarkImg: React.FC<LightDarkImgProps> = ({ light, dark, styles }) => {
   const { darkMode } = useContext(ThemeContext);
 
-  if (darkMode) return <img src={dark} alt={'Dark mode image'} {...styles} />;
-  return <img src={light} alt={'Dark mode image'} {...styles} />;
+  if (darkMode) return <img src={dark} alt={"Dark mode"} {...styles} />;
+  return <img src={light} alt={"Dark mode"} {...styles} />;
 };
 
 export default LightDarkImg;

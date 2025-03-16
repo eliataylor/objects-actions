@@ -1,6 +1,6 @@
 import React, { ChangeEvent, ReactElement, useState } from "react";
 import { Button, CircularProgress, FormControlLabel, FormHelperText, Grid, MenuItem, TextField, Typography } from "@mui/material";
-import { ModelType, ModelName, NavItem, NAVITEMS, RelEntity, FieldTypeDefinition } from "../types/types";
+import { FieldTypeDefinition, ModelName, ModelType, NavItem, NAVITEMS, RelEntity } from "../types/types";
 import AutocompleteField from "./AutocompleteField";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import AutocompleteMultipleField from "./AutocompleteMultipleField";
@@ -26,11 +26,11 @@ interface GenericFormProps<T extends ModelName> {
 }
 
 const GenericForm = <T extends ModelName>({
-  fields,
-  navItem,
-  original,
-  onSuccess
-}: GenericFormProps<T>) => {
+                                            fields,
+                                            navItem,
+                                            original,
+                                            onSuccess
+                                          }: GenericFormProps<T>) => {
   const eid = typeof original.id !== "undefined" ? original.id : "0";
   const [entity, setEntity] = useState<ModelType<T>>(original);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
@@ -82,7 +82,7 @@ const GenericForm = <T extends ModelName>({
       } else if (response.errors) {
         setErrors(response.errors);
       } else if (response.error) {
-        setErrors({'error': [response.error]});
+        setErrors({ "error": [response.error] });
       }
     }
   };
@@ -163,7 +163,7 @@ const GenericForm = <T extends ModelName>({
     if (response.errors) {
       setErrors(response.errors);
     } else if (response.error) {
-      setErrors({'error': [response.error]});
+      setErrors({ "error": [response.error] });
     }
   };
 

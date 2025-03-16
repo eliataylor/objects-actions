@@ -21,7 +21,7 @@ const ContentMenu: React.FC<ContentTypesHomeProps> = ({ showLine2 = undefined })
             to={`/${item.segment}`}
             selected={location.pathname === `/${item.segment}`}
           >
-            {item.icon && <ListItemAvatar style={{display:'flex'}}><MuiIcon fontSize={'small'} icon={item.icon} /></ListItemAvatar>}
+            {item.icon && <ListItemAvatar style={{ display: "flex" }}><MuiIcon fontSize={"small"} icon={item.icon} /></ListItemAvatar>}
             <ListItemText primary={item.plural} />
           </ListItemButton>
         );

@@ -1,12 +1,12 @@
-import { AuthProcess, redirectToProvider } from '../lib/allauth';
-import { Button, SvgIcon } from '@mui/material';
-import React from 'react';
-import { ReactComponent as Spotify } from '../logos/spotify.svg';
-import { ReactComponent as AppleMusic } from '../logos/applemusic.svg';
-import { ReactComponent as Apple } from '../logos/apple.svg';
-import { ReactComponent as Google } from '../logos/google.svg';
-import { WifiPassword } from '@mui/icons-material';
-import GoogleInAppButton from '../GoogleInAppButton';
+import { AuthProcess, redirectToProvider } from "../lib/allauth";
+import { Button, SvgIcon } from "@mui/material";
+import React from "react";
+import { ReactComponent as Spotify } from "../logos/spotify.svg";
+import { ReactComponent as AppleMusic } from "../logos/applemusic.svg";
+import { ReactComponent as Apple } from "../logos/apple.svg";
+import { ReactComponent as Google } from "../logos/google.svg";
+import { WifiPassword } from "@mui/icons-material";
+import GoogleInAppButton from "../GoogleInAppButton";
 
 interface ProviderButtonProps {
   provider: any;
@@ -14,13 +14,13 @@ interface ProviderButtonProps {
 }
 
 const ProviderButton: React.FC<ProviderButtonProps> = ({
-  provider,
-  connected,
-}) => {
+                                                         provider,
+                                                         connected
+                                                       }) => {
   function getIcon(provider: string) {
-    if (provider === 'apple') {
-      return <SvgIcon fontSize={'large'} component={Apple} inheritViewBox />;
-    } else if (provider === 'applemusic') {
+    if (provider === "apple") {
+      return <SvgIcon fontSize={"large"} component={Apple} inheritViewBox />;
+    } else if (provider === "applemusic") {
       return (
         <SvgIcon
           viewBox="0 0 136.46001 162.0049"
@@ -28,9 +28,9 @@ const ProviderButton: React.FC<ProviderButtonProps> = ({
           inheritViewBox
         />
       );
-    } else if (provider === 'google') {
+    } else if (provider === "google") {
       return <Google />;
-    } else if (provider === 'spotify') {
+    } else if (provider === "spotify") {
       return (
         <SvgIcon viewBox="0 0 496 512" component={Spotify} inheritViewBox />
       );
@@ -38,8 +38,8 @@ const ProviderButton: React.FC<ProviderButtonProps> = ({
     return null;
   }
 
-  if (localStorage.getItem('appOS') && provider.id === 'google') {
-    if (window.location.search.indexOf('useOauth') > -1) {
+  if (localStorage.getItem("appOS") && provider.id === "google") {
+    if (window.location.search.indexOf("useOauth") > -1) {
       return <GoogleInAppButton isConnected={connected} />;
     } else {
       return null; // doesn't work in webview
@@ -53,14 +53,14 @@ const ProviderButton: React.FC<ProviderButtonProps> = ({
       endIcon={connected ? <WifiPassword /> : undefined}
       key={provider.id}
       fullWidth
-      variant={'outlined'}
-      color={'inherit'}
+      variant={"outlined"}
+      color={"inherit"}
       onClick={() =>
         redirectToProvider(
           provider.id,
-          '/account/provider/callback',
+          "/account/provider/callback",
           /* @ts-ignore */
-          AuthProcess.CONNECT,
+          AuthProcess.CONNECT
         )
       }
     >

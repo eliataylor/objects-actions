@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import FormErrors, { hasError } from '../components/FormErrors';
-import { login } from '../lib/allauth';
-import { Link } from 'react-router-dom';
-import { useConfig } from '../auth';
-import ProviderList from '../socialaccount/ProviderList';
-import { Button, FormHelperText, Grid, TextField, Typography } from '@mui/material';
-import { Phone } from '@mui/icons-material';
+import React, { useState } from "react";
+import FormErrors, { hasError } from "../components/FormErrors";
+import { login } from "../lib/allauth";
+import { Link } from "react-router-dom";
+import { useConfig } from "../auth";
+import ProviderList from "../socialaccount/ProviderList";
+import { Button, FormHelperText, Grid, TextField, Typography } from "@mui/material";
+import { Phone } from "@mui/icons-material";
 
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Login () {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
   const config = useConfig();
   const hasProviders = config.data.socialaccount?.providers?.length > 0;
 
-  function submit() {
+  function submit () {
     setResponse({ ...response, fetching: true });
     const payload = { password };
-    if (email.indexOf('@') > -1) {
+    if (email.indexOf("@") > -1) {
       payload.email = email;
     } else {
       payload.username = email;
@@ -67,7 +67,7 @@ export default function Login() {
           onChange={(e) => setEmail(e.target.value)}
           type="email"
           required
-          error={hasError(response.content?.errors, 'email')}
+          error={hasError(response.content?.errors, "email")}
         />
         <FormErrors param="email" errors={response.content?.errors} />
       </Grid>
@@ -79,16 +79,16 @@ export default function Login() {
           type="password"
           required
           label="Password"
-          error={hasError(response.content?.errors, 'password')}
+          error={hasError(response.content?.errors, "password")}
         />
         <FormErrors param="password" errors={response.content?.errors} />
       </Grid>
-      <Grid item container justifyContent={'space-between'} gap={2}>
+      <Grid item container justifyContent={"space-between"} gap={2}>
         <Grid>
           <Button
             type="submit"
             disabled={
-              email.indexOf('@') < 1 ||
+              email.indexOf("@") < 1 ||
               password.length === 0 ||
               response.fetching
             }
@@ -100,7 +100,7 @@ export default function Login() {
           </Button>
         </Grid>
         <Grid item>
-          <FormHelperText style={{ width: '100%', textAlign: 'right' }}>
+          <FormHelperText style={{ width: "100%", textAlign: "right" }}>
             <Link to="/account/password/reset">Forgot your password?</Link>
           </FormHelperText>
         </Grid>
@@ -128,11 +128,11 @@ export default function Login() {
       <Button
         sx={{ mt: 1 }}
         component={Link}
-        to={'/account/sms'}
+        to={"/account/sms"}
         startIcon={<Phone />}
         fullWidth
-        variant={'outlined'}
-        color={'inherit'}
+        variant={"outlined"}
+        color={"inherit"}
       >
         SMS
       </Button>

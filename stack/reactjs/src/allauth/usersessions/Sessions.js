@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import { useConfig } from '../auth';
-import * as allauth from '../lib/allauth';
-import { Button } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Box from '@mui/material/Box';
+import { useEffect, useState } from "react";
+import { useConfig } from "../auth";
+import * as allauth from "../lib/allauth";
+import { Button } from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Box from "@mui/material/Box";
 
-export default function Sessions() {
+export default function Sessions () {
   const config = useConfig();
   const [sessions, setSessions] = useState([]);
   const [response, setResponse] = useState({
     fetching: false,
-    content: { status: 200, data: [] },
+    content: { status: 200, data: [] }
   });
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function Sessions() {
 
   const otherSessions = sessions.filter((session) => !session.is_current);
 
-  function logout(sessions) {
+  function logout (sessions) {
     setResponse({ ...response, fetching: true });
     allauth
       .endSessions(sessions.map((s) => s.id))
@@ -89,7 +89,7 @@ export default function Sessions() {
                 {config.data.usersessions.Hantrack_activity ? (
                   <TableCell>{session.last_seen_at}</TableCell>
                 ) : null}
-                <TableCell>{session.is_current ? '⭐' : ''}</TableCell>
+                <TableCell>{session.is_current ? "⭐" : ""}</TableCell>
                 <TableCell>
                   <Button onClick={() => logout([session])}>Logout</Button>
                 </TableCell>

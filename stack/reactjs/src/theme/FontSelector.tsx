@@ -43,12 +43,12 @@ const FontSelector: React.FC = () => {
       variant={"outlined"}
       value={fontFamily}
       onChange={(e) => {
-        window.localStorage.setItem('themeFont', e.target.value)
-        setFamily(e.target.value)
+        window.localStorage.setItem("themeFont", e.target.value);
+        setFamily(e.target.value);
       }}
       fullWidth
       InputProps={{
-        sx: { fontSize:12 },
+        sx: { fontSize: 12 },
         startAdornment: (
           <InputAdornment position="start">
             <img height={15} src={"/oa-assets/google-fonts.svg"} />

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Button, Grid, TextField, Typography } from '@mui/material';
-import { sms, smsVerify } from './lib/allauth';
-import { Link, useNavigate } from 'react-router-dom';
-import { makeRelative } from '../utils';
+import React, { useState } from "react";
+import { Button, Grid, TextField, Typography } from "@mui/material";
+import { sms, smsVerify } from "./lib/allauth";
+import { Link, useNavigate } from "react-router-dom";
+import { makeRelative } from "../utils";
 
 interface SmsSigninOrUpProps {
   onVerify?: (phoneNumber: string) => void;
@@ -10,48 +10,48 @@ interface SmsSigninOrUpProps {
 
 const SmsSigninOrUp: React.FC<SmsSigninOrUpProps> = ({ onVerify }) => {
   const navigate = useNavigate();
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [verificationCode, setVerificationCode] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [verificationCode, setVerificationCode] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const [response, setResponse] = useState({ fetching: false, content: null });
   const [isCodeSent, setIsCodeSent] = useState<boolean>(false);
 
   const handlePhoneNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setPhoneNumber(event.target.value);
   };
 
   const handleVerificationCodeChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setVerificationCode(event.target.value);
   };
 
   const handleSendCode = async () => {
     if (validatePhoneNumber(phoneNumber)) {
-      setError('');
+      setError("");
       try {
         await sendSms(phoneNumber);
         setIsCodeSent(true);
       } catch (err) {
         console.error(err);
-        setError('Failed to send SMS. Please try again.');
+        setError("Failed to send SMS. Please try again.");
       }
     } else {
-      setError('Invalid phone number format');
+      setError("Invalid phone number format");
     }
   };
 
   const handleVerifyCode = async () => {
     if (verificationCode && verificationCode.length > 0) {
-      setError('');
+      setError("");
       try {
         await SmsSigninOrUpCode(phoneNumber, verificationCode);
         // onVerify(phoneNumber);
       } catch (err) {
         console.error(err);
-        setError('Verification failed. Please try again.');
+        setError("Verification failed. Please try again.");
       }
     }
   };
@@ -88,7 +88,7 @@ const SmsSigninOrUp: React.FC<SmsSigninOrUpProps> = ({ onVerify }) => {
           if (content.redirect) {
             document.location.href = makeRelative(content.redirect);
           } else {
-            document.location.href = '/';
+            document.location.href = "/";
           }
         } else {
           setError(`Invalid Code ${JSON.stringify(content)}`);
@@ -109,10 +109,10 @@ const SmsSigninOrUp: React.FC<SmsSigninOrUpProps> = ({ onVerify }) => {
     <Grid
       container
       flexDirection="column"
-      justifyContent={'space-between'}
+      justifyContent={"space-between"}
       pb={3}
     >
-      <Grid item style={{ alignSelf: 'flex-start' }}></Grid>
+      <Grid item style={{ alignSelf: "flex-start" }}></Grid>
       {!isCodeSent ? (
         <React.Fragment>
           <Grid item>
@@ -127,10 +127,10 @@ const SmsSigninOrUp: React.FC<SmsSigninOrUpProps> = ({ onVerify }) => {
               helperText={error}
             />
           </Grid>
-          <Grid item xs={12} style={{ textAlign: 'center' }} mb={5}>
+          <Grid item xs={12} style={{ textAlign: "center" }} mb={5}>
             <Button
               disabled={
-                response.fetching || phoneNumber.length < '4159999999'.length
+                response.fetching || phoneNumber.length < "4159999999".length
               }
               fullWidth={true}
               variant="contained"
@@ -154,7 +154,7 @@ const SmsSigninOrUp: React.FC<SmsSigninOrUpProps> = ({ onVerify }) => {
               variant="filled"
               fullWidth
               margin="normal"
-              placeholder={'000000'}
+              placeholder={"000000"}
               value={verificationCode}
               onChange={handleVerificationCodeChange}
               error={!error}

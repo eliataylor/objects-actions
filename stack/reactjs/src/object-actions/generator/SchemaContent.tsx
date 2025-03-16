@@ -67,12 +67,8 @@ const SchemaContent: React.FC<{ worksheet: SchemaVersions }> = ({ worksheet }) =
 
 export default SchemaContent;
 
-export function renderOpenAiLinks(config: any) {
+export function renderOpenAiLinks(worksheet: SchemaVersions) {
   const linkConfig = {
-    "vector_store_id": {
-      url: "https://platform.openai.com/storage/vector_stores/__ID__",
-      name: "Vector Store"
-    },
     "assistant_id": {
       url: "https://platform.openai.com/assistants/__ID__",
       name: "Assistant"
@@ -80,17 +76,20 @@ export function renderOpenAiLinks(config: any) {
     "thread_id": {
       url: "https://platform.openai.com/threads/__ID__",
       name: "Thread"
-    },
+    }
     /*
     "message_id": {
       url: "https://platform.openai.com/messages/__ID__",
       name: "Message"
     },
+    "vector_store_id": {
+      url: "https://platform.openai.com/storage/vector_stores/__ID__",
+      name: "Vector Store"
+    },
     "run_id": {
       url: "https://platform.openai.com/runs/__ID__",
       name: "Run"
     },
-     */
     "file_id": {
       url: "https://platform.openai.com/storage/files/__ID__",
       name: "File"
@@ -99,28 +98,42 @@ export function renderOpenAiLinks(config: any) {
       url: "https://platform.openai.com/storage/files/__ID__",
       name: "File Path"
     }
+     */
   };
 
   return (
     <React.Fragment>
-      {Object.entries(linkConfig).map(([key, { url, name }]) => (
-        (!config[key]) ? null :
-          <Button
-            key={key}
-            style={{ marginRight: 10 }}
-            startIcon={<LightDarkImg light={"/oa-assets/openai-icon-black.svg"} dark={"/oa-assets/openai-icon-white.svg"} styles={{ height: 17 }} />}
-            endIcon={<OpenInNew fontSize={"small"} />}
-            variant={"outlined"}
-            color={"inherit"}
-            size="small"
-            component="a"
-            href={url.replace("__ID__", config[key])}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {name}
-          </Button>
-      ))}
+      {Object.entries(linkConfig).map(([key, { url, name }]) => {
+        // Use type assertion to tell TypeScript this is a valid key
+        if (key in worksheet) {
+          // Type guard to ensure the key exists in worksheet
+          const worksheetKey = key as keyof typeof worksheet;
+          const idValue = worksheet[worksheetKey];
+
+          // Check if the value is a string
+          if (typeof idValue === "string") {
+            return (
+              <Button
+                key={key}
+                style={{ marginRight: 10 }}
+                startIcon={<LightDarkImg light={"/oa-assets/openai-icon-black.svg"} dark={"/oa-assets/openai-icon-white.svg"} styles={{ height: 17 }} />}
+                endIcon={<OpenInNew fontSize={"small"} />}
+                variant={"outlined"}
+                color={"inherit"}
+                size="small"
+                component="a"
+                href={url.replace("__ID__", idValue)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {name}
+              </Button>
+            );
+          }
+        }
+
+        return null;
+      })}
     </React.Fragment>
   );
 }

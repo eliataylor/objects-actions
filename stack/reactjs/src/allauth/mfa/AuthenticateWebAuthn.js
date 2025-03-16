@@ -1,17 +1,13 @@
-import { useState } from 'react';
-import {
-  authenticateUsingWebAuthn,
-  AuthenticatorType,
-  getWebAuthnRequestOptionsForAuthentication,
-} from '../lib/allauth';
-import { Button } from '@mui/material';
-import { get, parseRequestOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
-import AuthenticateFlow from './AuthenticateFlow';
+import { useState } from "react";
+import { authenticateUsingWebAuthn, AuthenticatorType, getWebAuthnRequestOptionsForAuthentication } from "../lib/allauth";
+import { Button } from "@mui/material";
+import { get, parseRequestOptionsFromJSON } from "@github/webauthn-json/browser-ponyfill";
+import AuthenticateFlow from "./AuthenticateFlow";
 
-export default function AuthenticateWebAuthn(props) {
+export default function AuthenticateWebAuthn (props) {
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  async function submit() {
+  async function submit () {
     setResponse({ ...response, fetching: true });
     try {
       const optResp = await getWebAuthnRequestOptionsForAuthentication();

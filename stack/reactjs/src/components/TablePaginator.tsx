@@ -37,7 +37,7 @@ const TablePaginator: React.FC<PaginatorProps> = ({
     event: React.MouseEvent<HTMLButtonElement> | null,
     pageNum: number
   ) => {
-    const offset = pageNum * limit
+    const offset = pageNum * limit;
     setOffset(offset); // Increment value to match 1-based offset index
   };
 

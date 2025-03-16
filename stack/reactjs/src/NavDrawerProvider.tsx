@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 // Define the shape of the context value
 interface NavDrawerContextType {
@@ -18,14 +12,14 @@ interface NavDrawerContextType {
 
 // Create the context with a default value
 const NavDrawerContext = createContext<NavDrawerContextType | undefined>(
-  undefined,
+  undefined
 );
 
 // Custom hook to use the NavDrawerContext
 export const useNavDrawer = (): NavDrawerContextType => {
   const context = useContext(NavDrawerContext);
   if (!context) {
-    throw new Error('useNavDrawer must be used within a NavDrawerProvider');
+    throw new Error("useNavDrawer must be used within a NavDrawerProvider");
   }
   return context;
 };
@@ -37,21 +31,21 @@ interface NavDrawerProviderProps {
 
 // Provider component
 export const NavDrawerProvider: React.FC<NavDrawerProviderProps> = ({
-  children,
-}) => {
+                                                                      children
+                                                                    }) => {
   const [navDrawerWidth, setNavDrawerWidth] = useState<number>(155); // default width
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 600);
-  const [keyword, setKeyword] = useState<string>('');
+  const [keyword, setKeyword] = useState<string>("");
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 600);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -63,7 +57,7 @@ export const NavDrawerProvider: React.FC<NavDrawerProviderProps> = ({
         isMobile,
         setIsMobile,
         keyword,
-        setKeyword,
+        setKeyword
       }}
     >
       {children}

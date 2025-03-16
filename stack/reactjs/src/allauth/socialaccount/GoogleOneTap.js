@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { useConfig } from '../auth';
-import { authenticateByToken, URLs } from '../lib/allauth';
-import { ReactComponent as Google } from '../logos/google.svg';
-import { Button } from '@mui/material';
+import React, { useState } from "react";
+import { useConfig } from "../auth";
+import { authenticateByToken, URLs } from "../lib/allauth";
+import { ReactComponent as Google } from "../logos/google.svg";
+import { Button } from "@mui/material";
 
-function installGoogleOneTap(cb) {
-  const id = 'google-one-tap';
+function installGoogleOneTap (cb) {
+  const id = "google-one-tap";
   const scr = document.getElementById(id);
   if (!scr) {
-    const scr = document.createElement('script');
+    const scr = document.createElement("script");
     scr.id = id;
-    scr.src = '//accounts.google.com/gsi/client';
+    scr.src = "//accounts.google.com/gsi/client";
     scr.async = true;
-    scr.addEventListener('load', function () {
+    scr.addEventListener("load", function() {
       cb();
     });
     document.body.appendChild(scr);
@@ -21,31 +21,31 @@ function installGoogleOneTap(cb) {
   }
 }
 
-export default function GoogleOneTap(props) {
+export default function GoogleOneTap (props) {
   const config = useConfig();
   const [enabled, setEnabled] = useState(
-    () => window.sessionStorage.getItem('googleOneTapEnabled') === 'yes',
+    () => window.sessionStorage.getItem("googleOneTapEnabled") === "yes"
   );
 
-  function onGoogleOneTapInstalled() {
+  function onGoogleOneTapInstalled () {
     const provider = config.data.socialaccount.providers.find(
-      (p) => p.id === 'google',
+      (p) => p.id === "google"
     );
     if (provider && window.google) {
-      function handleCredentialResponse(token) {
+      function handleCredentialResponse (token) {
         authenticateByToken(
           provider.id,
           {
             id_token: token.credential,
-            client_id: provider.client_id,
+            client_id: provider.client_id
           },
-          props.process,
+          props.process
         );
       }
 
       window.google.accounts.id.initialize({
         client_id: provider.client_id,
-        callback: handleCredentialResponse,
+        callback: handleCredentialResponse
       });
       window.google.accounts.id.prompt();
     }
@@ -60,16 +60,16 @@ export default function GoogleOneTap(props) {
         data-login_uri={`${URLs.PROVIDER_TOKEN}`}
         fullWidth
         startIcon={<Google />}
-        variant={'outlined'}
-        color={'inherit'}
+        variant={"outlined"}
+        color={"inherit"}
       >
         Google One Tap
       </Button>
     );
   }
 
-  function enable() {
-    window.sessionStorage.setItem('googleOneTapEnabled', 'yes');
+  function enable () {
+    window.sessionStorage.setItem("googleOneTapEnabled", "yes");
     installGoogleOneTap(onGoogleOneTapInstalled);
     setEnabled(true);
   }
@@ -77,9 +77,9 @@ export default function GoogleOneTap(props) {
   return (
     <Button
       fullWidth
-      variant={'outlined'}
+      variant={"outlined"}
       startIcon={<Google />}
-      color={'inherit'}
+      color={"inherit"}
       onClick={() => enable()}
     >
       Google One Tap

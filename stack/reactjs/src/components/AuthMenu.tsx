@@ -1,7 +1,7 @@
 import { useAuth, useConfig } from "../allauth/auth";
 import { Link, useLocation } from "react-router-dom";
 import React from "react";
-import { AlternateEmail, AccountCircle, AppRegistration, DevicesOther, ExpandLess, ExpandMore, Login, Logout, Password, SwitchAccount, VpnKey } from "@mui/icons-material";
+import { AccountCircle, AlternateEmail, AppRegistration, DevicesOther, ExpandLess, ExpandMore, Login, Logout, Password, SwitchAccount, VpnKey } from "@mui/icons-material";
 import { Collapse, List, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material";
 
 interface PermissionProps {
@@ -48,7 +48,7 @@ export default function AuthMenu() {
   const location = useLocation();
   const config = useConfig();
 
-  const [open, setOpen] = React.useState(location.pathname === `/users/${me?.id}` || location.pathname.startsWith('/allauth'));
+  const [open, setOpen] = React.useState(location.pathname === `/users/${me?.id}` || location.pathname.startsWith("/allauth"));
 
   const handleClick = () => {
     setOpen(!open);
@@ -121,12 +121,12 @@ export default function AuthMenu() {
       </React.Fragment> : <React.Fragment>
         <NavBarItem
           to="/account/login"
-          icon={<Login fontSize={"small"} color={'secondary'} />}
+          icon={<Login fontSize={"small"} color={"secondary"} />}
           name="Sign In"
         />
         <NavBarItem
           to="/account/signup"
-          icon={<AppRegistration color={'secondary'} fontSize={"small"} />}
+          icon={<AppRegistration color={"secondary"} fontSize={"small"} />}
           name="Sign Up"
         />
       </React.Fragment>}

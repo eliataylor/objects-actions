@@ -5,10 +5,10 @@ import { ExpandMore } from "@mui/icons-material";
 
 const WorksheetType: React.FC<SchemaContentType> = ({ model_name, name, fields, forceExpand = false }) => {
 
-  const [expanded, setExpanded] = useState<boolean>(forceExpand)
+  const [expanded, setExpanded] = useState<boolean>(forceExpand);
 
   useEffect(() => {
-    setExpanded(forceExpand)
+    setExpanded(forceExpand);
   }, [forceExpand]);
 
   const getCardinalityDisplay = (cardinality: number | typeof Infinity | undefined) => {

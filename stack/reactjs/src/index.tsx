@@ -1,16 +1,16 @@
-import { createRoot } from 'react-dom/client';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import './index.css';
-import ErrorBoundary from './theme/ErrorBoundary';
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import "./index.css";
+import ErrorBoundary from "./theme/ErrorBoundary";
 
-const container = document.getElementById('root')!;
+const container = document.getElementById("root")!;
 const root = createRoot(container);
 root.render(
   // <React.StrictMode>
-  <ErrorBoundary showDebugInfo={process.env.NODE_ENV === 'development'}>
+  <ErrorBoundary showDebugInfo={process.env.NODE_ENV === "development"}>
     <App />
-  </ErrorBoundary>,
+  </ErrorBoundary>
   // </React.StrictMode>
 );
 

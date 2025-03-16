@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import FormErrors from '../components/FormErrors';
-import { Button, TextField } from '@mui/material';
-import * as allauth from '../lib/allauth';
-import { create, parseCreationOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
+import { useState } from "react";
+import { Navigate } from "react-router-dom";
+import FormErrors from "../components/FormErrors";
+import { Button, TextField } from "@mui/material";
+import * as allauth from "../lib/allauth";
+import { create, parseCreationOptionsFromJSON } from "@github/webauthn-json/browser-ponyfill";
 
-export default function AddWebAuthn(props) {
+export default function AddWebAuthn (props) {
   const [passwordless, setPasswordless] = useState(false);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [response, setResponse] = useState({ fetching: false, content: null });
 
-  async function submit() {
+  async function submit () {
     setResponse({ ...response, fetching: true });
     try {
       const optResp = await allauth.getWebAuthnCreateOptions(passwordless);
@@ -35,8 +35,8 @@ export default function AddWebAuthn(props) {
       <Navigate
         to={
           response.content.meta.recovery_codes_generated
-            ? '/account/2fa/recovery-codes'
-            : '/account/2fa/webauthn'
+            ? "/account/2fa/recovery-codes"
+            : "/account/2fa/webauthn"
         }
       />
     );

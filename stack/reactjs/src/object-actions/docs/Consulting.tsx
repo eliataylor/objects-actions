@@ -124,7 +124,7 @@ const Consulting: React.FC = () => {
                 <Typography variant="h5" align="center" gutterBottom>
                   {option.title}
                 </Typography>
-                <Typography variant="h4" color="primary" align="center" sx={{ fontWeight: 100, color: "#166105" }} gutterBottom>
+                <Typography variant="h4" color="primary" align="center" sx={{ fontWeight: 300, color: "#166105" }} gutterBottom>
                   {option.price}
                 </Typography>
                 <Typography variant="body1" color="textSecondary" gutterBottom>
@@ -167,20 +167,20 @@ const Consulting: React.FC = () => {
             margin: "10px auto"
           } : {}}>
             <Typography variant={"overline"} style={{ lineHeight: 0 }}>Free Consult with</Typography>
-            <Typography variant={"h3"} gutterBottom><a target="_blank" href={"https://taylormadetraffic.com/brands"}>Eli Taylor</a></Typography>
+            <Typography variant={"h3"} gutterBottom><a target="_blank" rel="noreferrer"  href={"https://taylormadetraffic.com/brands"}>Eli Taylor</a></Typography>
             <Grid container={true} gap={3} alignItems={"center"} alignContent={"center"}>
               <Grid item>
-                <a target="_blank" href="https://taylormadetraffic.com/brands" className="nolink">
-                  <img height="30" title="Taylor Made Traffic" src="/oa-assets/tmt-corner.png" />
+                <a target="_blank" rel="noreferrer" href="https://taylormadetraffic.com/brands" className="nolink">
+                  <img height="30" alt="Taylor Made Traffic" src="/oa-assets/tmt-corner.png" />
                 </a>
               </Grid>
               <Grid item>
-                <a target="_blank" href="https://www.linkedin.com/in/elitaylor/" className="nolink">
+                <a target="_blank" rel="noreferrer" href="https://www.linkedin.com/in/elitaylor/" className="nolink">
                   <SvgIcon style={{ fontSize: 30 }} viewBox="0 0 72 72" component={Linkedin} inheritViewBox />
                 </a>
               </Grid>
               <Grid item>
-                <a target="_blank" href="https://github.com/eliataylor" className="nolink">
+                <a target="_blank" rel="noreferrer" href="https://github.com/eliataylor" className="nolink">
                   <LightDarkImg
                     light={"/oa-assets/github-mark.svg"}
                     dark={"/oa-assets/github-mark-white.svg"}
@@ -194,7 +194,7 @@ const Consulting: React.FC = () => {
         <Grid item xs={12} md={6} style={{ textAlign: "center" }}>
           <a
             href={"https://calendar.app.google/N9RfLgwx62TqJRqs5"}
-            target={"_blank"}
+            target="_blank" rel="noreferrer"
           >
             <TightButton
               size={"small"}
@@ -230,8 +230,7 @@ const Consulting: React.FC = () => {
           </Typography>
           <a
             href={"https://github.com/sponsors/eliataylor"}
-            target={"_blank"}
-            rel="noopener noreferrer"
+            target="_blank" rel="noreferrer"
           >
             <TightButton
               variant={"contained"}

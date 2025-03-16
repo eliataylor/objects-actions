@@ -1,5 +1,5 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import ErrorPage from './ErrorPage';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import ErrorPage from "./ErrorPage";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -29,10 +29,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     this.handleUnhandledRejection = this.handleUnhandledRejection.bind(this);
 
     // Attach global error listeners
-    window.addEventListener('error', this.handleGlobalError);
+    window.addEventListener("error", this.handleGlobalError);
     window.addEventListener(
-      'unhandledrejection',
-      this.handleUnhandledRejection,
+      "unhandledrejection",
+      this.handleUnhandledRejection
     );
   }
 
@@ -43,15 +43,15 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({ error, errorInfo });
     // Optionally send this information to a logging service
-    console.error('React Error caught by ErrorBoundary:', error, errorInfo);
+    console.error("React Error caught by ErrorBoundary:", error, errorInfo);
   }
 
   componentWillUnmount() {
     // Remove global error listeners
-    window.removeEventListener('error', this.handleGlobalError);
+    window.removeEventListener("error", this.handleGlobalError);
     window.removeEventListener(
-      'unhandledrejection',
-      this.handleUnhandledRejection,
+      "unhandledrejection",
+      this.handleUnhandledRejection
     );
   }
 
@@ -63,17 +63,17 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         source: event.filename,
         lineno: event.lineno,
         colno: event.colno,
-        error: event.error,
-      },
+        error: event.error
+      }
     });
     // Optionally send this information to a logging service
     console.error(
-      'Global Error:',
+      "Global Error:",
       event.message,
       event.filename,
       event.lineno,
       event.colno,
-      event.error,
+      event.error
     );
   }
 
@@ -84,15 +84,15 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         message:
           event.reason instanceof Error
             ? event.reason.message
-            : 'Unhandled Promise Rejection',
-        source: '',
+            : "Unhandled Promise Rejection",
+        source: "",
         lineno: 0,
         colno: 0,
-        error: event.reason instanceof Error ? event.reason : null,
-      },
+        error: event.reason instanceof Error ? event.reason : null
+      }
     });
     // Optionally send this information to a logging service
-    console.error('Unhandled Rejection:', event.reason);
+    console.error("Unhandled Rejection:", event.reason);
   }
 
   render(): ReactNode {

@@ -17,7 +17,7 @@ const WorksheetCard: React.FC<WorksheetCardProps> = ({ worksheet }) => {
   return (
     <Card sx={{ marginLeft: worksheet.parent ? 3 : 0 }}>
       <CardHeader
-        avatar={<Avatar style={{fontSize:13}}>#{worksheet.id}</Avatar>}
+        avatar={<Avatar style={{ fontSize: 13 }}>#{worksheet.id}</Avatar>}
         subheader={
           <div>
             <Typography variant="subtitle2" gutterBottom>{worksheet.prompt}</Typography>

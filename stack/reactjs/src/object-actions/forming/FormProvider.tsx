@@ -1,5 +1,5 @@
 import React, { createContext, ReactElement, ReactNode, useContext, useState } from "react";
-import { ModelName, ModelType, FieldTypeDefinition, NavItem, NAVITEMS, RelEntity } from "../types/types";
+import { FieldTypeDefinition, ModelName, ModelType, NavItem, NAVITEMS, RelEntity } from "../types/types";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -49,11 +49,11 @@ interface FormContextValue<T extends ModelName> {
 const FormContext = createContext<FormContextValue<ModelName> | undefined>(undefined);
 
 export const FormProvider = <T extends ModelName>({
-  children,
-  fields,
-  original,
-  navItem
-}: FormProviderProps<T>) => {
+                                                    children,
+                                                    fields,
+                                                    original,
+                                                    navItem
+                                                  }: FormProviderProps<T>) => {
   const eid: string | number = original.id || 0;
   const [entity, setEntity] = useState<Partial<ModelType<T>>>(original);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
@@ -81,7 +81,7 @@ export const FormProvider = <T extends ModelName>({
   ) => {
     setEntity((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -130,7 +130,7 @@ export const FormProvider = <T extends ModelName>({
     for (const key in entity) {
 
       const typedKey = key as keyof ModelType<T>;
-      let val:any = entity[typedKey];
+      let val: any = entity[typedKey];
       const was = original[typedKey];
 
       if (JSON.stringify(was) === JSON.stringify(val)) {
@@ -146,7 +146,7 @@ export const FormProvider = <T extends ModelName>({
         }
       } else if (Array.isArray(val)) {
         val = val.map((v) => v.id) as any;
-      } else if (val && typeof val === "object" && 'id' in val) {
+      } else if (val && typeof val === "object" && "id" in val) {
         val = (val as RelEntity).id as any;
       }
 
@@ -405,7 +405,7 @@ export const FormProvider = <T extends ModelName>({
         handleSubmit,
         handleDelete,
         addFieldValue,
-        removeFieldValue,
+        removeFieldValue
       }}
     >
       {children}

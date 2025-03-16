@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, CircularProgress } from '@mui/material';
-import { ReactComponent as Google } from './logos/google.svg';
-import { WifiPassword } from '@mui/icons-material';
-import { ButtonPill } from '../theme/StyledFields';
+import React, { useEffect, useState } from "react";
+import { Alert, CircularProgress } from "@mui/material";
+import { ReactComponent as Google } from "./logos/google.svg";
+import { WifiPassword } from "@mui/icons-material";
+import { ButtonPill } from "../theme/StyledFields";
 
 interface AuthMessage {
   type: string;
@@ -13,8 +13,8 @@ interface AuthMessage {
 }
 
 const GoogleInAppButton: React.FC<{ isConnected: boolean }> = ({
-  isConnected = false,
-}) => {
+                                                                 isConnected = false
+                                                               }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,43 +22,43 @@ const GoogleInAppButton: React.FC<{ isConnected: boolean }> = ({
   const sendAuthRequest = () => {
     setLoading(true);
     const message: AuthMessage = {
-      type: 'auth-request',
-      provider: 'google',
+      type: "auth-request",
+      provider: "google"
     };
 
     // Send a message to Flutter WebView to initiate the OAuth process
-    window.postMessage(JSON.stringify(message), '*');
+    window.postMessage(JSON.stringify(message), "*");
   };
 
   // Function to handle messages from Flutter WebView
   const handleMessageFromFlutter = (event: MessageEvent) => {
     try {
       const message: AuthMessage =
-        typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        typeof event.data === "string" ? JSON.parse(event.data) : event.data;
 
-      console.log('FROM FLUTTER: ', message);
+      console.log("FROM FLUTTER: ", message);
       // Process the token received from Flutter
       if (
-        typeof message === 'object' &&
-        message.provider === 'google' &&
-        message.type === 'auth-response'
+        typeof message === "object" &&
+        message.provider === "google" &&
+        message.type === "auth-response"
       ) {
         setLoading(false);
         setError(JSON.stringify(message)); // TODO: set cookie or token and navigate to "next" param or home
       }
     } catch (error) {
       // @ts-ignore
-      setError('BAD PARSE' + error.toString());
-      console.error('Error handling message from Flutter:', error);
+      setError("BAD PARSE" + error.toString());
+      console.error("Error handling message from Flutter:", error);
     }
   };
 
   // Listen for messages from Flutter WebView
   useEffect(() => {
-    window.addEventListener('message', handleMessageFromFlutter);
+    window.addEventListener("message", handleMessageFromFlutter);
 
     return () => {
-      window.removeEventListener('message', handleMessageFromFlutter);
+      window.removeEventListener("message", handleMessageFromFlutter);
     };
   }, []);
 
@@ -70,8 +70,8 @@ const GoogleInAppButton: React.FC<{ isConnected: boolean }> = ({
         disabled={loading}
         endIcon={isConnected ? <WifiPassword /> : undefined}
         fullWidth
-        variant={'outlined'}
-        color={'inherit'}
+        variant={"outlined"}
+        color={"inherit"}
       >
         Google
       </ButtonPill>
