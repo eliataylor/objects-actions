@@ -374,8 +374,7 @@ urlpatterns += [
             perm_code = f"class {class_name}(BasePermission):\n"
 
             # Add class docstring with metadata for oa_exception_handler
-            perm_code += f'''    """
-        Permission class for {verb} operations on {model_name}.
+            perm_code += f'''    """Permission class for {verb} operations on {model_name}.
     '''
             if own_perm and own_perm['roles']:
                 own_roles_str = ", ".join(own_perm['roles'])
@@ -555,21 +554,18 @@ urlpatterns += [
         permissions_content = "\n\n".join(permission_classes)
 
         # Add a comment explaining generated permissions
-        permissions_header = '''"""
-    This file contains permission classes generated from the permissions matrix.
-    These classes are used by the DRF viewsets to control access to API endpoints.
+        permissions_header = '''"""This file contains permission classes generated from the permissions matrix.
+These classes are used by the DRF viewsets to control access to API endpoints.
 
-    Each permission class contains metadata used by the oa_exception_handler to create detailed error messages:
-    - required_roles_own: List of roles that can access their own content
-    - required_roles_others: List of roles that can access content owned by others
-    - context_info: Contains context (model) and verb information
-    - help_text: (Optional) Additional explanation about the permission
+Each permission class contains metadata used by the oa_exception_handler to create detailed error messages:
+- required_roles_own: List of roles that can access their own content
+- required_roles_others: List of roles that can access content owned by others
+- context_info: Contains context (model) and verb information
+- help_text: (Optional) Additional explanation about the permission
 
-    The oa_exception_handler constructs error messages based on this metadata,
-    adapting to the current user's authentication status and roles.
-    """
-
-    '''
+The oa_exception_handler constructs error messages based on this metadata,
+adapting to the current user's authentication status and roles.
+"""\n\n'''
 
         # Include the permissions header in the content
         permissions_content = permissions_header + permissions_content

@@ -31,23 +31,21 @@ from django.contrib.auth import get_user_model
 ####OBJECT-ACTIONS-PERMISSIONS-IMPORTS-ENDS####
 
 ####OBJECT-ACTIONS-PERMISSIONS-STARTS####
+"""This file contains permission classes generated from the permissions matrix.
+These classes are used by the DRF viewsets to control access to API endpoints.
+
+Each permission class contains metadata used by the oa_exception_handler to create detailed error messages:
+- required_roles_own: List of roles that can access their own content
+- required_roles_others: List of roles that can access content owned by others
+- context_info: Contains context (model) and verb information
+- help_text: (Optional) Additional explanation about the permission
+
+The oa_exception_handler constructs error messages based on this metadata,
+adapting to the current user's authentication status and roles.
 """
-    This file contains permission classes generated from the permissions matrix.
-    These classes are used by the DRF viewsets to control access to API endpoints.
 
-    Each permission class contains metadata used by the oa_exception_handler to create detailed error messages:
-    - required_roles_own: List of roles that can access their own content
-    - required_roles_others: List of roles that can access content owned by others
-    - context_info: Contains context (model) and verb information
-    - help_text: (Optional) Additional explanation about the permission
-
-    The oa_exception_handler constructs error messages based on this metadata,
-    adapting to the current user's authentication status and roles.
-    """
-
-    class can_view_list_users(BasePermission):
-    """
-        Permission class for view_list operations on Users.
+class can_view_list_users(BasePermission):
+    """Permission class for view_list operations on Users.
         Others' content: Allows authenticated, city sponsor
     """
     required_roles_own = []
@@ -68,8 +66,7 @@ from django.contrib.auth import get_user_model
 
 
 class can_view_profile_users(BasePermission):
-    """
-        Permission class for view_profile operations on Users.
+    """Permission class for view_profile operations on Users.
         Own content: Allows authenticated
     Others' content: Allows verified
     """
@@ -91,8 +88,7 @@ class can_view_profile_users(BasePermission):
 
 
 class can_add_users(BasePermission):
-    """
-        Permission class for add operations on Users.
+    """Permission class for add operations on Users.
         Own content: Allows anonymous
     """
     required_roles_own = ['anonymous']
@@ -111,8 +107,7 @@ class can_add_users(BasePermission):
 
 
 class can_sign_up_users(BasePermission):
-    """
-        Permission class for sign_up operations on Users.
+    """Permission class for sign_up operations on Users.
         Own content: Allows anonymous
     """
     required_roles_own = ['anonymous']
@@ -131,8 +126,7 @@ class can_sign_up_users(BasePermission):
 
 
 class can_edit_user_users(BasePermission):
-    """
-        Permission class for edit_user operations on Users.
+    """Permission class for edit_user operations on Users.
         Own content: Allows authenticated
     """
     required_roles_own = ['authenticated']
@@ -153,8 +147,7 @@ class can_edit_user_users(BasePermission):
 
 
 class can_delete_user_users(BasePermission):
-    """
-        Permission class for delete_user operations on Users.
+    """Permission class for delete_user operations on Users.
         Own content: Allows authenticated
     """
     required_roles_own = ['authenticated']
@@ -175,8 +168,7 @@ class can_delete_user_users(BasePermission):
 
 
 class can_block_user_users(BasePermission):
-    """
-        Permission class for block_user operations on Users.
+    """Permission class for block_user operations on Users.
         Others' content: Allows verified
     """
     required_roles_own = []
@@ -197,8 +189,7 @@ class can_block_user_users(BasePermission):
 
 
 class can_view_cities(BasePermission):
-    """
-        Permission class for view operations on Cities.
+    """Permission class for view operations on Cities.
         Own content: Allows anonymous, authenticated
     Others' content: Allows anonymous, authenticated
     """
@@ -210,8 +201,7 @@ class can_view_cities(BasePermission):
 
 
 class can_add_cities(BasePermission):
-    """
-        Permission class for add operations on Cities.
+    """Permission class for add operations on Cities.
         Own content: Allows verified
     Others' content: Allows verified
     """
@@ -225,8 +215,7 @@ class can_add_cities(BasePermission):
 
 
 class can_edit_cities(BasePermission):
-    """
-        Permission class for edit operations on Cities.
+    """Permission class for edit operations on Cities.
         Own content: Allows verified
     Others' content: Allows admin
     """
@@ -236,7 +225,7 @@ class can_edit_cities(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -247,8 +236,7 @@ class can_edit_cities(BasePermission):
 
 
 class can_delete_cities(BasePermission):
-    """
-        Permission class for delete operations on Cities.
+    """Permission class for delete operations on Cities.
         Own content: Allows verified
     Others' content: Allows admin
     """
@@ -258,7 +246,7 @@ class can_delete_cities(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -269,8 +257,7 @@ class can_delete_cities(BasePermission):
 
 
 class can_add_comment_cities(BasePermission):
-    """
-        Permission class for add_comment operations on Cities.
+    """Permission class for add_comment operations on Cities.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -290,8 +277,7 @@ class can_add_comment_cities(BasePermission):
 
 
 class can_edit_comment_cities(BasePermission):
-    """
-        Permission class for edit_comment operations on Cities.
+    """Permission class for edit_comment operations on Cities.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -311,8 +297,7 @@ class can_edit_comment_cities(BasePermission):
 
 
 class can_delete_comment_cities(BasePermission):
-    """
-        Permission class for delete_comment operations on Cities.
+    """Permission class for delete_comment operations on Cities.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -332,8 +317,7 @@ class can_delete_comment_cities(BasePermission):
 
 
 class can_sponsor_cities(BasePermission):
-    """
-        Permission class for sponsor operations on Cities.
+    """Permission class for sponsor operations on Cities.
         Own content: Allows authenticated
     Others' content: Allows authenticated
     """
@@ -347,8 +331,7 @@ class can_sponsor_cities(BasePermission):
 
 
 class can_view_rallies(BasePermission):
-    """
-        Permission class for view operations on Rallies.
+    """Permission class for view operations on Rallies.
         Own content: Allows anonymous, authenticated
     Others' content: Allows anonymous, authenticated
     """
@@ -360,8 +343,7 @@ class can_view_rallies(BasePermission):
 
 
 class can_add_rallies(BasePermission):
-    """
-        Permission class for add operations on Rallies.
+    """Permission class for add operations on Rallies.
         Own content: Allows rally attendee, rally speaker, rally moderator
     """
     required_roles_own = ['rally attendee', 'rally speaker', 'rally moderator']
@@ -370,7 +352,7 @@ class can_add_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsRallySpeaker').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -381,8 +363,7 @@ class can_add_rallies(BasePermission):
 
 
 class can_edit_rallies(BasePermission):
-    """
-        Permission class for edit operations on Rallies.
+    """Permission class for edit operations on Rallies.
         Own content: Allows verified
     Others' content: Allows admin, rally moderator
     """
@@ -392,7 +373,7 @@ class can_edit_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -403,8 +384,7 @@ class can_edit_rallies(BasePermission):
 
 
 class can_delete_rallies(BasePermission):
-    """
-        Permission class for delete operations on Rallies.
+    """Permission class for delete operations on Rallies.
         Own content: Allows verified
     Others' content: Allows admin
     """
@@ -414,7 +394,7 @@ class can_delete_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -425,8 +405,7 @@ class can_delete_rallies(BasePermission):
 
 
 class can_subscribe_rallies(BasePermission):
-    """
-        Permission class for subscribe operations on Rallies.
+    """Permission class for subscribe operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -446,8 +425,7 @@ class can_subscribe_rallies(BasePermission):
 
 
 class can_edit_subscribe_rallies(BasePermission):
-    """
-        Permission class for edit_subscribe operations on Rallies.
+    """Permission class for edit_subscribe operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -467,8 +445,7 @@ class can_edit_subscribe_rallies(BasePermission):
 
 
 class can_delete_subscription_rallies(BasePermission):
-    """
-        Permission class for delete_subscription operations on Rallies.
+    """Permission class for delete_subscription operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -488,8 +465,7 @@ class can_delete_subscription_rallies(BasePermission):
 
 
 class can_add_comment_rallies(BasePermission):
-    """
-        Permission class for add_comment operations on Rallies.
+    """Permission class for add_comment operations on Rallies.
         Own content: Allows rally attendee, rally moderator
     """
     required_roles_own = ['rally attendee', 'rally moderator']
@@ -498,7 +474,7 @@ class can_add_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallyModerator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -509,8 +485,7 @@ class can_add_comment_rallies(BasePermission):
 
 
 class can_edit_comment_rallies(BasePermission):
-    """
-        Permission class for edit_comment operations on Rallies.
+    """Permission class for edit_comment operations on Rallies.
         Own content: Allows rally attendee
     """
     required_roles_own = ['rally attendee']
@@ -530,8 +505,7 @@ class can_edit_comment_rallies(BasePermission):
 
 
 class can_delete_comment_rallies(BasePermission):
-    """
-        Permission class for delete_comment operations on Rallies.
+    """Permission class for delete_comment operations on Rallies.
         Own content: Allows rally attendee
     Others' content: Allows admin, rally moderator
     """
@@ -541,7 +515,7 @@ class can_delete_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyModerator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -552,8 +526,7 @@ class can_delete_comment_rallies(BasePermission):
 
 
 class can_view_officials(BasePermission):
-    """
-        Permission class for view operations on Officials.
+    """Permission class for view operations on Officials.
         Own content: Allows anonymous, authenticated
     Others' content: Allows anonymous, authenticated
     """
@@ -565,8 +538,7 @@ class can_view_officials(BasePermission):
 
 
 class can_add_officials(BasePermission):
-    """
-        Permission class for add operations on Officials.
+    """Permission class for add operations on Officials.
         Own content: Allows admin, city sponsor
     Others' content: Allows admin, city sponsor
     """
@@ -576,12 +548,11 @@ class can_add_officials(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsCitySponsor').exists()
 
 
 class can_edit_officials(BasePermission):
-    """
-        Permission class for edit operations on Officials.
+    """Permission class for edit operations on Officials.
         Own content: Allows admin, city sponsor
     Others' content: Allows admin, city sponsor
     """
@@ -591,12 +562,11 @@ class can_edit_officials(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsCitySponsor').exists()
 
 
 class can_delete_officials(BasePermission):
-    """
-        Permission class for delete operations on Officials.
+    """Permission class for delete operations on Officials.
         Own content: Allows admin, city sponsor
     Others' content: Allows admin, city sponsor
     """
@@ -606,12 +576,11 @@ class can_delete_officials(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsCitySponsor').exists()
 
 
 class can_view_actionplans(BasePermission):
-    """
-        Permission class for view operations on ActionPlans.
+    """Permission class for view operations on ActionPlans.
         Own content: Allows anonymous, authenticated
     Others' content: Allows anonymous, authenticated
     """
@@ -623,8 +592,7 @@ class can_view_actionplans(BasePermission):
 
 
 class can_add_actionplans(BasePermission):
-    """
-        Permission class for add operations on ActionPlans.
+    """Permission class for add operations on ActionPlans.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -644,8 +612,7 @@ class can_add_actionplans(BasePermission):
 
 
 class can_edit_actionplans(BasePermission):
-    """
-        Permission class for edit operations on ActionPlans.
+    """Permission class for edit operations on ActionPlans.
         Own content: Allows verified
     Others' content: Allows admin
     """
@@ -655,7 +622,7 @@ class can_edit_actionplans(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -666,8 +633,7 @@ class can_edit_actionplans(BasePermission):
 
 
 class can_delete_actionplans(BasePermission):
-    """
-        Permission class for delete operations on ActionPlans.
+    """Permission class for delete operations on ActionPlans.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -687,8 +653,7 @@ class can_delete_actionplans(BasePermission):
 
 
 class can_add_comment_actionplans(BasePermission):
-    """
-        Permission class for add_comment operations on ActionPlans.
+    """Permission class for add_comment operations on ActionPlans.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -708,8 +673,7 @@ class can_add_comment_actionplans(BasePermission):
 
 
 class can_edit_comment_actionplans(BasePermission):
-    """
-        Permission class for edit_comment operations on ActionPlans.
+    """Permission class for edit_comment operations on ActionPlans.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -729,8 +693,7 @@ class can_edit_comment_actionplans(BasePermission):
 
 
 class can_delete_comment_actionplans(BasePermission):
-    """
-        Permission class for delete_comment operations on ActionPlans.
+    """Permission class for delete_comment operations on ActionPlans.
         Own content: Allows verified
     Others' content: Allows admin
     """
@@ -740,7 +703,7 @@ class can_delete_comment_actionplans(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -751,8 +714,7 @@ class can_delete_comment_actionplans(BasePermission):
 
 
 class can_edit_rallies(BasePermission):
-    """
-        Permission class for edit operations on Rallies.
+    """Permission class for edit operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -772,8 +734,7 @@ class can_edit_rallies(BasePermission):
 
 
 class can_delete_rallies(BasePermission):
-    """
-        Permission class for delete operations on Rallies.
+    """Permission class for delete operations on Rallies.
         Own content: Allows verified
     Others' content: Allows admin, rally moderator
     """
@@ -783,7 +744,7 @@ class can_delete_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsAdmin').exists()
+        return request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -794,8 +755,7 @@ class can_delete_rallies(BasePermission):
 
 
 class can_add_comment_rallies(BasePermission):
-    """
-        Permission class for add_comment operations on Rallies.
+    """Permission class for add_comment operations on Rallies.
         Own content: Allows rally attendee
     """
     required_roles_own = ['rally attendee']
@@ -815,8 +775,7 @@ class can_add_comment_rallies(BasePermission):
 
 
 class can_edit_comment_rallies(BasePermission):
-    """
-        Permission class for edit_comment operations on Rallies.
+    """Permission class for edit_comment operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -836,8 +795,7 @@ class can_edit_comment_rallies(BasePermission):
 
 
 class can_delete_comment_rallies(BasePermission):
-    """
-        Permission class for delete_comment operations on Rallies.
+    """Permission class for delete_comment operations on Rallies.
         Own content: Allows verified
     Others' content: Allows rally moderator
     """
@@ -847,7 +805,7 @@ class can_delete_comment_rallies(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyModerator').exists()
+        return request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -858,8 +816,7 @@ class can_delete_comment_rallies(BasePermission):
 
 
 class can_sponsor_rallies(BasePermission):
-    """
-        Permission class for sponsor operations on Rallies.
+    """Permission class for sponsor operations on Rallies.
         Own content: Allows verified
     Others' content: Allows verified
     """
@@ -873,8 +830,7 @@ class can_sponsor_rallies(BasePermission):
 
 
 class can_apply_to_speak_rallies(BasePermission):
-    """
-        Permission class for apply_to_speak operations on Rallies.
+    """Permission class for apply_to_speak operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -894,8 +850,7 @@ class can_apply_to_speak_rallies(BasePermission):
 
 
 class can_withdraw_application_rallies(BasePermission):
-    """
-        Permission class for withdraw_application operations on Rallies.
+    """Permission class for withdraw_application operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -915,8 +870,7 @@ class can_withdraw_application_rallies(BasePermission):
 
 
 class can_approve_speaker_rallies(BasePermission):
-    """
-        Permission class for approve_speaker operations on Rallies.
+    """Permission class for approve_speaker operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -936,8 +890,7 @@ class can_approve_speaker_rallies(BasePermission):
 
 
 class can_reject_speaker_rallies(BasePermission):
-    """
-        Permission class for reject_speaker operations on Rallies.
+    """Permission class for reject_speaker operations on Rallies.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -957,8 +910,7 @@ class can_reject_speaker_rallies(BasePermission):
 
 
 class can_view_invites(BasePermission):
-    """
-        Permission class for view operations on Invites.
+    """Permission class for view operations on Invites.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -978,8 +930,7 @@ class can_view_invites(BasePermission):
 
 
 class can_add_invites(BasePermission):
-    """
-        Permission class for add operations on Invites.
+    """Permission class for add operations on Invites.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -999,8 +950,7 @@ class can_add_invites(BasePermission):
 
 
 class can_edit_invites(BasePermission):
-    """
-        Permission class for edit operations on Invites.
+    """Permission class for edit operations on Invites.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -1020,8 +970,7 @@ class can_edit_invites(BasePermission):
 
 
 class can_delete_invites(BasePermission):
-    """
-        Permission class for delete operations on Invites.
+    """Permission class for delete operations on Invites.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -1041,8 +990,7 @@ class can_delete_invites(BasePermission):
 
 
 class can_view_meetings(BasePermission):
-    """
-        Permission class for view operations on Meetings.
+    """Permission class for view operations on Meetings.
         Own content: Allows verified, admin, rally attendee
     Others' content: Allows admin, rally attendee
     """
@@ -1052,7 +1000,7 @@ class can_view_meetings(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1063,8 +1011,7 @@ class can_view_meetings(BasePermission):
 
 
 class can_add_meetings(BasePermission):
-    """
-        Permission class for add operations on Meetings.
+    """Permission class for add operations on Meetings.
         Own content: Allows verified, rally attendee
     """
     required_roles_own = ['verified', 'rally attendee']
@@ -1073,7 +1020,7 @@ class can_add_meetings(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1084,8 +1031,7 @@ class can_add_meetings(BasePermission):
 
 
 class can_edit_meetings(BasePermission):
-    """
-        Permission class for edit operations on Meetings.
+    """Permission class for edit operations on Meetings.
         Own content: Allows verified, rally attendee
     """
     required_roles_own = ['verified', 'rally attendee']
@@ -1094,7 +1040,7 @@ class can_edit_meetings(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1105,8 +1051,7 @@ class can_edit_meetings(BasePermission):
 
 
 class can_delete_meetings(BasePermission):
-    """
-        Permission class for delete operations on Meetings.
+    """Permission class for delete operations on Meetings.
         Own content: Allows verified, rally attendee
     """
     required_roles_own = ['verified', 'rally attendee']
@@ -1115,7 +1060,7 @@ class can_delete_meetings(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1126,8 +1071,7 @@ class can_delete_meetings(BasePermission):
 
 
 class can_view_rooms(BasePermission):
-    """
-        Permission class for view operations on Rooms.
+    """Permission class for view operations on Rooms.
         Own content: Allows verified
     Others' content: Allows admin, rally attendee, city sponsor, city official, rally speaker, rally moderator
     """
@@ -1137,7 +1081,7 @@ class can_view_rooms(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCitySponsor').exists()
+        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallyModerator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1148,8 +1092,7 @@ class can_view_rooms(BasePermission):
 
 
 class can_add_rooms(BasePermission):
-    """
-        Permission class for add operations on Rooms.
+    """Permission class for add operations on Rooms.
         Own content: Allows admin, rally attendee, city sponsor, city official, rally speaker, rally moderator
     """
     required_roles_own = ['admin', 'rally attendee', 'city sponsor', 'city official', 'rally speaker', 'rally moderator']
@@ -1158,7 +1101,7 @@ class can_add_rooms(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCitySponsor').exists()
+        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallyModerator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1169,8 +1112,7 @@ class can_add_rooms(BasePermission):
 
 
 class can_edit_rooms(BasePermission):
-    """
-        Permission class for edit operations on Rooms.
+    """Permission class for edit operations on Rooms.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -1190,8 +1132,7 @@ class can_edit_rooms(BasePermission):
 
 
 class can_delete_rooms(BasePermission):
-    """
-        Permission class for delete operations on Rooms.
+    """Permission class for delete operations on Rooms.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -1211,8 +1152,7 @@ class can_delete_rooms(BasePermission):
 
 
 class can_view_subscriptions(BasePermission):
-    """
-        Permission class for view operations on Subscriptions.
+    """Permission class for view operations on Subscriptions.
         Own content: Allows verified, admin, rally attendee, rally moderator
     Others' content: Allows admin, rally attendee, rally moderator
     """
@@ -1222,7 +1162,7 @@ class can_view_subscriptions(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsAdmin').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1233,8 +1173,7 @@ class can_view_subscriptions(BasePermission):
 
 
 class can_add_subscriptions(BasePermission):
-    """
-        Permission class for add operations on Subscriptions.
+    """Permission class for add operations on Subscriptions.
         Own content: Allows verified, rally attendee
     """
     required_roles_own = ['verified', 'rally attendee']
@@ -1243,7 +1182,7 @@ class can_add_subscriptions(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1254,8 +1193,7 @@ class can_add_subscriptions(BasePermission):
 
 
 class can_edit_subscriptions(BasePermission):
-    """
-        Permission class for edit operations on Subscriptions.
+    """Permission class for edit operations on Subscriptions.
         Own content: Allows verified, rally attendee
     """
     required_roles_own = ['verified', 'rally attendee']
@@ -1264,7 +1202,7 @@ class can_edit_subscriptions(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1275,8 +1213,7 @@ class can_edit_subscriptions(BasePermission):
 
 
 class can_delete_subscriptions(BasePermission):
-    """
-        Permission class for delete operations on Subscriptions.
+    """Permission class for delete operations on Subscriptions.
         Own content: Allows verified, rally attendee
     """
     required_roles_own = ['verified', 'rally attendee']
@@ -1285,7 +1222,7 @@ class can_delete_subscriptions(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsVerified').exists() or request.user.groups.filter(name='IsRallyAttendee').exists()
+        return request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsVerified').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1296,8 +1233,7 @@ class can_delete_subscriptions(BasePermission):
 
 
 class can_view_list_resources(BasePermission):
-    """
-        Permission class for view_list operations on Resources.
+    """Permission class for view_list operations on Resources.
         Own content: Allows verified
     """
     required_roles_own = ['verified']
@@ -1317,8 +1253,7 @@ class can_view_list_resources(BasePermission):
 
 
 class can_view_resources(BasePermission):
-    """
-        Permission class for view operations on Resources.
+    """Permission class for view operations on Resources.
         Own content: Allows verified
     Others' content: Allows verified
     """
@@ -1332,8 +1267,7 @@ class can_view_resources(BasePermission):
 
 
 class can_add_resources(BasePermission):
-    """
-        Permission class for add operations on Resources.
+    """Permission class for add operations on Resources.
         Own content: Allows paid user, rally attendee, city sponsor, city official, rally speaker, rally moderator
     """
     required_roles_own = ['paid user', 'rally attendee', 'city sponsor', 'city official', 'rally speaker', 'rally moderator']
@@ -1342,7 +1276,7 @@ class can_add_resources(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCitySponsor').exists()
+        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallyModerator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1353,8 +1287,7 @@ class can_add_resources(BasePermission):
 
 
 class can_edit_resources(BasePermission):
-    """
-        Permission class for edit operations on Resources.
+    """Permission class for edit operations on Resources.
         Own content: Allows paid user, rally attendee, city sponsor, city official, rally speaker, rally moderator
     """
     required_roles_own = ['paid user', 'rally attendee', 'city sponsor', 'city official', 'rally speaker', 'rally moderator']
@@ -1363,7 +1296,7 @@ class can_edit_resources(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCitySponsor').exists()
+        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallyModerator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
@@ -1374,8 +1307,7 @@ class can_edit_resources(BasePermission):
 
 
 class can_delete_resources(BasePermission):
-    """
-        Permission class for delete operations on Resources.
+    """Permission class for delete operations on Resources.
         Own content: Allows paid user, rally attendee, city sponsor, city official, rally speaker, rally moderator
     """
     required_roles_own = ['paid user', 'rally attendee', 'city sponsor', 'city official', 'rally speaker', 'rally moderator']
@@ -1384,7 +1316,7 @@ class can_delete_resources(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        return request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsRallyModerator').exists() or request.user.groups.filter(name='IsCitySponsor').exists()
+        return request.user.groups.filter(name='IsCitySponsor').exists() or request.user.groups.filter(name='IsRallySpeaker').exists() or request.user.groups.filter(name='IsPaidUser').exists() or request.user.groups.filter(name='IsCityOfficial').exists() or request.user.groups.filter(name='IsRallyAttendee').exists() or request.user.groups.filter(name='IsRallyModerator').exists()
 
     def has_object_permission(self, request, view, obj):
         is_own = hasattr(obj, 'author') and request.user.id == obj.author.id
