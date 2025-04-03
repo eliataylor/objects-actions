@@ -1,5 +1,6 @@
 import csv
 import os
+import random
 from typing import Dict, Optional
 
 from django.db import transaction
@@ -16,18 +17,21 @@ class Command(BaseUtilityCommand):
         # Add common arguments from the parent class
         super().add_arguments(parser)
 
+        parser.add_argument('--reuse-images', type=bool, default=False, help='Reuse images from existing cities instead of download')
+
     def handle_command(self, *args, **options):
         file_path = options['file']
         batch_size = options['batch_size']
         limit = options['limit']
         start = options['start']
+        reuse_images = options.get('reuse_images', False)
 
         if not os.path.exists(file_path):
             self.stdout.write(self.style.ERROR(f'File not found: {file_path}'))
             return
 
         self.stdout.write(self.style.SUCCESS(
-            f'Starting city import from {file_path} (starting at line {start}, limit {limit} batching {batch_size}) '))
+            f'Starting city import from {file_path} (starting at line {start}, limit {limit} batching {batch_size}, reuse images: {reuse_images}) '))
 
         # First, collect all state data and create states
         self.stdout.write('Collecting state data...')
@@ -38,7 +42,7 @@ class Command(BaseUtilityCommand):
 
         # Now process cities one by one in batches
         self.stdout.write(f'Importing cities')
-        self.import_cities_in_batches(file_path, state_map, batch_size, limit, start)
+        self.import_cities_in_batches(file_path, state_map, batch_size, limit, start, reuse_images)
 
         # Update state aggregations
         self.stdout.write('Updating state aggregations...')
@@ -89,7 +93,7 @@ class Command(BaseUtilityCommand):
         self.stdout.write(f'State data collection complete. Found {len(state_data)} states.')
         return state_data
 
-    def process_city_batch(self, batch_rows, state_map):
+    def process_city_batch(self, batch_rows, state_map, reuse_images=False):
         """
         Process a batch of city rows inside a single transaction
         Returns counts of created, updated, and error cities
@@ -121,7 +125,7 @@ class Command(BaseUtilityCommand):
                     state = state_map[state_name]
 
                     # Create or update city
-                    result = self.upsert_city(city_data, state)
+                    result = self.upsert_city(city_data, state, reuse_images)
                     if result == 'created':
                         created_count += 1
                     elif result == 'updated':
@@ -137,9 +141,9 @@ class Command(BaseUtilityCommand):
 
         return created_count, updated_count, error_count
 
-    # Modify import_cities_in_batches method to remove the outer transaction
+    # Modify import_cities_in_batches method to include reuse_images parameter
     def import_cities_in_batches(self, file_path: str, state_map: Dict[str, States], batch_size: int,
-                                 limit: Optional[int] = None, start: int = 0):
+                                 limit: Optional[int] = None, start: int = 0, reuse_images=False):
         """
         Import cities one by one in batches to respect transaction boundaries
         """
@@ -162,7 +166,6 @@ class Command(BaseUtilityCommand):
                     self.stdout.write(self.style.WARNING(f'Start line {start} exceeds file length'))
                     return
 
-            # Remove the outer transaction
             for row in reader:
                 try:
                     total_cities += 1
@@ -175,7 +178,7 @@ class Command(BaseUtilityCommand):
 
                     # Process batch if we've reached the batch size
                     if len(batch_cities) >= batch_size:
-                        created, updated, errors = self.process_city_batch(batch_cities, state_map)
+                        created, updated, errors = self.process_city_batch(batch_cities, state_map, reuse_images)
                         created_count += created
                         updated_count += updated
                         error_count += errors
@@ -190,6 +193,18 @@ class Command(BaseUtilityCommand):
                 except Exception as e:
                     self.stdout.write(self.style.ERROR(f"Error processing city from row: {str(e)}"))
                     error_count += 1
+
+        # Process any remaining cities in the last batch
+        if batch_cities:
+            created, updated, errors = self.process_city_batch(batch_cities, state_map, reuse_images)
+            created_count += created
+            updated_count += updated
+            error_count += errors
+            self.stdout.write(f'Final batch: Created: {created}, Updated: {updated}, Errors: {errors}')
+
+        self.stdout.write(
+            f'City import complete. Total processed: {total_cities}, Created: {created_count}, Updated: {updated_count}, Errors: {error_count}'
+        )
 
     def extract_city_data(self, row, state_name):
         """
@@ -252,8 +267,27 @@ class Command(BaseUtilityCommand):
 
         return state_map
 
-    # Add more detailed error logging in upsert_city
-    def upsert_city(self, city_data, state):
+    def get_random_existing_images(self):
+        """
+        Get random profile and cover images from existing cities with non-null funcstat
+        Returns tuple of (picture, cover_photo)
+        """
+        # Check if any cities exist with non-null funcstat
+        existing_cities = Cities.objects.filter(funcstat__isnull=False)
+
+        if not existing_cities.exists():
+            self.stdout.write("No existing cities with images found for reuse")
+            return None, None
+
+        # Get a random city with non-null funcstat
+        random_city = random.choice(list(existing_cities))
+
+        self.stdout.write(f"Reusing images from city: {random_city.name}")
+
+        return random_city.picture, random_city.cover_photo
+
+    # Update upsert_city to handle image reuse
+    def upsert_city(self, city_data, state, reuse_images=False):
         """
         Create or update a single city
         """
@@ -268,17 +302,22 @@ class Command(BaseUtilityCommand):
             # Create description
             description = f"{city_data['name']} is a {sumlev_description} located in {city_data['county']} County, {state.name}. It is currently an {funcstat_description} (SUMLEV: {city_data['sumlev']}, FUNCSTAT: {city_data['funcstat']})."
 
-            # Log before image download
-            self.stdout.write(f"Preparing to download images for city: {city_data['name']}")
+            # Handle image acquisition based on reuse_images flag
+            picture = None
+            cover_photo = None
 
-            # Download images for the city (with error handling)
-            picture = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}")
-            cover_photo = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}-cover")
+            if reuse_images:
+                # Try to get existing images
+                self.stdout.write(f"Attempting to reuse existing images for city: {city_data['name']}")
+                picture, cover_photo = self.get_random_existing_images()
 
-            # Log after image download
-            self.stdout.write(f"Images downloaded for city: {city_data['name']}")
+            # If not reusing images or no existing images were found, download new ones
+            if not reuse_images or (picture is None and cover_photo is None):
+                self.stdout.write(f"Downloading new images for city: {city_data['name']}")
+                picture = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}")
+                cover_photo = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}-cover")
 
-            # Build the defaults dict - log this to see exactly what's being saved
+            # Build the defaults dict
             defaults = {
                 'author_id': 1,
                 'description': description,
@@ -290,9 +329,13 @@ class Command(BaseUtilityCommand):
                 'funcstat': city_data['funcstat'],
                 'place_code': city_data['place_code'],
                 'timezone': timezone,
-                'picture': picture,
-                'cover_photo': cover_photo
             }
+
+            # Only add images to defaults if they exist
+            if picture:
+                defaults['picture'] = picture
+            if cover_photo:
+                defaults['cover_photo'] = cover_photo
 
             self.stdout.write(f"Attempting to save city with data: {city_data['name']}, state: {state.name}")
 
