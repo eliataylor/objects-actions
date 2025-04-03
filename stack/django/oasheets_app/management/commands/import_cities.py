@@ -1,8 +1,7 @@
-import os
 import csv
-from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
-from django.conf import settings
+import os
+from typing import Dict, Optional
+
 from django.db import transaction
 
 # Import your models and the new utility class
@@ -27,7 +26,8 @@ class Command(BaseUtilityCommand):
             self.stdout.write(self.style.ERROR(f'File not found: {file_path}'))
             return
 
-        self.stdout.write(self.style.SUCCESS(f'Starting city import from {file_path} (starting at line {start}, limit {limit} batching {batch_size}) '))
+        self.stdout.write(self.style.SUCCESS(
+            f'Starting city import from {file_path} (starting at line {start}, limit {limit} batching {batch_size}) '))
 
         # First, collect all state data and create states
         self.stdout.write('Collecting state data...')
@@ -137,6 +137,7 @@ class Command(BaseUtilityCommand):
 
         return created_count, updated_count, error_count
 
+    # Modify import_cities_in_batches method to remove the outer transaction
     def import_cities_in_batches(self, file_path: str, state_map: Dict[str, States], batch_size: int,
                                  limit: Optional[int] = None, start: int = 0):
         """
@@ -161,43 +162,34 @@ class Command(BaseUtilityCommand):
                     self.stdout.write(self.style.WARNING(f'Start line {start} exceeds file length'))
                     return
 
-            # Start a transaction for the first batch
-            with transaction.atomic():
-                for row in reader:
-                    try:
-                        total_cities += 1
+            # Remove the outer transaction
+            for row in reader:
+                try:
+                    total_cities += 1
 
-                        if limit and total_cities > limit:
-                            break
+                    if limit and total_cities > limit:
+                        break
 
-                        # Add this row to the current batch
-                        batch_cities.append(row)
+                    # Add this row to the current batch
+                    batch_cities.append(row)
 
-                        # Process batch if we've reached the batch size
-                        if len(batch_cities) >= batch_size:
-                            created, updated, errors = self.process_city_batch(batch_cities, state_map)
-                            created_count += created
-                            updated_count += updated
-                            error_count += errors
+                    # Process batch if we've reached the batch size
+                    if len(batch_cities) >= batch_size:
+                        created, updated, errors = self.process_city_batch(batch_cities, state_map)
+                        created_count += created
+                        updated_count += updated
+                        error_count += errors
 
-                            # Reset for next batch
-                            batch_cities = []
-                            current_batch = 0
+                        # Show progress
+                        self.stdout.write(
+                            f'Imported batch: created: {created}, updated: {updated}, errors: {errors}')
 
-                    except Exception as e:
-                        self.stdout.write(self.style.ERROR(f"Error processing city from row: {str(e)}"))
-                        error_count += 1
+                        # Reset for next batch
+                        batch_cities = []
 
-        # Process any remaining cities in the last batch
-        if len(batch_cities) > 0:
-            created, updated, errors = self.process_city_batch(batch_cities, state_map)
-            created_count += created
-            updated_count += updated
-            error_count += errors
-            self.stdout.write(f'Final batch: Created: {created}, Updated: {updated}, Errors: {errors}')
-
-        self.stdout.write(
-            f'City import complete. Total processed: {total_cities}, Created: {created_count}, Updated: {updated_count}, Errors: {error_count}')
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(f"Error processing city from row: {str(e)}"))
+                    error_count += 1
 
     def extract_city_data(self, row, state_name):
         """
@@ -260,6 +252,7 @@ class Command(BaseUtilityCommand):
 
         return state_map
 
+    # Add more detailed error logging in upsert_city
     def upsert_city(self, city_data, state):
         """
         Create or update a single city
@@ -272,42 +265,52 @@ class Command(BaseUtilityCommand):
             # Generate timezone for the state
             timezone = CommandUtils.get_timezone_for_state(state.name)
 
+            # Create description
+            description = f"{city_data['name']} is a {sumlev_description} located in {city_data['county']} County, {state.name}. It is currently an {funcstat_description} (SUMLEV: {city_data['sumlev']}, FUNCSTAT: {city_data['funcstat']})."
+
+            # Log before image download
+            self.stdout.write(f"Preparing to download images for city: {city_data['name']}")
+
             # Download images for the city (with error handling)
             picture = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}")
             cover_photo = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}-cover")
 
-            # Create description
-            description = f"{city_data['name']} is a {sumlev_description} located in {city_data['county']} County, {state.name}. It is currently an {funcstat_description} (SUMLEV: {city_data['sumlev']}, FUNCSTAT: {city_data['funcstat']})."
+            # Log after image download
+            self.stdout.write(f"Images downloaded for city: {city_data['name']}")
+
+            # Build the defaults dict - log this to see exactly what's being saved
+            defaults = {
+                'author_id': 1,
+                'description': description,
+                'postal_address': f"{city_data['name']}, {state.name}",
+                'population': city_data['population'],
+                'census2010_pop': city_data['census2010_pop'],
+                'county': city_data['county'],
+                'sumlev': city_data['sumlev'],
+                'funcstat': city_data['funcstat'],
+                'place_code': city_data['place_code'],
+                'timezone': timezone,
+                'picture': picture,
+                'cover_photo': cover_photo
+            }
+
+            self.stdout.write(f"Attempting to save city with data: {city_data['name']}, state: {state.name}")
 
             # Create or update the city
             city, created = Cities.objects.update_or_create(
                 name=city_data['name'],
                 state_id=state,
-                defaults={
-                    'author_id': 1,
-                    'description': description,
-                    'postal_address': f"{city_data['name']}, {state.name}",
-                    'population': city_data['population'],
-                    'census2010_pop': city_data['census2010_pop'],
-                    'county': city_data['county'],
-                    'sumlev': city_data['sumlev'],
-                    'funcstat': city_data['funcstat'],
-                    'place_code': city_data['place_code'],
-                    'timezone': timezone,
-                    'picture': picture,
-                    'cover_photo': cover_photo
-                }
+                defaults=defaults
             )
 
-            if created:
-                print(f'Created city: {city_data["name"]}')
-            else:
-                print(f'Updated city: {city_data["name"]}')
+            self.stdout.write(f"City {'created' if created else 'updated'} with ID: {city.id}")
 
             return 'created' if created else 'updated'
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f"Error creating/updating city {city_data['name']}: {str(e)}"))
+            import traceback
+            self.stdout.write(self.style.ERROR(f"Error creating/updating city {city_data['name']}:"))
+            self.stdout.write(self.style.ERROR(traceback.format_exc()))
             return 'error'
 
     def update_state_aggregations(self, states):

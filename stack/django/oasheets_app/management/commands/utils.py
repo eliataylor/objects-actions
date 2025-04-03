@@ -18,7 +18,7 @@ class CommandUtils:
     # Load the geo-lookups once for efficient reuse
     PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     BASE_DIR = os.path.dirname(PROJECT_DIR)
-    GEO_LOOKUPS_PATH = os.path.join(BASE_DIR, 'oasheets_app/management/commands', 'geo-lookups.json')
+    GEO_LOOKUPS_PATH = os.path.join(BASE_DIR, 'management/commands', 'geo-lookups.json')
     try:
         with open(GEO_LOOKUPS_PATH, 'r') as f:
             GEO_LOOKUPS = json.load(f)
