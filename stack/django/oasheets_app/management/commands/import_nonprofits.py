@@ -1,5 +1,4 @@
 import os
-from random import randint
 
 import requests
 from django.conf import settings
@@ -9,6 +8,7 @@ from django.db import transaction
 
 # Import models
 from oaexample_app.models import ResourceTypes, Resources, Cities, States
+from oasheets_app.management.commands.import_cities import GEO_LOOKUPS
 
 
 class Command(BaseCommand):
@@ -83,7 +83,7 @@ class Command(BaseCommand):
                             'ein': parts[0].strip(),
                             'name': parts[1].strip(),
                             'city': parts[2].strip(),
-                            'state': parts[3].strip(),
+                            'state_code': parts[3].strip(),
                             'country': parts[4].strip(),
                             'type': parts[5].strip()
                         }
@@ -101,20 +101,20 @@ class Command(BaseCommand):
                             # Get or create city and state if provided
                             city = None
                             if resource_data['city'] and resource_data['state']:
-                                city = self.get_or_create_city(resource_data['city'], resource_data['state'])
+                                city = self.get_or_create_city(resource_data['city'], resource_data['state_code'])
 
                             # Generate description based on tax code meaning
                             tax_code_meaning = self.geo_lookups.get('irsTaxExemptCodes', {}).get(resource_data['type'],
                                                                                                  resource_data['type'])
                             description = f"{resource_data['name']} is a {tax_code_meaning} organization"
-                            if resource_data['city'] and resource_data['state']:
-                                description += f" located in {resource_data['city']}, {resource_data['state']}"
+                            if resource_data['city'] and resource_data['state_code']:
+                                description += f" located in {resource_data['city']}, {resource_data['state_code']}"
                             description += f". EIN: {resource_data['ein']}"
 
                             # Create postal address
                             postal_address = ', '.join(filter(None, [
                                 resource_data['city'],
-                                resource_data['state'],
+                                resource_data['state_code'],
                                 resource_data['country'] or 'USA'
                             ]))
 
@@ -199,9 +199,9 @@ class Command(BaseCommand):
         self.resource_type_cache[tax_code] = resource_type
         return resource_type
 
-    def get_or_create_city(self, city_name, state_name):
+    def get_or_create_city(self, city_name, state_code):
         """Gets or creates a city and its related state"""
-        cache_key = f'{city_name}|{state_name}'
+        cache_key = f'{city_name}|{state_code}'
 
         if cache_key in self.city_cache:
             return self.city_cache[cache_key]
@@ -209,7 +209,7 @@ class Command(BaseCommand):
         # Try to find the city and state
         city = Cities.objects.filter(
             name=city_name,
-            state_id__name=state_name
+            state_id__state_code=state_code
         ).first()
 
         if city:
@@ -217,16 +217,14 @@ class Command(BaseCommand):
             return city
 
         # City doesn't exist, find or create the state first
-        state = self.get_or_create_state(state_name)
+        state = self.get_or_create_state(state_code)
 
         # Generate city data
         city_data = {
             'name': city_name,
-            'description': f'{city_name} is a city located in {state_name}.',
-            'postal_address': f'{city_name}, {state_name}, USA',
-            'state_id': state,
-            'population': randint(5000, 1000000),
-            'website': f'https://www.{city_name.lower().replace(" ", "")}.gov',
+            'description': f'{city_name} is a city located in {state_code}.',
+            'postal_address': f'{city_name}, {state_code}, USA',
+            'state_id': state
         }
 
         # Add image fields with random images
@@ -235,30 +233,35 @@ class Command(BaseCommand):
 
         # Create the city
         city = Cities.objects.create(**city_data)
-        self.stdout.write(f'Created city: {city_name}, {state_name} with ID: {city.id}')
+        self.stdout.write(f'Created city: {city_name}, {state_code} with ID: {city.id}')
 
         # Cache the result
         self.city_cache[cache_key] = city
         return city
 
-    def get_or_create_state(self, state_name):
+    def get_or_create_state(self, state_code):
         """Gets or creates a state"""
-        if state_name in self.state_cache:
-            return self.state_cache[state_name]
+        if state_code in self.state_cache:
+            return self.state_cache[state_code]
 
         # Find the state by name
-        state = States.objects.filter(name=state_name).first()
+        state = States.objects.filter(state_code=state_code).first()
+        if state_code not in GEO_LOOKUPS['stateAbbreviations']:
+            self.stdout.write(f'Invalid State state: {state_code}')
+            state_name = state_code
+        else:
+            state_name = GEO_LOOKUPS['stateAbbreviations'][state_code]
 
         if not state:
             # Create the state with basic info
             state = States.objects.create(
-                name=state_name,
-                website=f'https://{state_name.lower().replace(" ", "")}.gov'
+                state_code=state_code,
+                name=state_name
             )
-            self.stdout.write(f'Created state: {state_name} with ID: {state.id}')
+            self.stdout.write(f'Created state: {state_code} with ID: {state.id}')
 
         # Cache the result
-        self.state_cache[state_name] = state
+        self.state_cache[state_code] = state
         return state
 
     def get_random_image(self, seed):
@@ -283,7 +286,7 @@ class Command(BaseCommand):
             else:
                 # If the image can't be downloaded, return None
                 self.stderr.write(self.style.WARNING(f"Failed to download image for {seed}"))
-                return Nonef
+                return None
         except Exception as e:
             self.stderr.write(self.style.WARNING(f"Error getting image for {seed}: {str(e)}"))
             return None
