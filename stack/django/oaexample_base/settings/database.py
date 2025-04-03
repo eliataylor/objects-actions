@@ -33,6 +33,8 @@ elif OA_ENV_DB == 'gcp':
     DATABASES["default"]["NAME"] = myEnv("MYSQL_DATABASE", "localdb")
     DATABASES["default"]["USER"] = myEnv("MYSQL_USER", "localuser")
     DATABASES["default"]["PASSWORD"] = myEnv("MYSQL_PASSWORD", "localpassword")
+
+    # TODO: warn to not deploy 127!!
     DATABASES["default"]["HOST"] = "127.0.0.1" # when running mysql with proxy to Cloud SQL
     # DATABASES["default"]["HOST"] = myEnv("GCP_MYSQL_HOST")
 
