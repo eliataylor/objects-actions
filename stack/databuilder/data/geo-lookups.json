@@ -37,22 +37,80 @@
     "R": "Retired Entity (no longer functioning)",
     "S": "Statistical Entity that has been Superseded"
   },
+  "irsTaxExemptCodes": {
+    "PC": "Public Charity",
+    "PF": "Private Foundation",
+    "POF": "Private Operating Foundation",
+    "SOUNK": "Supporting Organization, Type Unknown",
+    "SO1": "Supporting Organization, Type I",
+    "SO2": "Supporting Organization, Type II",
+    "SO3F": "Supporting Organization, Type III Functionally Integrated",
+    "SO3NF": "Supporting Organization, Type III Non-Functionally Integrated",
+    "EO": "Exempt Organization",
+    "GROUP": "Group Exemption",
+    "LODGE": "Fraternal Organization or Lodge",
+    "FORGN": "Foreign Organization",
+    "CHURCH": "Church or Religious Organization",
+    "SCHOOL": "Educational Institution or School",
+    "HOSPITAL": "Hospital or Medical Research Organization",
+    "GOVT": "Governmental Unit",
+    "CHAR": "Charitable Organization",
+    "DP": "Domestic Private Foundation",
+    "FP": "Foreign Private Foundation"
+  },
   "timeZonesByRegion": {
     "eastCoast": [
-      "Maine", "New Hampshire", "Vermont", "Massachusetts", "Rhode Island",
-      "Connecticut", "New York", "New Jersey", "Pennsylvania", "Delaware",
-      "Maryland", "Virginia", "North Carolina", "South Carolina", "Georgia", "Florida"
+      "Maine",
+      "New Hampshire",
+      "Vermont",
+      "Massachusetts",
+      "Rhode Island",
+      "Connecticut",
+      "New York",
+      "New Jersey",
+      "Pennsylvania",
+      "Delaware",
+      "Maryland",
+      "Virginia",
+      "North Carolina",
+      "South Carolina",
+      "Georgia",
+      "Florida"
     ],
     "central": [
-      "Ohio", "Michigan", "Indiana", "Kentucky", "Tennessee", "Alabama", "Mississippi",
-      "Wisconsin", "Illinois", "Missouri", "Arkansas", "Louisiana", "Minnesota", "Iowa",
-      "Kansas", "Nebraska", "Oklahoma", "Texas"
+      "Ohio",
+      "Michigan",
+      "Indiana",
+      "Kentucky",
+      "Tennessee",
+      "Alabama",
+      "Mississippi",
+      "Wisconsin",
+      "Illinois",
+      "Missouri",
+      "Arkansas",
+      "Louisiana",
+      "Minnesota",
+      "Iowa",
+      "Kansas",
+      "Nebraska",
+      "Oklahoma",
+      "Texas"
     ],
     "mountain": [
-      "Montana", "Idaho", "Wyoming", "Colorado", "New Mexico", "Utah", "Arizona"
+      "Montana",
+      "Idaho",
+      "Wyoming",
+      "Colorado",
+      "New Mexico",
+      "Utah",
+      "Arizona"
     ],
     "pacific": [
-      "Washington", "Oregon", "Nevada", "California"
+      "Washington",
+      "Oregon",
+      "Nevada",
+      "California"
     ],
     "other": {
       "Alaska": "America/Anchorage",

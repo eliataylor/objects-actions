@@ -31,7 +31,7 @@ class TopicsAdmin(admin.ModelAdmin):
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.icon.url)
 		return "No Image"
 
-	list_display = ('id', 'image_tag')            
+	list_display = ('id', 'image_tag')
 
 
 admin.site.register(Topics, TopicsAdmin)
@@ -53,7 +53,7 @@ class StatesAdmin(admin.ModelAdmin):
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.icon.url)
 		return "No Image"
 
-	list_display = ('id', 'image_tag')            
+	list_display = ('id', 'image_tag', 'name', 'population', 'smallest_city', 'largest_city')
 
 
 admin.site.register(States, StatesAdmin)
@@ -65,7 +65,7 @@ class PartiesAdmin(admin.ModelAdmin):
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.logo.url)
 		return "No Image"
 
-	list_display = ('id', 'image_tag')            
+	list_display = ('id', 'image_tag')
 
 
 admin.site.register(Parties, PartiesAdmin)
@@ -77,7 +77,7 @@ class StakeholdersAdmin(admin.ModelAdmin):
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.image.url)
 		return "No Image"
 
-	list_display = ('id', 'image_tag')            
+	list_display = ('id', 'image_tag')
 
 
 admin.site.register(Stakeholders, StakeholdersAdmin)
@@ -89,7 +89,7 @@ class ResourcesAdmin(admin.ModelAdmin):
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.image.url)
 		return "No Image"
 
-	list_display = ('id', 'image_tag')            
+	list_display = ('id', 'image_tag')
 
 
 admin.site.register(Resources, ResourcesAdmin)
@@ -103,7 +103,7 @@ class UsersAdmin(BaseUserAdmin):
             'classes': ('wide',),
             'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo', 'resources'),
         }),
-    )                
+    )
     def display_groups(self, obj):
         return ", ".join([group.name for group in obj.groups.all()])
 
@@ -115,7 +115,7 @@ class UsersAdmin(BaseUserAdmin):
                 obj.picture.url)
         return "No Image"
 
-    list_display = ('id', 'username', 'email', 'get_full_name', 'display_groups', 'image_tag')            
+    list_display = ('id', 'username', 'email', 'get_full_name', 'display_groups', 'image_tag')
 
 
 admin.site.register(Users, UsersAdmin)
@@ -127,7 +127,7 @@ class CitiesAdmin(admin.ModelAdmin):
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.picture.url)
 		return "No Image"
 
-	list_display = ('id', 'image_tag')            
+	list_display = ('id', 'image_tag', 'name', 'state_id', 'population', 'land_area')
 
 
 admin.site.register(Cities, CitiesAdmin)
@@ -174,7 +174,7 @@ class AttendeesAdmin(admin.ModelAdmin):
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.display_bg.url)
 		return "No Image"
 
-	list_display = ('id', 'image_tag')            
+	list_display = ('id', 'image_tag')
 
 
 admin.site.register(Attendees, AttendeesAdmin)

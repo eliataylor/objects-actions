@@ -25,7 +25,7 @@ def upload_file_path(instance, filename):
 
 	# Construct the final upload path: "uploads/<yyyy-mm>/<filename>"
 	return os.path.join('uploads', date_folder, new_filename)
-	
+
 def validate_phone_number(value):
 	phone_regex = re.compile(r'^\+?1?\d{9,15}$')
 	if not phone_regex.match(value):
@@ -129,6 +129,7 @@ class MeetingTypes(SuperModel):
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 
+
 class States(SuperModel):
 	class Meta:
 		abstract = False
@@ -136,8 +137,64 @@ class States(SuperModel):
 		verbose_name_plural = "States"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
+	state_code = models.CharField(max_length=2, blank=True, null=True, verbose_name='State Code')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 	icon = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Icon')
+
+	# Population data
+	population = models.BigIntegerField(blank=True, null=True, verbose_name='State Population')
+	census2010_pop = models.BigIntegerField(blank=True, null=True, verbose_name='2010 Census Population')
+
+	# Aggregation fields
+	city_count = models.IntegerField(blank=True, null=True, verbose_name='Number of Cities')
+	total_city_population = models.BigIntegerField(blank=True, null=True, verbose_name='Total City Population')
+	avg_city_population = models.IntegerField(blank=True, null=True, verbose_name='Average City Population')
+	largest_city = models.ForeignKey('Cities', on_delete=models.SET_NULL, null=True, blank=True,
+									 related_name='largest_in_state', verbose_name='Largest City')
+	smallest_city = models.ForeignKey('Cities', on_delete=models.SET_NULL, null=True, blank=True,
+									  related_name='smallest_in_state', verbose_name='Smallest City')
+
+	# Geographic data
+	state_area = models.IntegerField(blank=True, null=True, verbose_name='State Area (sq km)')
+	population_density = models.FloatField(blank=True, null=True, verbose_name='Population Density')
+	urban_population = models.BigIntegerField(blank=True, null=True, verbose_name='Urban Population')
+	rural_population = models.BigIntegerField(blank=True, null=True, verbose_name='Rural Population')
+	urban_percentage = models.FloatField(blank=True, null=True, verbose_name='Urban Population Percentage')
+
+	# Growth metrics
+	growth_rate = models.FloatField(blank=True, null=True, verbose_name='Annual Growth Rate (%)')
+	fastest_growing_city = models.ForeignKey('Cities', on_delete=models.SET_NULL, null=True, blank=True,
+											 related_name='fastest_growing_in_state',
+											 verbose_name='Fastest Growing City')
+
+	def update_aggregations(self):
+		"""Update all aggregation fields based on associated cities"""
+		from django.db.models import Sum, Avg, Min, Max, F, Count
+
+		cities = Cities.objects.filter(state_id=self)
+		city_data = cities.aggregate(
+			count=Count('id'),
+			total_pop=Sum('population'),
+			avg_pop=Avg('population')
+		)
+
+		self.city_count = city_data['count'] or 0
+		self.total_city_population = city_data['total_pop'] or 0
+		self.avg_city_population = int(city_data['avg_pop'] or 0)
+
+		# Find largest and smallest cities
+		if cities.exists():
+			self.largest_city = cities.order_by('-population').first()
+			self.smallest_city = cities.filter(population__isnull=False).order_by('population').first()
+
+		# Calculate density if state_area is available
+		if self.state_area and self.population:
+			self.population_density = self.population / self.state_area
+
+		self.save(update_fields=[
+			'city_count', 'total_city_population', 'avg_city_population',
+			'largest_city', 'smallest_city', 'population_density'
+		])
 
 class Parties(SuperModel):
 	class Meta:
@@ -164,11 +221,13 @@ class Resources(SuperModel):
 		verbose_name = "Resource"
 		verbose_name_plural = "Resources"
 
+
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description_html = models.TextField(verbose_name='Description HTML')
 	image = models.ImageField(upload_to=upload_file_path, verbose_name='Image')
 	postal_address = models.CharField(max_length=255, blank=True, null=True, verbose_name='Postal Address')
 	price_ccoin = models.IntegerField(verbose_name='Price (citizencoin)')
+	cities = models.ManyToManyField('Cities', related_name='cities_to_resources', verbose_name='Cities')
 	resource_type = models.ManyToManyField('ResourceTypes', related_name='resource_type_to_resource_types', verbose_name='Resource Type')
 
 class Cities(SuperModel):
@@ -182,18 +241,42 @@ class Cities(SuperModel):
 	postal_address = models.CharField(max_length=255)
 	picture = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Picture')
 	cover_photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Cover Photo')
-	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_profile', blank=True, verbose_name='Sponsors')
+	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_profile', blank=True,
+									  verbose_name='Sponsors')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
+
+	# Population data (most recent)
 	population = models.IntegerField(blank=True, null=True, verbose_name='Population')
+	census2010_pop = models.IntegerField(blank=True, null=True, verbose_name='2010 Census Population')
+
+	# Geographic data
 	altitude = models.IntegerField(blank=True, null=True, verbose_name='Altitude')
 	county = models.CharField(max_length=255, blank=True, null=True, verbose_name='County')
-	state_id = models.ForeignKey('States', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='State')
-	officials = models.ManyToManyField(get_user_model(), related_name='officials_to_user_profile', blank=True, verbose_name='Officials')
+	state_id = models.ForeignKey('States', on_delete=models.SET_NULL, related_name='+', null=True, blank=True,
+								 verbose_name='State')
+	officials = models.ManyToManyField(get_user_model(), related_name='officials_to_user_profile', blank=True,
+									   verbose_name='Officials')
 	land_area = models.IntegerField(blank=True, null=True, verbose_name='Land Area')
 	water_area = models.IntegerField(blank=True, null=True, verbose_name='Water Area')
 	total_area = models.IntegerField(blank=True, null=True, verbose_name='Total Area')
 	density = models.IntegerField(blank=True, null=True, verbose_name='Density')
 	timezone = models.CharField(max_length=255, blank=True, null=True, verbose_name='Timezone')
+
+	# Census identifiers
+	place_code = models.CharField(max_length=7, blank=True, null=True, verbose_name='Place Code')
+	sumlev = models.CharField(max_length=3, blank=True, null=True, verbose_name='Summary Level')
+	funcstat = models.CharField(max_length=1, blank=True, null=True, verbose_name='Functional Status')
+
+	def save(self, *args, **kwargs):
+		# Calculate density if not provided
+		if self.population and self.total_area and not self.density:
+			self.density = self.population // self.total_area if self.total_area > 0 else 0
+
+		super().save(*args, **kwargs)
+
+		# Update state aggregations
+		if self.state_id:
+			self.state_id.update_aggregations()
 
 class Officials(SuperModel):
 	class Meta:
@@ -262,7 +345,7 @@ class Invites(SuperModel):
 		abstract = False
 		verbose_name = "Invite"
 		verbose_name_plural = "Invites"
-	
+
 	class StatusChoices(models.TextChoices):
 		invited = ("invited", "Invited")
 		rsvpd = ("rsvpd", " rsvpd")
@@ -278,7 +361,7 @@ class Subscriptions(SuperModel):
 		abstract = False
 		verbose_name = "Subscription"
 		verbose_name_plural = "Subscriptions"
-	
+
 	class StatusChoices(models.TextChoices):
 		approved = ("approved", "Approved")
 		denied = ("denied", " denied")
@@ -294,12 +377,12 @@ class Rooms(SuperModel):
 		abstract = False
 		verbose_name = "Room"
 		verbose_name_plural = "Rooms"
-	
+
 	class PrivacyChoices(models.TextChoices):
 		public = ("public", "Public")
 		inviteonly = ("inviteonly", " invite-only")
 		requests = ("requests", " requests")
-	
+
 	class StatusChoices(models.TextChoices):
 		live = ("live", "Live")
 		scheduled = ("scheduled", " scheduled")
@@ -319,7 +402,7 @@ class Attendees(SuperModel):
 		abstract = False
 		verbose_name = "Attendee"
 		verbose_name_plural = "Attendees"
-	
+
 	class RoleChoices(models.TextChoices):
 		viewer = ("viewer", "Viewer")
 		presenter = ("presenter", " presenter")

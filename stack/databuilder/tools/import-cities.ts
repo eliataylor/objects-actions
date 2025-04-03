@@ -6,7 +6,6 @@ import { WorldBuilder } from '../src/WorldBuilder';
 import ApiClient from '../src/ApiClient';
 import { Faker, en } from '@faker-js/faker';
 import geoLookups from '../data/geo-lookups.json';
-import { Users } from "../src/types";
 
 dotenv.config();
 
