@@ -159,7 +159,6 @@ async function prepareFormData(cityData: CityData, builder: WorldBuilder) {
             stream: `https://picsum.photos/seed/${cityData.name.replace(/\s+/g, '')}-cover/1200/400`,
             filename: `${cityData.name.toLowerCase().replace(/\s+/g, '-')}-cover.jpg`
         },
-        website: `https://www.${cityData.name.toLowerCase().replace(/\s+/g, '')}.gov`,
         land_area: faker.number.int({ min: 10, max: 500 }),
         water_area: faker.number.int({ min: 0, max: 100 }),
         density: cityData.population ? Math.floor(cityData.population / faker.number.int({ min: 5, max: 50 })) : undefined,
@@ -213,6 +212,7 @@ function getTimezoneForState(stateName: string): string {
     // Default fallback
     return geoLookups.timeZonesByRegion.defaultZones.default;
 }
+
 
 // Allow running from command line
 // ES Module version - using import.meta.url instead of require.main

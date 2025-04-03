@@ -85,8 +85,7 @@ class Command(BaseCommand):
                             'city': parts[2].strip(),
                             'state': parts[3].strip(),
                             'country': parts[4].strip(),
-                            'type': parts[5].strip(),
-                            'price_ccoin': randint(5, 100)
+                            'type': parts[5].strip()
                         }
 
                         # Skip if missing crucial data
@@ -284,7 +283,7 @@ class Command(BaseCommand):
             else:
                 # If the image can't be downloaded, return None
                 self.stderr.write(self.style.WARNING(f"Failed to download image for {seed}"))
-                return None
+                return Nonef
         except Exception as e:
             self.stderr.write(self.style.WARNING(f"Error getting image for {seed}: {str(e)}"))
             return None

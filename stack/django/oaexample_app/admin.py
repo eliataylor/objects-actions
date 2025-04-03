@@ -37,7 +37,7 @@ class TopicsAdmin(admin.ModelAdmin):
 admin.site.register(Topics, TopicsAdmin)
 
 class ResourceTypesAdmin(admin.ModelAdmin):
-	readonly_fields = ('id',)
+	readonly_fields = ('id', 'name')
 
 admin.site.register(ResourceTypes, ResourceTypesAdmin)
 
@@ -89,8 +89,10 @@ class ResourcesAdmin(admin.ModelAdmin):
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.image.url)
 		return "No Image"
 
-	list_display = ('id', 'image_tag')
+	list_display = ('id', 'image_tag', 'title', 'postal_address', 'resource_type')
 
+	def resource_type(self, obj):
+		return ", ".join([resource_type.name for resource_type in obj.resource_type.all()])
 
 admin.site.register(Resources, ResourcesAdmin)
 
