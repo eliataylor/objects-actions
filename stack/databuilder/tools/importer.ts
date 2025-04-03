@@ -4,6 +4,7 @@ import * as dotenv from "dotenv";
 import { existsSync } from "fs";
 import { importCharitiesByCsv } from "./charity-importer";
 import { importCities } from "./import-cities";
+import { importMeetings } from "./import-meetings";
 
 // Load environment variables
 dotenv.config();
@@ -70,6 +71,9 @@ async function importData() {
       break;
     case "cities":
       await importCities(dataPath as string);
+      break;
+    case "meetings":
+      await importMeetings();
       break;
     default:
       console.error(`No implementation for target: ${options.target}`);

@@ -41,9 +41,10 @@ async function start() {
 
     if (args.action === 'object-add') {
         await builder.loginUser(process.env.REACT_APP_LOGIN_EMAIL!);  // needs auth to getContentCreators
-        await builder.getContentCreators();
+        await builder.getContentCreators()
+        const target_type = typeof args.type === 'string' ? args.type.toLowerCase() : 'all';
 
-        let manual = NAVITEMS.find(nav => nav.type === args.type);
+        let manual = NAVITEMS.find(nav => nav.type.toLowerCase() === target_type);
         if (!manual) {
             return console.error(`no such model ${manual}`)
         }
