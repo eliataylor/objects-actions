@@ -129,6 +129,8 @@ class Command(BaseUtilityCommand):
                     else:
                         error_count += 1
 
+                    self.stdout.write(f'CITY: {result}: {city_name}')
+
                 except Exception as e:
                     self.stdout.write(self.style.ERROR(f"Error processing city from row: {str(e)}"))
                     error_count += 1
@@ -144,7 +146,6 @@ class Command(BaseUtilityCommand):
         created_count = 0
         updated_count = 0
         error_count = 0
-        current_batch = 0
         batch_cities = []
 
         with open(file_path, 'r', encoding='latin-1') as csv_file:
@@ -171,18 +172,13 @@ class Command(BaseUtilityCommand):
 
                         # Add this row to the current batch
                         batch_cities.append(row)
-                        current_batch += 1
 
                         # Process batch if we've reached the batch size
-                        if current_batch >= batch_size:
+                        if len(batch_cities) >= batch_size:
                             created, updated, errors = self.process_city_batch(batch_cities, state_map)
                             created_count += created
                             updated_count += updated
                             error_count += errors
-
-                            # Show progress
-                            self.stdout.write(
-                                f'Imported {total_cities} cities (created: {created_count}, updated: {updated_count}, errors: {error_count})...')
 
                             # Reset for next batch
                             batch_cities = []
@@ -193,7 +189,7 @@ class Command(BaseUtilityCommand):
                         error_count += 1
 
         # Process any remaining cities in the last batch
-        if current_batch > 0:
+        if len(batch_cities) > 0:
             created, updated, errors = self.process_city_batch(batch_cities, state_map)
             created_count += created
             updated_count += updated
@@ -299,7 +295,7 @@ class Command(BaseUtilityCommand):
                     'place_code': city_data['place_code'],
                     'timezone': timezone,
                     'picture': picture,
-                    'cover': cover_photo
+                    'cover_photo': cover_photo
                 }
             )
 

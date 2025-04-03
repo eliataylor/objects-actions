@@ -280,7 +280,7 @@ class Cities(SuperModel):
 	description = models.TextField(blank=True, null=True, verbose_name='Description')
 	postal_address = models.CharField(max_length=255)
 	picture = models.ImageField(upload_to=field_file_path('picture'), blank=True, null=True, verbose_name='Picture')
-	cover_photo = models.ImageField(upload_to=field_file_path('cover'), blank=True, null=True, verbose_name='Cover Photo')
+	cover_photo = models.ImageField(upload_to=field_file_path('cover_photo'), blank=True, null=True, verbose_name='Cover Photo')
 	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_profile', blank=True,
 									  verbose_name='Sponsors')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
