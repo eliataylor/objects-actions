@@ -1,4 +1,3 @@
-from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.core.files.base import ContentFile
@@ -6,39 +5,43 @@ from django.conf import settings
 
 from faker import Faker
 import random
-import requests
 import os
-from io import BytesIO
 from datetime import timedelta
 
-# Import your Users model and Resources model (adjust the import path as needed)
+# Import your models and utility class
 from oaexample_app.models import Users, Resources
+from .utils import BaseUtilityCommand, CommandUtils
 
 
-class Command(BaseCommand):
+class Command(BaseUtilityCommand):
     help = 'Creates fake users for testing purposes'
 
     def add_arguments(self, parser):
+        # Add common arguments from the parent class
+        super().add_arguments(parser)
+
+        # Add command-specific arguments
         parser.add_argument('count', type=int, help='Number of fake users to create')
         parser.add_argument('--resources', action='store_true', help='Assign random resources to users')
         parser.add_argument('--admin', action='store_true', help='Create admin users')
         parser.add_argument('--password', type=str, default='password123', help='Password for created users')
 
-    def handle(self, *args, **options):
+    def handle_command(self, *args, **options):
         fake = Faker()
         count = options['count']
         assign_resources = options['resources']
         create_admin = options['admin']
         password = options['password']
+        start = options['start']
 
         # Get available resources if we're going to assign them
         resources = list(Resources.objects.all()) if assign_resources else []
 
-        self.stdout.write(self.style.SUCCESS(f'Creating {count} fake users...'))
+        self.stdout.write(self.style.SUCCESS(f'Creating {count} fake users (starting at index {start})...'))
 
         created_users = 0
 
-        for i in range(count):
+        for i in range(start, start + count):
             try:
                 # Generate a random profile
                 first_name = fake.first_name()
@@ -71,27 +74,17 @@ class Command(BaseCommand):
                 # Save the user first so we can attach images
                 user.save()
 
-                # Get and save profile picture
+                # Get and save profile picture using the utility class
                 try:
-                    img_width = random.choice([300, 400, 500])
-                    img_height = random.choice([300, 400, 500])
-                    img_url = f"https://picsum.photos/{img_width}/{img_height}"
-                    img_response = requests.get(img_url, timeout=5)
-                    if img_response.status_code == 200:
-                        img_name = f"{username}_profile.jpg"
-                        user.picture.save(img_name, ContentFile(img_response.content))
+                    img_name = f"{username}_profile"
+                    user.picture = CommandUtils.get_random_image(img_name)
                 except Exception as e:
                     self.stdout.write(self.style.WARNING(f"Could not save profile picture for {username}: {e}"))
 
-                # Get and save cover photo
+                # Get and save cover photo using the utility class
                 try:
-                    cover_width = random.choice([800, 1000, 1200])
-                    cover_height = random.choice([300, 400, 500])
-                    cover_url = f"https://picsum.photos/{cover_width}/{cover_height}"
-                    cover_response = requests.get(cover_url, timeout=5)
-                    if cover_response.status_code == 200:
-                        cover_name = f"{username}_cover.jpg"
-                        user.cover_photo.save(cover_name, ContentFile(cover_response.content))
+                    cover_name = f"{username}_cover"
+                    user.cover_photo = CommandUtils.get_random_image(cover_name)
                 except Exception as e:
                     self.stdout.write(self.style.WARNING(f"Could not save cover photo for {username}: {e}"))
 

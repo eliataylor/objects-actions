@@ -127,6 +127,8 @@ class CitiesAdmin(admin.ModelAdmin):
 	def image_tag(self, obj):
 		if obj.picture:
 			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.picture.url)
+		elif obj.cover:
+			return format_html('<div style="width: 100px; height: 100px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>', obj.cover.url)
 		return "No Image"
 
 	list_display = ('id', 'image_tag', 'name', 'state_id', 'population', 'land_area')

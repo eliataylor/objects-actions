@@ -1,54 +1,43 @@
 import os
-
-import requests
 from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.management.base import BaseCommand
 from django.db import transaction
 
-# Import models
+# Import models and utility class
 from oaexample_app.models import ResourceTypes, Resources, Cities, States
-from oasheets_app.management.commands.import_cities import GEO_LOOKUPS
+from .utils import BaseUtilityCommand, CommandUtils
 
 
-class Command(BaseCommand):
+class Command(BaseUtilityCommand):
     help = 'Import charitable organizations from IRS data-download-pub78.txt file'
 
     def add_arguments(self, parser):
-        parser.add_argument('--file', type=str, help='Path to the data-download-pub78.txt file')
-        parser.add_argument('--limit', type=int, help='Limit the number of records to import')
+        # Add common arguments from the parent class
+        super().add_arguments(parser)
 
-    def handle(self, *args, **options):
-        file_path = options.get('file')
-        limit = options.get('limit')
+        # Override the default file path
+        parser.add_argument(
+            '--file',
+            type=str,
+            default=os.path.join(settings.BASE_DIR, 'data', 'data-download-pub78.txt'),
+            help='Path to the data-download-pub78.txt file'
+        )
 
-        if not file_path:
-            file_path = os.path.join(settings.BASE_DIR, 'data', 'data-download-pub78.txt')
+        # Add command-specific arguments
+        parser.add_argument(
+            '--price_ccoin',
+            type=int,
+            default=0,
+            help='Default price in community coins for imported resources'
+        )
 
-        self.stdout.write(self.style.SUCCESS(f'Starting charity import from {file_path}'))
+    def handle_command(self, *args, **options):
+        file_path = options['file']
+        limit = options['limit']
+        start = options['start']
+        batch_size = options['batch_size']
+        price_ccoin = options['price_ccoin']
 
-        # Load geo-lookups.json for tax codes
-        self.geo_lookups = {
-            "PC": "Public Charity",
-            "PF": "Private Foundation",
-            "POF": "Private Operating Foundation",
-            "SOUNK": "Supporting Organization, Type Unknown",
-            "SO1": "Supporting Organization, Type I",
-            "SO2": "Supporting Organization, Type II",
-            "SO3F": "Supporting Organization, Type III Functionally Integrated",
-            "SO3NF": "Supporting Organization, Type III Non-Functionally Integrated",
-            "EO": "Exempt Organization",
-            "GROUP": "Group Exemption",
-            "LODGE": "Fraternal Organization or Lodge",
-            "FORGN": "Foreign Organization",
-            "CHURCH": "Church or Religious Organization",
-            "SCHOOL": "Educational Institution or School",
-            "HOSPITAL": "Hospital or Medical Research Organization",
-            "GOVT": "Governmental Unit",
-            "CHAR": "Charitable Organization",
-            "DP": "Domestic Private Foundation",
-            "FP": "Foreign Private Foundation"
-        }
+        self.stdout.write(self.style.SUCCESS(f'Starting charity import from {file_path} (starting at line {start})'))
 
         # Cache to minimize database queries
         self.resource_type_cache = {}
@@ -59,18 +48,29 @@ class Command(BaseCommand):
         count = 0
         success_count = 0
         error_count = 0
+        batch_count = 0
+        batch_items = []
 
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
+                # Skip to the starting line
+                for _ in range(start):
+                    try:
+                        next(file)
+                    except StopIteration:
+                        self.stdout.write(self.style.WARNING(f'Start line {start} exceeds file length'))
+                        return
+
+                # Process the file from the start line
                 for line in file:
                     count += 1
 
-                    if limit and count > limit:
+                    if limit and (count > limit):
                         break
 
                     if count % 100 == 0:
                         self.stdout.write(
-                            f'Processed {count} entries (success: {success_count}, errors: {error_count})')
+                            f'Processed {count + start} entries (success: {success_count}, errors: {error_count})')
 
                     try:
                         # Parse the line
@@ -85,7 +85,8 @@ class Command(BaseCommand):
                             'city': parts[2].strip(),
                             'state_code': parts[3].strip(),
                             'country': parts[4].strip(),
-                            'type': parts[5].strip()
+                            'type': parts[5].strip(),
+                            'price_ccoin': price_ccoin
                         }
 
                         # Skip if missing crucial data
@@ -93,80 +94,29 @@ class Command(BaseCommand):
                             self.stdout.write(self.style.WARNING(f'Skipping entry with insufficient data: {line}'))
                             continue
 
-                        # Create or update the resource
-                        with transaction.atomic():
-                            # Get or create resource type
-                            resource_type = self.get_or_create_resource_type(resource_data['type'])
+                        # Add to batch
+                        batch_items.append(resource_data)
+                        batch_count += 1
 
-                            # Get or create city and state if provided
-                            city = None
-                            if resource_data['city'] and resource_data['state']:
-                                city = self.get_or_create_city(resource_data['city'], resource_data['state_code'])
+                        # Process batch if reached batch size
+                        if batch_count >= batch_size:
+                            processed_count = self.process_batch(batch_items)
+                            success_count += processed_count
+                            error_count += (batch_count - processed_count)
 
-                            # Generate description based on tax code meaning
-                            tax_code_meaning = self.geo_lookups.get('irsTaxExemptCodes', {}).get(resource_data['type'],
-                                                                                                 resource_data['type'])
-                            description = f"{resource_data['name']} is a {tax_code_meaning} organization"
-                            if resource_data['city'] and resource_data['state_code']:
-                                description += f" located in {resource_data['city']}, {resource_data['state_code']}"
-                            description += f". EIN: {resource_data['ein']}"
-
-                            # Create postal address
-                            postal_address = ', '.join(filter(None, [
-                                resource_data['city'],
-                                resource_data['state_code'],
-                                resource_data['country'] or 'USA'
-                            ]))
-
-                            # Check if resource already exists by EIN
-                            resource = Resources.objects.filter(
-                                description_html__contains=f"EIN: {resource_data['ein']}").first()
-
-                            # Create or update the resource
-                            if not resource:
-                                # Get image for organization
-                                image = self.get_random_image(f"{resource_data['ein']}")
-
-                                resource = Resources.objects.create(
-                                    title=resource_data['name'],
-                                    description_html=description,
-                                    postal_address=postal_address,
-                                    price_ccoin=resource_data['price_ccoin'],
-                                    image=image
-                                )
-
-                                # Add the resource type and city
-                                if resource_type:
-                                    resource.resource_type.add(resource_type)
-
-                                if city:
-                                    resource.cities.add(city)
-
-                                success_count += 1
-                                self.stdout.write(f"Created resource: {resource_data['name']}")
-                            else:
-                                # Update existing resource
-                                resource.title = resource_data['name']
-                                resource.description_html = description
-                                resource.postal_address = postal_address
-                                resource.price_ccoin = resource_data['price_ccoin']
-                                resource.save()
-
-                                # Update resource type and city
-                                if resource_type:
-                                    resource.resource_type.clear()
-                                    resource.resource_type.add(resource_type)
-
-                                if city:
-                                    resource.cities.clear()
-                                    resource.cities.add(city)
-
-                                success_count += 1
-                                self.stdout.write(f"Updated resource: {resource_data['name']}")
+                            # Reset batch
+                            batch_items = []
+                            batch_count = 0
 
                     except Exception as e:
                         error_count += 1
                         self.stderr.write(self.style.ERROR(f'Error processing line: {str(e)}'))
+
+                # Process remaining items in the last batch
+                if batch_items:
+                    processed_count = self.process_batch(batch_items)
+                    success_count += processed_count
+                    error_count += (batch_count - processed_count)
 
         except FileNotFoundError:
             self.stderr.write(self.style.ERROR(f'File not found: {file_path}'))
@@ -175,14 +125,94 @@ class Command(BaseCommand):
             f'Charity import completed. Total: {count}, Success: {success_count}, Errors: {error_count}'
         ))
 
+    @transaction.atomic
+    def process_batch(self, batch_items):
+        """Process a batch of items in a single transaction"""
+        success_count = 0
+
+        for resource_data in batch_items:
+            try:
+                # Get or create resource type
+                resource_type = self.get_or_create_resource_type(resource_data['type'])
+
+                # Get or create city and state if provided
+                city = None
+                if resource_data['city'] and resource_data['state_code']:
+                    city = self.get_or_create_city(resource_data['city'], resource_data['state_code'])
+
+                # Generate description based on tax code meaning
+                tax_code_meaning = CommandUtils.get_tax_exempt_description(resource_data['type'])
+                description = f"{resource_data['name']} is a {tax_code_meaning} organization"
+                if resource_data['city'] and resource_data['state_code']:
+                    description += f" located in {resource_data['city']}, {resource_data['state_code']}"
+                description += f". EIN: {resource_data['ein']}"
+
+                # Create postal address
+                postal_address = ', '.join(filter(None, [
+                    resource_data['city'],
+                    resource_data['state_code'],
+                    resource_data['country'] or 'USA'
+                ]))
+
+                # Check if resource already exists by EIN
+                resource = Resources.objects.filter(
+                    description_html__contains=f"EIN: {resource_data['ein']}").first()
+
+                # Create or update the resource
+                if not resource:
+                    # Get image for organization
+                    image = CommandUtils.get_random_image(f"{resource_data['ein']}")
+
+                    resource = Resources.objects.create(
+                        title=resource_data['name'],
+                        description_html=description,
+                        postal_address=postal_address,
+                        price_ccoin=resource_data['price_ccoin'],
+                        image=image,
+                        author_id=1  # Default author ID
+                    )
+
+                    # Add the resource type and city
+                    if resource_type:
+                        resource.resource_type.add(resource_type)
+
+                    if city:
+                        resource.cities.add(city)
+
+                    self.stdout.write(f"Created resource: {resource_data['name']}")
+                else:
+                    # Update existing resource
+                    resource.title = resource_data['name']
+                    resource.description_html = description
+                    resource.postal_address = postal_address
+                    resource.price_ccoin = resource_data['price_ccoin']
+                    resource.save()
+
+                    # Update resource type and city
+                    if resource_type:
+                        resource.resource_type.clear()
+                        resource.resource_type.add(resource_type)
+
+                    if city:
+                        resource.cities.clear()
+                        resource.cities.add(city)
+
+                    self.stdout.write(f"Updated resource: {resource_data['name']}")
+
+                success_count += 1
+
+            except Exception as e:
+                self.stderr.write(self.style.ERROR(f"Error processing resource {resource_data['name']}: {str(e)}"))
+
+        return success_count
+
     def get_or_create_resource_type(self, tax_code):
         """Gets or creates a resource type for a specific tax code"""
         if tax_code in self.resource_type_cache:
             return self.resource_type_cache[tax_code]
 
-        # Get the description for the tax code from the lookups
-        irs_tax_exempt_codes = self.geo_lookups.get('irsTaxExemptCodes', {})
-        tax_code_description = irs_tax_exempt_codes.get(tax_code, f'Tax Code {tax_code}')
+        # Get the description for the tax code from the lookup
+        tax_code_description = CommandUtils.get_tax_exempt_description(tax_code)
 
         # Format the resource type name with "IRS: " prefix
         resource_type_name = f'IRS: {tax_code_description}'
@@ -192,7 +222,10 @@ class Command(BaseCommand):
 
         if not resource_type:
             # Create a new resource type
-            resource_type = ResourceTypes.objects.create(name=resource_type_name)
+            resource_type = ResourceTypes.objects.create(
+                name=resource_type_name,
+                author_id=1  # Default author ID
+            )
             self.stdout.write(f'Created resource type: {resource_type_name} with ID: {resource_type.id}')
 
         # Cache the result
@@ -222,14 +255,15 @@ class Command(BaseCommand):
         # Generate city data
         city_data = {
             'name': city_name,
-            'description': f'{city_name} is a city located in {state_code}.',
-            'postal_address': f'{city_name}, {state_code}, USA',
-            'state_id': state
+            'description': f'{city_name} is a city located in {state.name}.',
+            'postal_address': f'{city_name}, {state.name}, USA',
+            'state_id': state,
+            'author_id': 1  # Default author ID
         }
 
         # Add image fields with random images
-        city_data['picture'] = self.get_random_image(f"{city_name.replace(' ', '')}")
-        city_data['cover_photo'] = self.get_random_image(f"{city_name.replace(' ', '')}-cover")
+        city_data['picture'] = CommandUtils.get_random_image(f"{city_name.replace(' ', '')}")
+        city_data['cover'] = CommandUtils.get_random_image(f"{city_name.replace(' ', '')}-cover")
 
         # Create the city
         city = Cities.objects.create(**city_data)
@@ -244,49 +278,21 @@ class Command(BaseCommand):
         if state_code in self.state_cache:
             return self.state_cache[state_code]
 
-        # Find the state by name
+        # Find the state by state code
         state = States.objects.filter(state_code=state_code).first()
-        if state_code not in GEO_LOOKUPS['stateAbbreviations']:
-            self.stdout.write(f'Invalid State state: {state_code}')
-            state_name = state_code
-        else:
-            state_name = GEO_LOOKUPS['stateAbbreviations'][state_code]
+
+        # Get full state name from abbreviation
+        state_name = CommandUtils.get_state_name_from_code(state_code)
 
         if not state:
             # Create the state with basic info
             state = States.objects.create(
                 state_code=state_code,
-                name=state_name
+                name=state_name,
+                author_id=1  # Default author ID
             )
-            self.stdout.write(f'Created state: {state_code} with ID: {state.id}')
+            self.stdout.write(f'Created state: {state_name} ({state_code}) with ID: {state.id}')
 
         # Cache the result
         self.state_cache[state_code] = state
         return state
-
-    def get_random_image(self, seed):
-        """Generate and return a random image file for a given seed"""
-        try:
-            # Create a unique filename
-            filename = f"{seed.lower().replace(' ', '-')}.jpg"
-
-            # Create a placeholder image URL
-            image_url = f"https://picsum.photos/seed/{seed}/800/600"
-
-            # Download the image
-            response = requests.get(image_url)
-            if response.status_code == 200:
-                # Create a SimpleUploadedFile from the image data
-                image_file = SimpleUploadedFile(
-                    name=filename,
-                    content=response.content,
-                    content_type='image/jpeg'
-                )
-                return image_file
-            else:
-                # If the image can't be downloaded, return None
-                self.stderr.write(self.style.WARNING(f"Failed to download image for {seed}"))
-                return None
-        except Exception as e:
-            self.stderr.write(self.style.WARNING(f"Error getting image for {seed}: {str(e)}"))
-            return None

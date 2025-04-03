@@ -6,7 +6,8 @@ from io import BytesIO
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management.base import BaseCommand
-
+import os
+import datetime
 
 class CommandUtils:
     """
@@ -15,7 +16,9 @@ class CommandUtils:
     """
 
     # Load the geo-lookups once for efficient reuse
-    GEO_LOOKUPS_PATH = os.path.join(settings.BASE_DIR, 'oasheets_app/management/commands', 'geo-lookups.json')
+    PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    BASE_DIR = os.path.dirname(PROJECT_DIR)
+    GEO_LOOKUPS_PATH = os.path.join(BASE_DIR, 'oasheets_app/management/commands', 'geo-lookups.json')
     try:
         with open(GEO_LOOKUPS_PATH, 'r') as f:
             GEO_LOOKUPS = json.load(f)
@@ -56,22 +59,59 @@ class CommandUtils:
         )
 
     @classmethod
-    def get_random_image(cls, seed, width=800, height=600, fallback_color=None):
+    def get_random_image(cls, seed, overwrite=False):
         """
         Generate and return a random image file for a given seed.
+        Uses fixed dimensions of 800x600 and generates a random fallback color.
 
         Args:
             seed (str): Seed string to generate consistent images
-            width (int): Desired image width
-            height (int): Desired image height
-            fallback_color (str): Color to use if requests fail (hex code)
+            overwrite (bool): Whether to overwrite existing files with the same name
 
         Returns:
             SimpleUploadedFile or None: The image file or None if generation failed
         """
+        # Hardcoded dimensions
+        width = 800
+        height = 600
+
         try:
             # Create a unique filename
             filename = f"{seed.lower().replace(' ', '-')}.jpg"
+
+            # If overwrite is enabled, check if file exists and delete it
+            if overwrite:
+
+                # Get current year and month for date-based paths
+                current_date = datetime.datetime.now()
+                year_month = current_date.strftime('%Y-%m')
+
+                # Construct path based on your MEDIA_ROOT and expected upload path
+                potential_paths = [
+                    os.path.join(settings.MEDIA_ROOT, 'pictures', filename),
+                    os.path.join(settings.MEDIA_ROOT, 'covers', filename),
+                    os.path.join(settings.MEDIA_ROOT, 'images', filename),
+                    # Add date-based paths
+                    os.path.join(settings.MEDIA_ROOT, 'uploads', year_month, filename),
+                    os.path.join(settings.MEDIA_ROOT, 'media', 'uploads', year_month, filename)
+                ]
+
+                # Also check for previous months (up to 3 months back)
+                for i in range(1, 4):
+                    previous_date = current_date - datetime.timedelta(days=30 * i)
+                    prev_year_month = previous_date.strftime('%Y-%m')
+                    potential_paths.append(os.path.join(settings.MEDIA_ROOT, 'uploads', prev_year_month, filename))
+                    potential_paths.append(
+                        os.path.join(settings.MEDIA_ROOT, 'media', 'uploads', prev_year_month, filename))
+
+                # Delete any existing files with this name
+                for path in potential_paths:
+                    if os.path.exists(path):
+                        try:
+                            os.remove(path)
+                            print(f"Deleted existing file: {path}")
+                        except Exception as e:
+                            print(f"Could not delete file {path}: {e}")
 
             # Create a placeholder image URL
             image_url = f"https://picsum.photos/seed/{seed}/{width}/{height}"
@@ -88,9 +128,13 @@ class CommandUtils:
                 return image_file
             else:
                 print(f"Warning: Failed to download image for {seed}")
+                # Generate random fallback color
+                fallback_color = f"#{random.randint(0, 0xFFFFFF):06x}"
                 return cls.create_fallback_image(filename, width, height, fallback_color)
         except Exception as e:
             print(f"Warning: Error getting image for {seed}: {str(e)}")
+            # Generate random fallback color
+            fallback_color = f"#{random.randint(0, 0xFFFFFF):06x}"
             return cls.create_fallback_image(filename, width, height, fallback_color)
 
     @classmethod
@@ -101,8 +145,8 @@ class CommandUtils:
 
         Args:
             filename (str): Desired filename
-            width (int): Image width
-            height (int): Image height
+            width (int): Image width (defaults to 800)
+            height (int): Image height (defaults to 600)
             color (str): Hex color code or None for random color
 
         Returns:
