@@ -312,7 +312,7 @@ const OaStackCards: React.FC = () => {
         <Card variant="outlined">
           <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img alt={'k6 logo'} src={"/oa-assets/k6-logo.svg"} height={30} />}
+            avatar={<img alt={'k6 logo'} src={"/oa-assets/logo-k6.svg"} height={30} />}
             title={"API Speed Tests"}
             subheader={"K6"}
           />

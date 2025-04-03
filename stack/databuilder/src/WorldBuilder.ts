@@ -1,4 +1,4 @@
-import {EntityTypes, FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users} from "./types";
+import { ModelType, FieldTypeDefinition, NavItem, NAVITEMS, TypeFieldSchema, Users, ModelName } from "./types";
 import ApiClient, {HttpResponse} from "./ApiClient";
 import fs from "fs";
 import path from "path";
@@ -24,8 +24,8 @@ export interface FixtureContext {
 }
 
 export interface FixtureData {
-    sent: EntityTypes;
-    received: EntityTypes;
+    sent: ModelType<ModelName>;
+    received: ModelType<ModelName>;
     context: FixtureContext;
 }
 
@@ -225,7 +225,7 @@ export class WorldBuilder {
                 "field_type": "text",
                 "data_type": "string",
                 "cardinality": 1,
-                "relationship": "",
+                "relationship": "Users",
                 "default": "",
                 "required": false,
                 "example": ""
