@@ -37,8 +37,6 @@ class Users(AbstractUser, BumpParentsModelMixin):
 		verbose_name_plural = "Users"
 		ordering = ['last_login']
 
-
-
 	phone = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='Phone', blank=True, null=True)
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 	bio = models.TextField(blank=True, null=True, verbose_name='Bio')

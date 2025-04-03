@@ -29,7 +29,7 @@ class Command(BaseCommand):
             help='Path to the CSV file'
         )
         parser.add_argument(
-            '--batch-size',
+            '--batch_size',
             type=int,
             default=500,
             help='Number of cities to process in a batch before committing'
@@ -90,11 +90,6 @@ class Command(BaseCommand):
             for row in reader:
                 row_count += 1
 
-                # Skip rows that don't represent cities
-                if row.get('SUMLEV', '') not in (
-                        '160', '170'):  # Filter for incorporated places and consolidated cities
-                    continue
-
                 state_name = row.get('STNAME', '').strip()
                 if not state_name:
                     continue
@@ -103,7 +98,6 @@ class Command(BaseCommand):
                 if state_name not in state_data:
                     state_data[state_name] = {
                         'name': state_name,
-                        'website': f"https://{state_name.lower().replace(' ', '')}.gov",
                         'state_code': row.get('STATE', ''),  # Get state code from CSV
                         'cities': []
                     }
@@ -147,7 +141,7 @@ class Command(BaseCommand):
                 cities_data.append(city_data)
                 state_data[state_name]['cities'].append(city_data)
 
-                if row_count % 1000 == 0:
+                if row_count % 500 == 0:
                     self.stdout.write(f'Processed {row_count} rows...')
 
         self.stdout.write(f'CSV processing complete. Found {len(cities_data)} cities in {len(state_data)} states.')
@@ -166,7 +160,6 @@ class Command(BaseCommand):
                     name=state_name,
                     defaults={
                         'author_id': 1,
-                        'website': data['website'],
                         'state_code': data['state_code'],
                         # We'll update the aggregation fields later
                     }
