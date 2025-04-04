@@ -158,7 +158,19 @@ class Command(BaseUtilityCommand):
                 # Create or update the resource
                 if not resource:
                     # Get image for organization
-                    image = CommandUtils.get_random_image(f"{resource_data['ein']}")
+                    image = None
+
+                    # Either reuse existing images or download new ones
+                    if reuse_images:
+                        resource_images = Resources.objects.filter(
+                            image__isnull=False
+                        ).order_by('?')[:1]  # Limit to 20 random users
+
+                        if resource_images.exists():
+                            image = resource_images.first().image
+
+                    if not image:
+                        image = CommandUtils.get_random_image(f"{resource_data['ein']}")
 
                     resource = Resources.objects.create(
                         title=resource_data['name'],
