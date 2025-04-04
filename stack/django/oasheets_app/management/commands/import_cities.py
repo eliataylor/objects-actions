@@ -45,10 +45,9 @@ class Command(BaseUtilityCommand):
         self.import_cities_in_batches(file_path, state_map, batch_size, limit, start, reuse_images)
 
         # Update state aggregations
-        self.stdout.write('Updating state aggregations...')
-        self.update_state_aggregations(state_map.values())
-
-        self.stdout.write(self.style.SUCCESS('City import completed successfully'))
+        # self.stdout.write('Updating state aggregations...')
+        # self.update_state_aggregations(state_map.values())
+        # self.stdout.write(self.style.SUCCESS('City import completed successfully'))
 
     def collect_state_data(self, file_path: str, limit: Optional[int] = None, start: int = 0) -> Dict:
         """
@@ -95,49 +94,142 @@ class Command(BaseUtilityCommand):
 
     def process_city_batch(self, batch_rows, state_map, reuse_images=False):
         """
-        Process a batch of city rows inside a single transaction
+        Process a batch of city rows using Django's bulk operations
         Returns counts of created, updated, and error cities
         """
         created_count = 0
         updated_count = 0
         error_count = 0
 
-        with transaction.atomic():
-            for row in batch_rows:
-                try:
-                    state_name = row.get('STNAME', '').strip()
-                    city_name = row.get('NAME', '').strip()
+        # Prepare lists for bulk operations
+        cities_to_create = []
+        existing_cities = {}
+        cities_to_update = []
 
-                    # Skip if state or city name is missing
-                    if not state_name or not city_name:
-                        continue
+        try:
+            with transaction.atomic():
+                # First pass: Identify cities to create or update
+                for row in batch_rows:
+                    try:
+                        state_name = row.get('STNAME', '').strip()
+                        city_name = row.get('NAME', '').strip()
 
-                    # Skip if state not found in our state_map
-                    if state_name not in state_map:
-                        self.stdout.write(self.style.WARNING(f"State '{state_name}' not found for city '{city_name}'"))
+                        # Skip if state or city name is missing
+                        if not state_name or not city_name:
+                            continue
+
+                        # Skip if state not found in our state_map
+                        if state_name not in state_map:
+                            self.stdout.write(
+                                self.style.WARNING(f"State '{state_name}' not found for city '{city_name}'"))
+                            error_count += 1
+                            continue
+
+                        # Extract city data
+                        city_data = self.extract_city_data(row, state_name)
+
+                        # Get state object
+                        state = state_map[state_name]
+
+                        # Check if city already exists
+                        existing_city = Cities.objects.filter(
+                            name=city_name,
+                            state_id=state
+                        ).first()
+
+                        if existing_city:
+                            # Prepare for update
+                            existing_cities[f"{city_name}_{state.id}"] = {
+                                'instance': existing_city,
+                                'data': city_data
+                            }
+                        else:
+                            # Prepare data for creation
+                            # Generate descriptions for SUMLEV and FUNCSTAT codes
+                            sumlev_description = CommandUtils.get_sumlev_description(city_data['sumlev'])
+                            funcstat_description = CommandUtils.get_funcstat_description(city_data['funcstat'])
+
+                            # Generate timezone for the state
+                            timezone = CommandUtils.get_timezone_for_state(state.name)
+
+                            # Create description
+                            description = f"{city_data['name']} is a {sumlev_description} located in {city_data['county']} County, {state.name}. It is currently an {funcstat_description} (SUMLEV: {city_data['sumlev']}, FUNCSTAT: {city_data['funcstat']})."
+
+                            # Handle image acquisition
+                            picture = None
+                            cover_photo = None
+
+                            if reuse_images:
+                                picture, cover_photo = self.get_random_existing_images()
+                            else:
+                                picture = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}")
+                                cover_photo = CommandUtils.get_random_image(
+                                    f"{city_data['name'].replace(' ', '')}-cover")
+
+                            # Create new city object
+                            new_city = Cities(
+                                name=city_data['name'],
+                                state_id=state,
+                                author_id=1,
+                                description=description,
+                                postal_address=f"{city_data['name']}, {state.name}",
+                                population=city_data['population'],
+                                census2010_pop=city_data['census2010_pop'],
+                                county=city_data['county'],
+                                sumlev=city_data['sumlev'],
+                                funcstat=city_data['funcstat'],
+                                place_code=city_data['place_code'],
+                                timezone=timezone,
+                                picture=picture,
+                                cover_photo=cover_photo
+                            )
+                            cities_to_create.append(new_city)
+
+                    except Exception as e:
+                        self.stdout.write(self.style.ERROR(f"Error processing city row: {str(e)}"))
                         error_count += 1
-                        continue
 
-                    # Extract city data
-                    city_data = self.extract_city_data(row, state_name)
+                # Bulk create new cities
+                if cities_to_create:
+                    # Note: bulk_create doesn't return primary keys on some databases for models with non-auto primary keys
+                    # If you need this, you might need to use a different approach
+                    Cities.objects.bulk_create(cities_to_create)
+                    created_count = len(cities_to_create)
 
-                    # Get state object
-                    state = state_map[state_name]
+                # Process updates individually (bulk_update has limitations with complex fields)
+                for key, city_info in existing_cities.items():
+                    try:
+                        existing_city = city_info['instance']
+                        city_data = city_info['data']
 
-                    # Create or update city
-                    result = self.upsert_city(city_data, state, reuse_images)
-                    if result == 'created':
-                        created_count += 1
-                    elif result == 'updated':
-                        updated_count += 1
-                    else:
+                        # Update fields
+                        existing_city.population = city_data['population']
+                        existing_city.census2010_pop = city_data['census2010_pop']
+                        existing_city.county = city_data['county']
+                        existing_city.sumlev = city_data['sumlev']
+                        existing_city.funcstat = city_data['funcstat']
+                        existing_city.place_code = city_data['place_code']
+
+                        # Add to update list
+                        cities_to_update.append(existing_city)
+
+                    except Exception as e:
+                        self.stdout.write(self.style.ERROR(f"Error updating city {key}: {str(e)}"))
                         error_count += 1
 
-                    self.stdout.write(f'CITY: {result}: {city_name}')
+                # Bulk update
+                if cities_to_update:
+                    # Specify which fields to update
+                    fields_to_update = ['population', 'census2010_pop', 'county', 'sumlev', 'funcstat', 'place_code']
+                    Cities.objects.bulk_update(cities_to_update, fields_to_update)
+                    updated_count = len(cities_to_update)
 
-                except Exception as e:
-                    self.stdout.write(self.style.ERROR(f"Error processing city from row: {str(e)}"))
-                    error_count += 1
+        except Exception as e:
+            # If any error occurs in the batch, the entire transaction is rolled back
+            self.stdout.write(self.style.ERROR(f"Batch processing error, rolling back: {str(e)}"))
+            error_count = len(batch_rows)
+            created_count = 0
+            updated_count = 0
 
         return created_count, updated_count, error_count
 
@@ -184,8 +276,8 @@ class Command(BaseUtilityCommand):
                         error_count += errors
 
                         # Show progress
-                        self.stdout.write(
-                            f'Imported batch: created: {created}, updated: {updated}, errors: {errors}')
+                        if batch_size > 1:
+                            self.stdout.write(f'Imported batch: created: {created}, updated: {updated}, errors: {errors}')
 
                         # Reset for next batch
                         batch_cities = []
@@ -257,7 +349,6 @@ class Command(BaseUtilityCommand):
                     defaults={
                         'author_id': 1,
                         'state_code': data['state_code'],
-                        # We'll update the aggregation fields later
                     }
                 )
 
@@ -282,7 +373,7 @@ class Command(BaseUtilityCommand):
         # Get a random city with non-null funcstat
         random_city = random.choice(list(existing_cities))
 
-        self.stdout.write(f"Reusing images from city: {random_city.name}")
+        # self.stdout.write(f"Reusing images from city: {random_city.name}")
 
         return random_city.picture, random_city.cover_photo
 
@@ -307,8 +398,6 @@ class Command(BaseUtilityCommand):
             cover_photo = None
 
             if reuse_images:
-                # Try to get existing images
-                self.stdout.write(f"Attempting to reuse existing images for city: {city_data['name']}")
                 picture, cover_photo = self.get_random_existing_images()
 
             # If not reusing images or no existing images were found, download new ones
@@ -337,8 +426,6 @@ class Command(BaseUtilityCommand):
             if cover_photo:
                 defaults['cover_photo'] = cover_photo
 
-            self.stdout.write(f"Attempting to save city with data: {city_data['name']}, state: {state.name}")
-
             # Create or update the city
             city, created = Cities.objects.update_or_create(
                 name=city_data['name'],
@@ -346,7 +433,7 @@ class Command(BaseUtilityCommand):
                 defaults=defaults
             )
 
-            self.stdout.write(f"City {'created' if created else 'updated'} with ID: {city.id}")
+            self.stdout.write(f"City {'created' if created else 'updated'}: {city.name} ({city.id})")
 
             return 'created' if created else 'updated'
 
