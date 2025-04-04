@@ -161,8 +161,7 @@ class Command(BaseUtilityCommand):
                             if not reuse_images or (picture is None and cover_photo is None):
                                 self.stdout.write(f"Downloading new images for city: {city_data['name']}")
                                 picture = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}")
-                                cover_photo = CommandUtils.get_random_image(
-                                    f"{city_data['name'].replace(' ', '')}-cover")
+                                cover_photo = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}-cover")
 
                             # Create new city object
                             new_city = Cities(

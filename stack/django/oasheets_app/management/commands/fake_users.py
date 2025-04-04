@@ -1,3 +1,5 @@
+from email.policy import default
+
 from django.utils import timezone
 import random
 
@@ -23,7 +25,7 @@ class Command(BaseUtilityCommand):
         super().add_arguments(parser)
 
         # Add command-specific arguments
-        parser.add_argument('--count', type=int, help='Number of fake users to create')
+        parser.add_argument('--count', type=int, default=1, help='Number of fake users to create')
         parser.add_argument('--resources', default=False, action='store_true', help='Assign random resources to users')
         parser.add_argument('--password', type=str, default='APasswordYouShouldChange',help='Password for created users')
         parser.add_argument('--reuse-images', type=bool, default=False, help='Reuse images from existing oa-tester users')
@@ -44,32 +46,6 @@ class Command(BaseUtilityCommand):
         # Get available resources if we're going to assign them
         resources = list(Resources.objects.all()) if assign_resources else []
 
-        # Get existing images from oa-tester users if reusing images
-        existing_images = []
-        existing_cover_photos = []
-        if reuse_images:
-            # Query for users with non-null images, limit to a reasonable number
-            # Use order_by('?') to get random users
-            profile_image_users = Users.objects.filter(
-                groups__name=OA_TESTER_GROUP,
-                picture__isnull=False
-            ).exclude(picture='').order_by('?')[:20]  # Limit to 20 random users
-
-            cover_image_users = Users.objects.filter(
-                groups__name=OA_TESTER_GROUP,
-                cover_photo__isnull=False
-            ).exclude(cover_photo='').order_by('?')[:20]  # Limit to 20 random users
-
-            # Extract the images
-            existing_images = [user.picture for user in profile_image_users if user.picture]
-            existing_cover_photos = [user.cover_photo for user in cover_image_users if user.cover_photo]
-
-            if not existing_images or not existing_cover_photos:
-                self.stdout.write(self.style.WARNING('No existing images found to reuse. Will download new images.'))
-                reuse_images = False
-
-        self.stdout.write(self.style.SUCCESS(f'Creating {count} fake users'))
-
         created_users = 0
 
         for i in range(count):
@@ -83,10 +59,26 @@ class Command(BaseUtilityCommand):
                 # Generate a valid phone number in the format +1XXXXXXXXXX
                 phone = f"+1{fake.numerify('##########')}"
 
+                picture = None
+                cover_photo = None
                 # Either reuse existing images or download new ones
-                if reuse_images and existing_images and existing_cover_photos:
-                    picture = random.choice(existing_images)
-                    cover_photo = random.choice(existing_cover_photos)
+                if reuse_images:
+                    profile_images = Users.objects.filter(
+                        groups__name=OA_TESTER_GROUP,
+                        picture__isnull=False
+                    ).order_by('?')[:1]  # Limit to 20 random users
+
+                    if profile_images.exists():
+                        picture = profile_images.first().picture
+
+                    cover_images = Users.objects.filter(
+                        groups__name=OA_TESTER_GROUP,
+                        cover_photo__isnull=False
+                    ).order_by('?')[:1]  # Limit to 20 random users
+
+                    if cover_images.exists():
+                        cover_photo = cover_images.first().picture
+
                 else:
                     picture = CommandUtils.get_random_image(f"{username}_profile")
                     cover_photo = CommandUtils.get_random_image(f"{username}_cover")
