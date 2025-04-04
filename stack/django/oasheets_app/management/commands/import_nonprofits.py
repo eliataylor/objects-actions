@@ -14,13 +14,8 @@ class Command(BaseUtilityCommand):
         # Add common arguments from the parent class
         super().add_arguments(parser)
 
-        # Override the default file path
-        parser.add_argument(
-            '--file',
-            type=str,
-            default=os.path.join(settings.BASE_DIR, 'data', 'data-download-pub78.txt'),
-            help='Path to the data-download-pub78.txt file'
-        )
+        parser.add_argument('--reuse-images', type=bool, default=True,
+                            help='Reuse images from existing cities instead of download')
 
         # Add command-specific arguments
         parser.add_argument(
@@ -36,6 +31,7 @@ class Command(BaseUtilityCommand):
         start = options['start']
         batch_size = options['batch_size']
         price_ccoin = options['price_ccoin']
+        reuse_images = options.get('reuse_images', True)
 
         self.stdout.write(self.style.SUCCESS(f'Starting charity import from {file_path} (starting at line {start})'))
 
@@ -100,7 +96,7 @@ class Command(BaseUtilityCommand):
 
                         # Process batch if reached batch size
                         if batch_count >= batch_size:
-                            processed_count = self.process_batch(batch_items)
+                            processed_count = self.process_batch(batch_items, reuse_images)
                             success_count += processed_count
                             error_count += (batch_count - processed_count)
 
@@ -114,7 +110,7 @@ class Command(BaseUtilityCommand):
 
                 # Process remaining items in the last batch
                 if batch_items:
-                    processed_count = self.process_batch(batch_items)
+                    processed_count = self.process_batch(batch_items, reuse_images)
                     success_count += processed_count
                     error_count += (batch_count - processed_count)
 
@@ -126,7 +122,7 @@ class Command(BaseUtilityCommand):
         ))
 
     @transaction.atomic
-    def process_batch(self, batch_items):
+    def process_batch(self, batch_items, reuse_images=True):
         """Process a batch of items in a single transaction"""
         success_count = 0
 
@@ -156,7 +152,8 @@ class Command(BaseUtilityCommand):
 
                 # Check if resource already exists by EIN
                 resource = Resources.objects.filter(
-                    description_html__contains=f"EIN: {resource_data['ein']}").first()
+                    title=resource_data['name']
+                ).first()
 
                 # Create or update the resource
                 if not resource:
@@ -245,6 +242,24 @@ class Command(BaseUtilityCommand):
             state_id__state_code=state_code
         ).first()
 
+        if not city:
+            city = Cities.objects.filter(
+                name=f"{city_name} town",
+                state_id__state_code=state_code
+            ).first()
+
+        if not city:
+            city = Cities.objects.filter(
+                name=f"{city_name} township",
+                state_id__state_code=state_code
+            ).first()
+
+        if not city:
+            city = Cities.objects.filter(
+                name=f"{city_name} city",
+                state_id__state_code=state_code
+            ).first()
+
         if city:
             self.city_cache[cache_key] = city
             return city
@@ -263,7 +278,7 @@ class Command(BaseUtilityCommand):
 
         # Add image fields with random images
         city_data['picture'] = CommandUtils.get_random_image(f"{city_name.replace(' ', '')}")
-        city_data['cover'] = CommandUtils.get_random_image(f"{city_name.replace(' ', '')}-cover")
+        city_data['cover_photo'] = CommandUtils.get_random_image(f"{city_name.replace(' ', '')}-cover")
 
         # Create the city
         city = Cities.objects.create(**city_data)

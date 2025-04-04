@@ -233,6 +233,25 @@ class CommandUtils:
             return state_code
 
     @classmethod
+    def get_state_code_from_name(cls, state_name):
+        """
+        Get full state name from state code.
+
+        Args:
+            state_name (str): Full state name or original state_code if not found
+
+        Returns:
+            str:
+        """
+        reversed_dict = {v: k for k, v in cls.GEO_LOOKUPS['stateAbbreviations'].items()}
+
+        # Handle case sensitivity by converting input to title case
+        state_name = state_name.strip().title()
+
+        # Look up the state code
+        return reversed_dict.get(state_name)
+
+    @classmethod
     def get_timezone_for_state(cls, state_name):
         """
         Gets the appropriate timezone for a state based on its region.

@@ -17,14 +17,15 @@ class Command(BaseUtilityCommand):
         # Add common arguments from the parent class
         super().add_arguments(parser)
 
-        parser.add_argument('--reuse-images', type=bool, default=False, help='Reuse images from existing cities instead of download')
+        parser.add_argument('--reuse-images', type=bool, default=True,
+                            help='Reuse images from existing cities instead of download')
 
     def handle_command(self, *args, **options):
         file_path = options['file']
         batch_size = options['batch_size']
         limit = options['limit']
         start = options['start']
-        reuse_images = options.get('reuse_images', False)
+        reuse_images = options.get('reuse_images', True)
 
         if not os.path.exists(file_path):
             self.stdout.write(self.style.ERROR(f'File not found: {file_path}'))
@@ -83,7 +84,7 @@ class Command(BaseUtilityCommand):
                 if state_name not in state_data:
                     state_data[state_name] = {
                         'name': state_name,
-                        'state_code': row.get('STATE', ''),  # Get state code from CSV
+                        'state_code':  CommandUtils.get_state_code_from_name(state_name)
                     }
 
                 if row_count % 1000 == 0:
@@ -97,8 +98,6 @@ class Command(BaseUtilityCommand):
         Process a batch of city rows using Django's bulk operations
         Returns counts of created, updated, and error cities
         """
-        created_count = 0
-        updated_count = 0
         error_count = 0
 
         # Prepare lists for bulk operations
@@ -155,13 +154,12 @@ class Command(BaseUtilityCommand):
                             # Create description
                             description = f"{city_data['name']} is a {sumlev_description} located in {city_data['county']} County, {state.name}. It is currently an {funcstat_description} (SUMLEV: {city_data['sumlev']}, FUNCSTAT: {city_data['funcstat']})."
 
-                            # Handle image acquisition
-                            picture = None
-                            cover_photo = None
-
                             if reuse_images:
                                 picture, cover_photo = self.get_random_existing_images()
-                            else:
+
+                            # If not reusing images or no existing images were found, download new ones
+                            if not reuse_images or (picture is None and cover_photo is None):
+                                self.stdout.write(f"Downloading new images for city: {city_data['name']}")
                                 picture = CommandUtils.get_random_image(f"{city_data['name'].replace(' ', '')}")
                                 cover_photo = CommandUtils.get_random_image(
                                     f"{city_data['name'].replace(' ', '')}-cover")
@@ -191,10 +189,7 @@ class Command(BaseUtilityCommand):
 
                 # Bulk create new cities
                 if cities_to_create:
-                    # Note: bulk_create doesn't return primary keys on some databases for models with non-auto primary keys
-                    # If you need this, you might need to use a different approach
                     Cities.objects.bulk_create(cities_to_create)
-                    created_count = len(cities_to_create)
 
                 # Process updates individually (bulk_update has limitations with complex fields)
                 for key, city_info in existing_cities.items():
@@ -222,27 +217,35 @@ class Command(BaseUtilityCommand):
                     # Specify which fields to update
                     fields_to_update = ['population', 'census2010_pop', 'county', 'sumlev', 'funcstat', 'place_code']
                     Cities.objects.bulk_update(cities_to_update, fields_to_update)
-                    updated_count = len(cities_to_update)
 
         except Exception as e:
             # If any error occurs in the batch, the entire transaction is rolled back
             self.stdout.write(self.style.ERROR(f"Batch processing error, rolling back: {str(e)}"))
             error_count = len(batch_rows)
-            created_count = 0
-            updated_count = 0
 
-        return created_count, updated_count, error_count
+        # Log all created cities with their IDs and names
+        if cities_to_create:
+            self.stdout.write(self.style.SUCCESS(f"Created {len(cities_to_create)} cities:"))
+            for city in cities_to_create:
+                self.stdout.write(
+                    f"  - ID: {city.id}, Name: {city.name}, State: {city.state_id.name if city.state_id else 'N/A'}")
+
+        # Log all updated cities with their IDs and names
+        if cities_to_update:
+            self.stdout.write(self.style.SUCCESS(f"Updated {len(cities_to_update)} cities:"))
+            for city in cities_to_update:
+                self.stdout.write(
+                    f"  - ID: {city.id}, Name: {city.name}, State: {city.state_id.name if city.state_id else 'N/A'}")
+
+        return len(cities_to_create), len(cities_to_update), error_count
 
     # Modify import_cities_in_batches method to include reuse_images parameter
     def import_cities_in_batches(self, file_path: str, state_map: Dict[str, States], batch_size: int,
-                                 limit: Optional[int] = None, start: int = 0, reuse_images=False):
+                                 limit: Optional[int] = None, start: int = 0, reuse_images=True):
         """
         Import cities one by one in batches to respect transaction boundaries
         """
         total_cities = 0
-        created_count = 0
-        updated_count = 0
-        error_count = 0
         batch_cities = []
 
         with open(file_path, 'r', encoding='latin-1') as csv_file:
@@ -261,7 +264,7 @@ class Command(BaseUtilityCommand):
             for row in reader:
                 try:
                     total_cities += 1
-
+                    row_count += 1
                     if limit and total_cities > limit:
                         break
 
@@ -271,32 +274,24 @@ class Command(BaseUtilityCommand):
                     # Process batch if we've reached the batch size
                     if len(batch_cities) >= batch_size:
                         created, updated, errors = self.process_city_batch(batch_cities, state_map, reuse_images)
-                        created_count += created
-                        updated_count += updated
-                        error_count += errors
 
                         # Show progress
                         if batch_size > 1:
-                            self.stdout.write(f'Imported batch: created: {created}, updated: {updated}, errors: {errors}')
+                            self.stdout.write(
+                                f'Imported batch end index {row_count}: created: {created}, updated: {updated}, errors: {errors}')
 
                         # Reset for next batch
                         batch_cities = []
 
                 except Exception as e:
                     self.stdout.write(self.style.ERROR(f"Error processing city from row: {str(e)}"))
-                    error_count += 1
 
         # Process any remaining cities in the last batch
         if batch_cities:
             created, updated, errors = self.process_city_batch(batch_cities, state_map, reuse_images)
-            created_count += created
-            updated_count += updated
-            error_count += errors
             self.stdout.write(f'Final batch: Created: {created}, Updated: {updated}, Errors: {errors}')
 
-        self.stdout.write(
-            f'City import complete. Total processed: {total_cities}, Created: {created_count}, Updated: {updated_count}, Errors: {error_count}'
-        )
+        self.stdout.write(f'City import complete!')
 
     def extract_city_data(self, row, state_name):
         """
@@ -364,21 +359,22 @@ class Command(BaseUtilityCommand):
         Returns tuple of (picture, cover_photo)
         """
         # Check if any cities exist with non-null funcstat
-        existing_cities = Cities.objects.filter(funcstat__isnull=False)
+        random_city = Cities.objects.filter(
+            funcstat__isnull=False,
+            picture__isnull=False,
+            cover_photo__isnull=False,
+        ).order_by('?')[:1]  # Limit to 1 random users
 
-        if not existing_cities.exists():
+        if not random_city.exists():
             self.stdout.write("No existing cities with images found for reuse")
             return None, None
 
-        # Get a random city with non-null funcstat
-        random_city = random.choice(list(existing_cities))
-
-        # self.stdout.write(f"Reusing images from city: {random_city.name}")
+        random_city = random_city.first()
 
         return random_city.picture, random_city.cover_photo
 
     # Update upsert_city to handle image reuse
-    def upsert_city(self, city_data, state, reuse_images=False):
+    def upsert_city(self, city_data, state, reuse_images=True):
         """
         Create or update a single city
         """
