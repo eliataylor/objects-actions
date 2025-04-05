@@ -4,9 +4,9 @@ import { Counter, Rate, Trend } from "k6/metrics";
 import { NAVITEMS } from "./navitems.js";
 
 // Configuration
-const BASE_URL = "https://api.oaexample.com"; // Update with your actual base URL
-const CSRF_TOKEN = "${__ENV.CSRF_TOKEN}"; // CSRF token for requests
-const COOKIE = "${__ENV.COOKIE}"; // Cookie value for authenticated requests
+const BASE_URL = __ENV.REACT_APP_API_HOST; // Load API host from environment variable
+const CSRF_TOKEN = __ENV.CSRF_TOKEN; // CSRF token for requests
+const COOKIE = __ENV.COOKIE; // Cookie value for authenticated requests
 
 // Custom metrics
 const errorRate = new Rate("error_rate");
@@ -61,7 +61,8 @@ export const options = {
     "http_req_duration": ["p(95)<3000"], // 95% of requests should be below 3s
     "valid_json_rate": ["rate>0.95"], // Valid JSON rate should be >95%
     "valid_results_rate": ["rate>0.95"] // Valid results array rate should be >95%
-  }
+  },
+  insecureSkipTLSVerify: true,
 };
 
 // Setup function (runs once per VU)

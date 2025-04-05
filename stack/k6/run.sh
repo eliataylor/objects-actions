@@ -9,7 +9,7 @@ BRANCH_CLEAN=$(echo "$BRANCH" | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]'
 # Check if .env file exists
 if [ ! -f .env ]; then
   echo "Error: .env file not found"
-  echo "Please create a .env file with CSRF_TOKEN and COOKIE variables"
+  echo "Please create a .env file with REACT_APP_API_HOST, CSRF_TOKEN and COOKIE variables"
   exit 1
 fi
 
@@ -22,6 +22,12 @@ while IFS= read -r line || [ -n "$line" ]; do
   fi
 done < .env
 
+# Set default REACT_APP_API_HOST if not defined in .env
+if [ -z "$REACT_APP_API_HOST" ]; then
+  echo "Warning: REACT_APP_API_HOST not found in .env file, using default value"
+  export REACT_APP_API_HOST="https://api.oaexample.com"
+fi
+
 # Verify that required variables are loaded
 if [ -z "$CSRF_TOKEN" ] || [ -z "$COOKIE" ]; then
   echo "Error: CSRF_TOKEN or COOKIE not found in .env file"
@@ -31,6 +37,7 @@ if [ -z "$CSRF_TOKEN" ] || [ -z "$COOKIE" ]; then
 fi
 
 # Show confirmation of loaded variables (obfuscated for security)
+echo "Loaded REACT_APP_API_HOST: ${REACT_APP_API_HOST}"
 echo "Loaded CSRF_TOKEN: ${CSRF_TOKEN:0:5}...${CSRF_TOKEN: -5}"
 echo "Loaded COOKIE: ${COOKIE:0:15}...${COOKIE: -15}"
 
@@ -39,6 +46,7 @@ mkdir -p test-results
 
 # Run K6 test with variables from .env file
 k6 run \
+  --env BASE_URL="$REACT_APP_API_HOST" \
   --env CSRF_TOKEN="$CSRF_TOKEN" \
   --env COOKIE="$COOKIE" \
   api-speed-tests.js
