@@ -59,6 +59,21 @@ class CommandUtils:
         )
 
     @classmethod
+    def download_image(cls, icon_url, filename=False):
+        response = requests.get(icon_url, timeout=5)
+        image_file = None
+        if not filename:
+            filename = os.path.basename(icon_url)
+        if response.status_code == 200:
+            image_file = SimpleUploadedFile(
+                name=filename,
+                content=response.content,
+                content_type='image/jpeg'
+            )
+        return image_file
+
+
+    @classmethod
     def get_random_image(cls, seed, overwrite=False):
         """
         Generate and return a random image file for a given seed.
