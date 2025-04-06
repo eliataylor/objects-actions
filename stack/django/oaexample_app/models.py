@@ -315,8 +315,8 @@ class Cities(SuperModel):
 		super().save(*args, **kwargs)
 
 		# Update state aggregations
-		# if self.state_id:
-			# self.state_id.update_aggregations()
+		if self.state_id:
+			self.state_id.update_aggregations()
 
 class Officials(SuperModel):
 	class Meta:

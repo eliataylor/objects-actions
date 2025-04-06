@@ -33,18 +33,18 @@ class Command(BaseUtilityCommand):
     def handle_command(self, *args, **options):
         fake = Faker()
         count = options['count']
-        assign_resources = options['resources']
         password = options['password']
         reuse_images = options['reuse_images']
         Users = get_user_model()
+
+        test_users = list(Users.objects.filter(
+            groups__name=OA_TESTER_GROUP,
+        )[:100])  # Limit to first 20 matching users
 
         group = Group.objects.filter(name=OA_TESTER_GROUP).first()
         if not group:
             print('Group not found')
             return
-
-        # Get available resources if we're going to assign them
-        resources = list(Resources.objects.all()) if assign_resources else []
 
         created_users = 0
 
@@ -61,24 +61,9 @@ class Command(BaseUtilityCommand):
 
                 picture = None
                 cover_photo = None
-                # Either reuse existing images or download new ones
-                if reuse_images:
-                    profile_images = Users.objects.filter(
-                        groups__name=OA_TESTER_GROUP,
-                        picture__isnull=False
-                    ).order_by('?')[:1]  # Limit to 20 random users
-
-                    if profile_images.exists():
-                        picture = profile_images.first().picture
-
-                    cover_images = Users.objects.filter(
-                        groups__name=OA_TESTER_GROUP,
-                        cover_photo__isnull=False
-                    ).order_by('?')[:1]  # Limit to 20 random users
-
-                    if cover_images.exists():
-                        cover_photo = cover_images.first().picture
-
+                if reuse_images and test_users:
+                    picture = random.choice(test_users).picture
+                    cover_photo = random.choice(test_users).cover_photo
                 else:
                     picture = CommandUtils.get_random_image(f"{username}_profile")
                     cover_photo = CommandUtils.get_random_image(f"{username}_cover")
@@ -98,10 +83,10 @@ class Command(BaseUtilityCommand):
                                                              tzinfo=timezone.get_current_timezone()),
                         'password': password,
                         'phone': phone,
-                        'website': f"https://{fake.domain_name()}/{username}",
-                        'bio': fake.paragraph(nb_sentences=5),
+#                        'website': f"https://{fake.domain_name()}/{username}",
+#                        'bio': fake.paragraph(nb_sentences=5),
                         'cover_photo': cover_photo,
-                        'picture': picture,
+                        'picture': picture
                     }
                 )
 
@@ -117,18 +102,10 @@ class Command(BaseUtilityCommand):
                     )
                     print(f"Created and verified user: {email}")
                 else:
-                    user.set_password("APasswordYouShouldChange")
-                    user.groups.add(group)
-                    user.save()
+                    # user.set_password("APasswordYouShouldChange")
+                    # user.groups.add(group)
+                    # user.save()
                     print(f"User already exists.")
-
-                # Assign random resources if available
-                if resources and assign_resources:
-                    # Assign between 1 and 5 random resources
-                    num_resources = min(len(resources), random.randint(1, 5))
-                    random_resources = random.sample(resources, num_resources)
-                    user.resources.add(*random_resources)
-                    user.save()
 
                 created_users += 1
 
