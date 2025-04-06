@@ -8,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management.base import BaseCommand
 import os
 import datetime
+from django.core.files.base import ContentFile
 
 class CommandUtils:
     """
@@ -71,6 +72,31 @@ class CommandUtils:
                 content_type='image/jpeg'
             )
         return image_file
+
+    @classmethod
+    def save_svg(cls, svg_string, title):
+        """
+        Convert SVG string to a file and return the file path
+
+        Args:
+            svg_string (str): The SVG content as a string
+
+        Returns:
+            ContentFile: A Django ContentFile containing the SVG
+        """
+        try:
+            safe_title = title.lower().replace(' ', '_').replace('-', '_')
+            # Remove any special characters
+            safe_title = ''.join(c for c in safe_title if c.isalnum() or c == '_')
+            filename = f"{safe_title}.svg"
+
+            # Create a ContentFile from the SVG string
+            svg_file = ContentFile(svg_string.encode('utf-8'), name=filename)
+
+            return svg_file
+        except Exception as e:
+            print(f"Error saving SVG: {str(e)}")
+            return None
 
 
     @classmethod
