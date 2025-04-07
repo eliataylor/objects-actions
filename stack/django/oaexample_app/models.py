@@ -11,21 +11,63 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 import os
 import re
+import sys
+import inspect
 ####OBJECT-ACTIONS-MODELS_IMPORTS-ENDS####
 
 ####OBJECT-ACTIONS-MODELS-STARTS####
-def upload_file_path(instance, filename):
-	ext = filename.split('.')[-1]  # e.g. "jpg"
-	# add datetime suffix to avoid collisions
-	new_filename = f"{os.path.basename(filename)}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
-	# WARN: watch for overwrites when using DataBuilder or any batch upload
+def field_file_path(field_name):
+	"""
+    Create a function that generates a path including model name and field name,
+    with date as the last directory segment.
 
-	# Use strftime to create a "year-month" folder dynamically
-	date_folder = timezone.now().strftime('%Y-%m')
+    Args:
+        field_name: Name of the field this function will be used for
 
-	# Construct the final upload path: "uploads/<yyyy-mm>/<filename>"
-	return os.path.join('uploads', date_folder, new_filename)
-	
+    Returns:
+        function: A function to be used as upload_to
+    """
+
+	def upload_file_path(instance, filename):
+		ext = filename.split('.')[-1]  # e.g. "jpg"
+		base_filename = os.path.basename(filename).rsplit('.', 1)[0]  # Get filename without extension
+
+		# Get model name (lowercase)
+		model_name = instance.__class__.__name__.lower()
+
+		# Check if we're running inside a management command
+		is_management_command = False
+
+		# Get current call stack
+		stack = inspect.stack()
+
+		# Look through the stack to find management command execution
+		for frame_info in stack:
+			module = inspect.getmodule(frame_info[0])
+			if module and ('management/commands' in module.__file__ or 'BaseCommand' in str(module.__file__)):
+				is_management_command = True
+				break
+
+		# Alternative approach: check sys.argv[0]
+		if 'manage.py' in sys.argv[0] and any(cmd in sys.argv for cmd in
+											  ['import_cities', 'fake_users', 'import_nonprofits', 'import_meetings']):
+			is_management_command = True
+
+		# Only add datetime suffix for regular API/Admin usage, not for management commands
+		if not is_management_command:
+			new_filename = f"{base_filename}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+		else:
+			# For management commands, keep the original filename to enable overwriting
+			new_filename = f"{base_filename}.{ext}"
+
+		# Use strftime to create a "year-month" folder dynamically
+		date_folder = timezone.now().strftime('%Y-%m')
+
+		# Construct the final upload path: "uploads/<model_name>/<field_name>/<yyyy-mm>/<filename>"
+		return os.path.join('uploads', model_name, field_name, date_folder, new_filename)
+
+	return upload_file_path
+
 def validate_phone_number(value):
 	phone_regex = re.compile(r'^\+?1?\d{9,15}$')
 	if not phone_regex.match(value):
@@ -37,13 +79,11 @@ class Users(AbstractUser, BumpParentsModelMixin):
 		verbose_name_plural = "Users"
 		ordering = ['last_login']
 
-
-
 	phone = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='Phone', blank=True, null=True)
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 	bio = models.TextField(blank=True, null=True, verbose_name='Bio')
-	picture = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Picture')
-	cover_photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Cover Photo')
+	picture = models.ImageField(upload_to=field_file_path('picture'), blank=True, null=True, verbose_name='Picture')
+	cover_photo = models.ImageField(upload_to=field_file_path('cover_photo'), blank=True, null=True, verbose_name='Cover Photo')
 	resources = models.ManyToManyField('Resources', related_name='resources_to_resources', blank=True, verbose_name='Resources')
 
 	def __str__(self):
@@ -110,8 +150,8 @@ class Topics(SuperModel):
 		verbose_name_plural = "Topics"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	icon = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Icon')
-	photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Photo')
+	icon = models.ImageField(upload_to=field_file_path('icon'), blank=True, null=True, verbose_name='Icon')
+	photo = models.ImageField(upload_to=field_file_path('photo'), blank=True, null=True, verbose_name='Photo')
 
 class ResourceTypes(SuperModel):
 	class Meta:
@@ -129,6 +169,7 @@ class MeetingTypes(SuperModel):
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 
+
 class States(SuperModel):
 	class Meta:
 		abstract = False
@@ -136,8 +177,64 @@ class States(SuperModel):
 		verbose_name_plural = "States"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
+	state_code = models.CharField(max_length=2, blank=True, null=True, verbose_name='State Code')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
-	icon = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Icon')
+	icon = models.ImageField(upload_to=field_file_path('icon'), blank=True, null=True, verbose_name='Icon')
+
+	# Population data
+	population = models.BigIntegerField(blank=True, null=True, verbose_name='State Population')
+	census2010_pop = models.BigIntegerField(blank=True, null=True, verbose_name='2010 Census Population')
+
+	# Aggregation fields
+	city_count = models.IntegerField(blank=True, null=True, verbose_name='Number of Cities')
+	total_city_population = models.BigIntegerField(blank=True, null=True, verbose_name='Total City Population')
+	avg_city_population = models.IntegerField(blank=True, null=True, verbose_name='Average City Population')
+	largest_city = models.ForeignKey('Cities', on_delete=models.SET_NULL, null=True, blank=True,
+									 related_name='largest_in_state', verbose_name='Largest City')
+	smallest_city = models.ForeignKey('Cities', on_delete=models.SET_NULL, null=True, blank=True,
+									  related_name='smallest_in_state', verbose_name='Smallest City')
+
+	# Geographic data
+	state_area = models.IntegerField(blank=True, null=True, verbose_name='State Area (sq km)')
+	population_density = models.FloatField(blank=True, null=True, verbose_name='Population Density')
+	urban_population = models.BigIntegerField(blank=True, null=True, verbose_name='Urban Population')
+	rural_population = models.BigIntegerField(blank=True, null=True, verbose_name='Rural Population')
+	urban_percentage = models.FloatField(blank=True, null=True, verbose_name='Urban Population Percentage')
+
+	# Growth metrics
+	growth_rate = models.FloatField(blank=True, null=True, verbose_name='Annual Growth Rate (%)')
+	fastest_growing_city = models.ForeignKey('Cities', on_delete=models.SET_NULL, null=True, blank=True,
+											 related_name='fastest_growing_in_state',
+											 verbose_name='Fastest Growing City')
+
+	def update_aggregations(self):
+		"""Update all aggregation fields based on associated cities"""
+		from django.db.models import Sum, Avg, Min, Max, F, Count
+
+		cities = Cities.objects.filter(state_id=self)
+		city_data = cities.aggregate(
+			count=Count('id'),
+			total_pop=Sum('population'),
+			avg_pop=Avg('population')
+		)
+
+		self.city_count = city_data['count'] or 0
+		self.total_city_population = city_data['total_pop'] or 0
+		self.avg_city_population = int(city_data['avg_pop'] or 0)
+
+		# Find largest and smallest cities
+		if cities.exists():
+			self.largest_city = cities.order_by('-population').first()
+			self.smallest_city = cities.filter(population__isnull=False).order_by('population').first()
+
+		# Calculate density if state_area is available
+		if self.state_area and self.population:
+			self.population_density = self.population / self.state_area
+
+		self.save(update_fields=[
+			'city_count', 'total_city_population', 'avg_city_population',
+			'largest_city', 'smallest_city', 'population_density'
+		])
 
 class Parties(SuperModel):
 	class Meta:
@@ -146,7 +243,7 @@ class Parties(SuperModel):
 		verbose_name_plural = "Parties"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	logo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Logo')
+	logo = models.ImageField(upload_to=field_file_path('logo'), blank=True, null=True, verbose_name='Logo')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 
 class Stakeholders(SuperModel):
@@ -156,7 +253,7 @@ class Stakeholders(SuperModel):
 		verbose_name_plural = "Stakeholders"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	image = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Image')
+	image = models.ImageField(upload_to=field_file_path('image'), blank=True, null=True, verbose_name='Image')
 
 class Resources(SuperModel):
 	class Meta:
@@ -164,11 +261,13 @@ class Resources(SuperModel):
 		verbose_name = "Resource"
 		verbose_name_plural = "Resources"
 
+
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description_html = models.TextField(verbose_name='Description HTML')
-	image = models.ImageField(upload_to=upload_file_path, verbose_name='Image')
+	image = models.ImageField(upload_to=field_file_path('image'), verbose_name='Image')
 	postal_address = models.CharField(max_length=255, blank=True, null=True, verbose_name='Postal Address')
 	price_ccoin = models.IntegerField(verbose_name='Price (citizencoin)')
+	cities = models.ManyToManyField('Cities', related_name='cities_to_resources', verbose_name='Cities')
 	resource_type = models.ManyToManyField('ResourceTypes', related_name='resource_type_to_resource_types', verbose_name='Resource Type')
 
 class Cities(SuperModel):
@@ -180,20 +279,44 @@ class Cities(SuperModel):
 	name = models.CharField(max_length=255, verbose_name='Name')
 	description = models.TextField(blank=True, null=True, verbose_name='Description')
 	postal_address = models.CharField(max_length=255)
-	picture = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Picture')
-	cover_photo = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Cover Photo')
-	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_profile', blank=True, verbose_name='Sponsors')
+	picture = models.ImageField(upload_to=field_file_path('picture'), blank=True, null=True, verbose_name='Picture')
+	cover_photo = models.ImageField(upload_to=field_file_path('cover_photo'), blank=True, null=True, verbose_name='Cover Photo')
+	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_profile', blank=True,
+									  verbose_name='Sponsors')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
+
+	# Population data (most recent)
 	population = models.IntegerField(blank=True, null=True, verbose_name='Population')
+	census2010_pop = models.IntegerField(blank=True, null=True, verbose_name='2010 Census Population')
+
+	# Geographic data
 	altitude = models.IntegerField(blank=True, null=True, verbose_name='Altitude')
 	county = models.CharField(max_length=255, blank=True, null=True, verbose_name='County')
-	state_id = models.ForeignKey('States', on_delete=models.SET_NULL, related_name='+', null=True, blank=True, verbose_name='State')
-	officials = models.ManyToManyField(get_user_model(), related_name='officials_to_user_profile', blank=True, verbose_name='Officials')
+	state_id = models.ForeignKey('States', on_delete=models.SET_NULL, related_name='+', null=True, blank=True,
+								 verbose_name='State')
+	officials = models.ManyToManyField(get_user_model(), related_name='officials_to_user_profile', blank=True,
+									   verbose_name='Officials')
 	land_area = models.IntegerField(blank=True, null=True, verbose_name='Land Area')
 	water_area = models.IntegerField(blank=True, null=True, verbose_name='Water Area')
 	total_area = models.IntegerField(blank=True, null=True, verbose_name='Total Area')
 	density = models.IntegerField(blank=True, null=True, verbose_name='Density')
 	timezone = models.CharField(max_length=255, blank=True, null=True, verbose_name='Timezone')
+
+	# Census identifiers
+	place_code = models.CharField(max_length=7, blank=True, null=True, verbose_name='Place Code')
+	sumlev = models.CharField(max_length=3, blank=True, null=True, verbose_name='Summary Level')
+	funcstat = models.CharField(max_length=1, blank=True, null=True, verbose_name='Functional Status')
+
+	def save(self, *args, **kwargs):
+		# Calculate density if not provided
+		if self.population and self.total_area and not self.density:
+			self.density = self.population // self.total_area if self.total_area > 0 else 0
+
+		super().save(*args, **kwargs)
+
+		# Update state aggregations
+		if self.state_id:
+			self.state_id.update_aggregations()
 
 class Officials(SuperModel):
 	class Meta:
@@ -216,7 +339,7 @@ class Rallies(SuperModel):
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description = models.TextField(verbose_name='Description')
-	media = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Media')
+	media = models.FileField(upload_to=field_file_path('media'), blank=True, null=True, verbose_name='Media')
 	topics = models.ManyToManyField('Topics', related_name='topics_to_topics', verbose_name='Topics')
 	comments = models.TextField(blank=True, null=True, verbose_name='Comments')
 
@@ -262,7 +385,7 @@ class Invites(SuperModel):
 		abstract = False
 		verbose_name = "Invite"
 		verbose_name_plural = "Invites"
-	
+
 	class StatusChoices(models.TextChoices):
 		invited = ("invited", "Invited")
 		rsvpd = ("rsvpd", " rsvpd")
@@ -278,7 +401,7 @@ class Subscriptions(SuperModel):
 		abstract = False
 		verbose_name = "Subscription"
 		verbose_name_plural = "Subscriptions"
-	
+
 	class StatusChoices(models.TextChoices):
 		approved = ("approved", "Approved")
 		denied = ("denied", " denied")
@@ -294,12 +417,12 @@ class Rooms(SuperModel):
 		abstract = False
 		verbose_name = "Room"
 		verbose_name_plural = "Rooms"
-	
+
 	class PrivacyChoices(models.TextChoices):
 		public = ("public", "Public")
 		inviteonly = ("inviteonly", " invite-only")
 		requests = ("requests", " requests")
-	
+
 	class StatusChoices(models.TextChoices):
 		live = ("live", "Live")
 		scheduled = ("scheduled", " scheduled")
@@ -312,14 +435,14 @@ class Rooms(SuperModel):
 	privacy = models.CharField(max_length=10, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True)
 	status = models.CharField(max_length=9, choices=StatusChoices.choices, verbose_name='Status', blank=True, null=True)
 	chat_thread = models.CharField(max_length=255, blank=True, null=True, verbose_name='Chat Thread')
-	recording = models.FileField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Recording')
+	recording = models.FileField(upload_to=field_file_path('recording'), blank=True, null=True, verbose_name='Recording')
 
 class Attendees(SuperModel):
 	class Meta:
 		abstract = False
 		verbose_name = "Attendee"
 		verbose_name_plural = "Attendees"
-	
+
 	class RoleChoices(models.TextChoices):
 		viewer = ("viewer", "Viewer")
 		presenter = ("presenter", " presenter")
@@ -327,7 +450,7 @@ class Attendees(SuperModel):
 		chat_moderator = ("chat_moderator", " chat moderator")
 	room_id = models.ForeignKey('Rooms', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Room ID')
 	display_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Display Name')
-	display_bg = models.ImageField(upload_to=upload_file_path, blank=True, null=True, verbose_name='Display Bg')
+	display_bg = models.ImageField(upload_to=field_file_path('display_bg'), blank=True, null=True, verbose_name='Display Bg')
 	role = models.CharField(max_length=14, choices=RoleChoices.choices, verbose_name='Role')
 	stream = models.CharField(max_length=255, blank=True, null=True, verbose_name='Stream')
 	is_muted = models.BooleanField(blank=True, null=True, verbose_name='Is Muted')

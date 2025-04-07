@@ -50,6 +50,7 @@ import WorksheetList from "./object-actions/generator/WorksheetList";
 import WorksheetLoader from "./object-actions/generator/WorksheetLoader";
 import Consulting from "./object-actions/docs/Consulting";
 import ContentTypesHome from "./screens/ContentTypesHome";
+import LoadTesting from "./object-actions/docs/LoadTesting";
 
 function createRouter() {
   const allRoutes = [
@@ -329,6 +330,7 @@ function createRouter() {
   allRoutes[0].children.push({ path: `/oa/readme`, element: <ReadMe /> });
   allRoutes[0].children.push({ path: `/oa/install`, element: <Install /> }); // legacy route
   allRoutes[0].children.push({ path: `/oa/run`, element: <Install /> });
+  allRoutes[0].children.push({ path: `/oa/load-tests`, element: <LoadTesting /> });
   allRoutes[0].children.push({ path: `/oa/customize`, element: <Customize /> });
   allRoutes[0].children.push({ path: `/oa/extend`, element: <Extend /> });
   allRoutes[0].children.push({ path: `/oa/schemas`, element: <WorksheetList /> });

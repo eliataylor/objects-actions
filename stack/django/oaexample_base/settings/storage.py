@@ -11,7 +11,7 @@ APP_HOST_PARTS = urlparse(APP_HOST)
 API_HOST = os.getenv('REACT_APP_API_HOST', 'https://localapi.oaexample.com:8080')
 API_HOST_PARTS = urlparse(API_HOST)
 
-OA_ENV_STORAGE = os.getenv("OA_ENV_STORAGE", "local")
+OA_ENV_STORAGE = myEnv("OA_ENV_STORAGE", "local")
 logger.debug(f"[OADJANGO] STORAGE USING: {OA_ENV_STORAGE} ")
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

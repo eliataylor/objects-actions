@@ -4,6 +4,7 @@
   "main": "src/WorldBuilder.ts",
   "scripts": {
     "start": "npx tsx src/main.ts --env-file=.env --action=objects-add --count=1",
+    "import": "npx tsx tools/importer.ts",
     "objects-add": "npx tsx src/main.ts --env-file=.env --action=objects-add --count=1",
     "users-add": "npx tsx src/main.ts --env-file=.env --action=users-add --count=1",
     "object-add": "npx tsx src/main.ts --env-file=.env --action=object-add --type=resources --count=1",
@@ -16,10 +17,10 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
-  "type": "module",
   "dependencies": {
     "@faker-js/faker": "9.1.0",
     "axios": "^1.7.2",
+    "csv-parse": "^5.6.0",
     "dotenv": "^16.4.5",
     "form-data": "^4.0.1",
     "tough-cookie": "^4.1.4"

@@ -69,6 +69,16 @@ function getPermsByTypeAndVerb(type: string, verb: string) {
   return matches;
 }
 
+function defaultPermission(verb: CRUDVerb, obj: ModelType<ModelName>, me?: MySession | null) {
+  if (DEFAULT_PERM === "AllowAny") return true;
+  if (me && me?.id > 0) {
+    if (DEFAULT_PERM === "IsAuthenticated" || DEFAULT_PERM === "IsAuthenticatedOrReadOnly") return true;
+  } else {
+    if ((verb.indexOf("view") > -1 || verb.indexOf("read") > -1) && DEFAULT_PERM === "IsAuthenticatedOrReadOnly") return true;
+  }
+  return `Default permission Is ${DEFAULT_PERM}`;
+}
+
 // returns error string or true if passes
 export function canDo(
   verb: CRUDVerb,
@@ -78,15 +88,7 @@ export function canDo(
   const perms = getPermsByTypeAndVerb(obj._type, verb);
 
   if (!perms || !perms.length) {
-    console.warn(`[PERMS] NO MATCHES FOR ${verb} - ${obj._type}`);
-    if (DEFAULT_PERM === "AllowAny") return true;
-    if (me && me?.id > 0) {
-      if (DEFAULT_PERM === "IsAuthenticated" || DEFAULT_PERM === "IsAuthenticatedOrReadOnly") return true;
-    } else {
-      if ((verb.indexOf("view") > -1 || verb.indexOf("read") > -1) && DEFAULT_PERM === "IsAuthenticatedOrReadOnly") return true;
-    }
-
-    return `Default permission Is ${DEFAULT_PERM}`;
+    return defaultPermission(verb, obj, me);
   }
 
   let isMine = verb === "add";
@@ -98,12 +100,11 @@ export function canDo(
     }
   }
 
-  let perm = perms.find(p => p.ownership === "others" && !isMine);
+  const perm = perms.find(p => p.ownership === "others" && !isMine);
   if (!perm) {
     perms.find(p => p.ownership === "own" && isMine);
     if (!perm) {
-      perm = perms[0];
-      console.warn(`[PERMS] MISMATCHED OWNERSHIP isMine: ${isMine}`, perms);
+      return defaultPermission(verb, obj, me);
     }
   }
 

@@ -1,0 +1,96 @@
+[
+  {
+    "title": "Future of Work Summit",
+    "description": "Join us to explore how automation is reshaping industries and creating new opportunities for innovation and growth. Discuss ethical implementation of AI and robotics in the workplace.",
+    "relatedTopics": [
+      "Automation",
+      "Education",
+      "Communications"
+    ],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f0f8ff'/><circle cx='50' cy='35' r='20' fill='#4682b4'/><rect x='30' y='55' width='40' height='30' fill='#708090'/><circle cx='40' cy='65' r='3' fill='#ff4500'/><circle cx='60' cy='65' r='3' fill='#32cd32'/><rect x='35' y='75' width='30' height='5' fill='#1e90ff'/></svg>"
+  },
+  {
+    "title": "Modernize Public Transit Networks",
+    "description": "A comprehensive plan to revitalize aging transportation infrastructure, expand service to underserved areas, and implement eco-friendly vehicles across all public transit systems.",
+    "relatedTopics": ["Transportation", "Energy", "Urban Farming"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f0f8ff'/><path d='M10,70 L90,70' stroke='#696969' stroke-width='6'/><rect x='25' y='45' width='50' height='25' rx='3' fill='#4169e1'/><circle cx='35' cy='75' r='5' fill='#000000'/><circle cx='65' cy='75' r='5' fill='#000000'/><rect x='30' y='50' width='8' height='8' fill='#f0f8ff'/><rect x='45' y='50' width='8' height='8' fill='#f0f8ff'/><rect x='60' y='50' width='8' height='8' fill='#f0f8ff'/><path d='M40,30 L60,30 L65,45 L55,45 L50,35 L45,45 L35,45 Z' fill='#32cd32'/></svg>"
+  },
+  {
+    "title": "Digitize Healthcare Access",
+    "description": "An initiative to improve healthcare accessibility through telemedicine expansion, digital health records integration, and remote monitoring tools for underserved and rural communities.",
+    "relatedTopics": ["Health", "Communications", "Automation"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f0ffff'/><circle cx='50' cy='50' r='30' fill='#ff6347' fill-opacity='0.3'/><path d='M50,30 L50,70 M30,50 L70,50' stroke='white' stroke-width='8'/><rect x='15' y='15' width='70' height='70' rx='10' stroke='#4682b4' stroke-width='3' fill='none'/><path d='M15,35 L5,35 L5,65 L15,65 M85,35 L95,35 L95,65 L85,65' stroke='#4682b4' stroke-width='3' fill='none'/></svg>"
+  },
+  {
+    "title": "Revolutionize School Curricula",
+    "description": "An educational reform strategy focusing on integrating critical thinking, digital literacy, and practical life skills into traditional academic subjects to better prepare students for future challenges.",
+    "relatedTopics": ["Education", "Automation", "Communications"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#fffaf0'/><path d='M20,30 L80,30 L80,80 L20,80 Z' stroke='#8a2be2' stroke-width='3' fill='none'/><path d='M50,15 L80,30' stroke='#8a2be2' stroke-width='3' fill='none'/><path d='M50,15 L20,30' stroke='#8a2be2' stroke-width='3' fill='none'/><circle cx='35' cy='45' r='5' fill='#ffd700'/><circle cx='65' cy='45' r='5' fill='#ffd700'/><path d='M35,65 L65,65' stroke='#ffd700' stroke-width='3'/><path d='M30,52 L70,52' stroke='#8a2be2' stroke-width='1'/><path d='M30,58 L70,58' stroke='#8a2be2' stroke-width='1'/></svg>"
+  },
+  {
+    "title": "Establish Neighborhood Green Spaces",
+    "description": "A grassroots initiative to transform vacant urban lots into community gardens, playgrounds, and natural habitats to improve quality of life, increase property values, and enhance environmental sustainability.",
+    "relatedTopics": ["Parks & Recreation", "Urban Farming", "Health"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f5fffa'/><rect x='10' y='70' width='80' height='20' fill='#8b4513'/><path d='M30,70 C30,40 10,35 25,70' fill='#228b22'/><path d='M55,70 C55,30 35,45 45,70' fill='#228b22'/><path d='M75,70 C75,45 60,50 65,70' fill='#228b22'/><path d='M10,70 L90,70' stroke='#8b4513' stroke-width='1'/><circle cx='20' cy='60' r='3' fill='#ff4500'/><circle cx='40' cy='55' r='3' fill='#ff4500'/><circle cx='65' cy='50' r='3' fill='#ff4500'/><circle cx='80' cy='20' r='10' fill='#ffff00'/></svg>"
+  },
+  {
+    "title": "Implement Renewable Energy Transition",
+    "description": "A strategic roadmap for communities to gradually shift from fossil fuels to renewable energy sources through infrastructure development, incentive programs, and public education campaigns.",
+    "relatedTopics": ["Energy", "Transportation", "Communications"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f0f8ff'/><circle cx='50' cy='45' r='20' fill='#ffd700'/><path d='M20,80 L40,80 L40,65 L20,65 Z' fill='#4682b4'/><path d='M45,80 L65,80 L65,55 L45,55 Z' fill='#4682b4'/><path d='M70,80 L90,80 L90,70 L70,70 Z' fill='#4682b4'/><path d='M25,65 L35,30 M50,55 L50,20 M75,70 L60,35' stroke='#000000' stroke-width='1'/><path d='M35,30 L55,30 L45,20 Z' fill='#32cd32'/><circle cx='50' cy='20' r='5' fill='#32cd32'/><path d='M60,35 L65,20 L70,35 Z' fill='#32cd32'/></svg>"
+  },
+  {
+    "title": "Digital Dialogue Forum",
+    "description": "A platform to address the evolving landscape of digital communications and media. Explore innovative approaches to foster meaningful connections in an increasingly virtual world.",
+    "relatedTopics": ["Communications", "Education", "Justice"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f5f5f5'/><path d='M25,30 L75,30 L75,70 L55,70 L50,80 L45,70 L25,70 Z' fill='#6495ed'/><circle cx='37' cy='50' r='5' fill='white'/><circle cx='50' cy='50' r='5' fill='white'/><circle cx='63' cy='50' r='5' fill='white'/></svg>"
+  },
+  {
+    "title": "Community Wellness Initiative",
+    "description": "Advocating for comprehensive healthcare access and promoting physical and mental wellbeing through community-based programs and education.",
+    "relatedTopics": ["Health", "Parks & Recreation", "Education"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f0fff0'/><circle cx='50' cy='50' r='30' fill='#ff6347' fill-opacity='0.2'/><path d='M50,20 Q65,35 80,50 Q65,65 50,80 Q35,65 20,50 Q35,35 50,20 Z' fill='#ff6347'/></svg>"
+  },
+  {
+    "title": "Equal Rights Assembly",
+    "description": "A gathering focused on advancing social justice, equality, and fair treatment for all members of society through policy reform and community engagement.",
+    "relatedTopics": ["Justice", "Education", "Communications"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f5f5dc'/><rect x='30' y='30' width='40' height='60' fill='#8b4513'/><rect x='20' y='25' width='60' height='5' fill='#8b4513'/><rect x='45' y='10' width='10' height='20' fill='#8b4513'/><circle cx='50' cy='45' r='5' fill='#ffd700'/></svg>"
+  },
+  {
+    "title": "Media Integrity Coalition",
+    "description": "Working to combat misinformation and protect reputations through promoting responsible journalism and advocating for balanced media coverage.",
+    "relatedTopics": ["Libel", "Communications", "Justice"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#fffafa'/><path d='M25,30 L75,30 L75,70 L25,70 Z' fill='#4169e1'/><rect x='30' y='40' width='40' height='5' fill='white'/><rect x='30' y='50' width='40' height='5' fill='white'/><rect x='30' y='60' width='25' height='5' fill='white'/><circle cx='70' cy='25' r='10' fill='#ff6347'/><path d='M65,25 L75,25 M70,20 L70,30' stroke='white' stroke-width='2'/></svg>"
+  },
+  {
+    "title": "Learning Revolution Symposium",
+    "description": "Reimagining educational systems to better prepare students for the challenges of tomorrow through innovative teaching methods and inclusive learning environments.",
+    "relatedTopics": ["Education", "Communications", "Automation"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#e6e6fa'/><path d='M30,30 L70,30 L70,70 L30,70 Z' fill='#9370db'/><path d='M30,30 L50,20 L70,30' fill='#9370db'/><rect x='45' y='70' width='10' height='10' fill='#9370db'/><circle cx='50' cy='45' r='8' fill='white'/><path d='M40,60 L60,60' stroke='white' stroke-width='2'/></svg>"
+  },
+  {
+    "title": "Outdoor Spaces Advocacy",
+    "description": "Championing the preservation and expansion of public recreational areas to promote physical activity, environmental appreciation, and community bonding.",
+    "relatedTopics": ["Parks & Recreation", "Health", "Urban Farming"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f0fff0'/><path d='M0,70 L100,70' stroke='#228b22' stroke-width='2'/><path d='M30,70 L40,40 L50,70' fill='#228b22'/><path d='M60,70 L70,30 L80,70' fill='#228b22'/><circle cx='25' cy='65' r='5' fill='#ff6347'/><circle cx='85' cy='65' r='5' fill='#ff6347'/><circle cx='20' cy='30' r='10' fill='#ffff00' stroke='#ffd700' stroke-width='2'/></svg>"
+  },
+  {
+    "title": "Sustainable Power Conference",
+    "description": "Exploring renewable energy solutions and conservation strategies to create a more sustainable and environmentally friendly future for all communities.",
+    "relatedTopics": ["Energy", "Transportation", "Urban Farming"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f0ffff'/><circle cx='50' cy='50' r='25' fill='#ffd700'/><path d='M50,15 L50,5 M50,95 L50,85 M15,50 L5,50 M95,50 L85,50 M26,26 L20,20 M74,26 L80,20 M26,74 L20,80 M74,74 L80,80' stroke='#ffd700' stroke-width='3'/><path d='M45,40 L35,60 L45,55 L40,75' stroke='#000000' stroke-width='3'/></svg>"
+  },
+  {
+    "title": "Mobility Future Forum",
+    "description": "Addressing the evolving needs of urban transportation systems through sustainable solutions, public transit improvements, and smart city integration.",
+    "relatedTopics": ["Transportation", "Energy", "Communications"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f5fffa'/><path d='M10,70 L90,70' stroke='#a9a9a9' stroke-width='5'/><rect x='20' y='55' width='40' height='15' rx='5' fill='#4682b4'/><circle cx='30' cy='75' r='5' fill='#000000'/><circle cx='55' cy='75' r='5' fill='#000000'/><path d='M65,50 C65,40 90,40 90,55 L90,60 L65,60 Z' fill='#3cb371'/><circle cx='75' cy='65' r='3' fill='#000000'/></svg>"
+  },
+  {
+    "title": "Community Harvest Alliance",
+    "description": "Promoting local food production through urban agriculture initiatives that enhance food security, create green spaces, and strengthen community bonds.",
+    "relatedTopics": ["Urban Farming", "Health", "Parks & Recreation"],
+    "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#f5fffa'/><path d='M50,80 L50,50' stroke='#8b4513' stroke-width='4'/><path d='M30,50 C30,20 50,15 45,50' fill='#32cd32'/><path d='M70,50 C70,20 50,15 55,50' fill='#32cd32'/><path d='M40,35 C40,15 50,20 45,35' fill='#32cd32'/><path d='M60,35 C60,15 50,20 55,35' fill='#32cd32'/><rect x='45' y='80' width='10' height='10' fill='#8b4513'/></svg>"
+  }
+]
