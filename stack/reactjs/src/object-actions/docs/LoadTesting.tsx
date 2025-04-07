@@ -96,7 +96,7 @@ const ErrorValue = styled(MetricValue)(({ theme }) => ({
 }));
 
 const SectionCard = styled(Card)(({ theme }) => ({
-  marginBottom: theme.spacing(6)
+  marginBottom: theme.spacing(3)
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
@@ -393,7 +393,7 @@ const APIPerformanceDashboard = () => {
           value={activeTab}
           variant={"fullWidth"}
           onChange={handleTabChange}
-          sx={{ mb: 4 }}
+          sx={{ mb: 2 }}
           indicatorColor="primary"
           textColor="primary"
         >
@@ -411,8 +411,8 @@ const APIPerformanceDashboard = () => {
         )}
         {activeTab === 0 && (
           <Box>
-            <Grid container spacing={3} sx={{ mb: 6 }}>
-              <Grid item xs={12} md={3}>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={6} md={3}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Total Requests</MetricLabel>
@@ -420,31 +420,17 @@ const APIPerformanceDashboard = () => {
                   </CardContent>
                 </MetricCard>
               </Grid>
-              <Grid item xs={12} md={3}>
-                <MetricCard>
-                  <CardContent>
-                    <MetricLabel>Valid JSON Rate</MetricLabel>
-                    {validJsonRate < 0.95 ? (
-                      <ErrorValue>{(validJsonRate * 100).toFixed(2)}%</ErrorValue>
-                    ) : (
-                      <SuccessValue>{(validJsonRate * 100).toFixed(2)}%</SuccessValue>
-                    )}
-                  </CardContent>
-                </MetricCard>
-              </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <MetricCard>
                   <CardContent>
-                    <MetricLabel>Request Rate (requests / second)</MetricLabel>
+                    <MetricLabel>Request Rate <small>(reqs / second)</small></MetricLabel>
                     <MetricValue>{requestRate.toFixed(2)}</MetricValue>
                   </CardContent>
                 </MetricCard>
               </Grid>
 
-
-
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Avg Response Time</MetricLabel>
@@ -456,7 +442,7 @@ const APIPerformanceDashboard = () => {
                   </CardContent>
                 </MetricCard>
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Valid Error Rate</MetricLabel>
