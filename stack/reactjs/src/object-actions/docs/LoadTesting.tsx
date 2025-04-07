@@ -507,7 +507,7 @@ const APIPerformanceDashboard = () => {
                     <TableHead>
                       <TableRow>
                         <TableCell>Endpoint</TableCell>
-                        <TableCell>Operation</TableCell>
+                        <TableCell>Slowest Operation</TableCell>
                         <TableCell>Total Documents</TableCell>
                         <TableCell>Response Time</TableCell>
                       </TableRow>
