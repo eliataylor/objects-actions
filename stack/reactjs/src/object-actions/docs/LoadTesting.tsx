@@ -177,8 +177,8 @@ const APIPerformanceDashboard = () => {
   // Available test dates (normally this would be fetched from an API)
   const availableDates = [
     "2025-04-07", // Currently we only have fallback data for this date
-    "2025-04-06",
-    "2025-04-05"
+//    "2025-04-06",
+//    "2025-04-05"
   ];
 
   useEffect(() => {
@@ -404,9 +404,9 @@ const APIPerformanceDashboard = () => {
 
         {activeTab === 2 && (
           <Box>
-            <Typography gutterBottom={true}>1. Limit returned fields to those requested in query param: <a href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138"}>github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138</a></Typography>
-            <Typography gutterBottom={true}>2. Ease serializer on select foreign keys: <a href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25"}>github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25</a></Typography>
-            <Typography gutterBottom={true}>3. Replace queryset and search with Stored Procedure: https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/views.py#L113</Typography>
+            <Typography gutterBottom={true}>1. Limit returned fields to only those requested by client with query param: <a target={"_blank"} href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138"}>github.com/.../django/oaexample_app/serializers.py#L138</a></Typography>
+            <Typography gutterBottom={true}>2. Ease serializer on foreign keys that can be loaded separately: <a target={"_blank"} href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25"}>github.com/.../django/oaexample_app/serializers.py#L25</a></Typography>
+            <Typography gutterBottom={true}>3. Replace queryset and `search_filter` with SQL / Stored Procedure: <a target={"_blank"} href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/views.py#L113"}>github.com/.../django/oaexample_app/views.py#L113</a></Typography>
           </Box>
         )}
         {activeTab === 0 && (
@@ -526,7 +526,7 @@ const APIPerformanceDashboard = () => {
 
                         return operations[0].time > 0 ? (
                           <TableRow key={endpoint.api}>
-                            <TableCell>{endpoint.api}</TableCell>
+                            <TableCell><a href={`https://api.oaexample.com${endpoint.api}`} target={"_blank"}>{endpoint.api}</a></TableCell>
                             <TableCell>{operations[0].name}</TableCell>
                             <TableCell>{operations[0].docs.toLocaleString()}</TableCell>
                             <TableCell>
@@ -600,11 +600,11 @@ const APIPerformanceDashboard = () => {
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <MetricItemLabel>Virtual Users</MetricItemLabel>
-                    <Typography>1</Typography>
+                    <Typography>{data.metrics.vus_max.values.value}</Typography>
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <MetricItemLabel>Iterations per VU</MetricItemLabel>
-                    <Typography>1</Typography>
+                    <Typography>{data.metrics.iterations.values.count}</Typography>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -633,7 +633,7 @@ const APIPerformanceDashboard = () => {
                       {sortedEndpoints.map((endpoint) => {
                         return (
                           <TableRow key={endpoint.api}>
-                            <TableCell>{endpoint.api}</TableCell>
+                            <TableCell><a href={`https://api.oaexample.com${endpoint.api}`} target={"_blank"}>{endpoint.api}</a></TableCell>
                             {renderSummaryCell(data.metrics[endpoint.trends.detail.name], endpoint.resultCounts.detail)}
                             {renderSummaryCell(data.metrics[endpoint.trends.pagination.name], endpoint.resultCounts.pagination)}
                             {renderSummaryCell(data.metrics[endpoint.trends.search.name], endpoint.resultCounts.search)}
