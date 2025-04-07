@@ -10,8 +10,8 @@ import {
   InputLabel,
   LinearProgress,
   MenuItem,
-  Paper,
   Select,
+  styled,
   Tab,
   Table,
   TableBody,
@@ -62,8 +62,106 @@ interface Metric {
 
 interface TestData {
   metrics: { [key: string]: Metric };
+  timestamp: number;
   endpoints: EndpointResult[];
 }
+
+const MetricCard = styled(Card)(({ theme }) => ({
+  height: "100%",
+  transition: "transform 0.2s",
+  "&:hover": {
+    transform: "translateY(-3px)",
+    boxShadow: theme.shadows[4]
+  }
+}));
+
+const MetricLabel = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  fontSize: "0.875rem",
+  marginRight: 2
+}));
+
+const MetricValue = styled(Typography)(({ theme }) => ({
+  fontSize: "1.75rem",
+  fontWeight: "bold"
+}));
+
+const SuccessValue = styled(MetricValue)(({ theme }) => ({
+  color: theme.palette.success.main
+}));
+
+const ErrorValue = styled(MetricValue)(({ theme }) => ({
+  color: theme.palette.error.main
+}));
+
+const SectionCard = styled(Card)(({ theme }) => ({
+  marginBottom: theme.spacing(6)
+}));
+
+const SectionTitle = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(3)
+}));
+
+const MetricGrid = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "1fr",
+  gap: theme.spacing(4),
+  [theme.breakpoints.up("md")]: {
+    gridTemplateColumns: "repeat(4, 1fr)"
+  }
+}));
+
+const MetricItem = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1)
+}));
+
+const MetricItemLabel = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  fontSize: "0.875rem"
+}));
+
+const MetricItemValue = styled(Typography)(({ theme }) => ({
+  fontSize: "1.25rem",
+  fontWeight: 500
+}));
+
+const EndpointCell = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column"
+}));
+
+const CellMetricRow = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center"
+}));
+
+const DocCountRow = styled(Box)(({ theme }) => ({
+  fontSize: "0.75rem"
+}));
+
+const ResultCount = styled("span")(({ theme }) => ({
+  fontWeight: "bold",
+  color: theme.palette.primary.main
+}));
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  overflowX: "auto",
+  "& .MuiTable-root": {
+    borderCollapse: "collapse"
+  },
+  "& .MuiTableHead-root": {
+    backgroundColor: theme.palette.mode === "dark"
+      ? theme.palette.grey[800]
+      : theme.palette.grey[100]
+  },
+  "& .MuiTableRow-root:hover": {
+    backgroundColor: theme.palette.mode === "dark"
+      ? theme.palette.grey[900]
+      : theme.palette.grey[50]
+  }
+}));
 
 const APIPerformanceDashboard = () => {
   const [data, setData] = useState<TestData | null>(null);
@@ -74,19 +172,18 @@ const APIPerformanceDashboard = () => {
 
   // Available test dates (normally this would be fetched from an API)
   const availableDates = [
-    "2025-04-07",
+    "2025-04-07", // Currently we only have fallback data for this date
     "2025-04-06",
-    "2025-04-05",
-    "2025-04-04",
-    "2025-03-12"
+    "2025-04-05"
   ];
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      // Attempt to fetch the test JSON file from Google Cloud Storage with CORS mode
+      const url = `https://storage.googleapis.com/oa-loadtestresults/test-${selectedDate}.json?v=${new Date().getTime()}`;
+
       try {
-        // Fetch the test JSON file from Google Cloud Storage
-        const url = `https://storage.googleapis.com/oa-loadtestresults/test-${selectedDate}.json`;
         const resp = await fetch(url, {
           method: "GET",
           mode: "cors",
@@ -102,9 +199,8 @@ const APIPerformanceDashboard = () => {
         const parsedData = await resp.json();
         setData(parsedData);
         setError(null);
-      } catch (err) {
-        setError(`Failed to load test data for ${selectedDate}`);
-        console.error(err);
+      } catch (primaryError) {
+        console.warn("Primary fetch attempt failed:", primaryError);
       } finally {
         setLoading(false);
       }
@@ -121,6 +217,27 @@ const APIPerformanceDashboard = () => {
     setSelectedDate(event.target.value as string);
   };
 
+  // Styled components for chips with different status colors
+  const SuccessChip = styled(Chip)(({ theme }) => ({
+    backgroundColor: theme.palette.success.light,
+    color: theme.palette.success.dark
+  }));
+
+  const WarningChip = styled(Chip)(({ theme }) => ({
+    backgroundColor: theme.palette.warning.light,
+    color: theme.palette.warning.dark
+  }));
+
+  const ErrorChip = styled(Chip)(({ theme }) => ({
+    backgroundColor: theme.palette.error.light,
+    color: theme.palette.error.dark
+  }));
+
+  const InfoChip = styled(Chip)(({ theme }) => ({
+    backgroundColor: theme.palette.info.light,
+    color: theme.palette.info.dark
+  }));
+
   // Format milliseconds for display
   const formatTime = (ms: number) => {
     if (ms >= 1000) {
@@ -129,36 +246,48 @@ const APIPerformanceDashboard = () => {
     return `${ms.toFixed(2)}ms`;
   };
 
-  // Get color based on response time (green -> yellow -> red)
-  const getTimeColor = (time: number) => {
-    if (time < 300) return "bg-green-100 text-green-800";
-    if (time < 1000) return "bg-blue-100 text-blue-800";
-    if (time < 3000) return "bg-yellow-100 text-yellow-800";
-    return "bg-red-100 text-red-800";
+  // Get chip component based on response time
+  const getTimeChip = (time: number, label: string) => {
+    if (time < 300) return <SuccessChip label={label} size="small" />;
+    if (time < 1000) return <InfoChip label={label} size="small" />;
+    if (time < 3000) return <WarningChip label={label} size="small" />;
+    return <ErrorChip label={label} size="small" />;
   };
 
-  // Get status badge style
-  const getStatusBadge = (code: number) => {
-    if (code >= 200 && code < 300) return "bg-green-100 text-green-800";
-    if (code >= 300 && code < 400) return "bg-blue-100 text-blue-800";
-    if (code >= 400 && code < 500) return "bg-yellow-100 text-yellow-800";
-    return "bg-red-100 text-red-800";
+  // Get status chip component
+  const getStatusChip = (code: number, label: string) => {
+    if (code >= 200 && code < 300) return <SuccessChip label={label} />;
+    if (code >= 300 && code < 400) return <InfoChip label={label} />;
+    if (code >= 400 && code < 500) return <WarningChip label={label} />;
+    return <ErrorChip label={label} />;
   };
+
+  const LoadingContainer = styled(Box)(({ theme }) => ({
+    padding: theme.spacing(4)
+  }));
+
+  const LoadingText = styled(Typography)(({ theme }) => ({
+    marginTop: theme.spacing(2)
+  }));
+
+  const ErrorContainer = styled(Box)(({ theme }) => ({
+    padding: theme.spacing(4)
+  }));
 
   if (loading) {
     return (
-      <Box className="p-4">
+      <LoadingContainer>
         <LinearProgress />
-        <Typography className="mt-2">Loading test results...</Typography>
-      </Box>
+        <LoadingText>Loading test results...</LoadingText>
+      </LoadingContainer>
     );
   }
 
   if (error || !data) {
     return (
-      <Box className="p-4">
+      <ErrorContainer>
         <Alert severity="error">{error || "Failed to load data"}</Alert>
-      </Box>
+      </ErrorContainer>
     );
   }
 
@@ -195,186 +324,300 @@ const APIPerformanceDashboard = () => {
 
   // Find the endpoints with highest document counts
   const endpointsWithMostDocs = [...data.endpoints].sort((a, b) => {
-    const aTotal = a.resultCounts.detail + a.resultCounts.pagination + a.resultCounts.search;
-    const bTotal = b.resultCounts.detail + b.resultCounts.pagination + b.resultCounts.search;
+//    const aTotal = a.resultCounts.detail + a.resultCounts.pagination + a.resultCounts.search;
+//    const bTotal = b.resultCounts.detail + b.resultCounts.pagination + b.resultCounts.search;
+    const aTotal = a.resultCounts.pagination;
+    const bTotal = b.resultCounts.pagination;
     return bTotal - aTotal;
   });
 
+  // Additional styled components
+
+  const HeaderTitle = styled(Typography)(({ theme }) => ({
+    fontWeight: "bold",
+    marginBottom: theme.spacing(2),
+    [theme.breakpoints.up("md")]: {
+      marginBottom: 0
+    }
+  }));
+
+  function renderSummaryCell(metric: Metric, docs: number) {
+    return <TableCell>
+      {metric && metric.values ? (
+        <EndpointCell>
+          <CellMetricRow>
+            <MetricLabel>Avg:</MetricLabel>
+            {getTimeChip(metric.values.avg!, formatTime(metric.values.avg!))}
+          </CellMetricRow>
+          <Typography variant={"caption"}>
+            <span style={{ fontWeight: "bold" }}>Min: </span>{formatTime(metric.values.min!)} | <span style={{ fontWeight: "bold" }}>Max: </span>{formatTime(metric.values.max!)}
+          </Typography>
+          <DocCountRow>
+            <span style={{ fontWeight: "bold" }}>Docs:</span>{" "}
+            <ResultCount>{docs.toLocaleString()}</ResultCount>
+          </DocCountRow>
+        </EndpointCell>
+      ) : "N/A"}
+    </TableCell>;
+  }
+
   return (
-    <Box className="p-4 max-w-6xl mx-auto">
-      <Box className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <Typography variant="h4" className="font-bold mb-2 md:mb-0">API Endpoint Performance Test Report</Typography>
-
-        <FormControl className="min-w-40">
-          <InputLabel id="date-select-label">Test Date</InputLabel>
-          <Select
-            labelId="date-select-label"
-            value={selectedDate}
-            onChange={handleDateChange}
-            label="Test Date"
-            size="small"
-          >
-            {availableDates.map(date => (
-              <MenuItem key={date} value={date}>
-                {date}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-      <Typography className="text-gray-500 mb-6">
-        Generated: {selectedDate}T19:56:47.519Z | Base URL: https://api.oaexample.com
+    <Box mt={1}>
+      <HeaderTitle variant="h4">API Performance Results</HeaderTitle>
+      <Typography variant="subtitle1">
+        Base URL: https://api.oaexample.com
+      </Typography>
+      <Typography variant="subtitle1">
+        {data && data.timestamp ? new Intl.DateTimeFormat("en-US", {
+          dateStyle: "full",
+          timeStyle: "long"
+        }).format(new Date(data.timestamp)) : null}
       </Typography>
 
-      <Box className="mb-6">
-        <Tabs value={activeTab} onChange={handleTabChange} className="mb-4" variant={'fullWidth'}>
+      <FormControl fullWidth={true} margin={"normal"} >
+        <InputLabel id="date-select-label">Test Date</InputLabel>
+        <Select
+          variant={"filled"}
+          labelId="date-select-label"
+          value={selectedDate}
+          onChange={handleDateChange}
+          label="Test Date"
+          size="small"
+        >
+          {availableDates.map(date => (
+            <MenuItem key={date} value={date}>
+              {date}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <Box>
+        <Tabs
+          value={activeTab}
+          variant={"fullWidth"}
+          onChange={handleTabChange}
+          sx={{ mb: 4 }}
+          indicatorColor="primary"
+          textColor="primary"
+        >
           <Tab label="Summary" />
-          <Tab label="Endpoints" />
-          <Tab label="Analysis" />
+          <Tab label="All Endpoints" />
         </Tabs>
 
         {activeTab === 0 && (
           <Box>
-            {/* Summary Cards */}
-            <Grid container spacing={3} className="mb-6">
+            <Grid container spacing={3} sx={{ mb: 6 }}>
               <Grid item xs={12} md={3}>
-                <Card className="h-full">
+                <MetricCard>
                   <CardContent>
-                    <Typography className="text-gray-500 text-sm">Total Requests</Typography>
-                    <Typography className="text-2xl font-bold">{totalRequests}</Typography>
+                    <MetricLabel>Total Requests</MetricLabel>
+                    <MetricValue>{totalRequests}</MetricValue>
                   </CardContent>
-                </Card>
+                </MetricCard>
               </Grid>
               <Grid item xs={12} md={3}>
-                <Card className="h-full">
+                <MetricCard>
                   <CardContent>
-                    <Typography className="text-gray-500 text-sm">Error Rate</Typography>
-                    <Typography className={`text-2xl font-bold ${errorRate > 0.05 ? "text-red-600" : "text-green-600"}`}>
-                      {(errorRate * 100).toFixed(2)}%
-                    </Typography>
+                    <MetricLabel>Valid JSON Rate</MetricLabel>
+                    {validJsonRate < 0.95 ? (
+                      <ErrorValue>{(validJsonRate * 100).toFixed(2)}%</ErrorValue>
+                    ) : (
+                      <SuccessValue>{(validJsonRate * 100).toFixed(2)}%</SuccessValue>
+                    )}
                   </CardContent>
-                </Card>
+                </MetricCard>
               </Grid>
               <Grid item xs={12} md={3}>
-                <Card className="h-full">
+                <MetricCard>
                   <CardContent>
-                    <Typography className="text-gray-500 text-sm">Valid JSON Rate</Typography>
-                    <Typography className={`text-2xl font-bold ${validJsonRate < 0.95 ? "text-red-600" : "text-green-600"}`}>
-                      {(validJsonRate * 100).toFixed(2)}%
-                    </Typography>
+                    <MetricLabel>Avg Response Time</MetricLabel>
+                    {avgResponseTime > 1000 ? (
+                      <ErrorValue>{formatTime(avgResponseTime)}</ErrorValue>
+                    ) : (
+                      <SuccessValue>{formatTime(avgResponseTime)}</SuccessValue>
+                    )}
                   </CardContent>
-                </Card>
+                </MetricCard>
               </Grid>
               <Grid item xs={12} md={3}>
-                <Card className="h-full">
+                <MetricCard>
                   <CardContent>
-                    <Typography className="text-gray-500 text-sm">Avg Response Time</Typography>
-                    <Typography className={`text-2xl font-bold ${avgResponseTime > 1000 ? "text-red-600" : "text-green-600"}`}>
-                      {formatTime(avgResponseTime)}
-                    </Typography>
+                    <MetricLabel>Valid Error Rate</MetricLabel>
+                    {errorRate > 0.05 ? (
+                      <ErrorValue>{(errorRate * 100).toFixed(2)}%</ErrorValue>
+                    ) : (
+                      <SuccessValue>{(errorRate * 100).toFixed(2)}%</SuccessValue>
+                    )}
                   </CardContent>
-                </Card>
+                </MetricCard>
               </Grid>
-            </Grid>
 
-            {/* Response Time Metrics */}
-            <Card className="mb-6">
+            </Grid>
+            <SectionCard>
               <CardContent>
-                <Typography variant="h6" className="mb-3">Response Time Metrics</Typography>
-                <Box className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Box>
-                    <Typography className="text-gray-500 text-sm">Min Response Time</Typography>
-                    <Typography className="text-xl font-semibold">{formatTime(minResponseTime)}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography className="text-gray-500 text-sm">Max Response Time</Typography>
-                    <Typography className="text-xl font-semibold">{formatTime(maxResponseTime)}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography className="text-gray-500 text-sm">95th Percentile</Typography>
-                    <Typography className="text-xl font-semibold">{formatTime(p95ResponseTime)}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography className="text-gray-500 text-sm">p95 Threshold Status</Typography>
-                    <Chip
-                      label={p95ResponseTime < 3000 ? "Passed" : "Failed"}
-                      className={p95ResponseTime < 3000 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                    />
-                  </Box>
-                </Box>
+                <SectionTitle variant="h6">Response Time Metrics</SectionTitle>
+                <MetricGrid>
+                  <MetricItem>
+                    <MetricItemLabel>Min Response Time</MetricItemLabel>
+                    <MetricItemValue>{formatTime(minResponseTime)}</MetricItemValue>
+                  </MetricItem>
+                  <MetricItem>
+                    <MetricItemLabel>Max Response Time</MetricItemLabel>
+                    <MetricItemValue>{formatTime(maxResponseTime)}</MetricItemValue>
+                  </MetricItem>
+                  <MetricItem>
+                    <MetricItemLabel>95th Percentile</MetricItemLabel>
+                    <MetricItemValue>{formatTime(p95ResponseTime)}</MetricItemValue>
+                  </MetricItem>
+                  <MetricItem>
+                    <MetricItemLabel>p95 Threshold Status</MetricItemLabel>
+                    {p95ResponseTime < 3000 ? (
+                      <SuccessChip label="Passed" />
+                    ) : (
+                      <ErrorChip label="Failed" />
+                    )}
+                  </MetricItem>
+                </MetricGrid>
               </CardContent>
-            </Card>
+            </SectionCard>
 
             {/* HTTP Status Codes */}
-            <Card className="mb-6">
+            <SectionCard>
               <CardContent>
-                <Typography variant="h6" className="mb-3">HTTP Status Codes</Typography>
-                <Box className="flex flex-wrap gap-2">
-                  <Chip label={`Status 200: ${status200Count} requests`} className="bg-green-100 text-green-800" />
+                <SectionTitle variant="h6">HTTP Status Codes</SectionTitle>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+                  <SuccessChip label={`Status 200: ${status200Count} requests`} />
                   {status403Count > 0 && (
-                    <Chip label={`Status 403: ${status403Count} requests`} className="bg-red-100 text-red-800" />
+                    <ErrorChip label={`Status 403: ${status403Count} requests`} />
                   )}
                   {status503Count > 0 && (
-                    <Chip label={`Status 503: ${status503Count} requests`} className="bg-red-100 text-red-800" />
+                    <ErrorChip label={`Status 503: ${status503Count} requests`} />
                   )}
                 </Box>
               </CardContent>
-            </Card>
-
-            {/* Slowest Endpoints */}
-            <Card className="mb-6">
+            </SectionCard>
+            <SectionCard>
               <CardContent>
-                <Typography variant="h6" className="mb-3">Slowest Endpoints</Typography>
-                <TableContainer component={Paper} className="overflow-x-auto">
+                <SectionTitle variant="h6">Slowest Endpoints</SectionTitle>
+                <StyledTableContainer>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
                         <TableCell>Endpoint</TableCell>
                         <TableCell>Operation</TableCell>
+                        <TableCell>Total Documents</TableCell>
                         <TableCell>Response Time</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {sortedEndpoints.slice(0, 5).map((endpoint) => {
+                      {sortedEndpoints.map((endpoint) => {
                         const detailTime = data.metrics[endpoint.trends.detail.name]?.values.avg || 0;
                         const paginationTime = data.metrics[endpoint.trends.pagination.name]?.values.avg || 0;
                         const searchTime = data.metrics[endpoint.trends.search.name]?.values.avg || 0;
 
                         const operations = [
-                          { name: "Detail", time: detailTime },
-                          { name: "Pagination", time: paginationTime },
-                          { name: "Search", time: searchTime }
+                          { name: "Detail", time: detailTime, docs: endpoint.resultCounts.detail },
+                          { name: "Pagination", time: paginationTime, docs: endpoint.resultCounts.pagination },
+                          { name: "Search", time: searchTime, docs: endpoint.resultCounts.search }
                         ].sort((a, b) => b.time - a.time);
 
                         return operations[0].time > 0 ? (
                           <TableRow key={endpoint.api}>
                             <TableCell>{endpoint.api}</TableCell>
                             <TableCell>{operations[0].name}</TableCell>
+                            <TableCell>{operations[0].docs.toLocaleString()}</TableCell>
                             <TableCell>
-                              <Chip
-                                label={formatTime(operations[0].time)}
-                                className={getTimeColor(operations[0].time)}
-                              />
+                              {getTimeChip(operations[0].time, formatTime(operations[0].time))}
                             </TableCell>
                           </TableRow>
                         ) : null;
                       })}
                     </TableBody>
                   </Table>
-                </TableContainer>
+                </StyledTableContainer>
               </CardContent>
-            </Card>
+            </SectionCard>
+
+            {/* Performance Thresholds */}
+            <SectionCard>
+              <CardContent>
+                <SectionTitle variant="h6">Performance Thresholds</SectionTitle>
+                <Grid container spacing={4}>
+                  <Grid item xs={12} md={6} lg={4}>
+                    <Box>
+                      <Typography sx={{ fontWeight: 600, mb: 1 }}>Error Rate Threshold</Typography>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Typography sx={{ mr: 2 }}>Rate &lt; 10%:</Typography>
+                        {errorRate < 0.1 ? (
+                          <SuccessChip label="Passed" size="small" />
+                        ) : (
+                          <ErrorChip label="Failed" size="small" />
+                        )}
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} md={6} lg={4}>
+                    <Box>
+                      <Typography sx={{ fontWeight: 600, mb: 1 }}>Valid JSON Rate Threshold</Typography>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Typography sx={{ mr: 2 }}>Rate &gt; 95%:</Typography>
+                        {validJsonRate > 0.95 ? (
+                          <SuccessChip label="Passed" size="small" />
+                        ) : (
+                          <ErrorChip label="Failed" size="small" />
+                        )}
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} md={6} lg={4}>
+                    <Box>
+                      <Typography sx={{ fontWeight: 600, mb: 1 }}>Response Time Threshold</Typography>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Typography sx={{ mr: 2 }}>p95 &lt; 3000ms:</Typography>
+                        {p95ResponseTime < 3000 ? (
+                          <SuccessChip label="Passed" size="small" />
+                        ) : (
+                          <ErrorChip label="Failed" size="small" />
+                        )}
+                      </Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </SectionCard>
+
+            {/* Test Configuration */}
+            <SectionCard sx={{ mb: 0 }}>
+              <CardContent>
+                <SectionTitle variant="h6">Test Configuration</SectionTitle>
+                <Grid container spacing={4}>
+                  <Grid item xs={12} md={4}>
+                    <MetricItemLabel>Base URL</MetricItemLabel>
+                    <Typography>https://api.oaexample.com</Typography>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <MetricItemLabel>Virtual Users</MetricItemLabel>
+                    <Typography>1</Typography>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <MetricItemLabel>Iterations per VU</MetricItemLabel>
+                    <Typography>1</Typography>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </SectionCard>
           </Box>
+
+
         )}
 
         {activeTab === 1 && (
           <Box>
-            {/* Endpoint Performance Table */}
-            <Card>
+            <SectionCard>
               <CardContent>
-                <Typography variant="h6" className="mb-3">Endpoint Performance</Typography>
-                <TableContainer component={Paper} className="overflow-x-auto">
+                <SectionTitle variant="h6">Endpoint Performance</SectionTitle>
+                <StyledTableContainer>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -385,171 +628,21 @@ const APIPerformanceDashboard = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {data.endpoints.map((endpoint) => {
-                        const detailTime = data.metrics[endpoint.trends.detail.name]?.values.avg;
-                        const paginationTime = data.metrics[endpoint.trends.pagination.name]?.values.avg;
-                        const searchTime = data.metrics[endpoint.trends.search.name]?.values.avg;
-
+                      {sortedEndpoints.map((endpoint) => {
                         return (
                           <TableRow key={endpoint.api}>
                             <TableCell>{endpoint.api}</TableCell>
-                            <TableCell>
-                              {detailTime ? (
-                                <Box>
-                                  <Box className="flex items-center">
-                                    <span className="font-bold mr-2">Avg:</span>
-                                    <Chip label={formatTime(detailTime)} className={getTimeColor(detailTime)} size="small" />
-                                  </Box>
-                                  <Box className="text-xs mt-1">
-                                    <span className="font-bold">Docs:</span> {endpoint.resultCounts.detail}
-                                  </Box>
-                                </Box>
-                              ) : "N/A"}
-                            </TableCell>
-                            <TableCell>
-                              {paginationTime ? (
-                                <Box>
-                                  <Box className="flex items-center">
-                                    <span className="font-bold mr-2">Avg:</span>
-                                    <Chip label={formatTime(paginationTime)} className={getTimeColor(paginationTime)} size="small" />
-                                  </Box>
-                                  <Box className="text-xs mt-1">
-                                    <span className="font-bold">Docs:</span> {endpoint.resultCounts.pagination}
-                                  </Box>
-                                </Box>
-                              ) : "N/A"}
-                            </TableCell>
-                            <TableCell>
-                              {searchTime ? (
-                                <Box>
-                                  <Box className="flex items-center">
-                                    <span className="font-bold mr-2">Avg:</span>
-                                    <Chip label={formatTime(searchTime)} className={getTimeColor(searchTime)} size="small" />
-                                  </Box>
-                                  <Box className="text-xs mt-1">
-                                    <span className="font-bold">Docs:</span> {endpoint.resultCounts.search}
-                                  </Box>
-                                </Box>
-                              ) : "N/A"}
-                            </TableCell>
+                            {renderSummaryCell(data.metrics[endpoint.trends.detail.name], endpoint.resultCounts.detail)}
+                            {renderSummaryCell(data.metrics[endpoint.trends.pagination.name], endpoint.resultCounts.pagination)}
+                            {renderSummaryCell(data.metrics[endpoint.trends.search.name], endpoint.resultCounts.search)}
                           </TableRow>
                         );
                       })}
                     </TableBody>
                   </Table>
-                </TableContainer>
+                </StyledTableContainer>
               </CardContent>
-            </Card>
-          </Box>
-        )}
-
-        {activeTab === 2 && (
-          <Box>
-            {/* Document Counts */}
-            <Card className="mb-6">
-              <CardContent>
-                <Typography variant="h6" className="mb-3">Endpoints with Highest Document Counts</Typography>
-                <TableContainer component={Paper}>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Endpoint</TableCell>
-                        <TableCell>Total Documents</TableCell>
-                        <TableCell>Response Time</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {endpointsWithMostDocs.slice(0, 5).map((endpoint) => {
-                        const totalDocs = endpoint.resultCounts.detail +
-                          endpoint.resultCounts.pagination +
-                          endpoint.resultCounts.search;
-                        const avgTime = (
-                          (data.metrics[endpoint.trends.detail.name]?.values.avg || 0) +
-                          (data.metrics[endpoint.trends.pagination.name]?.values.avg || 0) +
-                          (data.metrics[endpoint.trends.search.name]?.values.avg || 0)
-                        ) / 3;
-
-                        return totalDocs > 0 ? (
-                          <TableRow key={endpoint.api}>
-                            <TableCell>{endpoint.api}</TableCell>
-                            <TableCell>{totalDocs.toLocaleString()}</TableCell>
-                            <TableCell>
-                              <Chip
-                                label={formatTime(avgTime)}
-                                className={getTimeColor(avgTime)}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        ) : null;
-                      })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>
-            </Card>
-
-            {/* Performance Thresholds */}
-            <Card className="mb-6">
-              <CardContent>
-                <Typography variant="h6" className="mb-3">Performance Thresholds</Typography>
-                <Box className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Box>
-                    <Typography className="font-semibold">Error Rate Threshold</Typography>
-                    <Box className="flex items-center mt-1">
-                      <Typography className="mr-2">Rate &lt; 10%:</Typography>
-                      <Chip
-                        label={errorRate < 0.1 ? "Passed" : "Failed"}
-                        className={errorRate < 0.1 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                        size="small"
-                      />
-                    </Box>
-                  </Box>
-                  <Box>
-                    <Typography className="font-semibold">Valid JSON Rate Threshold</Typography>
-                    <Box className="flex items-center mt-1">
-                      <Typography className="mr-2">Rate &gt; 95%:</Typography>
-                      <Chip
-                        label={validJsonRate > 0.95 ? "Passed" : "Failed"}
-                        className={validJsonRate > 0.95 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                        size="small"
-                      />
-                    </Box>
-                  </Box>
-                  <Box>
-                    <Typography className="font-semibold">Response Time Threshold</Typography>
-                    <Box className="flex items-center mt-1">
-                      <Typography className="mr-2">p95 &lt; 3000ms:</Typography>
-                      <Chip
-                        label={p95ResponseTime < 3000 ? "Passed" : "Failed"}
-                        className={p95ResponseTime < 3000 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                        size="small"
-                      />
-                    </Box>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-
-            {/* Test Configuration */}
-            <Card>
-              <CardContent>
-                <Typography variant="h6" className="mb-3">Test Configuration</Typography>
-                <Box className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Box>
-                    <Typography className="text-gray-500 text-sm">Base URL</Typography>
-                    <Typography>https://api.oaexample.com</Typography>
-                  </Box>
-                  <Box>
-                    <Typography className="text-gray-500 text-sm">Virtual Users</Typography>
-                    <Typography>1</Typography>
-                  </Box>
-                  <Box>
-                    <Typography className="text-gray-500 text-sm">Iterations per VU</Typography>
-                    <Typography>1</Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
+            </SectionCard>
           </Box>
         )}
       </Box>

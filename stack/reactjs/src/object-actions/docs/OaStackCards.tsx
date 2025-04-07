@@ -2,15 +2,16 @@ import React, { useEffect, useRef } from "react";
 import { Box, Card, CardHeader, CardMedia, Grid, styled } from "@mui/material";
 import { TightButton } from "../../theme/StyledFields";
 import LightDarkImg from "../../components/LightDarkImg";
+import { Link } from "react-router-dom";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
-  '& .MuiCardHeader-title': {
-    fontSize: '1.5rem', // Custom title font size
+  "& .MuiCardHeader-title": {
+    fontSize: "1.5rem" // Custom title font size
   },
-  '& .MuiCardHeader-subheader': {
-    fontSize: '1rem', // Custom subheader font size
-    fontWeight: 600,
-  },
+  "& .MuiCardHeader-subheader": {
+    fontSize: "1rem", // Custom subheader font size
+    fontWeight: 600
+  }
 }));
 
 const OaStackCards: React.FC = () => {
@@ -39,7 +40,7 @@ const OaStackCards: React.FC = () => {
         <Card variant="outlined">
           <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img alt={'react logo'} src={"/oa-assets/logo-react.svg"} height={30} />}
+            avatar={<img alt={"react logo"} src={"/oa-assets/logo-react.svg"} height={30} />}
             title={"This Web App"}
             subheader={"React.JS"}
           />
@@ -186,7 +187,7 @@ const OaStackCards: React.FC = () => {
         <Card variant="outlined">
           <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img alt={'django logo'} src={"/oa-assets/logo-django.svg"} height={30} />}
+            avatar={<img alt={"django logo"} src={"/oa-assets/logo-django.svg"} height={30} />}
             title={"Backend Content Manager"}
             subheader={"Django Admin"}
           />
@@ -228,7 +229,7 @@ const OaStackCards: React.FC = () => {
         <Card variant="outlined">
           <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img alt={'django drf logo'}  src={"/oa-assets/logo-drf.png"} height={30} />}
+            avatar={<img alt={"django drf logo"} src={"/oa-assets/logo-drf.png"} height={30} />}
             title={"Backend API"}
             subheader={"Django DRF"}
           />
@@ -270,7 +271,7 @@ const OaStackCards: React.FC = () => {
         <Card variant="outlined">
           <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img alt={'typescript logo'} src={"/oa-assets/logo-typescript.svg"} height={30} />}
+            avatar={<img alt={"typescript logo"} src={"/oa-assets/logo-typescript.svg"} height={30} />}
             title={"Fake Data Generator"}
             subheader={"NodeJS"}
           />
@@ -312,7 +313,7 @@ const OaStackCards: React.FC = () => {
         <Card variant="outlined">
           <StyledCardHeader
             sx={{ mb: 0, p: 1 }}
-            avatar={<img alt={'k6 logo'} src={"/oa-assets/logo-k6.svg"} height={30} />}
+            avatar={<img alt={"k6 logo"} src={"/oa-assets/logo-k6.svg"} height={30} />}
             title={"API Speed Tests"}
             subheader={"K6"}
           />
@@ -325,28 +326,41 @@ const OaStackCards: React.FC = () => {
               }
             />
           </div>
-          <Box sx={{ textAlign: "right", p: 1, alignContent: "flex-end" }}>
-            <a
-              href={
-                "https://github.com/eliataylor/objects-actions/tree/main/stack/k6"
-              }
-              target="_blank" rel="noreferrer"
-            >
-              <TightButton
-                size={"small"}
-                variant={"outlined"}
-                startIcon={
-                  <LightDarkImg
-                    light={"/oa-assets/github-mark.svg"}
-                    dark={"/oa-assets/github-mark-white.svg"}
-                    styles={{ height: 20 }}
-                  />
+          <Grid p={1} container justifyContent={"space-between"}>
+            <Grid>
+              <Link to={"/oa/load-tests"}>
+                <TightButton
+                  size={"small"}
+                  color={'secondary'}
+                  variant={"outlined"}
+                >
+                  API Load Test Results
+                </TightButton>
+              </Link>
+            </Grid>
+            <Grid>
+              <a
+                href={
+                  "https://github.com/eliataylor/objects-actions/tree/main/stack/k6"
                 }
+                target="_blank" rel="noreferrer"
               >
-                View Source
-              </TightButton>
-            </a>
-          </Box>
+                <TightButton
+                  size={"small"}
+                  variant={"outlined"}
+                  startIcon={
+                    <LightDarkImg
+                      light={"/oa-assets/github-mark.svg"}
+                      dark={"/oa-assets/github-mark-white.svg"}
+                      styles={{ height: 20 }}
+                    />
+                  }
+                >
+                  View Source
+                </TightButton>
+              </a>
+            </Grid>
+          </Grid>
         </Card>
       </Grid>
 

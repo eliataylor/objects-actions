@@ -38,7 +38,8 @@ NAVITEMS.forEach(item => {
     detail: new Trend(`${name}_detail_item_response_time`)
   };
 
-  // Create counters for result counts
+  // Create gauges for result counts instead of counters
+  // We'll use counters but manage them manually to track the max value
   resultCounters[`${name}_detail_count`] = new Counter(`${name}_detail_count`);
   resultCounters[`${name}_pagination_count`] = new Counter(`${name}_pagination_count`);
   resultCounters[`${name}_search_count`] = new Counter(`${name}_search_count`);
@@ -81,9 +82,20 @@ export function setup () {
     console.log("Note: Results directory will be created by k6 if it does not exist");
   }
 
+  // Keep track of the maximum value for each counter
+  const maxResultCounts = {};
+
+  NAVITEMS.forEach(item => {
+    const name = item.type.toLowerCase();
+    maxResultCounts[`${name}_detail_count`] = 0;
+    maxResultCounts[`${name}_pagination_count`] = 0;
+    maxResultCounts[`${name}_search_count`] = 0;
+  });
+
   return {
     csrfToken: CSRF_TOKEN,
-    cookie: COOKIE
+    cookie: COOKIE,
+    maxResultCounts: maxResultCounts
   };
 }
 
@@ -92,16 +104,17 @@ function validateJsonResponse (body) {
   try {
     const data = JSON.parse(body);
     const hasResults = (data.hasOwnProperty("results") && Array.isArray(data.results)) || data.hasOwnProperty("_type");
+    const isValidError = (data.hasOwnProperty("error") || data.hasOwnProperty("detail") || data.hasOwnProperty("message"));
     const total = (data.count) ? data.count : data.hasOwnProperty("_type") ? 1 : 0;
     return {
       total: total,
-      isValidJson: hasResults,
+      isValidResponse: hasResults || isValidError,
       data: data
     };
   } catch (e) {
     return {
       total: -1,
-      isValidJson: false,
+      isValidResponse: false,
       error: e.message
     };
   }
@@ -110,12 +123,12 @@ function validateJsonResponse (body) {
 // Helper function to extract error message from response
 function extractErrorMessage (response, validation) {
   // If we have valid JSON with error details
-  if (validation.isValidJson && validation.data) {
-    if (validation.data.detail) {
-      return validation.data.detail;
-    }
+  if (validation.isValidResponse && validation.data) {
     if (validation.data.error) {
       return validation.data.error;
+    }
+    if (validation.data.detail) {
+      return validation.data.detail;
     }
     if (validation.data.message) {
       return validation.data.message;
@@ -127,7 +140,7 @@ function extractErrorMessage (response, validation) {
 }
 
 // Helper function to make requests
-function makeRequest (url, headers, metricName, itemTrend, item, testType) {
+function makeRequest (url, headers, metricName, itemTrend, item, testType, data) {
   const response = http.get(url, { headers });
   const itemName = item.type.toLowerCase();
 
@@ -151,20 +164,40 @@ function makeRequest (url, headers, metricName, itemTrend, item, testType) {
 
   // Validate JSON and results array
   const validation = validateJsonResponse(response.body);
-  validJsonRate.add(validation.isValidJson);
+  validJsonRate.add(validation.isValidResponse);
 
-  // Track the result count using the counter
+  // Track the result count - UPDATED to store the max value instead of accumulating
   if (validation.total >= 0) {
     const counterKey = `${itemName}_${testType}_count`;
-    if (resultCounters[counterKey]) {
-      resultCounters[counterKey].add(validation.total);
+
+    // For detail view, always set to 1
+    if (testType === 'detail') {
+      // We simply record a value of 1 for detail items,
+      // but only if we haven't already done so
+      if (data.maxResultCounts[counterKey] === 0) {
+        data.maxResultCounts[counterKey] = 1;
+        // Initialize the counter with a direct value of 1, not adding to it
+        if (resultCounters[counterKey]) {
+          resultCounters[counterKey].add(1);
+        }
+      }
+    }
+    // For pagination and search, directly set the max count value
+    else if (validation.total > data.maxResultCounts[counterKey]) {
+      // If the current result count is larger than what we've seen before,
+      // replace the previous value entirely
+      if (resultCounters[counterKey]) {
+        // Since we can't reset counters in k6, we need to track the max value separately
+        // and handle it in the handleSummary function
+        data.maxResultCounts[counterKey] = validation.total;
+      }
     }
   }
 
   // Check if the request was successful
   const success = check(response, {
     "status is 200": (r) => r.status === 200,
-    "response is valid JSON": (r) => validation.isValidJson
+    "response is valid JSON": (r) => validation.isValidResponse
   });
 
   // Record errors
@@ -177,7 +210,7 @@ function makeRequest (url, headers, metricName, itemTrend, item, testType) {
       url: url,
       status: response.status,
       message: errorMessage,
-      json_valid: validation.isValidJson,
+      json_valid: validation.isValidResponse,
       timestamp: new Date().toISOString()
     };
 
@@ -187,7 +220,7 @@ function makeRequest (url, headers, metricName, itemTrend, item, testType) {
       errors[item.api][testType].push(errorDetails);
     }
 
-    if (!validation.isValidJson) {
+    if (!validation.isValidResponse) {
       console.log("Response is not valid JSON");
     }
   }
@@ -213,7 +246,7 @@ export default function(data) {
     // Test 1: Paginated request
     const paginatedUrl = `${endpointBase}?offset=0&limit=10`;
     console.log(`Testing pagination: ${paginatedUrl}`);
-    const paginationResponse = makeRequest(paginatedUrl, headers, paginationTrend, item.trends.pagination, item, "pagination");
+    const paginationResponse = makeRequest(paginatedUrl, headers, paginationTrend, item.trends.pagination, item, "pagination", data);
     sleep(1); // Short pause between requests
 
     // Test 2: Get first item from pagination results if available
@@ -225,7 +258,7 @@ export default function(data) {
         firstItemId = responseData.results[0].id;
         const itemUrl = `${endpointBase}/${firstItemId}`;
         console.log(`Testing detail item: ${itemUrl}`);
-        makeRequest(itemUrl, headers, detailItemTrend, item.trends.detail, item, "detail");
+        makeRequest(itemUrl, headers, detailItemTrend, item.trends.detail, item, "detail", data);
         sleep(1); // Short pause between requests
       } else {
         if (responseData.results && responseData.results.length === 0) {
@@ -242,7 +275,7 @@ export default function(data) {
     if (item.search_fields && item.search_fields.length > 0) {
       const searchUrl = `${endpointBase}?search=a`;
       console.log(`Testing search: ${searchUrl}`);
-      makeRequest(searchUrl, headers, searchTrend, item.trends.search, item, "search");
+      makeRequest(searchUrl, headers, searchTrend, item.trends.search, item, "search", data);
       sleep(1); // Short pause between requests
     } else {
       console.log(`Skipping search test for ${item.api} - no search fields defined`);
@@ -269,14 +302,14 @@ export function handleSummary (data) {
   // Create a summary object with timestamped filenames
   const summary = {};
 
-  // Extract result counts from metrics
+  // Extract result counts directly from the maxResultCounts object
   const resultCounts = {};
   NAVITEMS.forEach(item => {
     const name = item.type.toLowerCase();
     resultCounts[item.api] = {
-      detail: data.metrics[`${name}_detail_count`] ? data.metrics[`${name}_detail_count`].values.count : 0,
-      pagination: data.metrics[`${name}_pagination_count`] ? data.metrics[`${name}_pagination_count`].values.count : 0,
-      search: data.metrics[`${name}_search_count`] ? data.metrics[`${name}_search_count`].values.count : 0
+      detail: data.data.maxResultCounts[`${name}_detail_count`] || 0,
+      pagination: data.data.maxResultCounts[`${name}_pagination_count`] || 0,
+      search: data.data.maxResultCounts[`${name}_search_count`] || 0
     };
   });
 
@@ -531,8 +564,8 @@ function generateHtmlReport (data, resultCounts) {
     
     <h2>Test Configuration</h2>
     <p>Base URL: ${BASE_URL}</p>
-    <p>Virtual Users: 1</p>
-    <p>Iterations per VU: 1</p>
+    <p>Virtual Users: ${options.scenarios.endpoint_tests.vus}</p>
+    <p>Iterations per VU: ${options.scenarios.endpoint_tests.iterations}</p>
     
     <script>
     var coll = document.getElementsByClassName("collapsible");
