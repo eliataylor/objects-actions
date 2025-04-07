@@ -23,6 +23,7 @@ import {
   Typography
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
+import { useLocation } from "react-router-dom";
 
 // TypeScript interfaces for our data structure
 interface EndpointResult {
@@ -142,8 +143,8 @@ const DocCountRow = styled(Box)(({ theme }) => ({
 }));
 
 const ResultCount = styled("span")(({ theme }) => ({
-  fontWeight: "bold",
-  color: theme.palette.primary.main
+  fontWeight: 500,
+  color: theme.palette.secondary.main
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
@@ -167,7 +168,10 @@ const APIPerformanceDashboard = () => {
   const [data, setData] = useState<TestData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState(0);
+
+  const params = new URLSearchParams(useLocation().search)
+
+  const [activeTab, setActiveTab] = useState(typeof params.get('tab') === 'string' ? parseInt(params.get('tab') || '0') : 0);
   const [selectedDate, setSelectedDate] = useState<string>("2025-04-07");
 
   // Available test dates (normally this would be fetched from an API)
@@ -293,6 +297,7 @@ const APIPerformanceDashboard = () => {
 
   // Extract summary metrics
   const totalRequests = data.metrics.http_reqs?.values.count || 0;
+  const requestRate = data.metrics.http_reqs?.values.rate || 0;
   const errorRate = data.metrics.error_rate?.values.rate || 0;
   const validJsonRate = data.metrics.valid_json_rate?.values.rate || 0;
   const avgResponseTime = data.metrics.http_req_duration?.values.avg || 0;
@@ -320,15 +325,6 @@ const APIPerformanceDashboard = () => {
     );
 
     return bMax - aMax;
-  });
-
-  // Find the endpoints with highest document counts
-  const endpointsWithMostDocs = [...data.endpoints].sort((a, b) => {
-//    const aTotal = a.resultCounts.detail + a.resultCounts.pagination + a.resultCounts.search;
-//    const bTotal = b.resultCounts.detail + b.resultCounts.pagination + b.resultCounts.search;
-    const aTotal = a.resultCounts.pagination;
-    const bTotal = b.resultCounts.pagination;
-    return bTotal - aTotal;
   });
 
   // Additional styled components
@@ -403,8 +399,16 @@ const APIPerformanceDashboard = () => {
         >
           <Tab label="Summary" />
           <Tab label="All Endpoints" />
+          <Tab label="Analysis" />
         </Tabs>
 
+        {activeTab === 2 && (
+          <Box>
+            <Typography gutterBottom={true}>1. Limit returned fields to those requested in query param: <a href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138"}>github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138</a></Typography>
+            <Typography gutterBottom={true}>2. Ease serializer on select foreign keys: <a href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25"}>github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25</a></Typography>
+            <Typography gutterBottom={true}>3. Replace queryset and search with Stored Procedure: https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/views.py#L113</Typography>
+          </Box>
+        )}
         {activeTab === 0 && (
           <Box>
             <Grid container spacing={3} sx={{ mb: 6 }}>
@@ -428,6 +432,18 @@ const APIPerformanceDashboard = () => {
                   </CardContent>
                 </MetricCard>
               </Grid>
+
+              <Grid item xs={12} md={3}>
+                <MetricCard>
+                  <CardContent>
+                    <MetricLabel>Request Rate (requests / second)</MetricLabel>
+                    <MetricValue>{requestRate.toFixed(2)}</MetricValue>
+                  </CardContent>
+                </MetricCard>
+              </Grid>
+
+
+
               <Grid item xs={12} md={3}>
                 <MetricCard>
                   <CardContent>

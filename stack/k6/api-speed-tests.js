@@ -26,7 +26,6 @@ for (let i = 100; i < 600; i++) {
 
 // Create endpoint-detail metrics and result count tracking
 const resultCounters = {};
-const errors = {};
 
 NAVITEMS.forEach(item => {
   const name = item.type.toLowerCase();
@@ -40,16 +39,10 @@ NAVITEMS.forEach(item => {
 
   // Create gauges for result counts instead of counters
   // We'll use counters but manage them manually to track the max value
-  resultCounters[`${name}_detail_count`] = new Counter(`${name}_detail_count`);
-  resultCounters[`${name}_pagination_count`] = new Counter(`${name}_pagination_count`);
-  resultCounters[`${name}_search_count`] = new Counter(`${name}_search_count`);
+  resultCounters[`${name}_detail`] = new Counter(`${name}_detail_count`);
+  resultCounters[`${name}_pagination`] = new Counter(`${name}_pagination_count`);
+  resultCounters[`${name}_search`] = new Counter(`${name}_search_count`);
 
-  // Initialize error tracking
-  errors[item.api] = {
-    detail: [],
-    pagination: [],
-    search: []
-  };
 });
 
 // Test options
@@ -82,20 +75,9 @@ export function setup () {
     console.log("Note: Results directory will be created by k6 if it does not exist");
   }
 
-  // Keep track of the maximum value for each counter
-  const maxResultCounts = {};
-
-  NAVITEMS.forEach(item => {
-    const name = item.type.toLowerCase();
-    maxResultCounts[`${name}_detail_count`] = 0;
-    maxResultCounts[`${name}_pagination_count`] = 0;
-    maxResultCounts[`${name}_search_count`] = 0;
-  });
-
   return {
     csrfToken: CSRF_TOKEN,
-    cookie: COOKIE,
-    maxResultCounts: maxResultCounts
+    cookie: COOKIE
   };
 }
 
@@ -105,7 +87,7 @@ function validateJsonResponse (body) {
     const data = JSON.parse(body);
     const hasResults = (data.hasOwnProperty("results") && Array.isArray(data.results)) || data.hasOwnProperty("_type");
     const isValidError = (data.hasOwnProperty("error") || data.hasOwnProperty("detail") || data.hasOwnProperty("message"));
-    const total = (data.count) ? data.count : data.hasOwnProperty("_type") ? 1 : 0;
+    const total = (data.count) ? data.count : (data.hasOwnProperty("_type") ? 1 : 0);
     return {
       total: total,
       isValidResponse: hasResults || isValidError,
@@ -113,9 +95,9 @@ function validateJsonResponse (body) {
     };
   } catch (e) {
     return {
-      total: -1,
+      total: 0,
       isValidResponse: false,
-      error: e.message
+      data: e.message
     };
   }
 }
@@ -167,32 +149,8 @@ function makeRequest (url, headers, metricName, itemTrend, item, testType, data)
   validJsonRate.add(validation.isValidResponse);
 
   // Track the result count - UPDATED to store the max value instead of accumulating
-  if (validation.total >= 0) {
-    const counterKey = `${itemName}_${testType}_count`;
-
-    // For detail view, always set to 1
-    if (testType === 'detail') {
-      // We simply record a value of 1 for detail items,
-      // but only if we haven't already done so
-      if (data.maxResultCounts[counterKey] === 0) {
-        data.maxResultCounts[counterKey] = 1;
-        // Initialize the counter with a direct value of 1, not adding to it
-        if (resultCounters[counterKey]) {
-          resultCounters[counterKey].add(1);
-        }
-      }
-    }
-    // For pagination and search, directly set the max count value
-    else if (validation.total > data.maxResultCounts[counterKey]) {
-      // If the current result count is larger than what we've seen before,
-      // replace the previous value entirely
-      if (resultCounters[counterKey]) {
-        // Since we can't reset counters in k6, we need to track the max value separately
-        // and handle it in the handleSummary function
-        data.maxResultCounts[counterKey] = validation.total;
-      }
-    }
-  }
+  const counterKey = `${itemName}_${testType}`;
+  resultCounters[counterKey].add(validation.total);
 
   // Check if the request was successful
   const success = check(response, {
@@ -216,13 +174,6 @@ function makeRequest (url, headers, metricName, itemTrend, item, testType, data)
 
     console.log(`Failed request to ${url}: Status ${response.status}, Message: ${errorMessage}`);
 
-    if (errors[item.api] && errors[item.api][testType]) {
-      errors[item.api][testType].push(errorDetails);
-    }
-
-    if (!validation.isValidResponse) {
-      console.log("Response is not valid JSON");
-    }
   }
 
   return response;
@@ -240,7 +191,7 @@ export default function(data) {
 
   // Loop through each NAVITEM and run three tests for each
   for (const item of NAVITEMS) {
-    // if (item.segment !== "topics") continue;
+    // if (item.segment !== "cities") continue;
     const endpointBase = `${BASE_URL}${item.api}`;
 
     // Test 1: Paginated request
@@ -302,38 +253,32 @@ export function handleSummary (data) {
   // Create a summary object with timestamped filenames
   const summary = {};
 
-  // Extract result counts directly from the maxResultCounts object
-  const resultCounts = {};
-  NAVITEMS.forEach(item => {
-    const name = item.type.toLowerCase();
-    resultCounts[item.api] = {
-      detail: data.data.maxResultCounts[`${name}_detail_count`] || 0,
-      pagination: data.data.maxResultCounts[`${name}_pagination_count`] || 0,
-      search: data.data.maxResultCounts[`${name}_search_count`] || 0
-    };
-  });
-
   // JSON report
   summary[`${resultsDir}/test-${timestamp}.json`] = JSON.stringify({
     metrics: data.metrics,
     root_group: data.root_group,
-    endpoints: NAVITEMS.map(item => ({
-      ...item,
-      type: item.type,
-      api: item.api,
-      resultCounts: resultCounts[item.api],
-      errors: errors[item.api]
-    }))
+    endpoints: NAVITEMS.map(item => {
+        const name = item.type.toLowerCase();
+        return {
+          ...item,
+          resultCounts: {
+            detail: data.metrics[`${name}_detail_count`] ? data.metrics[`${name}_detail_count`].values?.count : 0,
+            pagination: data.metrics[`${name}_pagination_count`] ? data.metrics[`${name}_pagination_count`].values?.count : 0,
+            search: data.metrics[`${name}_search_count`] ? data.metrics[`${name}_search_count`].values?.count : 0
+          }
+        };
+      }
+    )
   }, null, 2);
 
   // HTML report
-  summary[`${resultsDir}/test-${timestamp}.html`] = generateHtmlReport(data, resultCounts);
+//  summary[`${resultsDir}/test-${timestamp}.html`] = generateHtmlReport(data);
 
   return summary;
 }
 
 // Generate a simple HTML report
-function generateHtmlReport (data, resultCounts) {
+function generateHtmlReport (data) {
   // Group metrics by endpoint
   const endpointMetrics = {};
 
@@ -350,6 +295,18 @@ function generateHtmlReport (data, resultCounts) {
     const baseMetric = data.metrics[`${name}_detail_item_response_time`];
     const paginationMetric = data.metrics[`${name}_pagination_response_time`];
     const searchMetric = data.metrics[`${name}_search_response_time`];
+
+    const resultCounts = {
+      detail: data.metrics[`${name}_detail_count`] || 0,
+      pagination: data.metrics[`${name}_pagination_count`] || 0,
+      search: data.metrics[`${name}_search_count`] || 0
+    };
+
+    const errors = {
+      detail: data.metrics[`${name}_detail_error`],
+      pagination: data.metrics[`${name}_pagination_error`],
+      search: data.metrics[`${name}_search_error`]
+    };
 
     endpointMetrics[name] = {
       endpoint: item.api,
@@ -370,8 +327,7 @@ function generateHtmlReport (data, resultCounts) {
         avg: searchMetric.values.avg,
         min: searchMetric.values.min,
         max: searchMetric.values.max
-      } : "N/A",
-      errors: errors[item.api]
+      } : "N/A"
     };
   });
 
@@ -449,15 +405,15 @@ function generateHtmlReport (data, resultCounts) {
     <h2>HTTP Status Codes</h2>
     <div class="status-section">
       ${Object.entries(statusCodes).map(([code, count]) => {
-        let colorClass = "status-info";
-        if (code >= 200 && code < 300) colorClass = "status-success";
-        else if (code >= 300 && code < 400) colorClass = "status-redirect";
-        else if (code >= 400) colorClass = "status-error";
+    let colorClass = "status-info";
+    if (code >= 200 && code < 300) colorClass = "status-success";
+    else if (code >= 300 && code < 400) colorClass = "status-redirect";
+    else if (code >= 400) colorClass = "status-error";
 
-        return `<div class="status-badge ${colorClass}">
+    return `<div class="status-badge ${colorClass}">
               Status ${code}: ${count} requests
             </div>`;
-      }).join("")}
+  }).join("")}
     </div>
     
     <h2>Endpoint Performance</h2>
@@ -490,7 +446,7 @@ function generateHtmlReport (data, resultCounts) {
                 <div class="metric-item"><span class="metric-label">Max:</span> ${metric.paginationResponse.max.toFixed(2)}</div>
                 <div class="metric-item"><b>Docs:</b> <span class="result-count">${metric.paginationResponse.total}</span></div>
                 ${metric.errors.pagination.length > 0 ?
-        `<div class="metric-item"><span class="status-error">Errors: ${metric.errors.pagination.length}</span></div>` : ""}
+    `<div class="metric-item"><span class="status-error">Errors: ${metric.errors.pagination.length}</span></div>` : ""}
               </div>
             ` : metric.paginationResponse}
           </td>
@@ -513,15 +469,15 @@ function generateHtmlReport (data, resultCounts) {
       <h2>Error Details</h2>
       
       ${Object.values(endpointMetrics).filter(metric =>
-        metric.errors.detail.length > 0 ||
-        metric.errors.pagination.length > 0 ||
-        metric.errors.search.length > 0
-      ).map(metric => `
+    metric.errors.detail.length > 0 ||
+    metric.errors.pagination.length > 0 ||
+    metric.errors.search.length > 0
+  ).map(metric => `
         <button class="collapsible">${metric.endpoint} - Total Errors: ${
-        metric.errors.detail.length +
-        metric.errors.pagination.length +
-        metric.errors.search.length
-      }</button>
+    metric.errors.detail.length +
+    metric.errors.pagination.length +
+    metric.errors.search.length
+  }</button>
         <div class="content">
           ${metric.errors.pagination.length > 0 ? `
             <h4>Pagination Errors (${metric.errors.pagination.length})</h4>
@@ -564,8 +520,8 @@ function generateHtmlReport (data, resultCounts) {
     
     <h2>Test Configuration</h2>
     <p>Base URL: ${BASE_URL}</p>
-    <p>Virtual Users: ${options.scenarios.endpoint_tests.vus}</p>
-    <p>Iterations per VU: ${options.scenarios.endpoint_tests.iterations}</p>
+    <p>Virtual Users: ${data.metrics.vus.values.value}</p>
+    <p>Iterations per VU: ${options.scenarios.endpoint_tests?.iterations}</p>
     
     <script>
     var coll = document.getElementsByClassName("collapsible");
