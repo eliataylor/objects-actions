@@ -56,8 +56,8 @@ export const options = {
   scenarios: {
     endpoint_tests: {
       executor: "per-vu-iterations",
-      vus: 1,
-      iterations: 1,
+      vus: 5,
+      iterations: 5,
       maxDuration: "5m"
     }
   },
