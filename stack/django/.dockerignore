@@ -11,3 +11,5 @@ staticfiles
 
 cloud-sql-proxy
 schema.yaml
+*/.env.deploy
+*/.env.private

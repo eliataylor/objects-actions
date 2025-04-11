@@ -9,7 +9,7 @@ BRANCH_CLEAN=$(echo "$BRANCH" | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]'
 # Check if .env file exists
 if [ ! -f .env ]; then
   echo "Error: .env file not found"
-  echo "Please create a .env file with REACT_APP_API_HOST, CSRF_TOKEN and COOKIE variables"
+  echo "Please create a .env file with REACT_APP_API_HOST, CSRF_TOKEN and SESSION_ID variables"
   exit 1
 fi
 
@@ -29,8 +29,8 @@ if [ -z "$REACT_APP_API_HOST" ]; then
 fi
 
 # Verify that required variables are loaded
-if [ -z "$CSRF_TOKEN" ] || [ -z "$COOKIE" ]; then
-  echo "Error: CSRF_TOKEN or COOKIE not found in .env file"
+if [ -z "$CSRF_TOKEN" ] || [ -z "SESSION_ID" ]; then
+  echo "Error: CSRF_TOKEN or SESSION_ID not found in .env file"
   echo "Contents of .env file:"
   cat .env
   exit 1
@@ -39,7 +39,7 @@ fi
 # Show confirmation of loaded variables (obfuscated for security)
 echo "Loaded REACT_APP_API_HOST: ${REACT_APP_API_HOST}"
 echo "Loaded CSRF_TOKEN: ${CSRF_TOKEN:0:5}...${CSRF_TOKEN: -5}"
-echo "Loaded COOKIE: ${COOKIE:0:15}...${COOKIE: -15}"
+echo "Loaded SESSION_ID: ${SESSION_ID:0:15}...${SESSION_ID: -15}"
 
 # Create results directory if it doesn't exist
 mkdir -p test-results
@@ -48,5 +48,5 @@ mkdir -p test-results
 k6 run \
   --env BASE_URL="$REACT_APP_API_HOST" \
   --env CSRF_TOKEN="$CSRF_TOKEN" \
-  --env COOKIE="$COOKIE" \
+  --env SESSION_ID="$SESSION_ID" \
   api-speed-tests.js

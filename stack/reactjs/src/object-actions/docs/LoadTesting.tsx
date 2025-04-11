@@ -24,23 +24,9 @@ import {
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useLocation } from "react-router-dom";
+import { ModelName, NavItem } from "../types/types";
 
-// TypeScript interfaces for our data structure
-interface EndpointResult {
-  singular: string;
-  plural: string;
-  api: string;
-  resultCounts: {
-    detail: number;
-    pagination: number;
-    search: number;
-  };
-  trends: {
-    pagination: { name: string };
-    search: { name: string };
-    detail: { name: string };
-  };
-}
+export type TestType = "search" | "pagination" | "detail";
 
 interface Metric {
   type: string;
@@ -62,10 +48,95 @@ interface Metric {
 }
 
 interface TestData {
-  metrics: { [key: string]: Metric };
+  metrics: Record<string, Metric>;
+  base_url?: string;
   timestamp: number;
   endpoints: EndpointResult[];
 }
+
+// Reusable type for a metric reference
+type MetricReference = { name: keyof TestData["metrics"] };
+
+// Reusable type for status codes structure
+type StatusCodesStructure = {
+  "200s": MetricReference;
+  "300s": MetricReference;
+  "400s": MetricReference;
+  "500s": MetricReference;
+};
+
+// Reusable type for a test type to metric mapping
+type TestTypeToMetric = {
+  [K in TestType]: MetricReference;
+};
+
+interface EndpointResult extends NavItem<ModelName> {
+  resultCounts: {
+    [K in TestType]: number;
+  };
+  status_codes: {
+    [K in TestType]: StatusCodesStructure;
+  };
+  timers: TestTypeToMetric;
+  tablesize: TestTypeToMetric;
+}
+
+
+// Define types for the return structure
+interface StatusCounts {
+  "200s": number;
+  "300s": number;
+  "400s": number;
+  "500s": number;
+  all: number;
+}
+
+/**
+ * Sums status codes from test data, either for all NAVITEMs or for a specific one
+ *
+ * @param testData The test data containing metrics and endpoints
+ * @param navItemName Optional name of specific NAVITEM to sum (if omitted, sums all NAVITEMs)
+ * @returns Object with status code counts
+ */
+function sumStatusCodes(testData: TestData, navItemName?: string): StatusCounts {
+  // Initialize result object
+  const result: StatusCounts = {
+    "200s": 0,
+    "300s": 0,
+    "400s": 0,
+    "500s": 0,
+    "all": 0
+  };
+
+  // Process each endpoint
+  for (const endpoint of testData.endpoints) {
+    const currentNavName = endpoint.type.toLowerCase();
+
+    // Skip if a specific navItemName was requested and this isn't it
+    if (navItemName && currentNavName !== navItemName) {
+      continue;
+    }
+
+    // Process each test type (pagination, search, detail)
+    if (endpoint.status_codes) {
+      for (const testType in endpoint.status_codes) {
+        // @ts-ignore
+        const statusCodes = endpoint.status_codes[testType];
+        for (const range in statusCodes) {
+          const key = `${currentNavName}_${testType}_status_code_${range}` as keyof typeof testData.metrics;
+          if (typeof testData.metrics[key] !== "undefined" && typeof testData.metrics[key].values.count !== "undefined") {
+            const count = testData.metrics[key].values.count as number;
+            result[range as keyof StatusCounts] += count;
+            result.all += count;
+          }
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
 
 const MetricCard = styled(Card)(({ theme }) => ({
   height: "100%",
@@ -106,7 +177,7 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
 const MetricGrid = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "1fr",
-  gap: theme.spacing(4),
+  gap: theme.spacing(1),
   [theme.breakpoints.up("md")]: {
     gridTemplateColumns: "repeat(4, 1fr)"
   }
@@ -169,16 +240,15 @@ const APIPerformanceDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const params = new URLSearchParams(useLocation().search)
+  const params = new URLSearchParams(useLocation().search);
 
-  const [activeTab, setActiveTab] = useState(typeof params.get('tab') === 'string' ? parseInt(params.get('tab') || '0') : 0);
-  const [selectedDate, setSelectedDate] = useState<string>("2025-04-07");
+  const [activeTab, setActiveTab] = useState(typeof params.get("tab") === "string" ? parseInt(params.get("tab") || "0") : 0);
+  const [selectedDate, setSelectedDate] = useState<string>("2025-04-11");
 
   // Available test dates (normally this would be fetched from an API)
   const availableDates = [
     "2025-04-07", // Currently we only have fallback data for this date
-    "2025-04-06",
-    "2025-04-05"
+    "2025-04-11"
   ];
 
   useEffect(() => {
@@ -258,14 +328,6 @@ const APIPerformanceDashboard = () => {
     return <ErrorChip label={label} size="small" />;
   };
 
-  // Get status chip component
-  const getStatusChip = (code: number, label: string) => {
-    if (code >= 200 && code < 300) return <SuccessChip label={label} />;
-    if (code >= 300 && code < 400) return <InfoChip label={label} />;
-    if (code >= 400 && code < 500) return <WarningChip label={label} />;
-    return <ErrorChip label={label} />;
-  };
-
   const LoadingContainer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(4)
   }));
@@ -304,30 +366,24 @@ const APIPerformanceDashboard = () => {
   const minResponseTime = data.metrics.http_req_duration?.values.min || 0;
   const maxResponseTime = data.metrics.http_req_duration?.values.max || 0;
   const p95ResponseTime = data.metrics.http_req_duration?.values["p(95)"] || 0;
-
-  // Get HTTP status codes
-  const status200Count = data.metrics.status_code_200?.values.count || 0;
-  const status403Count = data.metrics.status_code_403?.values.count || 0;
-  const status503Count = data.metrics.status_code_503?.values.count || 0;
+  const statusCodes = sumStatusCodes(data, undefined);
 
   // Sort endpoints by max response time for "slowest endpoints" section
   const sortedEndpoints = [...data.endpoints].sort((a, b) => {
     const aMax = Math.max(
-      data.metrics[a.trends.detail.name]?.values.avg || 0,
-      data.metrics[a.trends.pagination.name]?.values.avg || 0,
-      data.metrics[a.trends.search.name]?.values.avg || 0
+      data.metrics[a.timers.detail.name]?.values.avg || 0,
+      data.metrics[a.timers.pagination.name]?.values.avg || 0,
+      data.metrics[a.timers.search.name]?.values.avg || 0
     );
 
     const bMax = Math.max(
-      data.metrics[b.trends.detail.name]?.values.avg || 0,
-      data.metrics[b.trends.pagination.name]?.values.avg || 0,
-      data.metrics[b.trends.search.name]?.values.avg || 0
+      data.metrics[b.timers.detail.name]?.values.avg || 0,
+      data.metrics[b.timers.pagination.name]?.values.avg || 0,
+      data.metrics[b.timers.search.name]?.values.avg || 0
     );
 
     return bMax - aMax;
   });
-
-  // Additional styled components
 
   const HeaderTitle = styled(Typography)(({ theme }) => ({
     fontWeight: "bold",
@@ -337,7 +393,18 @@ const APIPerformanceDashboard = () => {
     }
   }));
 
-  function renderSummaryCell(metric: Metric, docs: number) {
+  function renderSummaryCell(metric: Metric, docs: number, model_name: string) {
+    if (!data) return null;
+    const codes = sumStatusCodes(data, model_name);
+
+    const toshow = [];
+    for (let i = 200; i <= 500; i += 100) {
+      const key = `${i}s` as keyof StatusCounts
+      if (codes[key] > 0) {
+        toshow.push(`${key}: ${codes[key]}`);
+      }
+    }
+
     return <TableCell>
       {metric && metric.values ? (
         <EndpointCell>
@@ -352,6 +419,9 @@ const APIPerformanceDashboard = () => {
             <span style={{ fontWeight: "bold" }}>Docs:</span>{" "}
             <ResultCount>{docs.toLocaleString()}</ResultCount>
           </DocCountRow>
+          <DocCountRow>
+            <span style={{ fontWeight: "bold" }}>Codes:</span>{" "} {toshow.join(', ')}
+          </DocCountRow>
         </EndpointCell>
       ) : "N/A"}
     </TableCell>;
@@ -361,7 +431,7 @@ const APIPerformanceDashboard = () => {
     <Box mt={1}>
       <HeaderTitle variant="h4">API Performance Results</HeaderTitle>
       <Typography variant="subtitle1">
-        Base URL: https://api.oaexample.com
+        Base URL: {data.base_url ?? "https://api.oaexample.com"}
       </Typography>
       <Typography variant="subtitle1">
         {data && data.timestamp ? new Intl.DateTimeFormat("en-US", {
@@ -370,7 +440,7 @@ const APIPerformanceDashboard = () => {
         }).format(new Date(data.timestamp)) : null}
       </Typography>
 
-      <FormControl fullWidth={true} margin={"normal"} >
+      <FormControl fullWidth={true} margin={"normal"}>
         <InputLabel id="date-select-label">Test Date</InputLabel>
         <Select
           variant={"filled"}
@@ -404,15 +474,18 @@ const APIPerformanceDashboard = () => {
 
         {activeTab === 2 && (
           <Box>
-            <Typography gutterBottom={true}>1. Limit returned fields to those requested in query param: <a href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138"}>github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138</a></Typography>
-            <Typography gutterBottom={true}>2. Ease serializer on select foreign keys: <a href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25"}>github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25</a></Typography>
-            <Typography gutterBottom={true}>3. Replace queryset and search with Stored Procedure: https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/views.py#L113</Typography>
+            <Typography gutterBottom={true}>1. Limit returned fields to only those requested by client with query param: <a target={"_blank"}
+                                                                                                                            href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138"}>github.com/.../django/oaexample_app/serializers.py#L138</a></Typography>
+            <Typography gutterBottom={true}>2. Ease serializer on foreign keys that can be loaded separately: <a target={"_blank"}
+                                                                                                                 href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25"}>github.com/.../django/oaexample_app/serializers.py#L25</a></Typography>
+            <Typography gutterBottom={true}>3. Replace queryset and `search_filter` with SQL / Stored Procedure: <a target={"_blank"}
+                                                                                                                    href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/views.py#L113"}>github.com/.../django/oaexample_app/views.py#L113</a></Typography>
           </Box>
         )}
         {activeTab === 0 && (
           <Box>
             <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={4}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Total Requests</MetricLabel>
@@ -421,7 +494,7 @@ const APIPerformanceDashboard = () => {
                 </MetricCard>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={4}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Request Rate <small>(reqs / second)</small></MetricLabel>
@@ -430,7 +503,7 @@ const APIPerformanceDashboard = () => {
                 </MetricCard>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={4}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Avg Response Time</MetricLabel>
@@ -442,20 +515,19 @@ const APIPerformanceDashboard = () => {
                   </CardContent>
                 </MetricCard>
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <MetricCard>
-                  <CardContent>
-                    <MetricLabel>Valid Error Rate</MetricLabel>
-                    {errorRate > 0.05 ? (
-                      <ErrorValue>{(errorRate * 100).toFixed(2)}%</ErrorValue>
-                    ) : (
-                      <SuccessValue>{(errorRate * 100).toFixed(2)}%</SuccessValue>
-                    )}
-                  </CardContent>
-                </MetricCard>
-              </Grid>
-
             </Grid>
+            <SectionCard>
+              <CardContent>
+                <SectionTitle variant="h6">Status Codes</SectionTitle>
+                <Grid container justifyContent={"space-between"}>
+                  <SuccessChip label={`200s: ${statusCodes["200s"]}`} />
+                  <InfoChip label={`300s: ${statusCodes["300s"]}`} />
+                  <WarningChip label={`400s: ${statusCodes["400s"]}`} />
+                  <ErrorChip label={`500s: ${statusCodes["500s"]}`} />
+                </Grid>
+              </CardContent>
+            </SectionCard>
+
             <SectionCard>
               <CardContent>
                 <SectionTitle variant="h6">Response Time Metrics</SectionTitle>
@@ -484,21 +556,6 @@ const APIPerformanceDashboard = () => {
               </CardContent>
             </SectionCard>
 
-            {/* HTTP Status Codes */}
-            <SectionCard>
-              <CardContent>
-                <SectionTitle variant="h6">HTTP Status Codes</SectionTitle>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-                  <SuccessChip label={`Status 200: ${status200Count} requests`} />
-                  {status403Count > 0 && (
-                    <ErrorChip label={`Status 403: ${status403Count} requests`} />
-                  )}
-                  {status503Count > 0 && (
-                    <ErrorChip label={`Status 503: ${status503Count} requests`} />
-                  )}
-                </Box>
-              </CardContent>
-            </SectionCard>
             <SectionCard>
               <CardContent>
                 <SectionTitle variant="h6">Slowest Endpoints</SectionTitle>
@@ -514,9 +571,9 @@ const APIPerformanceDashboard = () => {
                     </TableHead>
                     <TableBody>
                       {sortedEndpoints.map((endpoint) => {
-                        const detailTime = data.metrics[endpoint.trends.detail.name]?.values.avg || 0;
-                        const paginationTime = data.metrics[endpoint.trends.pagination.name]?.values.avg || 0;
-                        const searchTime = data.metrics[endpoint.trends.search.name]?.values.avg || 0;
+                        const detailTime = data.metrics[endpoint.timers.detail.name]?.values.avg || 0;
+                        const paginationTime = data.metrics[endpoint.timers.pagination.name]?.values.avg || 0;
+                        const searchTime = data.metrics[endpoint.timers.search.name]?.values.avg || 0;
 
                         const operations = [
                           { name: "Detail", time: detailTime, docs: endpoint.resultCounts.detail },
@@ -526,7 +583,7 @@ const APIPerformanceDashboard = () => {
 
                         return operations[0].time > 0 ? (
                           <TableRow key={endpoint.api}>
-                            <TableCell>{endpoint.api}</TableCell>
+                            <TableCell><a href={`https://api.oaexample.com${endpoint.api}`} target={"_blank"}>{endpoint.api}</a></TableCell>
                             <TableCell>{operations[0].name}</TableCell>
                             <TableCell>{operations[0].docs.toLocaleString()}</TableCell>
                             <TableCell>
@@ -596,15 +653,15 @@ const APIPerformanceDashboard = () => {
                 <Grid container spacing={4}>
                   <Grid item xs={12} md={4}>
                     <MetricItemLabel>Base URL</MetricItemLabel>
-                    <Typography>https://api.oaexample.com</Typography>
+                    <Typography>{data.base_url ?? "https://api.oaexample.com"}</Typography>
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <MetricItemLabel>Virtual Users</MetricItemLabel>
-                    <Typography>1</Typography>
+                    <Typography>{data.metrics.vus_max.values.value}</Typography>
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <MetricItemLabel>Iterations per VU</MetricItemLabel>
-                    <Typography>1</Typography>
+                    <Typography>{data.metrics.iterations.values.count}</Typography>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -633,10 +690,10 @@ const APIPerformanceDashboard = () => {
                       {sortedEndpoints.map((endpoint) => {
                         return (
                           <TableRow key={endpoint.api}>
-                            <TableCell>{endpoint.api}</TableCell>
-                            {renderSummaryCell(data.metrics[endpoint.trends.detail.name], endpoint.resultCounts.detail)}
-                            {renderSummaryCell(data.metrics[endpoint.trends.pagination.name], endpoint.resultCounts.pagination)}
-                            {renderSummaryCell(data.metrics[endpoint.trends.search.name], endpoint.resultCounts.search)}
+                            <TableCell><a href={`https://api.oaexample.com${endpoint.api}`} target={"_blank"}>{endpoint.api}</a></TableCell>
+                            {renderSummaryCell(data.metrics[endpoint.timers.detail.name], endpoint.resultCounts.detail, endpoint.type.toLowerCase())}
+                            {renderSummaryCell(data.metrics[endpoint.timers.pagination.name], endpoint.resultCounts.pagination, endpoint.type.toLowerCase())}
+                            {renderSummaryCell(data.metrics[endpoint.timers.search.name], endpoint.resultCounts.search, endpoint.type.toLowerCase())}
                           </TableRow>
                         );
                       })}

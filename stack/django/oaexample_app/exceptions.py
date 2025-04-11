@@ -1,6 +1,8 @@
 from rest_framework.exceptions import NotAuthenticated, AuthenticationFailed, PermissionDenied
 from rest_framework.views import exception_handler
 
+from oaexample_base.settings import DEBUG
+
 
 def oa_exception_handler(exc, context):
     """
