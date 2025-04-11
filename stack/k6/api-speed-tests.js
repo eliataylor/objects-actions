@@ -269,7 +269,7 @@ export function handleSummary (data) {
         pagination: data.metrics[`${name}_pagination_response_time`] ? data.metrics[`${name}_pagination_response_time`].values : null,
         search: data.metrics[`${name}_search_response_time`] ? data.metrics[`${name}_search_response_time`].values : null
       },
-      ...statusCodes
+      statusCodes: statusCodes
     });
   }
 
