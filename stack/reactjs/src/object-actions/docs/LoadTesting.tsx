@@ -25,8 +25,6 @@ import {
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useLocation } from "react-router-dom";
 import { ModelName, NavItem } from "../types/types";
-import { DefaultizedPieValueType } from "@mui/x-charts";
-import { pieArcLabelClasses, PieChart } from "@mui/x-charts/PieChart";
 
 export type TestType = "search" | "pagination" | "detail";
 
@@ -107,7 +105,7 @@ function sumStatusCodes(testData: TestData, navItemName?: string): StatusCounts 
     "300s": 0,
     "400s": 0,
     "500s": 0,
-    all: 0
+    "all": 0
   };
 
   // Process each endpoint
@@ -124,26 +122,16 @@ function sumStatusCodes(testData: TestData, navItemName?: string): StatusCounts 
       for (const testType in endpoint.status_codes) {
         // @ts-ignore
         const statusCodes = endpoint.status_codes[testType];
-
-        // Process each status code group (200s, 300s, 400s, 500s)
-        for (const range of ["200s", "300s", "400s", "500s"] as const) {
-          if (statusCodes[range] && statusCodes[range].name) {
-            const metricName = statusCodes[range].name;
-            const metric = testData.metrics[metricName as keyof typeof testData.metrics];
-
-            if (metric) {
-              let count = 0;
-              // Extract count based on metric type
-              if (metric.type === "counter" && metric.values.count !== undefined) {
-                count = metric.values.count;
-              } else if (metric.type === "gauge" && metric.values.value !== undefined) {
-                count = metric.values.value;
-              }
-
-              // Add to totals
-              result[range] += count;
-              result.all += count;
-            }
+        for (const range in statusCodes) {
+          const key = `${currentNavName}_${testType}_status_code_${range}` as keyof typeof testData.metrics;
+          if (typeof testData.metrics[key] !== "undefined" && typeof testData.metrics[key].values.count !== "undefined") {
+            const count = testData.metrics[key].values.count as number;
+            result[range as keyof StatusCounts] += count;
+            result.all += count;
+          } else if (typeof testData.metrics[key] !== "undefined" && typeof testData.metrics[key].values.value !== "undefined") {
+            const count = testData.metrics[key].values.value as number;
+            result[range as keyof StatusCounts] += count;
+            result.all += count;
           }
         }
       }
@@ -193,7 +181,7 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
 const MetricGrid = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "1fr",
-  gap: theme.spacing(4),
+  gap: theme.spacing(1),
   [theme.breakpoints.up("md")]: {
     gridTemplateColumns: "repeat(4, 1fr)"
   }
@@ -391,24 +379,6 @@ const APIPerformanceDashboard = () => {
   const maxResponseTime = data.metrics.http_req_duration?.values.max || 0;
   const p95ResponseTime = data.metrics.http_req_duration?.values["p(95)"] || 0;
   const statusCodes = sumStatusCodes(data, undefined);
-  const statusChart = [];
-  for (const code in statusCodes) {
-    if (code !== "all") {
-      // @ts-ignore
-      statusChart.push({ value: statusCodes[code], label: code });
-    }
-  }
-
-  const getArcLabel = (params: DefaultizedPieValueType) => {
-    // return params.value;
-    const percent = params.value / statusCodes["all"];
-    return `${(percent * 100).toFixed(0)}%`;
-  };
-
-  // Get HTTP status codes
-  const status200Count = data.metrics.status_code_200?.values.count || 0;
-  const status403Count = data.metrics.status_code_403?.values.count || 0;
-  const status503Count = data.metrics.status_code_503?.values.count || 0;
 
   // Sort endpoints by max response time for "slowest endpoints" section
   const sortedEndpoints = [...data.endpoints].sort((a, b) => {
@@ -426,8 +396,6 @@ const APIPerformanceDashboard = () => {
 
     return bMax - aMax;
   });
-
-  // Additional styled components
 
   const HeaderTitle = styled(Typography)(({ theme }) => ({
     fontWeight: "bold",
@@ -549,28 +517,13 @@ const APIPerformanceDashboard = () => {
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Status Codes</MetricLabel>
-                    <PieChart
-                      series={[
-                        {
-                          data: statusChart
-                        }
-                      ]}
-                      sx={{
-                        [`& .${pieArcLabelClasses.root}`]: {
-                          fill: "white",
-                          fontSize: 14
-                        }
-                      }}
-                      slotProps={{
-                        legend: {
-                          direction: "row",
-                          position: { vertical: "bottom", horizontal: "middle" },
-                          padding: 0
-                        }
-                      }}
-                      width={250}
-                      height={300}
-                    />
+                    <Grid container gap={1}>
+                      <SuccessChip label={`200s: ${statusCodes["200s"]}`} />
+                      <InfoChip label={`300s: ${statusCodes["300s"]}`} />
+                      <WarningChip label={`400s: ${statusCodes["400s"]}`} />
+                      <ErrorChip label={`500s: ${statusCodes["500s"]}`} />
+                      <ErrorChip label={`all: ${statusCodes["all"]}`} />
+                    </Grid>
                   </CardContent>
                 </MetricCard>
               </Grid>
@@ -604,21 +557,6 @@ const APIPerformanceDashboard = () => {
               </CardContent>
             </SectionCard>
 
-            {/* HTTP Status Codes */}
-            <SectionCard>
-              <CardContent>
-                <SectionTitle variant="h6">HTTP Status Codes</SectionTitle>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-                  <SuccessChip label={`Status 200: ${status200Count} requests`} />
-                  {status403Count > 0 && (
-                    <ErrorChip label={`Status 403: ${status403Count} requests`} />
-                  )}
-                  {status503Count > 0 && (
-                    <ErrorChip label={`Status 503: ${status503Count} requests`} />
-                  )}
-                </Box>
-              </CardContent>
-            </SectionCard>
             <SectionCard>
               <CardContent>
                 <SectionTitle variant="h6">Slowest Endpoints</SectionTitle>
