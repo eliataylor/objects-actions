@@ -1,57 +1,58 @@
 import http from "k6/http";
 import { check, sleep } from "k6";
-import { Counter, Rate, Trend, Gauge } from "k6/metrics";
+import { Counter, Gauge, Rate, Trend } from "k6/metrics";
 import { NAVITEMS } from "./navitems.js";
 
 // Configuration
 const BASE_URL = __ENV.REACT_APP_API_HOST; // Load API host from environment variable
-const CSRF_TOKEN = __ENV.CSRF_TOKEN; // CSRF token for requests
-const COOKIE = __ENV.COOKIE; // Cookie value for authenticated requests
+const CSRF_TOKEN = __ENV.CSRF_TOKEN;
+const SESSION_ID = __ENV.SESSION_ID;
 
 // Custom metrics
 const errorRate = new Rate("error_rate");
-const responseTime = new Trend("response_time");
 const validJsonRate = new Rate("valid_json_rate");
 
-// Create trend metrics for different test types
-const detailItemTrend = new Trend("detail_item_response_time");
-const paginationTrend = new Trend("pagination_response_time");
-const searchTrend = new Trend("search_response_time");
+for (let i = 0; i < NAVITEMS.length; i++) {
 
-// Status code tracking
-const statusCodeCounter = {};
-for (let i = 100; i < 600; i++) {
-  statusCodeCounter[i] = new Counter(`status_code_${i}`);
-}
-
-// Create endpoint-detail metrics and result count tracking
-// Using Gauge instead of Counter to track current values
-const resultGauges = {};
-
-NAVITEMS.forEach(item => {
+  const item = NAVITEMS[i];
   const name = item.type.toLowerCase();
 
+  // if (name !== "cities" && name !== "users") continue;
+
   // Create trends for response times
-  item.trends = {
+  item.timers = {
     pagination: new Trend(`${name}_pagination_response_time`),
     search: new Trend(`${name}_search_response_time`),
-    detail: new Trend(`${name}_detail_item_response_time`)
+    detail: new Trend(`${name}_detail_response_time`)
   };
 
-  // Create gauges for result counts instead of counters
-  // Gauges can be set to specific values and report the current value, not a cumulative total
-  resultGauges[`${name}_detail`] = new Gauge(`${name}_detail_count`);
-  resultGauges[`${name}_pagination`] = new Gauge(`${name}_pagination_count`);
-  resultGauges[`${name}_search`] = new Gauge(`${name}_search_count`);
-});
+  item.tablesize = {
+    pagination: new Gauge(`${name}_pagination_count`),
+    search: new Gauge(`${name}_search_count`),
+    detail: new Gauge(`${name}_detail_count`)
+  };
+
+  item.status_codes = {
+    pagination: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 },
+    search: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 },
+    detail: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 }
+  };
+
+  for (let i = 200; i <= 500; i += 100) {
+    item.status_codes.pagination[`${i}s`] = new Counter(`${name}_pagination_status_code_${i}s`);
+    item.status_codes.search[`${i}s`] = new Gauge(`${name}_search_status_code_${i}s`);
+    item.status_codes.detail[`${i}s`] = new Gauge(`${name}_detail_status_code_${i}s`);
+  }
+
+}
 
 // Test options
 export const options = {
   scenarios: {
     endpoint_tests: {
       executor: "per-vu-iterations",
-      vus: 5,
-      iterations: 5,
+      vus: 1,
+      iterations: 1,
       maxDuration: "5m"
     }
   },
@@ -76,8 +77,8 @@ export function setup () {
   }
 
   return {
-    csrfToken: CSRF_TOKEN,
-    cookie: COOKIE
+    csrftoken: CSRF_TOKEN,
+    sessionid: SESSION_ID
   };
 }
 
@@ -122,61 +123,49 @@ function extractErrorMessage (response, validation) {
 }
 
 // Helper function to make requests
-function makeRequest (url, headers, metricName, itemTrend, item, testType, data) {
-  const response = http.get(url, { headers });
-  const itemName = item.type.toLowerCase();
+function makeRequest (url, item, testType) {
+
+  const response = http.get(url, {
+    "referer": BASE_URL,
+    "Origin": BASE_URL,
+    "Host:": BASE_URL.replace("https://", "").replace("http://", ""),
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "X-CSRFToken": CSRF_TOKEN,
+    cookies: {
+      csrftoken: CSRF_TOKEN,
+      sessionid: SESSION_ID,
+    }
+  });
 
   // Track status code
-  if (statusCodeCounter[response.status]) {
-    statusCodeCounter[response.status].add(1);
+  const statusKey = Math.round(parseInt(response.status) / 100) * 100;
+
+  if (typeof !item.status_codes[testType][`${statusKey}s`] === "undefined") {
+    console.warn(`Unknown status code ${statusKey} for ${testType}`, item.status_codes[testType]);
+    item.status_codes[testType][`${statusKey}s`] = new Gauge(`${item.segment}_${testType}_status_code_${statusKey}`);
   }
+  item.status_codes[testType][`${statusKey}s`].add(1);
 
   // Add to general metric
-  responseTime.add(response.timings.duration);
-
-  // Add to detail test type metric
-  if (metricName) {
-    metricName.add(response.timings.duration);
-  }
-
-  // Add to endpoint-detail metric
-  if (itemTrend) {
-    itemTrend.add(response.timings.duration);
-  }
+  item.timers[testType].add(response.timings.duration);
 
   // Validate JSON and results array
   const validation = validateJsonResponse(response.body);
   validJsonRate.add(validation.isValidResponse);
 
-  // Track the result count using Gauge.add() with the current value
-  // This sets the gauge to the current value from this response instead of adding to it
-  const gaugeKey = `${itemName}_${testType}`;
-  if (resultGauges[gaugeKey]) {
-    // Use .add() for Gauge to set the value, not accumulate it
-    resultGauges[gaugeKey].add(validation.total);
-  }
+  item.tablesize[testType].add(validation.total);
 
-  // Check if the request was successful
+  // Check if the request was successful (includes valid permissions errors)
   const success = check(response, {
-    "status is 200": (r) => r.status === 200,
     "response is valid JSON": (r) => validation.isValidResponse
   });
 
-  // Record errors
   errorRate.add(!success);
 
-  // Log and store detailed information for failed requests
   if (!success || response.status !== 200) {
     const errorMessage = extractErrorMessage(response, validation);
-    const errorDetails = {
-      url: url,
-      status: response.status,
-      message: errorMessage,
-      json_valid: validation.isValidResponse,
-      timestamp: new Date().toISOString()
-    };
-
-    console.log(`Failed request to ${url}: Status ${response.status}, Message: ${errorMessage}`);
+    console.warn(`Failed request to ${url}: Status ${response.status}, Message: ${errorMessage}`);
   }
 
   return response;
@@ -184,23 +173,19 @@ function makeRequest (url, headers, metricName, itemTrend, item, testType, data)
 
 // Main function
 export default function(data) {
-  // Common headers for all requests
-  const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-    "X-CSRFToken": data.csrfToken,
-    "Cookie": data.cookie
-  };
 
-  // Loop through each NAVITEM and run three tests for each
-  for (const item of NAVITEMS) {
-    // if (item.segment !== "cities") continue;
+  // Loop through each NAVITEMS and run three tests for each
+  for (let i = 0; i < NAVITEMS.length; i++) {
+    const item = NAVITEMS[i];
+
+    // if (item.segment !== "cities" && item.segment !== "users") continue;
+
     const endpointBase = `${BASE_URL}${item.api}`;
 
     // Test 1: Paginated request
     const paginatedUrl = `${endpointBase}?offset=0&limit=10`;
     console.log(`Testing pagination: ${paginatedUrl}`);
-    const paginationResponse = makeRequest(paginatedUrl, headers, paginationTrend, item.trends.pagination, item, "pagination", data);
+    const paginationResponse = makeRequest(paginatedUrl, item, "pagination");
     sleep(1); // Short pause between requests
 
     // Test 2: Get first item from pagination results if available
@@ -212,7 +197,7 @@ export default function(data) {
         firstItemId = responseData.results[0].id;
         const itemUrl = `${endpointBase}/${firstItemId}`;
         console.log(`Testing detail item: ${itemUrl}`);
-        makeRequest(itemUrl, headers, detailItemTrend, item.trends.detail, item, "detail", data);
+        makeRequest(itemUrl, item, "detail");
         sleep(1); // Short pause between requests
       } else {
         if (responseData.results && responseData.results.length === 0) {
@@ -229,7 +214,7 @@ export default function(data) {
     if (item.search_fields && item.search_fields.length > 0) {
       const searchUrl = `${endpointBase}?search=a`;
       console.log(`Testing search: ${searchUrl}`);
-      makeRequest(searchUrl, headers, searchTrend, item.trends.search, item, "search", data);
+      makeRequest(searchUrl, item, "search");
       sleep(1); // Short pause between requests
     } else {
       console.log(`Skipping search test for ${item.api} - no search fields defined`);
@@ -253,28 +238,32 @@ export function handleSummary (data) {
     }
   }
 
-  // Create a summary object with timestamped filenames
+  // Create a summary object with timestamp filenames
   const summary = {};
+  const endpoints = [];
 
-  // JSON report
+  for (let i = 0; i < NAVITEMS.length; i++) {
+    const item = NAVITEMS[i];
+    const name = item.type.toLowerCase();
+    // if (item.segment !== "cities" && item.segment !== "users") continue;
+
+    endpoints.push({
+      ...item,
+      resultCounts: {
+        detail: data.metrics[`${name}_detail_count`] ? data.metrics[`${name}_detail_count`].values?.value : 0,
+        pagination: data.metrics[`${name}_pagination_count`] ? data.metrics[`${name}_pagination_count`].values?.value : 0,
+        search: data.metrics[`${name}_search_count`] ? data.metrics[`${name}_search_count`].values?.value : 0
+      }
+    });
+  }
+
   summary[`${resultsDir}/test-${timestamp}.json`] = JSON.stringify({
     metrics: data.metrics,
+    base_url: BASE_URL,
     root_group: data.root_group,
-    endpoints: NAVITEMS.map(item => {
-        const name = item.type.toLowerCase();
-        return {
-          ...item,
-          resultCounts: {
-            detail: data.metrics[`${name}_detail_count`] ? data.metrics[`${name}_detail_count`].values?.value : 0,
-            pagination: data.metrics[`${name}_pagination_count`] ? data.metrics[`${name}_pagination_count`].values?.value : 0,
-            search: data.metrics[`${name}_search_count`] ? data.metrics[`${name}_search_count`].values?.value : 0
-          }
-        };
-      }
-    )
+    endpoints: endpoints
   }, null, 2);
 
-  // HTML report - commented out as in original code
   // summary[`${resultsDir}/test-${timestamp}.html`] = generateHtmlReport(data);
 
   return summary;

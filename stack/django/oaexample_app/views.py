@@ -56,10 +56,6 @@ from .permissions import can_view_actionplans, can_view_officials, can_edit_acti
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
 
-class LimitedLimitOffsetPagination(LimitOffsetPagination):
-    max_limit = 100
-
-
 class PaginatedViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
 
@@ -112,7 +108,7 @@ class TopicsViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    
+
 class ResourceTypesViewSet(viewsets.ModelViewSet):
     queryset = ResourceTypes.objects.all().order_by('id')
     serializer_class = ResourceTypesSerializer
@@ -120,7 +116,7 @@ class ResourceTypesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    
+
 class MeetingTypesViewSet(viewsets.ModelViewSet):
     queryset = MeetingTypes.objects.all().order_by('id')
     serializer_class = MeetingTypesSerializer
@@ -128,7 +124,7 @@ class MeetingTypesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    
+
 class StatesViewSet(viewsets.ModelViewSet):
     queryset = States.objects.all().order_by('id')
     serializer_class = StatesSerializer
@@ -136,7 +132,7 @@ class StatesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    
+
 class PartiesViewSet(viewsets.ModelViewSet):
     queryset = Parties.objects.all().order_by('id')
     serializer_class = PartiesSerializer
@@ -144,7 +140,7 @@ class PartiesViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    
+
 class StakeholdersViewSet(viewsets.ModelViewSet):
     queryset = Stakeholders.objects.all().order_by('id')
     serializer_class = StakeholdersSerializer
@@ -152,7 +148,7 @@ class StakeholdersViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    
+
 class ResourcesViewSet(viewsets.ModelViewSet):
     queryset = Resources.objects.all().order_by('id')
     serializer_class = ResourcesSerializer
@@ -529,8 +525,8 @@ class AttendeesViewSet(viewsets.ModelViewSet):
     queryset = Attendees.objects.all().order_by('id')
     serializer_class = AttendeesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
-    
+
+
 ####OBJECT-ACTIONS-VIEWSETS-ENDS####
 
 

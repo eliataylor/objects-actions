@@ -1,6 +1,8 @@
 from rest_framework.exceptions import NotAuthenticated, AuthenticationFailed, PermissionDenied
 from rest_framework.views import exception_handler
 
+from oaexample_base.settings import DEBUG
+
 
 def oa_exception_handler(exc, context):
     """
@@ -92,6 +94,10 @@ def oa_exception_handler(exc, context):
                     roles_str = ", ".join([f"'{role}'" for role in missing_roles])
                     ownership_word = "your own" if is_own else "other's"
                     custom_message = f"You need {roles_str} permissions to {action} {ownership_word} {model_name}."
+
+                if DEBUG == True:
+                    custom_message += f" (You have: {request.user.groups.all()})"
+
 
         # Return simplified response
         response.data = {

@@ -177,7 +177,7 @@ const APIPerformanceDashboard = () => {
   // Available test dates (normally this would be fetched from an API)
   const availableDates = [
     "2025-04-07", // Currently we only have fallback data for this date
-//    "2025-04-06",
+    "2025-04-10",
 //    "2025-04-05"
   ];
 

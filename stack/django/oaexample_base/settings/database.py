@@ -5,7 +5,7 @@ from .base import myEnv, logger
 OA_ENV_DB = myEnv("OA_ENV_DB", "docker")
 logger.debug(f"[OADJANGO] DATABASE USING: {OA_ENV_DB} ")
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 AUTH_USER_MODEL = "oaexample_app.Users"
 
