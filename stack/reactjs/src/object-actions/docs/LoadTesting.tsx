@@ -128,10 +128,6 @@ function sumStatusCodes(testData: TestData, navItemName?: string): StatusCounts 
             const count = testData.metrics[key].values.count as number;
             result[range as keyof StatusCounts] += count;
             result.all += count;
-          } else if (typeof testData.metrics[key] !== "undefined" && typeof testData.metrics[key].values.value !== "undefined") {
-            const count = testData.metrics[key].values.value as number;
-            result[range as keyof StatusCounts] += count;
-            result.all += count;
           }
         }
       }
@@ -332,14 +328,6 @@ const APIPerformanceDashboard = () => {
     return <ErrorChip label={label} size="small" />;
   };
 
-  // Get status chip component
-  const getStatusChip = (code: number, label: string) => {
-    if (code >= 200 && code < 300) return <SuccessChip label={label} />;
-    if (code >= 300 && code < 400) return <InfoChip label={label} />;
-    if (code >= 400 && code < 500) return <WarningChip label={label} />;
-    return <ErrorChip label={label} />;
-  };
-
   const LoadingContainer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(4)
   }));
@@ -405,7 +393,18 @@ const APIPerformanceDashboard = () => {
     }
   }));
 
-  function renderSummaryCell(metric: Metric, docs: number) {
+  function renderSummaryCell(metric: Metric, docs: number, model_name: string) {
+    if (!data) return null;
+    const codes = sumStatusCodes(data, model_name);
+
+    const toshow = [];
+    for (let i = 200; i <= 500; i += 100) {
+      const key = `${i}s` as keyof StatusCounts
+      if (codes[key] > 0) {
+        toshow.push(`${key}: ${codes[key]}`);
+      }
+    }
+
     return <TableCell>
       {metric && metric.values ? (
         <EndpointCell>
@@ -419,6 +418,9 @@ const APIPerformanceDashboard = () => {
           <DocCountRow>
             <span style={{ fontWeight: "bold" }}>Docs:</span>{" "}
             <ResultCount>{docs.toLocaleString()}</ResultCount>
+          </DocCountRow>
+          <DocCountRow>
+            <span style={{ fontWeight: "bold" }}>Codes:</span>{" "} {toshow.join(', ')}
           </DocCountRow>
         </EndpointCell>
       ) : "N/A"}
@@ -483,7 +485,7 @@ const APIPerformanceDashboard = () => {
         {activeTab === 0 && (
           <Box>
             <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={4}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Total Requests</MetricLabel>
@@ -492,7 +494,7 @@ const APIPerformanceDashboard = () => {
                 </MetricCard>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={4}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Request Rate <small>(reqs / second)</small></MetricLabel>
@@ -501,7 +503,7 @@ const APIPerformanceDashboard = () => {
                 </MetricCard>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={4}>
                 <MetricCard>
                   <CardContent>
                     <MetricLabel>Avg Response Time</MetricLabel>
@@ -513,22 +515,19 @@ const APIPerformanceDashboard = () => {
                   </CardContent>
                 </MetricCard>
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <MetricCard>
-                  <CardContent>
-                    <MetricLabel>Status Codes</MetricLabel>
-                    <Grid container gap={1}>
-                      <SuccessChip label={`200s: ${statusCodes["200s"]}`} />
-                      <InfoChip label={`300s: ${statusCodes["300s"]}`} />
-                      <WarningChip label={`400s: ${statusCodes["400s"]}`} />
-                      <ErrorChip label={`500s: ${statusCodes["500s"]}`} />
-                      <ErrorChip label={`all: ${statusCodes["all"]}`} />
-                    </Grid>
-                  </CardContent>
-                </MetricCard>
-              </Grid>
-
             </Grid>
+            <SectionCard>
+              <CardContent>
+                <SectionTitle variant="h6">Status Codes</SectionTitle>
+                <Grid container justifyContent={"space-between"}>
+                  <SuccessChip label={`200s: ${statusCodes["200s"]}`} />
+                  <InfoChip label={`300s: ${statusCodes["300s"]}`} />
+                  <WarningChip label={`400s: ${statusCodes["400s"]}`} />
+                  <ErrorChip label={`500s: ${statusCodes["500s"]}`} />
+                </Grid>
+              </CardContent>
+            </SectionCard>
+
             <SectionCard>
               <CardContent>
                 <SectionTitle variant="h6">Response Time Metrics</SectionTitle>
@@ -654,7 +653,7 @@ const APIPerformanceDashboard = () => {
                 <Grid container spacing={4}>
                   <Grid item xs={12} md={4}>
                     <MetricItemLabel>Base URL</MetricItemLabel>
-                    <Typography>https://api.oaexample.com</Typography>
+                    <Typography>{data.base_url ?? "https://api.oaexample.com"}</Typography>
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <MetricItemLabel>Virtual Users</MetricItemLabel>
@@ -692,9 +691,9 @@ const APIPerformanceDashboard = () => {
                         return (
                           <TableRow key={endpoint.api}>
                             <TableCell><a href={`https://api.oaexample.com${endpoint.api}`} target={"_blank"}>{endpoint.api}</a></TableCell>
-                            {renderSummaryCell(data.metrics[endpoint.timers.detail.name], endpoint.resultCounts.detail)}
-                            {renderSummaryCell(data.metrics[endpoint.timers.pagination.name], endpoint.resultCounts.pagination)}
-                            {renderSummaryCell(data.metrics[endpoint.timers.search.name], endpoint.resultCounts.search)}
+                            {renderSummaryCell(data.metrics[endpoint.timers.detail.name], endpoint.resultCounts.detail, endpoint.type.toLowerCase())}
+                            {renderSummaryCell(data.metrics[endpoint.timers.pagination.name], endpoint.resultCounts.pagination, endpoint.type.toLowerCase())}
+                            {renderSummaryCell(data.metrics[endpoint.timers.search.name], endpoint.resultCounts.search, endpoint.type.toLowerCase())}
                           </TableRow>
                         );
                       })}

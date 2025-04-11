@@ -9,7 +9,6 @@
     "@github/webauthn-json": "^2.1.1",
     "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.4.6",
-    "@mui/x-charts": "^7.28.0",
     "@mui/x-date-pickers": "^7.27.1",
     "@mui/x-tree-view": "^7.26.0",
     "@testing-library/jest-dom": "^5.14.1",

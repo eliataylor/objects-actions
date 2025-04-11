@@ -95,10 +95,6 @@ def oa_exception_handler(exc, context):
                     ownership_word = "your own" if is_own else "other's"
                     custom_message = f"You need {roles_str} permissions to {action} {ownership_word} {model_name}."
 
-                if DEBUG == True:
-                    custom_message += f" (You have: {request.user.groups.all()})"
-
-
         # Return simplified response
         response.data = {
             "message": custom_message,

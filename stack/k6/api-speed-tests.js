@@ -40,8 +40,8 @@ for (let i = 0; i < NAVITEMS.length; i++) {
 
   for (let i = 200; i <= 500; i += 100) {
     item.status_codes.pagination[`${i}s`] = new Counter(`${name}_pagination_status_code_${i}s`);
-    item.status_codes.search[`${i}s`] = new Gauge(`${name}_search_status_code_${i}s`);
-    item.status_codes.detail[`${i}s`] = new Gauge(`${name}_detail_status_code_${i}s`);
+    item.status_codes.search[`${i}s`] = new Counter(`${name}_search_status_code_${i}s`);
+    item.status_codes.detail[`${i}s`] = new Counter(`${name}_detail_status_code_${i}s`);
   }
 
 }
@@ -134,7 +134,7 @@ function makeRequest (url, item, testType) {
     "X-CSRFToken": CSRF_TOKEN,
     cookies: {
       csrftoken: CSRF_TOKEN,
-      sessionid: SESSION_ID,
+      sessionid: SESSION_ID
     }
   });
 
@@ -246,6 +246,16 @@ export function handleSummary (data) {
     const item = NAVITEMS[i];
     const name = item.type.toLowerCase();
     // if (item.segment !== "cities" && item.segment !== "users") continue;
+    const statusCodes = {
+      pagination: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 },
+      search: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 },
+      detail: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 }
+    };
+    for (let i = 200; i <= 500; i += 100) {
+      ['pagination', 'search', 'detail'].forEach(testType => {
+        statusCodes[testType][`${i}s`] = data.metrics[`${name}_${testType}_status_code_${i}s`] ? data.metrics[`${name}_${testType}_status_code_${i}s`].values?.value : 0
+      })
+    }
 
     endpoints.push({
       ...item,
@@ -253,7 +263,13 @@ export function handleSummary (data) {
         detail: data.metrics[`${name}_detail_count`] ? data.metrics[`${name}_detail_count`].values?.value : 0,
         pagination: data.metrics[`${name}_pagination_count`] ? data.metrics[`${name}_pagination_count`].values?.value : 0,
         search: data.metrics[`${name}_search_count`] ? data.metrics[`${name}_search_count`].values?.value : 0
-      }
+      },
+      resultTimes: {
+        detail: data.metrics[`${name}_detail_response_time`] ? data.metrics[`${name}_detail_response_time`].values : null,
+        pagination: data.metrics[`${name}_pagination_response_time`] ? data.metrics[`${name}_pagination_response_time`].values : null,
+        search: data.metrics[`${name}_search_response_time`] ? data.metrics[`${name}_search_response_time`].values : null
+      },
+      ...statusCodes
     });
   }
 
