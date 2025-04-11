@@ -24,23 +24,11 @@ import {
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useLocation } from "react-router-dom";
+import { ModelName, NavItem } from "../types/types";
+import { DefaultizedPieValueType } from "@mui/x-charts";
+import { pieArcLabelClasses, PieChart } from "@mui/x-charts/PieChart";
 
-// TypeScript interfaces for our data structure
-interface EndpointResult {
-  singular: string;
-  plural: string;
-  api: string;
-  resultCounts: {
-    detail: number;
-    pagination: number;
-    search: number;
-  };
-  trends: {
-    pagination: { name: string };
-    search: { name: string };
-    detail: { name: string };
-  };
-}
+export type TestType = "search" | "pagination" | "detail";
 
 interface Metric {
   type: string;
@@ -62,10 +50,109 @@ interface Metric {
 }
 
 interface TestData {
-  metrics: { [key: string]: Metric };
+  metrics: Record<string, Metric>;
+  base_url?: string;
   timestamp: number;
   endpoints: EndpointResult[];
 }
+
+// Reusable type for a metric reference
+type MetricReference = { name: keyof TestData["metrics"] };
+
+// Reusable type for status codes structure
+type StatusCodesStructure = {
+  "200s": MetricReference;
+  "300s": MetricReference;
+  "400s": MetricReference;
+  "500s": MetricReference;
+};
+
+// Reusable type for a test type to metric mapping
+type TestTypeToMetric = {
+  [K in TestType]: MetricReference;
+};
+
+interface EndpointResult extends NavItem<ModelName> {
+  resultCounts: {
+    [K in TestType]: number;
+  };
+  status_codes: {
+    [K in TestType]: StatusCodesStructure;
+  };
+  timers: TestTypeToMetric;
+  tablesize: TestTypeToMetric;
+}
+
+
+// Define types for the return structure
+interface StatusCounts {
+  "200s": number;
+  "300s": number;
+  "400s": number;
+  "500s": number;
+  all: number;
+}
+
+/**
+ * Sums status codes from test data, either for all NAVITEMs or for a specific one
+ *
+ * @param testData The test data containing metrics and endpoints
+ * @param navItemName Optional name of specific NAVITEM to sum (if omitted, sums all NAVITEMs)
+ * @returns Object with status code counts
+ */
+function sumStatusCodes(testData: TestData, navItemName?: string): StatusCounts {
+  // Initialize result object
+  const result: StatusCounts = {
+    "200s": 0,
+    "300s": 0,
+    "400s": 0,
+    "500s": 0,
+    all: 0
+  };
+
+  // Process each endpoint
+  for (const endpoint of testData.endpoints) {
+    const currentNavName = endpoint.type.toLowerCase();
+
+    // Skip if a specific navItemName was requested and this isn't it
+    if (navItemName && currentNavName !== navItemName) {
+      continue;
+    }
+
+    // Process each test type (pagination, search, detail)
+    if (endpoint.status_codes) {
+      for (const testType in endpoint.status_codes) {
+        // @ts-ignore
+        const statusCodes = endpoint.status_codes[testType];
+
+        // Process each status code group (200s, 300s, 400s, 500s)
+        for (const range of ["200s", "300s", "400s", "500s"] as const) {
+          if (statusCodes[range] && statusCodes[range].name) {
+            const metricName = statusCodes[range].name;
+            const metric = testData.metrics[metricName as keyof typeof testData.metrics];
+
+            if (metric) {
+              let count = 0;
+              // Extract count based on metric type
+              if (metric.type === "counter" && metric.values.count !== undefined) {
+                count = metric.values.count;
+              } else if (metric.type === "gauge" && metric.values.value !== undefined) {
+                count = metric.values.value;
+              }
+
+              // Add to totals
+              result[range] += count;
+              result.all += count;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
 
 const MetricCard = styled(Card)(({ theme }) => ({
   height: "100%",
@@ -169,16 +256,15 @@ const APIPerformanceDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const params = new URLSearchParams(useLocation().search)
+  const params = new URLSearchParams(useLocation().search);
 
-  const [activeTab, setActiveTab] = useState(typeof params.get('tab') === 'string' ? parseInt(params.get('tab') || '0') : 0);
-  const [selectedDate, setSelectedDate] = useState<string>("2025-04-07");
+  const [activeTab, setActiveTab] = useState(typeof params.get("tab") === "string" ? parseInt(params.get("tab") || "0") : 0);
+  const [selectedDate, setSelectedDate] = useState<string>("2025-04-11");
 
   // Available test dates (normally this would be fetched from an API)
   const availableDates = [
     "2025-04-07", // Currently we only have fallback data for this date
-    "2025-04-10",
-//    "2025-04-05"
+    "2025-04-11"
   ];
 
   useEffect(() => {
@@ -304,6 +390,20 @@ const APIPerformanceDashboard = () => {
   const minResponseTime = data.metrics.http_req_duration?.values.min || 0;
   const maxResponseTime = data.metrics.http_req_duration?.values.max || 0;
   const p95ResponseTime = data.metrics.http_req_duration?.values["p(95)"] || 0;
+  const statusCodes = sumStatusCodes(data, undefined);
+  const statusChart = [];
+  for (const code in statusCodes) {
+    if (code !== "all") {
+      // @ts-ignore
+      statusChart.push({ value: statusCodes[code], label: code });
+    }
+  }
+
+  const getArcLabel = (params: DefaultizedPieValueType) => {
+    // return params.value;
+    const percent = params.value / statusCodes["all"];
+    return `${(percent * 100).toFixed(0)}%`;
+  };
 
   // Get HTTP status codes
   const status200Count = data.metrics.status_code_200?.values.count || 0;
@@ -313,15 +413,15 @@ const APIPerformanceDashboard = () => {
   // Sort endpoints by max response time for "slowest endpoints" section
   const sortedEndpoints = [...data.endpoints].sort((a, b) => {
     const aMax = Math.max(
-      data.metrics[a.trends.detail.name]?.values.avg || 0,
-      data.metrics[a.trends.pagination.name]?.values.avg || 0,
-      data.metrics[a.trends.search.name]?.values.avg || 0
+      data.metrics[a.timers.detail.name]?.values.avg || 0,
+      data.metrics[a.timers.pagination.name]?.values.avg || 0,
+      data.metrics[a.timers.search.name]?.values.avg || 0
     );
 
     const bMax = Math.max(
-      data.metrics[b.trends.detail.name]?.values.avg || 0,
-      data.metrics[b.trends.pagination.name]?.values.avg || 0,
-      data.metrics[b.trends.search.name]?.values.avg || 0
+      data.metrics[b.timers.detail.name]?.values.avg || 0,
+      data.metrics[b.timers.pagination.name]?.values.avg || 0,
+      data.metrics[b.timers.search.name]?.values.avg || 0
     );
 
     return bMax - aMax;
@@ -361,7 +461,7 @@ const APIPerformanceDashboard = () => {
     <Box mt={1}>
       <HeaderTitle variant="h4">API Performance Results</HeaderTitle>
       <Typography variant="subtitle1">
-        Base URL: https://api.oaexample.com
+        Base URL: {data.base_url ?? "https://api.oaexample.com"}
       </Typography>
       <Typography variant="subtitle1">
         {data && data.timestamp ? new Intl.DateTimeFormat("en-US", {
@@ -370,7 +470,7 @@ const APIPerformanceDashboard = () => {
         }).format(new Date(data.timestamp)) : null}
       </Typography>
 
-      <FormControl fullWidth={true} margin={"normal"} >
+      <FormControl fullWidth={true} margin={"normal"}>
         <InputLabel id="date-select-label">Test Date</InputLabel>
         <Select
           variant={"filled"}
@@ -404,9 +504,12 @@ const APIPerformanceDashboard = () => {
 
         {activeTab === 2 && (
           <Box>
-            <Typography gutterBottom={true}>1. Limit returned fields to only those requested by client with query param: <a target={"_blank"} href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138"}>github.com/.../django/oaexample_app/serializers.py#L138</a></Typography>
-            <Typography gutterBottom={true}>2. Ease serializer on foreign keys that can be loaded separately: <a target={"_blank"} href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25"}>github.com/.../django/oaexample_app/serializers.py#L25</a></Typography>
-            <Typography gutterBottom={true}>3. Replace queryset and `search_filter` with SQL / Stored Procedure: <a target={"_blank"} href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/views.py#L113"}>github.com/.../django/oaexample_app/views.py#L113</a></Typography>
+            <Typography gutterBottom={true}>1. Limit returned fields to only those requested by client with query param: <a target={"_blank"}
+                                                                                                                            href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L138"}>github.com/.../django/oaexample_app/serializers.py#L138</a></Typography>
+            <Typography gutterBottom={true}>2. Ease serializer on foreign keys that can be loaded separately: <a target={"_blank"}
+                                                                                                                 href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/serializers.py#L25"}>github.com/.../django/oaexample_app/serializers.py#L25</a></Typography>
+            <Typography gutterBottom={true}>3. Replace queryset and `search_filter` with SQL / Stored Procedure: <a target={"_blank"}
+                                                                                                                    href={"https://github.com/eliataylor/objects-actions/blob/main/stack/django/oaexample_app/views.py#L113"}>github.com/.../django/oaexample_app/views.py#L113</a></Typography>
           </Box>
         )}
         {activeTab === 0 && (
@@ -445,12 +548,29 @@ const APIPerformanceDashboard = () => {
               <Grid item xs={12} sm={6} md={3}>
                 <MetricCard>
                   <CardContent>
-                    <MetricLabel>Valid Error Rate</MetricLabel>
-                    {errorRate > 0.05 ? (
-                      <ErrorValue>{(errorRate * 100).toFixed(2)}%</ErrorValue>
-                    ) : (
-                      <SuccessValue>{(errorRate * 100).toFixed(2)}%</SuccessValue>
-                    )}
+                    <MetricLabel>Status Codes</MetricLabel>
+                    <PieChart
+                      series={[
+                        {
+                          data: statusChart
+                        }
+                      ]}
+                      sx={{
+                        [`& .${pieArcLabelClasses.root}`]: {
+                          fill: "white",
+                          fontSize: 14
+                        }
+                      }}
+                      slotProps={{
+                        legend: {
+                          direction: "row",
+                          position: { vertical: "bottom", horizontal: "middle" },
+                          padding: 0
+                        }
+                      }}
+                      width={250}
+                      height={300}
+                    />
                   </CardContent>
                 </MetricCard>
               </Grid>
@@ -514,9 +634,9 @@ const APIPerformanceDashboard = () => {
                     </TableHead>
                     <TableBody>
                       {sortedEndpoints.map((endpoint) => {
-                        const detailTime = data.metrics[endpoint.trends.detail.name]?.values.avg || 0;
-                        const paginationTime = data.metrics[endpoint.trends.pagination.name]?.values.avg || 0;
-                        const searchTime = data.metrics[endpoint.trends.search.name]?.values.avg || 0;
+                        const detailTime = data.metrics[endpoint.timers.detail.name]?.values.avg || 0;
+                        const paginationTime = data.metrics[endpoint.timers.pagination.name]?.values.avg || 0;
+                        const searchTime = data.metrics[endpoint.timers.search.name]?.values.avg || 0;
 
                         const operations = [
                           { name: "Detail", time: detailTime, docs: endpoint.resultCounts.detail },
@@ -634,9 +754,9 @@ const APIPerformanceDashboard = () => {
                         return (
                           <TableRow key={endpoint.api}>
                             <TableCell><a href={`https://api.oaexample.com${endpoint.api}`} target={"_blank"}>{endpoint.api}</a></TableCell>
-                            {renderSummaryCell(data.metrics[endpoint.trends.detail.name], endpoint.resultCounts.detail)}
-                            {renderSummaryCell(data.metrics[endpoint.trends.pagination.name], endpoint.resultCounts.pagination)}
-                            {renderSummaryCell(data.metrics[endpoint.trends.search.name], endpoint.resultCounts.search)}
+                            {renderSummaryCell(data.metrics[endpoint.timers.detail.name], endpoint.resultCounts.detail)}
+                            {renderSummaryCell(data.metrics[endpoint.timers.pagination.name], endpoint.resultCounts.pagination)}
+                            {renderSummaryCell(data.metrics[endpoint.timers.search.name], endpoint.resultCounts.search)}
                           </TableRow>
                         );
                       })}
