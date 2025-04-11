@@ -35,7 +35,7 @@ class CustomUsersSerializer(serializers.ModelSerializer):
         representation['_type'] = instance.__class__.__name__
 
         for field in self.Meta.model._meta.get_fields():
-            if field.is_relation and hasattr(instance, field.name):
+            if field.is_relation and not field.auto_created and hasattr(instance, field.name):
                 field_name = field.name
                 related_instance = getattr(instance, field_name)
 
