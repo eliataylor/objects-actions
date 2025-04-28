@@ -45,7 +45,7 @@ export default function ReauthenticateCode (props) {
         </label>
         <FormErrors param="code" errors={response.content?.errors} />
       </div>
-      <Button disabled={response.fetching} onClick={() => submit()}>
+      <Button variant={'contained'} disabled={response.fetching} onClick={() => submit()}>
         Confirm
       </Button>
     </ReauthenticateFlow>

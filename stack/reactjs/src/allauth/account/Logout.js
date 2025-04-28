@@ -29,7 +29,7 @@ export default function Logout () {
     return <Navigate to="/" />;
   }
   return (
-    <Box style={{ textAlign: "center" }}>
+    <Box mt={7}>
       <Typography variant="body1" gutterBottom={true}>
         Are you sure you want to logout?
       </Typography>

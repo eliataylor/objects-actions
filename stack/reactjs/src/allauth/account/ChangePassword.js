@@ -58,7 +58,7 @@ export default function ChangePassword () {
           : "You currently have no password set. Enter your (new) password."}
       </Typography>
       {hasCurrentPassword ? (
-        <Box>
+        <Box mt={2}>
           <TextField
             fullWidth
             autoComplete="password"
@@ -88,7 +88,7 @@ export default function ChangePassword () {
 
         <FormErrors param="new_password" errors={response.content?.errors} />
       </Box>
-      <Box>
+      <Box mb={2}>
         <TextField
           fullWidth
           value={newPassword2}
@@ -101,7 +101,7 @@ export default function ChangePassword () {
         <FormErrors param="new_password2" errors={newPassword2Errors} />
       </Box>
 
-      <Button disabled={response.fetching} onClick={() => submit()}>
+      <Button variant={'contained'} disabled={response.fetching} onClick={() => submit()}>
         {hasCurrentPassword ? "Change" : "Set"}
       </Button>
     </Box>

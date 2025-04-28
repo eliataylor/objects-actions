@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FormErrors from "../components/FormErrors";
 import * as allauth from "../lib/allauth";
-import { Button } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useAuthInfo } from "../auth/hooks";
 import { Navigate } from "react-router-dom";
 import AuthenticateFlow from "./AuthenticateFlow";
@@ -38,16 +38,19 @@ export default function AuthenticateCode (props) {
   return (
     <AuthenticateFlow authenticatorType={props.authenticatorType}>
       {props.children}
-      <label>
-        Code:
-        <input
+
+      <Box mt={2} mb={1}>
+        <TextField
+          fullWidth
           type="text"
+          label={"Authenticator code"}
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
-      </label>
+      </Box>
+
       <FormErrors param="code" errors={response.content?.errors} />
-      <Button onClick={() => submit()}>Sign In</Button>
+      <Button variant={"contained"} onClick={() => submit()}>Sign In</Button>
     </AuthenticateFlow>
   );
 }
