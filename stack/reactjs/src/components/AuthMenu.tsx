@@ -56,9 +56,6 @@ export default function AuthMenu() {
 
   return (
     <div id={"AuthMenu"}>
-      {process.env.REACT_APP_DEBUG ? (
-        <NavBarItem to="http://localhost:1080" icon="✉️" name="MailCatcher" />
-      ) : null}
       {me && me?.id ? <React.Fragment>
         <ListItemButton
           dense={true}

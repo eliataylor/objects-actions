@@ -88,7 +88,7 @@ interface StatusCounts {
   "300s": number;
   "400s": number;
   "500s": number;
-  all: number;
+  others: number;
 }
 
 /**
@@ -105,7 +105,7 @@ function sumStatusCodes(testData: TestData, navItemName?: string): StatusCounts 
     "300s": 0,
     "400s": 0,
     "500s": 0,
-    "all": 0
+    "others": 0
   };
 
   // Process each endpoint
@@ -127,7 +127,6 @@ function sumStatusCodes(testData: TestData, navItemName?: string): StatusCounts 
           if (typeof testData.metrics[key] !== "undefined" && typeof testData.metrics[key].values.count !== "undefined") {
             const count = testData.metrics[key].values.count as number;
             result[range as keyof StatusCounts] += count;
-            result.all += count;
           }
         }
       }
@@ -243,11 +242,12 @@ const APIPerformanceDashboard = () => {
   const params = new URLSearchParams(useLocation().search);
 
   const [activeTab, setActiveTab] = useState(typeof params.get("tab") === "string" ? parseInt(params.get("tab") || "0") : 0);
-  const [selectedDate, setSelectedDate] = useState<string>("2025-04-11");
+  const [selectedDate, setSelectedDate] = useState<string>("2025-04-11-localhost");
 
   // Available test dates (normally this would be fetched from an API)
   const availableDates = [
-    "2025-04-11"
+    "2025-04-11-localhost",
+    "2025-04-11-production"
   ];
 
   useEffect(() => {
@@ -396,13 +396,13 @@ const APIPerformanceDashboard = () => {
     if (!data) return null;
     const codes = sumStatusCodes(data, model_name);
 
-    const toshow = [];
-    for (let i = 200; i <= 500; i += 100) {
-      const key = `${i}s` as keyof StatusCounts
-      if (codes[key] > 0) {
-        toshow.push(`${key}: ${codes[key]}`);
+    const toshow: string[] = [];
+    ["200s", "300s", "400s", "500s", "others"].forEach(key => {
+      if (codes[key as keyof StatusCounts] > 0) {
+        toshow.push(`${key}: ${codes[key as keyof StatusCounts]}`);
       }
-    }
+    });
+
 
     return <TableCell>
       {metric && metric.values ? (
@@ -419,7 +419,7 @@ const APIPerformanceDashboard = () => {
             <ResultCount>{docs.toLocaleString()}</ResultCount>
           </DocCountRow>
           <DocCountRow>
-            <span style={{ fontWeight: "bold" }}>Codes:</span>{" "} {toshow.join(', ')}
+            <span style={{ fontWeight: "bold" }}>Codes:</span>{" "} {toshow.join(", ")}
           </DocCountRow>
         </EndpointCell>
       ) : "N/A"}

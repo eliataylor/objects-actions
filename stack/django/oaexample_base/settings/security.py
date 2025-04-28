@@ -51,6 +51,8 @@ CORS_ALLOW_CREDENTIALS = True # using cookies
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'x-email-verification-key',  # used by allauth
     'X-App-Client',  # used by mobile to toggle to Token auth
+    'x-password-reset-key',
+    'x-csrftoken'
 ]
 
 logger.debug(f"Allowing Hosts: {", ".join(ALLOWED_HOSTS)}")
