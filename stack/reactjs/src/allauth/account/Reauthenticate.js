@@ -33,7 +33,7 @@ export default function Reauthenticate () {
 
       <FormErrors errors={response.content?.errors} />
 
-      <Box>
+      <Box mb={2} mt={2}>
         <TextField
           fullWidth
           value={password}
@@ -44,7 +44,7 @@ export default function Reauthenticate () {
         />
         <FormErrors param="password" errors={response.content?.errors} />
       </Box>
-      <Button disabled={response.fetching} onClick={() => submit()}>
+      <Button variant={'contained'} disabled={response.fetching} onClick={() => submit()}>
         Confirm
       </Button>
     </ReauthenticateFlow>

@@ -68,7 +68,7 @@ export default function ResetPassword () {
           />
           <FormErrors param="password" errors={response.content?.errors} />
         </Box>
-        <Box>
+        <Box mt={1} mb={1}>
           <TextField
             fullWidth
             value={password2}
@@ -80,7 +80,7 @@ export default function ResetPassword () {
           <FormErrors param="password2" errors={password2Errors} />
         </Box>
 
-        <Button disabled={response.fetching} onClick={() => submit()}>
+        <Button variant={"contained"} disabled={response.fetching} onClick={() => submit()}>
           Reset
         </Button>
       </>
@@ -90,10 +90,12 @@ export default function ResetPassword () {
   return (
     <Box p={1} mt={8}>
       <Typography variant="h6">Reset Password</Typography>
+      <Box mt={2} mb={4}>
+      {body}
+      </Box>
       <Typography variant="body1">
         Remember your password? <Link to="/account/login">Back to login.</Link>
       </Typography>
-      {body}
     </Box>
   );
 }

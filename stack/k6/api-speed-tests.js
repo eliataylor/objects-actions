@@ -33,9 +33,9 @@ for (let i = 0; i < NAVITEMS.length; i++) {
   };
 
   item.status_codes = {
-    pagination: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 },
-    search: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 },
-    detail: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 }
+    pagination: { "200s": 0, "300s": 0, "400s": 0, "500s": 0, "others": 0 },
+    search: { "200s": 0, "300s": 0, "400s": 0, "500s": 0, "others": 0 },
+    detail: { "200s": 0, "300s": 0, "400s": 0, "500s": 0, "others": 0 }
   };
 
   for (let i = 200; i <= 500; i += 100) {
@@ -44,6 +44,10 @@ for (let i = 0; i < NAVITEMS.length; i++) {
     item.status_codes.detail[`${i}s`] = new Counter(`${name}_detail_status_code_${i}s`);
   }
 
+  item.status_codes.pagination[`others`] = new Counter(`${name}_pagination_status_code_others`);
+  item.status_codes.search[`others`] = new Counter(`${name}_search_status_code_others`);
+  item.status_codes.detail[`others`] = new Counter(`${name}_detail_status_code_others`);
+
 }
 
 // Test options
@@ -51,8 +55,8 @@ export const options = {
   scenarios: {
     endpoint_tests: {
       executor: "per-vu-iterations",
-      vus: 5,
-      iterations: 5,
+      vus: 1,
+      iterations: 1,
       maxDuration: "5m"
     }
   },
@@ -141,11 +145,12 @@ function makeRequest (url, item, testType) {
   // Track status code
   const statusKey = Math.round(parseInt(response.status) / 100) * 100;
 
-  if (typeof !item.status_codes[testType][`${statusKey}s`] === "undefined") {
-    console.warn(`Unknown status code ${statusKey} for ${testType}`, item.status_codes[testType]);
-    item.status_codes[testType][`${statusKey}s`] = new Gauge(`${item.segment}_${testType}_status_code_${statusKey}`);
+  if (typeof item.status_codes[testType][`${statusKey}s`] === "undefined") {
+    console.warn(`Unknown status code ${statusKey} for ${testType}`);
+    item.status_codes[testType][`others`].add(1);
+  } else {
+    item.status_codes[testType][`${statusKey}s`].add(1);
   }
-  item.status_codes[testType][`${statusKey}s`].add(1);
 
   // Add to general metric
   item.timers[testType].add(response.timings.duration);
@@ -247,15 +252,15 @@ export function handleSummary (data) {
     const name = item.type.toLowerCase();
     // if (item.segment !== "cities" && item.segment !== "users") continue;
     const statusCodes = {
-      pagination: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 },
-      search: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 },
-      detail: { "200s": 0, "300s": 0, "400s": 0, "500s": 0 }
+      pagination: { "200s": 0, "300s": 0, "400s": 0, "500s": 0, "others": 0 },
+      search: { "200s": 0, "300s": 0, "400s": 0, "500s": 0, "others": 0 },
+      detail: { "200s": 0, "300s": 0, "400s": 0, "500s": 0, "others": 0 }
     };
-    for (let i = 200; i <= 500; i += 100) {
-      ['pagination', 'search', 'detail'].forEach(testType => {
-        statusCodes[testType][`${i}s`] = data.metrics[`${name}_${testType}_status_code_${i}s`] ? data.metrics[`${name}_${testType}_status_code_${i}s`].values?.value : 0
-      })
-    }
+    ["200s", "300s", "400s", "500s", "others"].forEach(i => {
+      ["pagination", "search", "detail"].forEach(testType => {
+        statusCodes[testType][i] = data.metrics[`${name}_${testType}_status_code_${i}`] ? data.metrics[`${name}_${testType}_status_code_${i}`].values?.value : 0;
+      });
+    })
 
     endpoints.push({
       ...item,
@@ -269,7 +274,7 @@ export function handleSummary (data) {
         pagination: data.metrics[`${name}_pagination_response_time`] ? data.metrics[`${name}_pagination_response_time`].values : null,
         search: data.metrics[`${name}_search_response_time`] ? data.metrics[`${name}_search_response_time`].values : null
       },
-      ...statusCodes
+      statusCodes: statusCodes
     });
   }
 

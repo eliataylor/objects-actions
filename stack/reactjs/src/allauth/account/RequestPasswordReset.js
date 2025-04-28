@@ -38,13 +38,10 @@ export default function RequestPasswordReset () {
   return (
     <Box p={1} mt={8}>
       <Typography variant="h6">Reset Password</Typography>
-      <Typography variant="body1">
-        Remember your password? <Link to="/account/login">Back to login.</Link>
-      </Typography>
 
       <FormErrors errors={response.content?.errors} />
 
-      <Box>
+      <Box mt={1} mb={1}>
         <TextField
           fullWidth
           value={email}
@@ -55,9 +52,13 @@ export default function RequestPasswordReset () {
         />
         <FormErrors param="email" errors={response.content?.errors} />
       </Box>
-      <Button disabled={response.fetching} onClick={() => submit()}>
-        Reset
+      <Button variant={"contained"} disabled={response.fetching} onClick={() => submit()}>
+        Request Reset
       </Button>
+      <Typography variant="body1" mt={3}>
+        Remember your password? <Link to="/account/login">Back to login.</Link>
+      </Typography>
+
     </Box>
   );
 }

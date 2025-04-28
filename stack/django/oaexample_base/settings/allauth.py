@@ -28,6 +28,7 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_DISPLAY = lambda user: user.get_full_name()
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 
 OPENAI_API_KEY = myEnv('OPENAI_API_KEY', 'NoKeySet')
 
@@ -36,6 +37,7 @@ if DJANGO_ENV != 'production':
     ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # allow both for the sake of databuilder
     ACCOUNT_LOGIN_METHODS = {'email', 'username'} # allow both for the sake of databuilder
     ACCOUNT_RATE_LIMITS = False
+    ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 
 HEADLESS_ONLY = True
 
@@ -65,6 +67,10 @@ HEADLESS_FRONTEND_URLS = {
 HEADLESS_SERVE_SPECIFICATION = True
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True
+MFA_PASSKEY_SIGNUP_ENABLED = False
+# MFA_TRUST_ENABLED = True
+if DJANGO_ENV != 'production':
+    MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = True
 
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
