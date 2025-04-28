@@ -17,8 +17,6 @@ MFA_FORMS = {
     'deactivate_totp': 'allauth.mfa.forms.DeactivateTOTPForm',
 }
 
-TOTP_ELI= '4D5UOVBMGUGDKTO5GHYTS3K47NFGTI3V'
-
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_EMAIL_VERIFICATION = "optional"  # since SMS only is allowed
