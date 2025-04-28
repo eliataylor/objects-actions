@@ -85,7 +85,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'client_id': myEnv('GOOGLE_OAUTH_CLIENT_ID', ""),
             'secret': myEnv('GOOGLE_OAUTH_SECRET', ""),
             'key': myEnv('GOOGLE_OAUTH_KEY', ""),
-            'redirect_uri': f"{API_HOST}/accounts/google/login/callback"
+            'redirect_uri': f"{APP_HOST}/accounts/oidc/google/login/callback"
         },
         'EMAIL_AUTHENTICATION': True,
         'FETCH_USERINFO': True,
@@ -96,7 +96,7 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
-            'redirect_uri': f"{API_HOST}/accounts/google/login/callback"
+            'redirect_uri': f"{APP_HOST}/accounts/oidc/google/login/callback"
         }
     },
     'github': {
@@ -109,11 +109,11 @@ SOCIALACCOUNT_PROVIDERS = {
             "provider_id": "github",
             'client_id': myEnv('GITHUB_CLIENT_ID', ""),
             'secret': myEnv('GITHUB_SECRET', ""),
-            'redirect_uri': f"{API_HOST}/accounts/github/login/callback"
+            'redirect_uri': f"{APP_HOST}/accounts/oidc/github/login/callback"
         },
         'AUTH_PARAMS': {
             'access_type': 'online',
-            'redirect_uri': f"{API_HOST}/accounts/github/login/callback"
+            'redirect_uri': f"{APP_HOST}/accounts/oidc/github/login/callback"
         }
     },
     "openid_connect": {
@@ -123,13 +123,13 @@ SOCIALACCOUNT_PROVIDERS = {
                 "name": "LinkedIn",
                 "client_id": myEnv('LINKEDIN_CLIENT_ID', ""),
                 "secret": myEnv('LINKEDIN_SECRET', ""),
-                'redirect_uri': f"{API_HOST}/accounts/oidc/linkedin/login/callback",
+                'redirect_uri': f"{APP_HOST}/accounts/oidc/linkedin/login/callback",
                 "settings": {
                     "server_url": "https://www.linkedin.com/oauth",
                 },
                 'AUTH_PARAMS': {
                     'access_type': 'offline',
-                    'redirect_uri': f"{API_HOST}/accounts/oidc/linkedin/login/callback"
+                    'redirect_uri': f"{APP_HOST}/accounts/oidc/linkedin/login/callback"
                 }
             }
         ]
@@ -145,11 +145,11 @@ SOCIALACCOUNT_PROVIDERS = {
             "provider_id": "spotify",
             "client_id": myEnv("SPOTIFY_CLIENT_ID"),
             "secret": myEnv("SPOTIFY_SECRET"),
-            'redirect_uri': f"{API_HOST}/accounts/spotify/login/callback"
+            'redirect_uri': f"{APP_HOST}/accounts/oidc/spotify/login/callback"
         },
         'AUTH_PARAMS': {
             'access_type': 'offline',
-            'redirect_uri': f"{API_HOST}/accounts/spotify/login/callback"
+            'redirect_uri': f"{APP_HOST}/accounts/oidc/spotify/login/callback"
         }
     }
 }

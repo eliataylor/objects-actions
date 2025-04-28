@@ -15,4 +15,4 @@ COPY . .
 
 RUN chmod +x /app/databuilder/entrypoint.sh
 
-CMD ["sh", "entrypoint.sh"]
+CMD ["bash", "entrypoint.sh"]

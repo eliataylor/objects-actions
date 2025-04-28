@@ -115,6 +115,10 @@ function createRouter() {
           element: <Logout />
         },
         {
+          path: "/account/oidc/:provider/callback",
+          element: <ProviderCallback />
+        },
+        {
           path: "/account/:provider/callback",
           element: <ProviderCallback />
         },
