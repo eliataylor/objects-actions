@@ -1,13 +1,15 @@
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import { pathForPendingFlow, URLs, useAuthStatus } from "../auth";
 import { Box } from "@mui/material";
 
 export default function ProviderCallback () {
   const location = useLocation();
+  const { provider } = useParams();
   const params = new URLSearchParams(location.search);
   const error = params.get("error");
   const [auth, status] = useAuthStatus();
-  const providerName = params.provider ? params.provider : "";
+
+  const providerName = provider !== 'provider' ? provider : (params.provider ? params.provider : "Third-Party");
 
   let url = URLs.LOGIN_URL;
   if (status.isAuthenticated) {
@@ -23,7 +25,7 @@ export default function ProviderCallback () {
   }
   return (
     <Box p={2} mt={7}>
-      <h1>Third-Party {providerName} Login Failure</h1>
+      <h1>{providerName} login failed</h1>
       <p>
         Something went wrong. This account may already be linked to another
         user.

@@ -52,7 +52,8 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'x-email-verification-key',  # used by allauth
     'X-App-Client',  # used by mobile to toggle to Token auth
     'x-password-reset-key',
-    'x-csrftoken'
+    'x-csrftoken',
+ #   'X-Session-Token' # allAuth App Usage
 ]
 
 logger.debug(f"Allowing Hosts: {", ".join(ALLOWED_HOSTS)}")

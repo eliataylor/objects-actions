@@ -29,4 +29,4 @@ RUN chmod +x /app/django/entrypoint.sh
 EXPOSE 8080
 
 # Run the Django application
-CMD ["sh", "entrypoint.sh"]
+CMD ["bash", "entrypoint.sh"]

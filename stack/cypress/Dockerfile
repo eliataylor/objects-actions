@@ -16,4 +16,4 @@ COPY . .
 RUN chmod +x ./entrypoint.sh
 
 # Set the entrypoint script
-ENTRYPOINT ["sh", "./entrypoint.sh"]
+ENTRYPOINT ["bash", "./entrypoint.sh"]

@@ -35,7 +35,7 @@ OPENAI_API_KEY = myEnv('OPENAI_API_KEY', 'NoKeySet')
 if DJANGO_ENV != 'production':
     EMAIL_USE_SSL = False  # True if using SSL
     ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # allow both for the sake of databuilder
-    ACCOUNT_LOGIN_METHODS = {'email', 'username'} # allow both for the sake of databuilder
+    ACCOUNT_LOGIN_METHODS = {'email', 'username'}  # allow both for the sake of databuilder
     ACCOUNT_RATE_LIMITS = False
     ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 
@@ -43,8 +43,8 @@ HEADLESS_ONLY = True
 
 DEFAULT_HTTP_PROTOCOL = API_HOST_PARTS.scheme
 
-LOGIN_REDIRECT_URL = f"{APP_HOST}/account/provider/callback"
-SIGNUP_REDIRECT_URL = f"{APP_HOST}/account/provider/callback"
+# LOGIN_REDIRECT_URL = f"{APP_HOST}/account/provider/callback"
+# SIGNUP_REDIRECT_URL = f"{APP_HOST}/account/provider/callback"
 
 HEADLESS_ADAPTER = 'oaexample_app.adapter.CustomHeadlessAdapter'
 SOCIALACCOUNT_ADAPTER = 'oaexample_app.adapter.MySocialAccountAdapter'
@@ -85,7 +85,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'client_id': myEnv('GOOGLE_OAUTH_CLIENT_ID', ""),
             'secret': myEnv('GOOGLE_OAUTH_SECRET', ""),
             'key': myEnv('GOOGLE_OAUTH_KEY', ""),
-            'redirect_uri': f"{API_HOST}/accounts/google/login/callback"
+            'redirect_uri': f"{API_HOST}/accounts/google/login/callback/"
         },
         'EMAIL_AUTHENTICATION': True,
         'FETCH_USERINFO': True,
@@ -96,7 +96,7 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
-            'redirect_uri': f"{API_HOST}/accounts/google/login/callback"
+            'redirect_uri': f"{API_HOST}/accounts/google/login/callback/"
         }
     },
     'github': {
@@ -109,11 +109,11 @@ SOCIALACCOUNT_PROVIDERS = {
             "provider_id": "github",
             'client_id': myEnv('GITHUB_CLIENT_ID', ""),
             'secret': myEnv('GITHUB_SECRET', ""),
-            'redirect_uri': f"{API_HOST}/accounts/github/login/callback"
+            'redirect_uri': f"{API_HOST}/accounts/github/login/callback/"
         },
         'AUTH_PARAMS': {
             'access_type': 'online',
-            'redirect_uri': f"{API_HOST}/accounts/github/login/callback"
+            'redirect_uri': f"{API_HOST}/accounts/github/login/callback/"
         }
     },
     "openid_connect": {
@@ -145,11 +145,14 @@ SOCIALACCOUNT_PROVIDERS = {
             "provider_id": "spotify",
             "client_id": myEnv("SPOTIFY_CLIENT_ID"),
             "secret": myEnv("SPOTIFY_SECRET"),
-            'redirect_uri': f"{API_HOST}/accounts/spotify/login/callback"
+            'redirect_uri': f"{API_HOST}/accounts/spotify/login/callback/",
+            "settings": {
+                "server_url": "https://accounts.spotify.com/authorize",
+            },
         },
         'AUTH_PARAMS': {
             'access_type': 'offline',
-            'redirect_uri': f"{API_HOST}/accounts/spotify/login/callback"
+            'redirect_uri': f"{API_HOST}/accounts/spotify/login/callback/"
         }
     }
 }

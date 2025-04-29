@@ -22,4 +22,4 @@ RUN chmod +x /app/reactjs/entrypoint.sh
 EXPOSE 3000
 
 # Command to run the ReactJS server
-CMD ["sh", "entrypoint.sh"]
+CMD ["bash", "entrypoint.sh"]

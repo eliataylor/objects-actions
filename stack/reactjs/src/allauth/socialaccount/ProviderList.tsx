@@ -52,18 +52,6 @@ const ProviderList: React.FC<ProviderListProps> = ({
           (a: any) => a.provider.id === provider.id
         );
 
-        if (window.location.search.indexOf("debug") === -1) {
-          if (!connected && provider.id === "google") {
-            return null;
-          }
-          if (!connected && provider.id === "facebook") {
-            return null;
-          }
-          if (!connected && provider.id === "spotify") {
-            return null;
-          }
-        }
-
         // @ts-ignore
         return (
           <Button
