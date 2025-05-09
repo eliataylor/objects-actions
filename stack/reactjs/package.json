@@ -19,7 +19,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "analytics": "^0.8.13",
-    "axios": "^1.7.2",
+    "axios": "^1.8.2",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.11",
     "notistack": "^3.0.1",
