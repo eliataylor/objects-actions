@@ -49,7 +49,7 @@ const UserView: React.FC = () => {
       }
     };
     fetchUserProfile();
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, uid]);
 
   useEffect(() => {
     const newstats = { ...stats };
@@ -80,7 +80,7 @@ const UserView: React.FC = () => {
     updateAllStats();
 
     console.log("STATS", stats);
-  }, []);
+  }, [stats, location.search, uid]);
 
   if (!userProfile) return null;
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { AppBar, Box, Fab, Grid } from "@mui/material";
 import { ApiListResponse, ModelName, ModelType, NavItem, NAVITEMS } from "../object-actions/types/types";
 import EntityCard from "../object-actions/components/EntityCard";
@@ -36,7 +36,7 @@ const EntityList = <T extends ModelName>({
     }
   }) as NavItem<T>;
 
-  const fetchData = async (offset = 0, limit = 10) => {
+  const fetchData = useCallback(async (offset = 0, limit = 10) => {
     if (!hasUrl) {
       console.error("NO URL " + model, location.pathname);
       return;
@@ -65,7 +65,7 @@ const EntityList = <T extends ModelName>({
     }
 
     updateData(response.data as ApiListResponse<T>);
-  };
+  }, [author, hasUrl, model, location.pathname]);
 
   const handlePagination = (limit: number, offset: number) => {
     if (!model) {
@@ -84,7 +84,7 @@ const EntityList = <T extends ModelName>({
     const offset = params.has("offset") ? parseInt(params.get("offset") || "0") : 0;
     const limit = params.has("limit") ? parseInt(params.get("limit") || "10") : 10;
     fetchData(offset, limit);
-  }, [model, location.pathname, location.search]);
+  }, [model, fetchData, location.pathname, location.search]);
 
   if (!hasUrl) return <div>Invalid URL...</div>;
 

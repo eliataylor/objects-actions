@@ -21,7 +21,6 @@ export default function AutocompleteField<T extends ModelName>({
                                                                }: SingleAcFieldProps<T>) {
   const {
     options,
-    inputValue,
     loading,
     nestedForm,
     setInputValue,

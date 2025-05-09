@@ -4,7 +4,6 @@ import TablePaginator from "../../components/TablePaginator";
 import ApiClient, { HttpResponse } from "../../config/ApiClient";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
-import { useAuth } from "../../allauth/auth";
 import { WorksheetListResponse } from "./generator-types";
 import WorksheetCard from "./WorksheetCard";
 import { TightButton } from "../../theme/StyledFields";
@@ -12,29 +11,7 @@ import { TightButton } from "../../theme/StyledFields";
 const WorksheetList = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const me = useAuth()?.data?.user;
   const [listData, updateData] = React.useState<WorksheetListResponse | null | string>(null);
-
-  const fetchData = async (offset = 0, limit = 10) => {
-    let apiUrl = `/api/worksheets`;
-
-    const params = new URLSearchParams();
-
-    if (offset > 0) {
-      params.set("offset", offset.toString());
-    }
-    if (limit > 0) {
-      params.set("limit", limit.toString());
-    }
-
-    apiUrl += `/?${params.toString()}`;
-    const response: HttpResponse<WorksheetListResponse> = await ApiClient.get(apiUrl);
-    if (response.error) {
-      return updateData(response.error);
-    }
-
-    updateData(response.data as WorksheetListResponse);
-  };
 
   const handlePagination = (limit: number, offset: number) => {
     const params = new URLSearchParams(location.search);
@@ -44,6 +21,27 @@ const WorksheetList = () => {
   };
 
   useEffect(() => {
+    const fetchData = async (offset = 0, limit = 10) => {
+      let apiUrl = `/api/worksheets`;
+
+      const params = new URLSearchParams();
+
+      if (offset > 0) {
+        params.set("offset", offset.toString());
+      }
+      if (limit > 0) {
+        params.set("limit", limit.toString());
+      }
+
+      apiUrl += `/?${params.toString()}`;
+      const response: HttpResponse<WorksheetListResponse> = await ApiClient.get(apiUrl);
+      if (response.error) {
+        return updateData(response.error);
+      }
+
+      updateData(response.data as WorksheetListResponse);
+    };
+
     const params = new URLSearchParams(location.search);
     const offset = params.has("offset") ? parseInt(params.get("offset") || "0") : 0;
     const limit = params.has("limit") ? parseInt(params.get("limit") || "10") : 10;

@@ -79,7 +79,7 @@ export const FormProvider = <T extends ModelName>({
     name: K,
     value: ModelType<T>[K]
   ) => {
-    setEntity((prev) => ({
+    setEntity((prev: Partial<ModelType<T>>) => ({
       ...prev,
       [name]: value
     }));

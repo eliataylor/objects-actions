@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { sms, smsVerify } from "./lib/allauth";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { makeRelative } from "../utils";
 
 interface SmsSigninOrUpProps {
@@ -9,7 +9,6 @@ interface SmsSigninOrUpProps {
 }
 
 const SmsSigninOrUp: React.FC<SmsSigninOrUpProps> = ({ onVerify }) => {
-  const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [verificationCode, setVerificationCode] = useState<string>("");
   const [error, setError] = useState<string>("");

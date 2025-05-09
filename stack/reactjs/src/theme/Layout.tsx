@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { AppBar, Box, Divider, Fab, Grid, List, Popover } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -60,9 +60,9 @@ const Layout: React.FC = () => {
     setNavDrawerWidth(0);
   };
 
-  function isOaPage(): boolean {
+  const isOaPage = useCallback((): boolean => {
     return location.pathname.indexOf("/oa/") === 0 || location.pathname === "/";
-  }
+  }, [location.pathname]);
 
   function formatPathnameToDocTitle(pathname: string) {
     // Remove leading and trailing slashes, then split by remaining slashes
@@ -85,7 +85,7 @@ const Layout: React.FC = () => {
     } else {
       document.title = formatPathnameToDocTitle(location.pathname);
     }
-  }, [location.pathname]);
+  }, [location.pathname, isOaPage]);
 
   const MainLogo = isOaPage() ? OALogo : Logo;
 

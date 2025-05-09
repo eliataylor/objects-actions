@@ -125,6 +125,7 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
                 </div>
               );
             }
+            return null;
           });
           if (list.length > 0) {
             atts.secondary = list;
