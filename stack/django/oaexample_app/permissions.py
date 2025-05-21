@@ -25,9 +25,7 @@ If verb has list or detail:
 """
 
 ####OBJECT-ACTIONS-PERMISSIONS-IMPORTS-STARTS####
-from rest_framework import permissions
 from rest_framework.permissions import BasePermission
-from django.contrib.auth import get_user_model
 ####OBJECT-ACTIONS-PERMISSIONS-IMPORTS-ENDS####
 
 ####OBJECT-ACTIONS-PERMISSIONS-STARTS####

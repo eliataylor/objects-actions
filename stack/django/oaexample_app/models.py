@@ -1,18 +1,22 @@
 ####OBJECT-ACTIONS-MODELS_IMPORTS-STARTS####
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth import get_user_model
-from utils.models import BumpParentsModelMixin
-from allauth.account.models import EmailAddress
-from django.dispatch import receiver
-from allauth.account.signals import email_confirmed
-from django.utils.timezone import now
-from django.core.exceptions import ValidationError
-from django.utils import timezone
+import inspect
 import os
 import re
 import sys
-import inspect
+
+from allauth.account.models import EmailAddress
+from allauth.account.signals import email_confirmed
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.dispatch import receiver
+from django.utils import timezone
+from django.utils.timezone import now
+
+from utils.models import BumpParentsModelMixin
+
+
 ####OBJECT-ACTIONS-MODELS_IMPORTS-ENDS####
 
 ####OBJECT-ACTIONS-MODELS-STARTS####
@@ -106,7 +110,7 @@ class Users(AbstractUser, BumpParentsModelMixin):
 
 
 	@receiver(email_confirmed)
-	def update_user_email(sender, request, email_address, **kwargs):
+	def update_user_email(self, request, email_address, **kwargs):
 		# Once the email address is confirmed, make new email_address primary.
 		# This also sets user.email to the new email address.
 		# email_address is an instance of allauth.account.models.EmailAddress
@@ -209,7 +213,7 @@ class States(SuperModel):
 
 	def update_aggregations(self):
 		"""Update all aggregation fields based on associated cities"""
-		from django.db.models import Sum, Avg, Min, Max, F, Count
+		from django.db.models import Sum, Avg, Count
 
 		cities = Cities.objects.filter(state_id=self)
 		city_data = cities.aggregate(

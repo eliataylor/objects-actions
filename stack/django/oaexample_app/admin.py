@@ -1,13 +1,12 @@
 # admin.py
 
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
+from django.contrib.admin.views.main import ChangeList
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
-from django.contrib.admin.views.main import ChangeList
-import django_filters
-from .admin_mixins import SmartAdminMixin
+from django.utils.translation import gettext_lazy as _
 
+from .admin_mixins import SmartAdminMixin
 # Import your models here
 from .models import (
     Topics, ResourceTypes, MeetingTypes, States, Parties, Stakeholders,
@@ -15,6 +14,8 @@ from .models import (
     Invites, Subscriptions, Rooms, Attendees, AppTokens
 )
 
+image_html = '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>'
+no_image_html = "No Image"
 
 # Custom pagination for large datasets
 class LargeTablePaginator(admin.AdminSite):
@@ -55,9 +56,9 @@ class TopicsAdmin(BaseModelAdmin):
     def image_tag(self, obj):
         if obj.icon:
             return format_html(
-                '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                image_html,
                 obj.icon.url)
-        return "No Image"
+        return no_image_html
 
     image_tag.short_description = 'Icon'
 
@@ -95,9 +96,9 @@ class StatesAdmin(BaseModelAdmin):
     def image_tag(self, obj):
         if obj.icon:
             return format_html(
-                '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                image_html,
                 obj.icon.url)
-        return "No Image"
+        return no_image_html
 
     image_tag.short_description = 'Icon'
 
@@ -117,9 +118,9 @@ class PartiesAdmin(BaseModelAdmin):
     def image_tag(self, obj):
         if obj.logo:
             return format_html(
-                '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                image_html,
                 obj.logo.url)
-        return "No Image"
+        return no_image_html
 
     image_tag.short_description = 'Logo'
 
@@ -135,9 +136,9 @@ class StakeholdersAdmin(BaseModelAdmin):
     def image_tag(self, obj):
         if obj.image:
             return format_html(
-                '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                image_html,
                 obj.image.url)
-        return "No Image"
+        return no_image_html
 
     image_tag.short_description = 'Image'
 
@@ -156,10 +157,8 @@ class ResourcesAdmin(BaseModelAdmin):
 
     def image_tag(self, obj):
         if obj.image:
-            return format_html(
-                '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
-                obj.image.url)
-        return "No Image"
+            return format_html(image_html,obj.image.url)
+        return no_image_html
 
     image_tag.short_description = 'Image'
 
@@ -199,9 +198,9 @@ class UsersAdmin(BaseUserAdmin):
     def image_tag(self, obj):
         if obj.picture:
             return format_html(
-                '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                image_html,
                 obj.picture.url)
-        return "No Image"
+        return no_image_html
 
     image_tag.short_description = 'Picture'
 
@@ -225,9 +224,9 @@ class CitiesAdmin(BaseModelAdmin):
     def image_tag(self, obj):
         if obj.picture:
             return format_html(
-                '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                image_html,
                 obj.picture.url)
-        return "No Image"
+        return no_image_html
 
     image_tag.short_description = 'Image'
 
@@ -467,9 +466,9 @@ class AttendeesAdmin(BaseModelAdmin):
     def image_tag(self, obj):
         if obj.display_bg:
             return format_html(
-                '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+                image_html,
                 obj.display_bg.url)
-        return "No Image"
+        return no_image_html
 
     image_tag.short_description = 'Background'
 

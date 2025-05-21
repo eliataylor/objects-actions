@@ -1,28 +1,29 @@
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-STARTS####
-from rest_framework import serializers
-from .models import Topics
-from .models import ResourceTypes
-from .models import MeetingTypes
-from .models import States
-from .models import Parties
-from .models import Stakeholders
-from .models import Resources
-from .models import Users
-from .models import Cities
-from .models import Officials
-from .models import Rallies
-from .models import ActionPlans
-from .models import Meetings
-from .models import Invites
-from .models import Subscriptions
-from .models import Rooms
-from .models import Attendees
-####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
-
 import logging
+
 from django.db.models import ImageField
+from rest_framework import serializers
+
+from .models import ActionPlans
+from .models import Attendees
+from .models import Cities
+from .models import Invites
+from .models import MeetingTypes
+from .models import Meetings
+from .models import Officials
+from .models import Parties
+from .models import Rallies
+from .models import ResourceTypes
+from .models import Resources
+from .models import Rooms
+from .models import Stakeholders
+from .models import States
+from .models import Subscriptions
+from .models import Topics
+from .models import Users
+
+####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
 logger = logging.getLogger(__name__)
-from django.contrib.auth import get_user_model
 from django.core.exceptions import FieldDoesNotExist
 from google.auth.exceptions import DefaultCredentialsError
 

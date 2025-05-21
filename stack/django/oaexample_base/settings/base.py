@@ -1,6 +1,8 @@
-import os
-from dotenv import dotenv_values
 import logging
+import os
+
+from dotenv import dotenv_values
+
 logger = logging.getLogger(__name__)
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))

@@ -22,7 +22,6 @@ export default function AutocompleteMultipleField<T extends ModelName>({
                                                                        }: MultiAcFieldProps<T>) {
   const {
     options,
-    inputValue,
     loading,
     nestedForm,
     setInputValue,

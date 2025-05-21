@@ -1,6 +1,5 @@
 import csv
 import os
-import random
 from typing import Dict, Optional
 
 from django.db import transaction

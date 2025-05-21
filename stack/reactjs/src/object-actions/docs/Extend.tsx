@@ -5,11 +5,6 @@ import EnvBuilder from "../forming/EnvBuilder";
 import { useEnvContext } from "../forming/EnvProvider";
 import { NeedHelp } from "./NeedHelp";
 
-interface Task {
-  description: string;
-  link: string;
-}
-
 const Extend: React.FC = () => {
   const { envConfig } = useEnvContext();
 
@@ -34,7 +29,7 @@ const Extend: React.FC = () => {
         <Command command="bash clone.sh --env .env" />
       </StyledPaper>
 
-      {envConfig.STACK_PATH != "." && (
+      {envConfig.STACK_PATH !== "." && (
         <StyledPaper>
           <Command command={`cd ${envConfig.STACK_PATH}`} />
         </StyledPaper>

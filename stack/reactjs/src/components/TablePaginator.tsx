@@ -31,7 +31,7 @@ const TablePaginator: React.FC<PaginatorProps> = ({
 
   useEffect(() => {
     onPageChange(limit, offset);
-  }, [offset, limit]);
+  }, [offset, limit, onPageChange]);
 
   const handlePageChange = (
     event: React.MouseEvent<HTMLButtonElement> | null,

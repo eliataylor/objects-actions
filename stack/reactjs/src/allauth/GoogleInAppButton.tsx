@@ -27,7 +27,7 @@ const GoogleInAppButton: React.FC<{ isConnected: boolean }> = ({
     };
 
     // Send a message to Flutter WebView to initiate the OAuth process
-    window.postMessage(JSON.stringify(message), "*");
+    window.postMessage(JSON.stringify(message), process.env.REACT_APP_APP_HOST || "*");
   };
 
   // Function to handle messages from Flutter WebView

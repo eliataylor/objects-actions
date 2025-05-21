@@ -51,7 +51,7 @@ const FontSelector: React.FC = () => {
         sx: { fontSize: 12 },
         startAdornment: (
           <InputAdornment position="start">
-            <img height={15} src={"/oa-assets/google-fonts.svg"} />
+            <img alt="google fonts" height={15} src={"/oa-assets/google-fonts.svg"} />
           </InputAdornment>
         )
       }}

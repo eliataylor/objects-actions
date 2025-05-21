@@ -1,5 +1,6 @@
-from django.forms import Select
 from functools import lru_cache
+
+from django.forms import Select
 
 
 class SmartAdminMixin:

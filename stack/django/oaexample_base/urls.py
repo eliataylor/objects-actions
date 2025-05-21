@@ -1,9 +1,10 @@
-from django.urls import include, path
-from django.contrib import admin
 from django.conf import settings
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from oaexample_base.settings import myEnv
+from django.contrib import admin
 from django.shortcuts import redirect
+from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+
+from oaexample_base.settings import myEnv
 
 
 def favicon_redirect(request):

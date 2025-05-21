@@ -1,6 +1,9 @@
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
-    opera: any;
+    gtag: (command: string, eventName: string, params?: Record<string, any>) => void;
+    opera: {
+      version: () => string;
+      [key: string]: any; // Allow other properties if needed
+    };
   }
 }

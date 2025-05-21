@@ -1,58 +1,64 @@
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-STARTS####
-from rest_framework import viewsets, permissions, filters, generics
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.views import APIView
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework import viewsets, permissions, filters, generics
-from rest_framework.views import APIView
-from django.http import JsonResponse
-from django.core.management import call_command
-from django.apps import apps
-from django.http import HttpResponse
-from django.shortcuts import redirect
-from django.utils import timezone
-from .services import send_sms
 import random
 import re
-import os
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-from .serializers import TopicsSerializer
-from .models import Topics
-from .serializers import ResourceTypesSerializer
-from .models import ResourceTypes
-from .serializers import MeetingTypesSerializer
-from .models import MeetingTypes
-from .serializers import StatesSerializer
-from .models import States
-from .serializers import PartiesSerializer
-from .models import Parties
-from .serializers import StakeholdersSerializer
-from .models import Stakeholders
-from .serializers import ResourcesSerializer
-from .models import Resources
-from .serializers import UsersSerializer
-from .models import Users
-from .serializers import CitiesSerializer
-from .models import Cities
-from .serializers import OfficialsSerializer
-from .models import Officials
-from .serializers import RalliesSerializer
-from .models import Rallies
-from .serializers import ActionPlansSerializer
-from .models import ActionPlans
-from .serializers import MeetingsSerializer
-from .models import Meetings
-from .serializers import InvitesSerializer
-from .models import Invites
-from .serializers import SubscriptionsSerializer
-from .models import Subscriptions
-from .serializers import RoomsSerializer
-from .models import Rooms
-from .serializers import AttendeesSerializer
-from .models import Attendees
+
+from django.apps import apps
+from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
-from .permissions import can_view_actionplans, can_view_officials, can_edit_actionplans, can_edit_officials, can_edit_cities, can_edit_rallies, can_delete_cities, can_delete_invites, can_edit_subscriptions, can_delete_subscriptions, can_delete_meetings, can_view_subscriptions, can_add_cities, can_add_resources, can_add_subscriptions, can_delete_rallies, can_view_rooms, can_delete_resources, can_view_resources, can_add_users, can_delete_actionplans, can_edit_invites, can_view_cities, can_add_invites, can_delete_officials, can_add_officials, can_add_rallies, can_add_rooms, can_add_meetings, can_view_profile_users, can_view_meetings, can_view_invites, can_delete_rooms, can_edit_resources, can_edit_rooms, can_view_list_users, can_add_actionplans, can_edit_meetings, can_view_list_resources, can_view_rallies
+from django.shortcuts import redirect
+from django.utils import timezone
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
+from rest_framework import viewsets, permissions, filters, generics
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.views import APIView
+
+from .models import ActionPlans
+from .models import Attendees
+from .models import Cities
+from .models import Invites
+from .models import MeetingTypes
+from .models import Meetings
+from .models import Officials
+from .models import Parties
+from .models import Rallies
+from .models import ResourceTypes
+from .models import Resources
+from .models import Rooms
+from .models import Stakeholders
+from .models import States
+from .models import Subscriptions
+from .models import Topics
+from .models import Users
+from .permissions import can_view_actionplans, can_view_officials, can_edit_actionplans, can_edit_officials, \
+    can_edit_cities, can_edit_rallies, can_delete_cities, can_delete_invites, can_edit_subscriptions, \
+    can_delete_subscriptions, can_delete_meetings, can_view_subscriptions, can_add_cities, can_add_resources, \
+    can_add_subscriptions, can_delete_rallies, can_view_rooms, can_delete_resources, can_view_resources, can_add_users, \
+    can_delete_actionplans, can_edit_invites, can_view_cities, can_add_invites, can_delete_officials, can_add_officials, \
+    can_add_rallies, can_add_rooms, can_add_meetings, can_view_profile_users, can_view_meetings, can_view_invites, \
+    can_delete_rooms, can_edit_resources, can_edit_rooms, can_view_list_users, can_add_actionplans, can_edit_meetings, \
+    can_view_list_resources, can_view_rallies
+from .serializers import ActionPlansSerializer
+from .serializers import AttendeesSerializer
+from .serializers import CitiesSerializer
+from .serializers import InvitesSerializer
+from .serializers import MeetingTypesSerializer
+from .serializers import MeetingsSerializer
+from .serializers import OfficialsSerializer
+from .serializers import PartiesSerializer
+from .serializers import RalliesSerializer
+from .serializers import ResourceTypesSerializer
+from .serializers import ResourcesSerializer
+from .serializers import RoomsSerializer
+from .serializers import StakeholdersSerializer
+from .serializers import StatesSerializer
+from .serializers import SubscriptionsSerializer
+from .serializers import TopicsSerializer
+from .serializers import UsersSerializer
+from .services import send_sms
+
+
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
 

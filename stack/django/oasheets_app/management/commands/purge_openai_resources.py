@@ -5,6 +5,7 @@ from django.db import transaction
 
 from oasheets_app.models import SchemaVersions
 
+
 class Command(BaseCommand):
     help = "Purges all OpenAI Assistants, Threads, Messages, and Runs for SchemaVersions instances."
 

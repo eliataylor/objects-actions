@@ -1,7 +1,9 @@
+import logging
+
 from rest_framework.authentication import BaseAuthentication, SessionAuthentication, TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
-import logging
+
 logger = logging.getLogger(__name__)
 
 """

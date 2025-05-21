@@ -1,11 +1,9 @@
-import os
-from django.conf import settings
-from django.db import transaction
+import json
 import time
+
 # Import models and utility class
 from oaexample_app.models import ResourceTypes, Resources, Cities, States
 from .utils import BaseUtilityCommand, CommandUtils
-import json
 
 
 class Command(BaseUtilityCommand):

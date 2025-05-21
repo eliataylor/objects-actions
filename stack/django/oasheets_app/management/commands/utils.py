@@ -1,14 +1,16 @@
-import os
 import json
+import datetime
+import json
+import os
 import random
-import requests
 from io import BytesIO
+
+import requests
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management.base import BaseCommand
-import os
-import datetime
-from django.core.files.base import ContentFile
+
 
 class CommandUtils:
     """

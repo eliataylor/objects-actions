@@ -55,7 +55,7 @@ export class Helpers {
     }
 
     public getDefaultValue(field: any, entry?: any, index: number = 0) {
-        var propname = field['data-propname'];
+        let propname = field['data-propname'];
         if (entry && typeof entry[index] !== 'undefined' && typeof entry[index][propname] !== 'undefined') {
             return (entry[index][propname] === null) ? '' : entry[index][propname];
         } else if (typeof field.default_value === 'string' || typeof field.default_value === 'number') {
