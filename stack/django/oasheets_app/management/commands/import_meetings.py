@@ -1,12 +1,13 @@
-from django.core.management.base import BaseCommand
-from django.contrib.auth import get_user_model
-from django.utils import timezone
-from django.db import transaction
-from oaexample_app.models import MeetingTypes, Rallies, Meetings, Topics
-import random
-import json
 import datetime
 import logging
+import random
+
+from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.utils import timezone
+
+from oaexample_app.models import MeetingTypes, Rallies, Meetings, Topics
 
 User = get_user_model()
 logger = logging.getLogger(__name__)

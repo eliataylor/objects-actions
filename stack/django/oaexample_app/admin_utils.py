@@ -4,8 +4,6 @@ from django.contrib.admin.widgets import AutocompleteSelect
 from django.core.cache import cache
 from django.db import connection
 from django.forms import ModelChoiceField, Select, SelectMultiple
-from django.conf import settings
-import time
 
 
 class ConditionalAutocompleteSelect(AutocompleteSelect):
@@ -106,7 +104,6 @@ class SmartModelMultipleChoiceField(ModelChoiceField):
 
 # Usage in admin.py
 
-from django.contrib import admin
 from .admin_utils import SmartModelChoiceField, SmartModelMultipleChoiceField
 
 

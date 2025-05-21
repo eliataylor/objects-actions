@@ -1,7 +1,9 @@
-from django.contrib.auth.models import Group
 from allauth.account.signals import email_confirmed
+from django.contrib.auth.models import Group
 from django.dispatch import receiver
+
 from models import Cities
+
 
 @receiver(email_confirmed)
 def add_user_to_verified_group(request, email_address, **kwargs):

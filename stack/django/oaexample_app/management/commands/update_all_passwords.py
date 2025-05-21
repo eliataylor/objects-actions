@@ -1,5 +1,6 @@
-from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
+
 
 # This file is only needed by the databuilder which works best when it can log in as any user to test creating, reading, updating, and deleting (CRUD)
 

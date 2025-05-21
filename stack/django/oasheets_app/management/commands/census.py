@@ -1,9 +1,9 @@
-import requests
-import pandas as pd
-import time
 import os
+import time
+
+import pandas as pd
+import requests
 from dotenv import load_dotenv
-import json
 
 # Load environment variables (for API key)
 load_dotenv()

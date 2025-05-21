@@ -1,5 +1,4 @@
-import {NAVITEMS} from "../../support/types";
-
+import { NAVITEMS } from "../../support/types";
 
 describe("oaexample navigate drawer", async () => {
     beforeEach(() => {

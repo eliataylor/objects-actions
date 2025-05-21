@@ -1,18 +1,15 @@
-from email.policy import default
-
-from django.utils import timezone
 import random
 
+from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from faker import Faker
-from allauth.account.models import EmailAddress
-# from oaexample_app.models import Users
 
 # Import your models and utility class
-from oaexample_app.models import Resources
 from .utils import BaseUtilityCommand, CommandUtils
+
+# from oaexample_app.models import Users
 
 OA_TESTER_GROUP = 'oa-tester'
 

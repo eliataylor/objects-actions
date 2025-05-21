@@ -85,7 +85,7 @@ class DjangoBuilder:
 
         # Process permissions if provided
         if matrix_path and os.path.exists(matrix_path):
-            self.build_permissions(matrix_path, default_perm)
+            self.build_permissions(matrix_path)
         elif matrix_path:
             logger.warning(f'Cannot find Permissions Matrix {matrix_path}')
 
@@ -281,7 +281,7 @@ urlpatterns += [
 
         inject_generated_code(outpath, "\n".join(viewsets), 'VIEWSETS')
 
-    def build_permissions(self, matrix_path, default_perm):
+    def build_permissions(self, matrix_path):
         """Main permission building method that orchestrates the process"""
 
         # Get the permission matrix from CSV if provided
@@ -322,7 +322,7 @@ urlpatterns += [
         new_apps = tpl.replace("__OA_PERM_ROLES__", "\n".join(group_commands))
         inject_generated_code(apps_file_path, new_apps, 'PERMISSIONS-ROLE-GROUPS')
 
-        logger.info(f"Group initialization code added for all permission groups")
+        logger.info("Group initialization code added for all permission groups")
 
     def build_permission_classes(self):
         """Generate permission classes in permissions.py file with metadata for the exception handler"""
@@ -781,7 +781,7 @@ adapting to the current user's authentication status and roles.
                     # Look for pattern: last property line followed by empty line or another def
 
                     # First find all property assignments
-                    properties_pattern = r"\n\s+\w+\s*=.*?(?=\n\s*\n|\n\s*def|\Z)"
+                    properties_pattern = r"\n\s+\w+\s*=.*(?=\n\s*\n|\n\s*def|\Z)"
                     properties_matches = list(re.finditer(properties_pattern, class_content, re.DOTALL))
 
                     if properties_matches:

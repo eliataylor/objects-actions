@@ -1,5 +1,6 @@
-from urllib.parse import urlparse
 import os
+from urllib.parse import urlparse
+
 from .base import myEnv, DEBUG, logger
 
 # how are emails sent: django | gmail | sendgrid | smtp

@@ -1,14 +1,17 @@
+import logging
+
+from django.apps import apps
 from django.contrib.auth.models import Group
-from .serializers import CustomUsersSerializer
-from .models import Users
+from django.db.models import Q
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
-from django.apps import apps
-from django.db.models import Q
-import logging
+from rest_framework.response import Response
+
+from .models import Users
+from .serializers import CustomUsersSerializer
+
 logger = logging.getLogger(__name__)
 
 # Constants

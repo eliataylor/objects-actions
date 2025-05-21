@@ -1,7 +1,10 @@
 import os
 from urllib.parse import urlparse
+
 from corsheaders.defaults import default_headers
+
 from .base import myEnv, logger, DJANGO_ENV
+
 
 def get_tld(hostname):
     if hostname:
