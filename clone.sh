@@ -119,6 +119,7 @@ ROOT_FILES=(
     "set-env-vars.sh"
     ".gitignore"
     "docker-compose.yml"
+    "docker-compose.dev.yml"
     "$ENV_FILE"
     "$ENV_FILE|.env"
 )
