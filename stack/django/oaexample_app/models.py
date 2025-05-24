@@ -70,6 +70,7 @@ def field_file_path(field_name):
 		# Construct the final upload path: "uploads/<model_name>/<field_name>/<yyyy-mm>/<filename>"
 		return os.path.join('uploads', model_name, field_name, date_folder, new_filename)
 
+	upload_file_path.__name__ = f'upload_to_{field_name}'
 	return upload_file_path
 
 def validate_phone_number(value):
@@ -463,8 +464,6 @@ class Attendees(SuperModel):
 	sharing_screen = models.BooleanField(blank=True, null=True, verbose_name='Sharing Screen')
 	hand_raised = models.BooleanField(blank=True, null=True, verbose_name='Hand Raised')
 	is_typing = models.BooleanField(blank=True, null=True, verbose_name='Is Typing')
-####OBJECT-ACTIONS-MODELS-ENDS####
-
 
 # applemusic or anything not covered by AllAuth
 class AppTokens(models.Model):
@@ -491,3 +490,5 @@ class AppTokens(models.Model):
     expires_at = models.DateTimeField(
         blank=True, null=True, verbose_name="expires at"
     )
+
+####OBJECT-ACTIONS-MODELS-ENDS####

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Ensure node_modules exist
 if [ ! -d "/app/reactjs/node_modules" ]; then
@@ -10,4 +10,4 @@ fi
 export DOCKER_ENV=true
 
 # Execute start.sh
-exec sh /app/reactjs/start.sh
+exec bash /app/reactjs/start.sh

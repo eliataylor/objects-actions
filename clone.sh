@@ -16,11 +16,13 @@ EXCLUDE_PATTERNS=(
   "data"
   ".idea"
   ".venv"
-  ".log"
-  ".git*"
+  "*.log"
+  ".git/"
   ".DS_Store"
   "vendor"
   "build"
+  "fixtures"
+  "schema.yaml"
   "*.bak"
   "uploads"
   "*.pyc"
@@ -54,7 +56,7 @@ REPLACEMENTS=(
 echo "Setting up $MACHINE_NAME at stackpath"
 
 # Copy stack Builder
-rsync -av "${EXCLUDE_ARGS[@]}" "$SCRIPT_DIR/builder" "$STACK_PATH/builder"
+rsync -av "${EXCLUDE_ARGS[@]}" "$SCRIPT_DIR/builder" "$STACK_PATH"
 
 # Directories to loop through
 STACK_DIRS=("cypress" "databuilder" "django" "k6" "reactjs")
@@ -111,23 +113,37 @@ for dir in "$STACK_PATH/stack/django"/*; do
     fi
 done
 
+# Root files to copy (format: "source_file|destination_file" or just "filename" if same)
+ROOT_FILES=(
+    "load-sheets.sh"
+    ".gitignore"
+    "docker-compose.yml"
+    "$ENV_FILE"
+    "$ENV_FILE|.env"
+)
 
+# Copy root files
+for file_spec in "${ROOT_FILES[@]}"; do
+    if [[ "$file_spec" == *"|"* ]]; then
+        # Handle source|destination format
+        IFS="|" read -r source_file dest_file <<< "$file_spec"
+        source_path="$source_file"
+        dest_path="$STACK_PATH/$dest_file"
+        display_name="$source_file as $dest_file"
+    else
+        # Handle simple filename format
+        source_path="$SCRIPT_DIR/$file_spec"
+        dest_path="$STACK_PATH/$file_spec"
+        display_name="$file_spec"
+    fi
 
-# Copy docker-compose.yml to $STACK_PATH
-if [ -f "$SCRIPT_DIR/docker-compose.yml" ]; then
-    cp "$SCRIPT_DIR/docker-compose.yml" "$STACK_PATH/docker-compose.yml"
-    echo "Copied docker-compose.yml to $STACK_PATH"
-else
-    echo "Error: docker-compose.yml not found in $SCRIPT_DIR"
-fi
-
-# Copy environment file
-if [ -f "$ENV_FILE" ]; then
-    cp "$ENV_FILE" "$STACK_PATH/.env"
-    echo "Copied environment file to $STACK_PATH/.env"
-else
-    echo "No environment file found: $ENV_FILE"
-fi
+    if [ -f "$source_path" ]; then
+        cp "$source_path" "$dest_path"
+        echo "Copied $display_name to $STACK_PATH"
+    else
+        echo "Warning: $display_name not found. Skipping."
+    fi
+done
 
 # SSL certificate creation
 ssl_cert_path="$HOME/.ssl/certificate.crt"
@@ -163,7 +179,6 @@ for replacement in "${REPLACEMENTS[@]}"; do
     done
 done
 
-cp "$SCRIPT_DIR/load-sheets.sh" "$STACK_PATH/load-sheets.sh"
 
 echo "Your new stack is available at $STACK_PATH"
 

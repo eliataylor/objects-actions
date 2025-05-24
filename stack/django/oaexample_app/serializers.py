@@ -1,5 +1,4 @@
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-STARTS####
-import logging
 
 from django.db.models import ImageField
 from rest_framework import serializers
@@ -23,6 +22,7 @@ from .models import Topics
 from .models import Users
 
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
+import logging
 logger = logging.getLogger(__name__)
 from django.core.exceptions import FieldDoesNotExist
 from google.auth.exceptions import DefaultCredentialsError

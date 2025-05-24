@@ -3,9 +3,9 @@
 .venv
 
 stack/cypress/cypress/e2e/examples
-
+stack/django/staticfiles
 stack/databuilder/dist
-
+stack/django/keys
 stack/reactjs/dist
 stack/reactjs/build
 

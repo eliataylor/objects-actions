@@ -65,3 +65,8 @@ The builder writes these files based on your Object Types spreadsheet. The surro
 
 ## To Build a GCP project with CloudRun, SQL Cloud, and all necessary service agents, load balancers, ...
 Follow instructions in [deploy/README.md](stack/django/deploy/README.md)
+
+## To build django migrations: 
+- `docker exec -it django-service bash`
+- `python manage.py makemigrations oaexample_app`
+- `python manage.py migrate oaexample_app`

@@ -7,7 +7,7 @@
 
 source "$(pwd)/builder/environment/common.sh"
 
-cd "$SCRIPT_DIR/src"
+cd "$SCRIPT_DIR/builder"
 
 
 if [ ! -d .venv ]; then

@@ -8,7 +8,7 @@ WORKDIR /app/databuilder
 COPY package.json package-lock.json ./
 
 # Install Node.js dependencies
-RUN npm ci
+RUN npm cache clean --force && npm install
 
 # Copy the ReactJS project source code
 COPY . .
