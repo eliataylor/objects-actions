@@ -1,4 +1,4 @@
-# oaExample.com reactjs web app
+# OAExample.com reactjs web app
 
 #### Run in Docker
 ```sh

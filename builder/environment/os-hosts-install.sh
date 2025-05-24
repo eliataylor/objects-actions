@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "$(pwd)/docs/common.sh"
+source "$(pwd)/builder/environment/common.sh"
 
 API_HOST=$(echo "$REACT_APP_API_HOST" | sed -E 's|^https?://([^:/]+).*|\1|')
 APP_HOST=$(echo "$REACT_APP_APP_HOST" | sed -E 's|^https?://([^:/]+).*|\1|')

@@ -5,7 +5,7 @@
 # OR
 # ./load-sheets.sh --project "oaexample" --types "stack/objects.csv" --permissions "stack/permissions.csv"
 
-source "$(pwd)/docs/common.sh"
+source "$(pwd)/builder/environment/common.sh"
 
 cd "$SCRIPT_DIR/src"
 

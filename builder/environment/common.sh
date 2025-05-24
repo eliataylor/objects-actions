@@ -31,6 +31,11 @@ while [[ $# -gt 0 ]]; do
             echo "CLI: PROJECT_NAME set to $PROJECT_NAME"
             shift 2
             ;;
+        --machine-name)
+            MACHINE_NAME="$2"
+            echo "CLI: MACHINE_NAME set to $MACHINE_NAME"
+            shift 2
+            ;;
         --types)
             TYPES_PATH="$2"
             echo "CLI: TYPES_PATH set to $TYPES_PATH"
@@ -97,8 +102,13 @@ get_machinename() {
     echo "$name"
 }
 
-# Derive machinename
-MACHINE_NAME=$(get_machinename "$PROJECT_NAME")
+
+if [[ -z "$MACHINE_NAME" ]]; then
+    MACHINE_NAME=$(get_machinename "$PROJECT_NAME")
+    echo "Derived MACHINE_NAME from PROJECT_NAME: $MACHINE_NAME"
+else
+    echo "Using given MACHINE_NAME: $MACHINE_NAME"
+fi
 
 # Ensure stack directory exists
 if [[ "$STACK_PATH" == '.' ]]; then
@@ -141,4 +151,4 @@ echo "****USING: "
 printenv | grep -E 'ENV_FILE|PROJECT_NAME|STACK_PATH|TYPES_PATH|PERMISSIONS_PATH|OUTPUT_DIR|REACT_APP_'
 
 # Export all variables for use in other scripts
-export ENV_FILE STACK_PATH PROJECT_NAME TYPES_PATH PERMISSIONS_PATH OUTPUT_DIR REACT_APP_API_HOST REACT_APP_APP_HOST REACT_APP_LOGIN_EMAIL REACT_APP_LOGIN_PASS
+export ENV_FILE STACK_PATH PROJECT_NAME MACHINE_NAME TYPES_PATH PERMISSIONS_PATH OUTPUT_DIR REACT_APP_API_HOST REACT_APP_APP_HOST REACT_APP_LOGIN_EMAIL REACT_APP_LOGIN_PASS
