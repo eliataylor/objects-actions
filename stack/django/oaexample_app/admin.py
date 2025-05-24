@@ -1,18 +1,19 @@
 # admin.py
-
+####OBJECT-ACTIONS-ADMIN_IMPORTS-STARTS####
 from django.contrib import admin
-from django.contrib.admin.views.main import ChangeList
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-
-from .admin_mixins import SmartAdminMixin
-# Import your models here
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import (
     Topics, ResourceTypes, MeetingTypes, States, Parties, Stakeholders,
     Resources, Users, Cities, Officials, Rallies, ActionPlans, Meetings,
     Invites, Subscriptions, Rooms, Attendees, AppTokens
 )
+####OBJECT-ACTIONS-ADMIN_IMPORTS-ENDS####
+
+from django.contrib.admin.views.main import ChangeList
+from django.utils.html import format_html
+from .admin_mixins import SmartAdminMixin
+
 
 image_html = '<div style="width: 50px; height: 50px; background-image: url({}); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>'
 no_image_html = "No Image"
@@ -47,6 +48,47 @@ class OptimizedChangeList(ChangeList):
             qs = qs.only(*required_fields)
         return qs
 
+
+####OBJECT-ACTIONS-ADMIN_MODELS-STARTS####
+class UsersAdmin(BaseUserAdmin):
+    fieldsets = BaseUserAdmin.fieldsets + (
+        (_('Additional Info'), {'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo')}),
+        (_('Resources'), {'fields': ('resources',), 'classes': ('collapse',)}),
+    )
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo'),
+        }),
+    )
+
+    # Use autocomplete for many-to-many fields
+    autocomplete_fields = ['resources', 'groups']
+
+    list_display = ('id', 'image_tag', 'username', 'email', 'get_full_name', 'display_groups', 'is_active')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'phone')
+
+    def display_groups(self, obj):
+        return ", ".join([group.name for group in obj.groups.all()[:3]])
+
+    display_groups.short_description = 'Groups'
+
+    def image_tag(self, obj):
+        if obj.picture:
+            return format_html(
+                image_html,
+                obj.picture.url)
+        return no_image_html
+
+    image_tag.short_description = 'Picture'
+
+    # Faster loading when displaying user lists
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('groups')
+
+
+admin.site.register(Users, UsersAdmin)
 
 class TopicsAdmin(BaseModelAdmin):
     readonly_fields = ('id',)
@@ -170,46 +212,6 @@ class ResourcesAdmin(BaseModelAdmin):
 
 admin.site.register(Resources, ResourcesAdmin)
 
-
-class UsersAdmin(BaseUserAdmin):
-    fieldsets = BaseUserAdmin.fieldsets + (
-        (_('Additional Info'), {'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo')}),
-        (_('Resources'), {'fields': ('resources',), 'classes': ('collapse',)}),
-    )
-    add_fieldsets = BaseUserAdmin.add_fieldsets + (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('phone', 'website', 'bio', 'picture', 'cover_photo'),
-        }),
-    )
-
-    # Use autocomplete for many-to-many fields
-    autocomplete_fields = ['resources', 'groups']
-
-    list_display = ('id', 'image_tag', 'username', 'email', 'get_full_name', 'display_groups', 'is_active')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
-    search_fields = ('username', 'first_name', 'last_name', 'email', 'phone')
-
-    def display_groups(self, obj):
-        return ", ".join([group.name for group in obj.groups.all()[:3]])
-
-    display_groups.short_description = 'Groups'
-
-    def image_tag(self, obj):
-        if obj.picture:
-            return format_html(
-                image_html,
-                obj.picture.url)
-        return no_image_html
-
-    image_tag.short_description = 'Picture'
-
-    # Faster loading when displaying user lists
-    def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related('groups')
-
-
-admin.site.register(Users, UsersAdmin)
 
 
 class CitiesAdmin(BaseModelAdmin):
@@ -511,3 +513,5 @@ class AppTokensAdmin(BaseModelAdmin):
 
 
 admin.site.register(AppTokens, AppTokensAdmin)
+
+####OBJECT-ACTIONS-ADMIN_MODELS-ENDS####

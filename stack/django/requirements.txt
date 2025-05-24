@@ -11,6 +11,8 @@ django-extensions==3.2.3
 
 django-allauth[mfa,socialaccount]>=64.1.0
 
+django-money==3.5.4
+
 google-cloud-storage==2.17.0
 gunicorn==22.0.0
 

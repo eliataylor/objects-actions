@@ -40,6 +40,7 @@ const Extend: React.FC = () => {
           3. Version control from the beginning to track your changes
         </StyledTypography>
         <Command command="git init" />
+        <Command command="git add *" />
         <Command command="git commit -am 'initial objects/actions out-of-the-box'" />
       </StyledPaper>
 
