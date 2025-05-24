@@ -48,6 +48,7 @@ REPLACEMENTS=(
   "OAExample|$MACHINE_NAME"
   "OAexample|$MACHINE_NAME"
   "Oaexample|$MACHINE_NAME"
+  "oaexample|$MACHINE_NAME"
 )
 
 echo "Setting up $MACHINE_NAME at stackpath"
@@ -143,21 +144,21 @@ export LC_ALL=C # Avoid issues with non-UTF-8 characters
 
 echo "Performing string replacements in $STACK_PATH"
 
-# Determine sed -i syntax once
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    SED_INPLACE="sed -i ''"
-else
-    SED_INPLACE="sed -i"
-fi
-
 for replacement in "${REPLACEMENTS[@]}"; do
     IFS="|" read -r find replace <<< "$replacement"
     echo "  Replacing '$find' with '$replace'"
 
     # Use -l to list files with matches, then process them
     grep -rl "$find" "$STACK_PATH" 2>/dev/null | while read -r file; do
-        if $SED_INPLACE "s|$find|$replace|g" "$file" 2>/dev/null; then
-            echo "    Updated: $file"
+        # Handle sed -i correctly for macOS vs Linux
+        if [[ "$(uname -s)" == "Darwin" ]]; then
+            if sed -i '' "s|$find|$replace|g" "$file" 2>/dev/null; then
+                echo "    Updated: $file"
+            fi
+        else
+            if sed -i "s|$find|$replace|g" "$file" 2>/dev/null; then
+                echo "    Updated: $file"
+            fi
         fi
     done
 done
