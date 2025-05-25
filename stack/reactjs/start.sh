@@ -4,7 +4,13 @@
 [ -f .env ] || cp .env.public .env
 
 # Load environment variables from .env
-export $(grep -v '^#' .env | xargs)
+while IFS='=' read -r key value; do
+    [[ $key =~ ^[[:space:]]*# ]] && continue  # skip comments
+    [[ -z $key ]] && continue                 # skip empty lines
+    key=$(echo "$key" | xargs)               # trim whitespace
+    value=$(echo "$value" | xargs)           # trim whitespace
+    export "$key"="$value"
+done < .env
 
 # Extract protocol, host, and port from REACT_APP_APP_HOST
 if [[ -n "$REACT_APP_APP_HOST" ]]; then
@@ -52,4 +58,8 @@ if [[ -n "$DOCKER_ENV" ]]; then
 fi
 
 # Start React app
-npm run react-start
+if [[ "$HTTPS" == "true" ]]; then
+  npm run start-ssl-in-docker
+else
+  npm run react-start
+fi

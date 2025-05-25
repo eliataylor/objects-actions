@@ -11,7 +11,10 @@ RUN apk add --no-cache openssl bash
 COPY package.json package-lock.json ./
 
 # Install Node.js dependencies
-RUN npm cache clean --force && npm ci
+RUN npm cache clean --force && npm ci || \
+    (echo "Initial install failed, trying without package-lock.json" && \
+     rm -f package-lock.json && \
+     npm install)
 
 # Copy the ReactJS project source code
 COPY . .
@@ -19,7 +22,7 @@ COPY . .
 RUN chmod +x /app/reactjs/entrypoint.sh
 
 # Expose the ReactJS development server port
-EXPOSE 5174
+EXPOSE 3000
 
 # Command to run the ReactJS server
 CMD ["/bin/sh", "entrypoint.sh"]

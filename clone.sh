@@ -116,8 +116,10 @@ done
 # Root files to copy (format: "source_file|destination_file" or just "filename" if same)
 ROOT_FILES=(
     "load-sheets.sh"
+    "set-env-vars.sh"
     ".gitignore"
     "docker-compose.yml"
+    "docker-compose.dev.yml"
     "$ENV_FILE"
     "$ENV_FILE|.env"
 )
@@ -184,4 +186,5 @@ echo "Your new stack is available at $STACK_PATH"
 
 cd "$STACK_PATH"
 
+. "$STACK_PATH/set-env-vars.sh" --env "$ENV_FILE"
 . "$STACK_PATH/load-sheets.sh" --env "$ENV_FILE"
