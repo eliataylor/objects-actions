@@ -9,7 +9,6 @@ source "$(pwd)/builder/environment/common.sh"
 
 cd "$SCRIPT_DIR/builder"
 
-
 if [ ! -d .venv ]; then
     python -m venv .venv
     echo "First run. Creating new virtual environment."
