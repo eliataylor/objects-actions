@@ -1,4 +1,4 @@
-Django==5.0.7
+Django==5.1.10
 django-extensions==3.2.3
 django-filter==24.2
 django-storages==1.14.4
