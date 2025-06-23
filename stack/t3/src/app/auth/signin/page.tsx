@@ -1,53 +1,75 @@
-import { type Metadata } from "next";
-import { getProviders } from "next-auth/react";
+"use client";
 
-import { SignInForm } from "~/app/_components/auth/sign-in-form";
+import { signIn, getProviders } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { Button } from "@mui/material";
+import { Google, GitHub } from "@mui/icons-material";
 
-export const metadata: Metadata = {
-  title: "Sign In",
+interface Provider {
+  id: string;
+  name: string;
+  type: string;
+  signinUrl: string;
+  callbackUrl: string;
+}
+
+const providerIcons: Record<string, React.ReactNode> = {
+  google: <Google />,
+  github: <GitHub />,
+  spotify: "🎵",
+  linkedin: "💼",
+  discord: "🎮",
 };
 
-export default async function SignInPage() {
-  const providers = await getProviders();
+export default function SignIn() {
+  const [providers, setProviders] = useState<Record<string, Provider> | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const res = await getProviders();
+      setProviders(res);
+    })();
+  }, []);
 
   return (
-    <div className="container relative h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
-      <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
-        <div className="absolute inset-0 bg-zinc-900" />
-        <div className="relative z-20 flex items-center text-lg font-medium">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mr-2 h-6 w-6"
-          >
-            <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
-          </svg>
-          Your App Name
-        </div>
-        <div className="relative z-20 mt-auto">
-          <blockquote className="space-y-2">
-            <p className="text-lg">
-              Welcome back! Please sign in to continue.
-            </p>
-          </blockquote>
-        </div>
-      </div>
-      <div className="lg:p-8">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-          <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Sign in to your account
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email and password to continue
-            </p>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+          Sign In to <span className="text-[hsl(280,100%,70%)]">OA Example</span>
+        </h1>
+        
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-xl text-white">Choose your preferred sign-in method:</p>
+          
+          <div className="flex flex-col gap-3 w-80">
+            {providers &&
+              Object.values(providers).map((provider) => (
+                <Button
+                  key={provider.name}
+                  variant="contained"
+                  size="large"
+                  startIcon={providerIcons[provider.id]}
+                  onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+                  sx={{
+                    backgroundColor: "white",
+                    color: "black",
+                    "&:hover": {
+                      backgroundColor: "#f0f0f0",
+                    },
+                    textTransform: "none",
+                    fontSize: "1.1rem",
+                    py: 1.5,
+                  }}
+                >
+                  Sign in with {provider.name}
+                </Button>
+              ))}
           </div>
-          <SignInForm providers={providers} />
+          
+          <div className="mt-4 text-center text-sm text-gray-400">
+            <p>By signing in, you agree to authenticate with both NextAuth.js and our Django backend.</p>
+            <p>Your session will be synchronized across both systems.</p>
+          </div>
         </div>
       </div>
     </div>
