@@ -33,7 +33,11 @@ export default async function RootLayout({
           <TRPCReactProvider>
             <ThemeRegistry>
               <SelectionProvider>
-                <Navigation />
+                <Navigation 
+                  isAuthenticated={!!session}
+                  isAdmin={session?.user?.role === 'admin'}
+                  userName={session?.user?.name ?? undefined}
+                />
                 <main>
                   {children}
                 </main>

@@ -1,198 +1,108 @@
-"use client"
-
-import { useState } from "react"
-import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { NAVITEMS } from "~/types/types"
 import {
   AppBar,
   Box,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
   Toolbar,
-  Typography,
-  Button,
-  useTheme,
-  useMediaQuery,
-  Divider,
+  Typography
 } from "@mui/material"
-import MenuIcon from "@mui/icons-material/Menu"
+import { MobileDrawer } from "./MobileDrawer"
+import StyledButton from "~/styles/StyledButton"
 
-const DRAWER_WIDTH = 240
+import LogoGeneric from "../_docs/LogoGeneric"
 
-export default function Navigation() {
-  const { data: session, status } = useSession()
-  const pathname = usePathname()
-  const isAuthenticated = status === "authenticated"
-  const isAdmin = session?.user?.role === "admin"
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const [mobileOpen, setMobileOpen] = useState(false)
+interface NavigationProps {
+  isAuthenticated?: boolean
+  isAdmin?: boolean
+  userName?: string
+}
 
-  // Filter nav items based on permissions
+export default function Navigation({ 
+  isAuthenticated = false, 
+  isAdmin = false,
+  userName 
+}: NavigationProps) {
+  
+  // Filter nav items based on permissions (server-side logic)
   const visibleNavItems = NAVITEMS.filter(item => {
-    switch (item.permissions) {
-      case "IsAdmin":
-        return isAuthenticated && isAdmin
-      case "IsAuthenticated":
-        return isAuthenticated
-      case "IsAuthenticatedOrReadOnly":
-      case "AllowAny":
-      default:
-        return true
-    }
+    // For now, show all items since permissions might be custom
+    // This would be implemented based on your permission system
+    return true
   })
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+  return (
+    <AppBar
+      position="fixed"
+      sx={{
+        width: "100%",
+        zIndex: 1201, // Above drawer (1200)
+      }}
+    >
+      <Toolbar>
+        {/* Mobile Drawer - only renders on mobile */}
+        <MobileDrawer 
+          isAuthenticated={isAuthenticated}
+          isAdmin={isAdmin}
+          userName={userName}
+        />
 
-  const navigationLinks = (
-    <>
-      <Link href="/search" passHref>
-        <Button color="inherit" sx={{ textTransform: "none" }}>
-          Search
-        </Button>
-      </Link>
-      <Divider orientation="vertical" flexItem />
-      {visibleNavItems.map((item) => (
-        <Link key={item.segment} href={`/${item.segment}`} passHref aria-label={item.plural}>
-          <Button
+        {/* Desktop Navigation */}
+        <Typography
+          variant="h6"
+          component={Link}
+          href="/"
+          sx={{
+            flexGrow: 1,
+            color: "inherit",
+            textDecoration: "none",
+            display: { xs: "none", md: "block" }
+          }}
+        >
+          <LogoGeneric height={24} width={24} />
+        </Typography>
+
+        {/* Mobile Title - shown when drawer hamburger is present */}
+        <Typography
+          variant="h6"
+          component={Link}
+          href="/"
+          sx={{
+            flexGrow: 1,
+            color: "inherit", 
+            textDecoration: "none",
+            display: { xs: "block", md: "none" }
+          }}
+        >
+          🧬 OA
+        </Typography>
+
+        <Box sx={{ display: { xs: "none", md: "flex" } }}>
+          <StyledButton
             color="inherit"
-            sx={{
-              textTransform: "none",
-              borderBottom: pathname === `/${item.segment}` ? 2 : 0,
-              borderColor: "white",
-            }}
-          >
-            {item.plural}
-          </Button>
-        </Link>
-      ))}
-    </>
-  )
-
-  const authButton = !isAuthenticated ? (
-    <Link href="/api/auth/signin" passHref>
-      Sign In
-    </Link>
-  ) : (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-      <Typography variant="body2">
-        Welcome, {session.user.name}
-      </Typography>
-      <Link href="/api/auth/signout" passHref>
-        Sign Out
-      </Link>
-    </Box>
-  )
-
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        🧬 Helix.AI
-      </Typography>
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton
             component={Link}
-            href={`/search`}
-            selected={pathname === `/search`}
+            href="/search"
           >
-            <ListItemText primary={'Search'} />
-          </ListItemButton>
-        </ListItem>
-        {visibleNavItems.map((item) => (
-          <ListItem key={item.segment} disablePadding>
-            <ListItemButton
+            Search
+          </StyledButton>
+          {visibleNavItems.map((item) => (
+            <StyledButton
+              key={item.segment}
+              color="inherit"
               component={Link}
               href={`/${item.segment}`}
-              selected={pathname === `/${item.segment}`}
             >
-              <ListItemText primary={item.plural} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-        <ListItem disablePadding>
-          <ListItemButton
+              {item.plural}
+            </StyledButton>
+          ))}
+          <StyledButton
+            color="inherit"
             component={Link}
             href={isAuthenticated ? "/api/auth/signout" : "/api/auth/signin"}
           >
-            <ListItemText
-              primary={isAuthenticated ? "Sign Out" : "Sign In"}
-            />
-          </ListItemButton>
-        </ListItem>
-      </List>
-    </Box>
-  )
-
-  return (
-    <>
-      <AppBar position="static" sx={{ bgcolor: "grey.900" }}>
-        <Toolbar>
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <Link href="/"><Typography
-            variant="h6"
-            component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
-            🧬
-          </Typography>
-          </Link>
-          <Box
-            aria-label="Main Navigation"
-            sx={{
-              ml: 2,
-              flexGrow: 1,
-              display: { xs: "none", md: "flex" },
-              gap: 2,
-            }}
-          >
-            {navigationLinks}
-          </Box>
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
-            {authButton}
-          </Box>
-        </Toolbar>
-      </AppBar>
-
-      <Box component="nav">
-        <Drawer
-          aria-label="Main Navigation"
-          variant="temporary"
-          anchor="left"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: "block", md: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: DRAWER_WIDTH,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-    </>
+            {isAuthenticated ? `Sign Out (${userName})` : "Sign In"}
+          </StyledButton>
+        </Box>
+      </Toolbar>
+    </AppBar>
   )
 } 

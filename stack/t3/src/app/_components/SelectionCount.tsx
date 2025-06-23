@@ -1,18 +1,19 @@
-"use client"
-
 import { Chip } from "@mui/material"
-import { useSelection } from "~/contexts/SelectionContext"
 import type { ModelName } from "~/types/types"
 import Link from "next/link"
 
 interface SelectionCountProps {
   type: ModelName
+  selectedIds?: string[]
   showZero?: boolean
 }
 
-export function SelectionCount({ type, showZero = false }: SelectionCountProps) {
-  const { selectedItems } = useSelection()
-  const count = selectedItems[type]?.length ?? 0
+export function SelectionCount({ 
+  type, 
+  selectedIds = [], 
+  showZero = false 
+}: SelectionCountProps) {
+  const count = selectedIds.length
 
   if (count === 0 && !showZero) {
     return null
@@ -36,9 +37,12 @@ export function SelectionCount({ type, showZero = false }: SelectionCountProps) 
   )
 
   if (count > 1) {
+    const searchParams = new URLSearchParams()
+    searchParams.set('selected', selectedIds.join(','))
+    
     return (
       <Link 
-        href={`/compare/${type.toLowerCase()}`}
+        href={`/compare/${type.toLowerCase()}?${searchParams.toString()}`}
         style={{ textDecoration: 'none' }}
       >
         {chip}

@@ -127,7 +127,11 @@ export default function SearchPage() {
                                         <Typography variant="h6" gutterBottom>
                                             {navItem.plural} ({result.count})
                                         </Typography>
-                                        <SelectionCount type={navItem.type} />
+                                        {/* TODO: Update SelectionCount when converting search page to SSR */}
+                                        <SelectionCount 
+                                          type={navItem.type} 
+                                          selectedIds={[]} 
+                                        />
                                     </Box>
                                     <Box sx={{ display: 'grid', gap: 2 }}>
                                         {(!result?.items || result.items.length === 0) ? null : result.items.map((item) => (
