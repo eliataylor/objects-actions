@@ -20,58 +20,44 @@ from utils.models import BumpParentsModelMixin
 ####OBJECT-ACTIONS-MODELS_IMPORTS-ENDS####
 
 ####OBJECT-ACTIONS-MODELS-STARTS####
-def field_file_path(field_name):
-	"""
-    Create a function that generates a path including model name and field name,
-    with date as the last directory segment.
-
-    Args:
-        field_name: Name of the field this function will be used for
-
-    Returns:
-        function: A function to be used as upload_to
+class UploadToField:
     """
+    Custom class to handle dynamic file uploads based on model and field name.
+    """
+    def __init__(self, field_name):
+        self.field_name = field_name
 
-	def upload_file_path(instance, filename):
-		ext = filename.split('.')[-1]  # e.g. "jpg"
-		base_filename = os.path.basename(filename).rsplit('.', 1)[0]  # Get filename without extension
+    def __call__(self, instance, filename):
+        ext = filename.split('.')[-1]
+        base_filename = os.path.basename(filename).rsplit('.', 1)[0]
 
-		# Get model name (lowercase)
-		model_name = instance.__class__.__name__.lower()
+        # Get model name (lowercase)
+        model_name = instance.__class__.__name__.lower()
 
-		# Check if we're running inside a management command
-		is_management_command = False
+        # Check if we're running inside a management command
+        is_management_command = False
+        stack = inspect.stack()
+        for frame_info in stack:
+            module = inspect.getmodule(frame_info[0])
+            if module and ('management/commands' in module.__file__ or 'BaseCommand' in str(module.__file__)):
+                is_management_command = True
+                break
 
-		# Get current call stack
-		stack = inspect.stack()
+        if 'manage.py' in sys.argv[0] and any(cmd in sys.argv for cmd in ['import_cities', 'fake_users', 'import_nonprofits', 'import_meetings']):
+             is_management_command = True
 
-		# Look through the stack to find management command execution
-		for frame_info in stack:
-			module = inspect.getmodule(frame_info[0])
-			if module and ('management/commands' in module.__file__ or 'BaseCommand' in str(module.__file__)):
-				is_management_command = True
-				break
+        if not is_management_command:
+            new_filename = f"{base_filename}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+        else:
+            new_filename = f"{base_filename}.{ext}"
 
-		# Alternative approach: check sys.argv[0]
-		if 'manage.py' in sys.argv[0] and any(cmd in sys.argv for cmd in
-											  ['import_cities', 'fake_users', 'import_nonprofits', 'import_meetings']):
-			is_management_command = True
+        # Construct the final upload path: "uploads/<model_name>/<field_name>/<yyyy-mm>/<filename>"
+        date_folder = timezone.now().strftime('%Y-%m')
+        return os.path.join('uploads', model_name, self.field_name, date_folder, new_filename)
 
-		# Only add datetime suffix for regular API/Admin usage, not for management commands
-		if not is_management_command:
-			new_filename = f"{base_filename}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
-		else:
-			# For management commands, keep the original filename to enable overwriting
-			new_filename = f"{base_filename}.{ext}"
+    def deconstruct(self):
+        return ('oaexample_app.models.UploadToField', [self.field_name], {}) # Replace <your_app_name> with your app's name
 
-		# Use strftime to create a "year-month" folder dynamically
-		date_folder = timezone.now().strftime('%Y-%m')
-
-		# Construct the final upload path: "uploads/<model_name>/<field_name>/<yyyy-mm>/<filename>"
-		return os.path.join('uploads', model_name, field_name, date_folder, new_filename)
-
-	upload_file_path.__name__ = f'upload_to_{field_name}'
-	return upload_file_path
 
 def validate_phone_number(value):
 	phone_regex = re.compile(r'^\+?1?\d{9,15}$')
@@ -87,8 +73,8 @@ class Users(AbstractUser, BumpParentsModelMixin):
 	phone = models.CharField(validators=[validate_phone_number], max_length=16, verbose_name='Phone', blank=True, null=True)
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 	bio = models.TextField(blank=True, null=True, verbose_name='Bio')
-	picture = models.ImageField(upload_to=field_file_path('picture'), blank=True, null=True, verbose_name='Picture')
-	cover_photo = models.ImageField(upload_to=field_file_path('cover_photo'), blank=True, null=True, verbose_name='Cover Photo')
+	picture = models.ImageField(upload_to=UploadToField('picture'), blank=True, null=True, verbose_name='Picture')
+	cover_photo = models.ImageField(upload_to=UploadToField('cover_photo'), blank=True, null=True, verbose_name='Cover Photo')
 	resources = models.ManyToManyField('Resources', related_name='resources_to_resources', blank=True, verbose_name='Resources')
 
 	def __str__(self):
@@ -155,8 +141,8 @@ class Topics(SuperModel):
 		verbose_name_plural = "Topics"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	icon = models.ImageField(upload_to=field_file_path('icon'), blank=True, null=True, verbose_name='Icon')
-	photo = models.ImageField(upload_to=field_file_path('photo'), blank=True, null=True, verbose_name='Photo')
+	icon = models.ImageField(upload_to=UploadToField('icon'), blank=True, null=True, verbose_name='Icon')
+	photo = models.ImageField(upload_to=UploadToField('photo'), blank=True, null=True, verbose_name='Photo')
 
 class ResourceTypes(SuperModel):
 	class Meta:
@@ -184,7 +170,7 @@ class States(SuperModel):
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
 	state_code = models.CharField(max_length=2, blank=True, null=True, verbose_name='State Code')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
-	icon = models.ImageField(upload_to=field_file_path('icon'), blank=True, null=True, verbose_name='Icon')
+	icon = models.ImageField(upload_to=UploadToField('icon'), blank=True, null=True, verbose_name='Icon')
 
 	# Population data
 	population = models.BigIntegerField(blank=True, null=True, verbose_name='State Population')
@@ -248,7 +234,7 @@ class Parties(SuperModel):
 		verbose_name_plural = "Parties"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	logo = models.ImageField(upload_to=field_file_path('logo'), blank=True, null=True, verbose_name='Logo')
+	logo = models.ImageField(upload_to=UploadToField('logo'), blank=True, null=True, verbose_name='Logo')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
 
 class Stakeholders(SuperModel):
@@ -258,7 +244,7 @@ class Stakeholders(SuperModel):
 		verbose_name_plural = "Stakeholders"
 
 	name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name')
-	image = models.ImageField(upload_to=field_file_path('image'), blank=True, null=True, verbose_name='Image')
+	image = models.ImageField(upload_to=UploadToField('image'), blank=True, null=True, verbose_name='Image')
 
 class Resources(SuperModel):
 	class Meta:
@@ -269,7 +255,7 @@ class Resources(SuperModel):
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description_html = models.TextField(verbose_name='Description HTML')
-	image = models.ImageField(upload_to=field_file_path('image'), verbose_name='Image')
+	image = models.ImageField(upload_to=UploadToField('image'), verbose_name='Image')
 	postal_address = models.CharField(max_length=255, blank=True, null=True, verbose_name='Postal Address')
 	price_ccoin = models.IntegerField(verbose_name='Price (citizencoin)')
 	cities = models.ManyToManyField('Cities', related_name='cities_to_resources', verbose_name='Cities')
@@ -284,8 +270,8 @@ class Cities(SuperModel):
 	name = models.CharField(max_length=255, verbose_name='Name')
 	description = models.TextField(blank=True, null=True, verbose_name='Description')
 	postal_address = models.CharField(max_length=255)
-	picture = models.ImageField(upload_to=field_file_path('picture'), blank=True, null=True, verbose_name='Picture')
-	cover_photo = models.ImageField(upload_to=field_file_path('cover_photo'), blank=True, null=True, verbose_name='Cover Photo')
+	picture = models.ImageField(upload_to=UploadToField('picture'), blank=True, null=True, verbose_name='Picture')
+	cover_photo = models.ImageField(upload_to=UploadToField('cover_photo'), blank=True, null=True, verbose_name='Cover Photo')
 	sponsors = models.ManyToManyField(get_user_model(), related_name='sponsors_to_user_profile', blank=True,
 									  verbose_name='Sponsors')
 	website = models.URLField(blank=True, null=True, verbose_name='Website')
@@ -344,7 +330,7 @@ class Rallies(SuperModel):
 
 	title = models.CharField(max_length=255, verbose_name='Title')
 	description = models.TextField(verbose_name='Description')
-	media = models.FileField(upload_to=field_file_path('media'), blank=True, null=True, verbose_name='Media')
+	media = models.FileField(upload_to=UploadToField('media'), blank=True, null=True, verbose_name='Media')
 	topics = models.ManyToManyField('Topics', related_name='topics_to_topics', verbose_name='Topics')
 	comments = models.TextField(blank=True, null=True, verbose_name='Comments')
 
@@ -440,7 +426,7 @@ class Rooms(SuperModel):
 	privacy = models.CharField(max_length=10, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True, null=True)
 	status = models.CharField(max_length=9, choices=StatusChoices.choices, verbose_name='Status', blank=True, null=True)
 	chat_thread = models.CharField(max_length=255, blank=True, null=True, verbose_name='Chat Thread')
-	recording = models.FileField(upload_to=field_file_path('recording'), blank=True, null=True, verbose_name='Recording')
+	recording = models.FileField(upload_to=UploadToField('recording'), blank=True, null=True, verbose_name='Recording')
 
 class Attendees(SuperModel):
 	class Meta:
@@ -455,7 +441,7 @@ class Attendees(SuperModel):
 		chat_moderator = ("chat_moderator", " chat moderator")
 	room_id = models.ForeignKey('Rooms', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Room ID')
 	display_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Display Name')
-	display_bg = models.ImageField(upload_to=field_file_path('display_bg'), blank=True, null=True, verbose_name='Display Bg')
+	display_bg = models.ImageField(upload_to=UploadToField('display_bg'), blank=True, null=True, verbose_name='Display Bg')
 	role = models.CharField(max_length=14, choices=RoleChoices.choices, verbose_name='Role')
 	stream = models.CharField(max_length=255, blank=True, null=True, verbose_name='Stream')
 	is_muted = models.BooleanField(blank=True, null=True, verbose_name='Is Muted')
