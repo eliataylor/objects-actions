@@ -3,21 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ActionPlans } from '../models/ActionPlans';
-import type { ActionPlansRequest } from '../models/ActionPlansRequest';
 import type { Attendees } from '../models/Attendees';
-import type { AttendeesRequest } from '../models/AttendeesRequest';
 import type { Cities } from '../models/Cities';
-import type { CitiesRequest } from '../models/CitiesRequest';
 import type { Invites } from '../models/Invites';
-import type { InvitesRequest } from '../models/InvitesRequest';
 import type { Meetings } from '../models/Meetings';
-import type { MeetingsRequest } from '../models/MeetingsRequest';
 import type { MeetingTypes } from '../models/MeetingTypes';
-import type { MeetingTypesRequest } from '../models/MeetingTypesRequest';
 import type { OATester } from '../models/OATester';
-import type { OATesterRequest } from '../models/OATesterRequest';
 import type { Officials } from '../models/Officials';
-import type { OfficialsRequest } from '../models/OfficialsRequest';
 import type { PaginatedActionPlansList } from '../models/PaginatedActionPlansList';
 import type { PaginatedAttendeesList } from '../models/PaginatedAttendeesList';
 import type { PaginatedCitiesList } from '../models/PaginatedCitiesList';
@@ -38,46 +30,35 @@ import type { PaginatedSubscriptionsList } from '../models/PaginatedSubscription
 import type { PaginatedTopicsList } from '../models/PaginatedTopicsList';
 import type { PaginatedUsersList } from '../models/PaginatedUsersList';
 import type { Parties } from '../models/Parties';
-import type { PartiesRequest } from '../models/PartiesRequest';
-import type { PatchedActionPlansRequest } from '../models/PatchedActionPlansRequest';
-import type { PatchedAttendeesRequest } from '../models/PatchedAttendeesRequest';
-import type { PatchedCitiesRequest } from '../models/PatchedCitiesRequest';
-import type { PatchedInvitesRequest } from '../models/PatchedInvitesRequest';
-import type { PatchedMeetingsRequest } from '../models/PatchedMeetingsRequest';
-import type { PatchedMeetingTypesRequest } from '../models/PatchedMeetingTypesRequest';
-import type { PatchedOATesterRequest } from '../models/PatchedOATesterRequest';
-import type { PatchedOfficialsRequest } from '../models/PatchedOfficialsRequest';
-import type { PatchedPartiesRequest } from '../models/PatchedPartiesRequest';
-import type { PatchedRalliesRequest } from '../models/PatchedRalliesRequest';
-import type { PatchedResourcesRequest } from '../models/PatchedResourcesRequest';
-import type { PatchedResourceTypesRequest } from '../models/PatchedResourceTypesRequest';
-import type { PatchedRoomsRequest } from '../models/PatchedRoomsRequest';
-import type { PatchedSchemaVersionRequest } from '../models/PatchedSchemaVersionRequest';
-import type { PatchedStakeholdersRequest } from '../models/PatchedStakeholdersRequest';
-import type { PatchedStatesRequest } from '../models/PatchedStatesRequest';
-import type { PatchedSubscriptionsRequest } from '../models/PatchedSubscriptionsRequest';
-import type { PatchedTopicsRequest } from '../models/PatchedTopicsRequest';
-import type { PatchedUsersRequest } from '../models/PatchedUsersRequest';
+import type { PatchedActionPlans } from '../models/PatchedActionPlans';
+import type { PatchedAttendees } from '../models/PatchedAttendees';
+import type { PatchedCities } from '../models/PatchedCities';
+import type { PatchedInvites } from '../models/PatchedInvites';
+import type { PatchedMeetings } from '../models/PatchedMeetings';
+import type { PatchedMeetingTypes } from '../models/PatchedMeetingTypes';
+import type { PatchedOATester } from '../models/PatchedOATester';
+import type { PatchedOfficials } from '../models/PatchedOfficials';
+import type { PatchedParties } from '../models/PatchedParties';
+import type { PatchedRallies } from '../models/PatchedRallies';
+import type { PatchedResources } from '../models/PatchedResources';
+import type { PatchedResourceTypes } from '../models/PatchedResourceTypes';
+import type { PatchedRooms } from '../models/PatchedRooms';
+import type { PatchedSchemaVersion } from '../models/PatchedSchemaVersion';
+import type { PatchedStakeholders } from '../models/PatchedStakeholders';
+import type { PatchedStates } from '../models/PatchedStates';
+import type { PatchedSubscriptions } from '../models/PatchedSubscriptions';
+import type { PatchedTopics } from '../models/PatchedTopics';
+import type { PatchedUsers } from '../models/PatchedUsers';
 import type { Rallies } from '../models/Rallies';
-import type { RalliesRequest } from '../models/RalliesRequest';
 import type { Resources } from '../models/Resources';
-import type { ResourcesRequest } from '../models/ResourcesRequest';
 import type { ResourceTypes } from '../models/ResourceTypes';
-import type { ResourceTypesRequest } from '../models/ResourceTypesRequest';
 import type { Rooms } from '../models/Rooms';
-import type { RoomsRequest } from '../models/RoomsRequest';
 import type { SchemaVersion } from '../models/SchemaVersion';
-import type { SchemaVersionRequest } from '../models/SchemaVersionRequest';
 import type { Stakeholders } from '../models/Stakeholders';
-import type { StakeholdersRequest } from '../models/StakeholdersRequest';
 import type { States } from '../models/States';
-import type { StatesRequest } from '../models/StatesRequest';
 import type { Subscriptions } from '../models/Subscriptions';
-import type { SubscriptionsRequest } from '../models/SubscriptionsRequest';
 import type { Topics } from '../models/Topics';
-import type { TopicsRequest } from '../models/TopicsRequest';
 import type { Users } from '../models/Users';
-import type { UsersRequest } from '../models/UsersRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class ApiService {
@@ -110,7 +91,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiActionPlansCreate(
-    requestBody: ActionPlansRequest,
+    requestBody: ActionPlans,
   ): CancelablePromise<ActionPlans> {
     return this.httpRequest.request({
       method: 'POST',
@@ -143,7 +124,7 @@ export class ApiService {
    */
   public apiActionPlansUpdate(
     id: number,
-    requestBody: ActionPlansRequest,
+    requestBody: ActionPlans,
   ): CancelablePromise<ActionPlans> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -163,7 +144,7 @@ export class ApiService {
    */
   public apiActionPlansPartialUpdate(
     id: number,
-    requestBody?: PatchedActionPlansRequest,
+    requestBody?: PatchedActionPlans,
   ): CancelablePromise<ActionPlans> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -216,7 +197,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiAttendeesCreate(
-    requestBody: AttendeesRequest,
+    requestBody: Attendees,
   ): CancelablePromise<Attendees> {
     return this.httpRequest.request({
       method: 'POST',
@@ -249,7 +230,7 @@ export class ApiService {
    */
   public apiAttendeesUpdate(
     id: number,
-    requestBody: AttendeesRequest,
+    requestBody: Attendees,
   ): CancelablePromise<Attendees> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -269,7 +250,7 @@ export class ApiService {
    */
   public apiAttendeesPartialUpdate(
     id: number,
-    requestBody?: PatchedAttendeesRequest,
+    requestBody?: PatchedAttendees,
   ): CancelablePromise<Attendees> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -325,7 +306,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiCitiesCreate(
-    requestBody: CitiesRequest,
+    requestBody: Cities,
   ): CancelablePromise<Cities> {
     return this.httpRequest.request({
       method: 'POST',
@@ -358,7 +339,7 @@ export class ApiService {
    */
   public apiCitiesUpdate(
     id: number,
-    requestBody: CitiesRequest,
+    requestBody: Cities,
   ): CancelablePromise<Cities> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -378,7 +359,7 @@ export class ApiService {
    */
   public apiCitiesPartialUpdate(
     id: number,
-    requestBody?: PatchedCitiesRequest,
+    requestBody?: PatchedCities,
   ): CancelablePromise<Cities> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -434,7 +415,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiInvitesCreate(
-    requestBody: InvitesRequest,
+    requestBody: Invites,
   ): CancelablePromise<Invites> {
     return this.httpRequest.request({
       method: 'POST',
@@ -467,7 +448,7 @@ export class ApiService {
    */
   public apiInvitesUpdate(
     id: number,
-    requestBody: InvitesRequest,
+    requestBody: Invites,
   ): CancelablePromise<Invites> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -487,7 +468,7 @@ export class ApiService {
    */
   public apiInvitesPartialUpdate(
     id: number,
-    requestBody?: PatchedInvitesRequest,
+    requestBody?: PatchedInvites,
   ): CancelablePromise<Invites> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -543,7 +524,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiMeetingTypesCreate(
-    requestBody?: MeetingTypesRequest,
+    requestBody?: MeetingTypes,
   ): CancelablePromise<MeetingTypes> {
     return this.httpRequest.request({
       method: 'POST',
@@ -576,7 +557,7 @@ export class ApiService {
    */
   public apiMeetingTypesUpdate(
     id: number,
-    requestBody?: MeetingTypesRequest,
+    requestBody?: MeetingTypes,
   ): CancelablePromise<MeetingTypes> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -596,7 +577,7 @@ export class ApiService {
    */
   public apiMeetingTypesPartialUpdate(
     id: number,
-    requestBody?: PatchedMeetingTypesRequest,
+    requestBody?: PatchedMeetingTypes,
   ): CancelablePromise<MeetingTypes> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -652,7 +633,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiMeetingsCreate(
-    requestBody: MeetingsRequest,
+    requestBody: Meetings,
   ): CancelablePromise<Meetings> {
     return this.httpRequest.request({
       method: 'POST',
@@ -685,7 +666,7 @@ export class ApiService {
    */
   public apiMeetingsUpdate(
     id: number,
-    requestBody: MeetingsRequest,
+    requestBody: Meetings,
   ): CancelablePromise<Meetings> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -705,7 +686,7 @@ export class ApiService {
    */
   public apiMeetingsPartialUpdate(
     id: number,
-    requestBody?: PatchedMeetingsRequest,
+    requestBody?: PatchedMeetings,
   ): CancelablePromise<Meetings> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -760,7 +741,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiOaTestersCreate(
-    requestBody: OATesterRequest,
+    requestBody: OATester,
   ): CancelablePromise<OATester> {
     return this.httpRequest.request({
       method: 'POST',
@@ -795,7 +776,7 @@ export class ApiService {
    */
   public apiOaTestersUpdate(
     id: number,
-    requestBody: OATesterRequest,
+    requestBody: OATester,
   ): CancelablePromise<OATester> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -816,7 +797,7 @@ export class ApiService {
    */
   public apiOaTestersPartialUpdate(
     id: number,
-    requestBody?: PatchedOATesterRequest,
+    requestBody?: PatchedOATester,
   ): CancelablePromise<OATester> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -883,7 +864,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiOfficialsCreate(
-    requestBody: OfficialsRequest,
+    requestBody: Officials,
   ): CancelablePromise<Officials> {
     return this.httpRequest.request({
       method: 'POST',
@@ -916,7 +897,7 @@ export class ApiService {
    */
   public apiOfficialsUpdate(
     id: number,
-    requestBody: OfficialsRequest,
+    requestBody: Officials,
   ): CancelablePromise<Officials> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -936,7 +917,7 @@ export class ApiService {
    */
   public apiOfficialsPartialUpdate(
     id: number,
-    requestBody?: PatchedOfficialsRequest,
+    requestBody?: PatchedOfficials,
   ): CancelablePromise<Officials> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -992,7 +973,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiPartiesCreate(
-    requestBody?: PartiesRequest,
+    requestBody?: Parties,
   ): CancelablePromise<Parties> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1025,7 +1006,7 @@ export class ApiService {
    */
   public apiPartiesUpdate(
     id: number,
-    requestBody?: PartiesRequest,
+    requestBody?: Parties,
   ): CancelablePromise<Parties> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1045,7 +1026,7 @@ export class ApiService {
    */
   public apiPartiesPartialUpdate(
     id: number,
-    requestBody?: PatchedPartiesRequest,
+    requestBody?: PatchedParties,
   ): CancelablePromise<Parties> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1101,7 +1082,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiRalliesCreate(
-    requestBody: RalliesRequest,
+    requestBody: Rallies,
   ): CancelablePromise<Rallies> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1134,7 +1115,7 @@ export class ApiService {
    */
   public apiRalliesUpdate(
     id: number,
-    requestBody: RalliesRequest,
+    requestBody: Rallies,
   ): CancelablePromise<Rallies> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1154,7 +1135,7 @@ export class ApiService {
    */
   public apiRalliesPartialUpdate(
     id: number,
-    requestBody?: PatchedRalliesRequest,
+    requestBody?: PatchedRallies,
   ): CancelablePromise<Rallies> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1210,7 +1191,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiResourceTypesCreate(
-    requestBody?: ResourceTypesRequest,
+    requestBody?: ResourceTypes,
   ): CancelablePromise<ResourceTypes> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1243,7 +1224,7 @@ export class ApiService {
    */
   public apiResourceTypesUpdate(
     id: number,
-    requestBody?: ResourceTypesRequest,
+    requestBody?: ResourceTypes,
   ): CancelablePromise<ResourceTypes> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1263,7 +1244,7 @@ export class ApiService {
    */
   public apiResourceTypesPartialUpdate(
     id: number,
-    requestBody?: PatchedResourceTypesRequest,
+    requestBody?: PatchedResourceTypes,
   ): CancelablePromise<ResourceTypes> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1319,7 +1300,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiResourcesCreate(
-    requestBody: ResourcesRequest,
+    requestBody: Resources,
   ): CancelablePromise<Resources> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1352,7 +1333,7 @@ export class ApiService {
    */
   public apiResourcesUpdate(
     id: number,
-    requestBody: ResourcesRequest,
+    requestBody: Resources,
   ): CancelablePromise<Resources> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1372,7 +1353,7 @@ export class ApiService {
    */
   public apiResourcesPartialUpdate(
     id: number,
-    requestBody?: PatchedResourcesRequest,
+    requestBody?: PatchedResources,
   ): CancelablePromise<Resources> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1428,7 +1409,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiRoomsCreate(
-    requestBody: RoomsRequest,
+    requestBody: Rooms,
   ): CancelablePromise<Rooms> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1461,7 +1442,7 @@ export class ApiService {
    */
   public apiRoomsUpdate(
     id: number,
-    requestBody: RoomsRequest,
+    requestBody: Rooms,
   ): CancelablePromise<Rooms> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1481,7 +1462,7 @@ export class ApiService {
    */
   public apiRoomsPartialUpdate(
     id: number,
-    requestBody?: PatchedRoomsRequest,
+    requestBody?: PatchedRooms,
   ): CancelablePromise<Rooms> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1506,6 +1487,29 @@ export class ApiService {
       url: '/api/rooms/{id}',
       path: {
         'id': id,
+      },
+    });
+  }
+  /**
+   * OpenApi3 schema for this API. Format can be selected via content negotiation.
+   *
+   * - YAML: application/vnd.oai.openapi
+   * - JSON: application/vnd.oai.openapi+json
+   * @param format
+   * @param lang
+   * @returns any
+   * @throws ApiError
+   */
+  public apiSchemaRetrieve(
+    format?: 'json' | 'yaml',
+    lang?: 'af' | 'ar' | 'ar-dz' | 'ast' | 'az' | 'be' | 'bg' | 'bn' | 'br' | 'bs' | 'ca' | 'ckb' | 'cs' | 'cy' | 'da' | 'de' | 'dsb' | 'el' | 'en' | 'en-au' | 'en-gb' | 'eo' | 'es' | 'es-ar' | 'es-co' | 'es-mx' | 'es-ni' | 'es-ve' | 'et' | 'eu' | 'fa' | 'fi' | 'fr' | 'fy' | 'ga' | 'gd' | 'gl' | 'he' | 'hi' | 'hr' | 'hsb' | 'hu' | 'hy' | 'ia' | 'id' | 'ig' | 'io' | 'is' | 'it' | 'ja' | 'ka' | 'kab' | 'kk' | 'km' | 'kn' | 'ko' | 'ky' | 'lb' | 'lt' | 'lv' | 'mk' | 'ml' | 'mn' | 'mr' | 'ms' | 'my' | 'nb' | 'ne' | 'nl' | 'nn' | 'os' | 'pa' | 'pl' | 'pt' | 'pt-br' | 'ro' | 'ru' | 'sk' | 'sl' | 'sq' | 'sr' | 'sr-latn' | 'sv' | 'sw' | 'ta' | 'te' | 'tg' | 'th' | 'tk' | 'tr' | 'tt' | 'udm' | 'ug' | 'uk' | 'ur' | 'uz' | 'vi' | 'zh-hans' | 'zh-hant',
+  ): CancelablePromise<Record<string, any>> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/api/schema',
+      query: {
+        'format': format,
+        'lang': lang,
       },
     });
   }
@@ -1537,7 +1541,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiStakeholdersCreate(
-    requestBody?: StakeholdersRequest,
+    requestBody?: Stakeholders,
   ): CancelablePromise<Stakeholders> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1570,7 +1574,7 @@ export class ApiService {
    */
   public apiStakeholdersUpdate(
     id: number,
-    requestBody?: StakeholdersRequest,
+    requestBody?: Stakeholders,
   ): CancelablePromise<Stakeholders> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1590,7 +1594,7 @@ export class ApiService {
    */
   public apiStakeholdersPartialUpdate(
     id: number,
-    requestBody?: PatchedStakeholdersRequest,
+    requestBody?: PatchedStakeholders,
   ): CancelablePromise<Stakeholders> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1646,7 +1650,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiStatesCreate(
-    requestBody?: StatesRequest,
+    requestBody?: States,
   ): CancelablePromise<States> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1679,7 +1683,7 @@ export class ApiService {
    */
   public apiStatesUpdate(
     id: number,
-    requestBody?: StatesRequest,
+    requestBody?: States,
   ): CancelablePromise<States> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1699,7 +1703,7 @@ export class ApiService {
    */
   public apiStatesPartialUpdate(
     id: number,
-    requestBody?: PatchedStatesRequest,
+    requestBody?: PatchedStates,
   ): CancelablePromise<States> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1755,7 +1759,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiSubscriptionsCreate(
-    requestBody: SubscriptionsRequest,
+    requestBody: Subscriptions,
   ): CancelablePromise<Subscriptions> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1788,7 +1792,7 @@ export class ApiService {
    */
   public apiSubscriptionsUpdate(
     id: number,
-    requestBody: SubscriptionsRequest,
+    requestBody: Subscriptions,
   ): CancelablePromise<Subscriptions> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1808,7 +1812,7 @@ export class ApiService {
    */
   public apiSubscriptionsPartialUpdate(
     id: number,
-    requestBody?: PatchedSubscriptionsRequest,
+    requestBody?: PatchedSubscriptions,
   ): CancelablePromise<Subscriptions> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1864,7 +1868,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiTopicsCreate(
-    requestBody?: TopicsRequest,
+    requestBody?: Topics,
   ): CancelablePromise<Topics> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1897,7 +1901,7 @@ export class ApiService {
    */
   public apiTopicsUpdate(
     id: number,
-    requestBody?: TopicsRequest,
+    requestBody?: Topics,
   ): CancelablePromise<Topics> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1917,7 +1921,7 @@ export class ApiService {
    */
   public apiTopicsPartialUpdate(
     id: number,
-    requestBody?: PatchedTopicsRequest,
+    requestBody?: PatchedTopics,
   ): CancelablePromise<Topics> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1973,7 +1977,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiUsersCreate(
-    requestBody: UsersRequest,
+    requestBody: Users,
   ): CancelablePromise<Users> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2006,7 +2010,7 @@ export class ApiService {
    */
   public apiUsersUpdate(
     id: number,
-    requestBody: UsersRequest,
+    requestBody: Users,
   ): CancelablePromise<Users> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -2026,7 +2030,7 @@ export class ApiService {
    */
   public apiUsersPartialUpdate(
     id: number,
-    requestBody?: PatchedUsersRequest,
+    requestBody?: PatchedUsers,
   ): CancelablePromise<Users> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2122,7 +2126,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiWorksheetsCreate(
-    requestBody: SchemaVersionRequest,
+    requestBody: SchemaVersion,
   ): CancelablePromise<SchemaVersion> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2155,7 +2159,7 @@ export class ApiService {
    */
   public apiWorksheetsUpdate(
     id: number,
-    requestBody: SchemaVersionRequest,
+    requestBody: SchemaVersion,
   ): CancelablePromise<SchemaVersion> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -2175,7 +2179,7 @@ export class ApiService {
    */
   public apiWorksheetsPartialUpdate(
     id: number,
-    requestBody?: PatchedSchemaVersionRequest,
+    requestBody?: PatchedSchemaVersion,
   ): CancelablePromise<SchemaVersion> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2245,7 +2249,7 @@ export class ApiService {
    */
   public apiWorksheetsEnhanceCreate(
     id: number,
-    requestBody: SchemaVersionRequest,
+    requestBody: SchemaVersion,
   ): CancelablePromise<SchemaVersion> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2264,7 +2268,7 @@ export class ApiService {
    * @throws ApiError
    */
   public apiWorksheetsGenerateCreate(
-    requestBody: SchemaVersionRequest,
+    requestBody: SchemaVersion,
   ): CancelablePromise<SchemaVersion> {
     return this.httpRequest.request({
       method: 'POST',

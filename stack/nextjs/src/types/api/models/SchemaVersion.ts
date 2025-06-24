@@ -7,6 +7,10 @@ import type { NullEnum } from './NullEnum';
 import type { SchemaVersionPrivacyEnum } from './SchemaVersionPrivacyEnum';
 export type SchemaVersion = {
   readonly id: number;
+  /**
+   * Model type name
+   */
+  readonly _type: string;
   readonly versions_count: string;
   readonly version_tree: string;
   readonly created_at: string;
@@ -20,8 +24,71 @@ export type SchemaVersion = {
   reasoning?: string | null;
   schema?: any;
   version_notes?: string | null;
-  author?: number | null;
-  project?: number | null;
-  parent?: number | null;
+  readonly author: {
+    /**
+     * Primary key of the related object
+     */
+    id: number;
+    /**
+     * String representation of the related object
+     */
+    str: string;
+    /**
+     * Type name of the related object
+     */
+    _type: string;
+    /**
+     * Additional fields based on query parameters
+     */
+    entity?: Record<string, any> | null;
+    /**
+     * Image URL if available
+     */
+    img?: string | null;
+  } | null;
+  readonly project: {
+    /**
+     * Primary key of the related object
+     */
+    id: number;
+    /**
+     * String representation of the related object
+     */
+    str: string;
+    /**
+     * Type name of the related object
+     */
+    _type: string;
+    /**
+     * Additional fields based on query parameters
+     */
+    entity?: Record<string, any> | null;
+    /**
+     * Image URL if available
+     */
+    img?: string | null;
+  } | null;
+  readonly parent: {
+    /**
+     * Primary key of the related object
+     */
+    id: number;
+    /**
+     * String representation of the related object
+     */
+    str: string;
+    /**
+     * Type name of the related object
+     */
+    _type: string;
+    /**
+     * Additional fields based on query parameters
+     */
+    entity?: Record<string, any> | null;
+    /**
+     * Image URL if available
+     */
+    img?: string | null;
+  } | null;
 };
 

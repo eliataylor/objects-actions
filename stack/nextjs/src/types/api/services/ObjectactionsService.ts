@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { PhoneNumberRequest } from '../models/PhoneNumberRequest';
-import type { VerifyPhoneRequest } from '../models/VerifyPhoneRequest';
+import type { PhoneNumber } from '../models/PhoneNumber';
+import type { VerifyPhone } from '../models/VerifyPhone';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class ObjectactionsService {
@@ -14,7 +14,7 @@ export class ObjectactionsService {
    * @throws ApiError
    */
   public objectactionsAuthSmsCreate(
-    requestBody: PhoneNumberRequest,
+    requestBody: PhoneNumber,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'POST',
@@ -32,7 +32,7 @@ export class ObjectactionsService {
    * @throws ApiError
    */
   public objectactionsAuthVerifySmsCreate(
-    requestBody: VerifyPhoneRequest,
+    requestBody: VerifyPhone,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'POST',

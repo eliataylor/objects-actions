@@ -9,6 +9,12 @@ export const $Subscriptions = {
       isReadOnly: true,
       isRequired: true,
     },
+    _type: {
+      type: 'string',
+      description: `Model type name`,
+      isReadOnly: true,
+      isRequired: true,
+    },
     created_at: {
       type: 'string',
       isReadOnly: true,
@@ -26,19 +32,147 @@ export const $Subscriptions = {
       isRequired: true,
     },
     author: {
-      type: 'number',
+      properties: {
+        id: {
+          type: 'number',
+          description: `Primary key of the related object`,
+          isRequired: true,
+        },
+        str: {
+          type: 'string',
+          description: `String representation of the related object`,
+          isRequired: true,
+        },
+        _type: {
+          type: 'string',
+          description: `Type name of the related object`,
+          isRequired: true,
+        },
+        entity: {
+          type: 'dictionary',
+          contains: {
+            properties: {
+            },
+          },
+          isNullable: true,
+        },
+        img: {
+          type: 'string',
+          description: `Image URL if available`,
+          isNullable: true,
+          format: 'uri',
+        },
+      },
+      isReadOnly: true,
+      isRequired: true,
       isNullable: true,
     },
     subscriber: {
-      type: 'number',
+      properties: {
+        id: {
+          type: 'number',
+          description: `Primary key of the related object`,
+          isRequired: true,
+        },
+        str: {
+          type: 'string',
+          description: `String representation of the related object`,
+          isRequired: true,
+        },
+        _type: {
+          type: 'string',
+          description: `Type name of the related object`,
+          isRequired: true,
+        },
+        entity: {
+          type: 'dictionary',
+          contains: {
+            properties: {
+            },
+          },
+          isNullable: true,
+        },
+        img: {
+          type: 'string',
+          description: `Image URL if available`,
+          isNullable: true,
+          format: 'uri',
+        },
+      },
+      isReadOnly: true,
+      isRequired: true,
       isNullable: true,
     },
     rally: {
-      type: 'number',
+      properties: {
+        id: {
+          type: 'number',
+          description: `Primary key of the related object`,
+          isRequired: true,
+        },
+        str: {
+          type: 'string',
+          description: `String representation of the related object`,
+          isRequired: true,
+        },
+        _type: {
+          type: 'string',
+          description: `Type name of the related object`,
+          isRequired: true,
+        },
+        entity: {
+          type: 'dictionary',
+          contains: {
+            properties: {
+            },
+          },
+          isNullable: true,
+        },
+        img: {
+          type: 'string',
+          description: `Image URL if available`,
+          isNullable: true,
+          format: 'uri',
+        },
+      },
+      isReadOnly: true,
+      isRequired: true,
       isNullable: true,
     },
     meeting: {
-      type: 'number',
+      properties: {
+        id: {
+          type: 'number',
+          description: `Primary key of the related object`,
+          isRequired: true,
+        },
+        str: {
+          type: 'string',
+          description: `String representation of the related object`,
+          isRequired: true,
+        },
+        _type: {
+          type: 'string',
+          description: `Type name of the related object`,
+          isRequired: true,
+        },
+        entity: {
+          type: 'dictionary',
+          contains: {
+            properties: {
+            },
+          },
+          isNullable: true,
+        },
+        img: {
+          type: 'string',
+          description: `Image URL if available`,
+          isNullable: true,
+          format: 'uri',
+        },
+      },
+      isReadOnly: true,
+      isRequired: true,
       isNullable: true,
     },
   },

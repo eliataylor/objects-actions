@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
-  title: oaexample
-  version: 1.0.0
-  description: oaexample
+  title: ''
+  version: 0.0.0
 paths:
   /:
     get:
@@ -55,13 +54,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionPlansRequest'
+              $ref: '#/components/schemas/ActionPlans'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ActionPlansRequest'
+              $ref: '#/components/schemas/ActionPlans'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ActionPlansRequest'
+              $ref: '#/components/schemas/ActionPlans'
         required: true
       security:
       - cookieAuth: []
@@ -108,13 +107,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionPlansRequest'
+              $ref: '#/components/schemas/ActionPlans'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ActionPlansRequest'
+              $ref: '#/components/schemas/ActionPlans'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ActionPlansRequest'
+              $ref: '#/components/schemas/ActionPlans'
         required: true
       security:
       - cookieAuth: []
@@ -140,13 +139,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedActionPlansRequest'
+              $ref: '#/components/schemas/PatchedActionPlans'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedActionPlansRequest'
+              $ref: '#/components/schemas/PatchedActionPlans'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedActionPlansRequest'
+              $ref: '#/components/schemas/PatchedActionPlans'
       security:
       - cookieAuth: []
       responses:
@@ -208,13 +207,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AttendeesRequest'
+              $ref: '#/components/schemas/Attendees'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/AttendeesRequest'
+              $ref: '#/components/schemas/Attendees'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/AttendeesRequest'
+              $ref: '#/components/schemas/Attendees'
         required: true
       security:
       - cookieAuth: []
@@ -262,13 +261,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AttendeesRequest'
+              $ref: '#/components/schemas/Attendees'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/AttendeesRequest'
+              $ref: '#/components/schemas/Attendees'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/AttendeesRequest'
+              $ref: '#/components/schemas/Attendees'
         required: true
       security:
       - cookieAuth: []
@@ -294,13 +293,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedAttendeesRequest'
+              $ref: '#/components/schemas/PatchedAttendees'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedAttendeesRequest'
+              $ref: '#/components/schemas/PatchedAttendees'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedAttendeesRequest'
+              $ref: '#/components/schemas/PatchedAttendees'
       security:
       - cookieAuth: []
       responses:
@@ -368,13 +367,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CitiesRequest'
+              $ref: '#/components/schemas/Cities'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/CitiesRequest'
+              $ref: '#/components/schemas/Cities'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/CitiesRequest'
+              $ref: '#/components/schemas/Cities'
         required: true
       security:
       - cookieAuth: []
@@ -421,13 +420,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CitiesRequest'
+              $ref: '#/components/schemas/Cities'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/CitiesRequest'
+              $ref: '#/components/schemas/Cities'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/CitiesRequest'
+              $ref: '#/components/schemas/Cities'
         required: true
       security:
       - cookieAuth: []
@@ -453,13 +452,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedCitiesRequest'
+              $ref: '#/components/schemas/PatchedCities'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedCitiesRequest'
+              $ref: '#/components/schemas/PatchedCities'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedCitiesRequest'
+              $ref: '#/components/schemas/PatchedCities'
       security:
       - cookieAuth: []
       responses:
@@ -527,13 +526,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvitesRequest'
+              $ref: '#/components/schemas/Invites'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/InvitesRequest'
+              $ref: '#/components/schemas/Invites'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/InvitesRequest'
+              $ref: '#/components/schemas/Invites'
         required: true
       security:
       - cookieAuth: []
@@ -580,13 +579,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvitesRequest'
+              $ref: '#/components/schemas/Invites'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/InvitesRequest'
+              $ref: '#/components/schemas/Invites'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/InvitesRequest'
+              $ref: '#/components/schemas/Invites'
         required: true
       security:
       - cookieAuth: []
@@ -612,13 +611,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedInvitesRequest'
+              $ref: '#/components/schemas/PatchedInvites'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedInvitesRequest'
+              $ref: '#/components/schemas/PatchedInvites'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedInvitesRequest'
+              $ref: '#/components/schemas/PatchedInvites'
       security:
       - cookieAuth: []
       responses:
@@ -686,13 +685,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MeetingTypesRequest'
+              $ref: '#/components/schemas/MeetingTypes'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/MeetingTypesRequest'
+              $ref: '#/components/schemas/MeetingTypes'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MeetingTypesRequest'
+              $ref: '#/components/schemas/MeetingTypes'
       security:
       - cookieAuth: []
       responses:
@@ -739,13 +738,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MeetingTypesRequest'
+              $ref: '#/components/schemas/MeetingTypes'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/MeetingTypesRequest'
+              $ref: '#/components/schemas/MeetingTypes'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MeetingTypesRequest'
+              $ref: '#/components/schemas/MeetingTypes'
       security:
       - cookieAuth: []
       responses:
@@ -770,13 +769,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedMeetingTypesRequest'
+              $ref: '#/components/schemas/PatchedMeetingTypes'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedMeetingTypesRequest'
+              $ref: '#/components/schemas/PatchedMeetingTypes'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedMeetingTypesRequest'
+              $ref: '#/components/schemas/PatchedMeetingTypes'
       security:
       - cookieAuth: []
       responses:
@@ -844,13 +843,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MeetingsRequest'
+              $ref: '#/components/schemas/Meetings'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/MeetingsRequest'
+              $ref: '#/components/schemas/Meetings'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MeetingsRequest'
+              $ref: '#/components/schemas/Meetings'
         required: true
       security:
       - cookieAuth: []
@@ -897,13 +896,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MeetingsRequest'
+              $ref: '#/components/schemas/Meetings'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/MeetingsRequest'
+              $ref: '#/components/schemas/Meetings'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MeetingsRequest'
+              $ref: '#/components/schemas/Meetings'
         required: true
       security:
       - cookieAuth: []
@@ -929,13 +928,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedMeetingsRequest'
+              $ref: '#/components/schemas/PatchedMeetings'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedMeetingsRequest'
+              $ref: '#/components/schemas/PatchedMeetings'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedMeetingsRequest'
+              $ref: '#/components/schemas/PatchedMeetings'
       security:
       - cookieAuth: []
       responses:
@@ -999,13 +998,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OATesterRequest'
+              $ref: '#/components/schemas/OATester'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/OATesterRequest'
+              $ref: '#/components/schemas/OATester'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/OATesterRequest'
+              $ref: '#/components/schemas/OATester'
         required: true
       security:
       - cookieAuth: []
@@ -1055,13 +1054,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OATesterRequest'
+              $ref: '#/components/schemas/OATester'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/OATesterRequest'
+              $ref: '#/components/schemas/OATester'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/OATesterRequest'
+              $ref: '#/components/schemas/OATester'
         required: true
       security:
       - cookieAuth: []
@@ -1088,13 +1087,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedOATesterRequest'
+              $ref: '#/components/schemas/PatchedOATester'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedOATesterRequest'
+              $ref: '#/components/schemas/PatchedOATester'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedOATesterRequest'
+              $ref: '#/components/schemas/PatchedOATester'
       security:
       - cookieAuth: []
       responses:
@@ -1178,13 +1177,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OfficialsRequest'
+              $ref: '#/components/schemas/Officials'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/OfficialsRequest'
+              $ref: '#/components/schemas/Officials'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/OfficialsRequest'
+              $ref: '#/components/schemas/Officials'
         required: true
       security:
       - cookieAuth: []
@@ -1231,13 +1230,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OfficialsRequest'
+              $ref: '#/components/schemas/Officials'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/OfficialsRequest'
+              $ref: '#/components/schemas/Officials'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/OfficialsRequest'
+              $ref: '#/components/schemas/Officials'
         required: true
       security:
       - cookieAuth: []
@@ -1263,13 +1262,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedOfficialsRequest'
+              $ref: '#/components/schemas/PatchedOfficials'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedOfficialsRequest'
+              $ref: '#/components/schemas/PatchedOfficials'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedOfficialsRequest'
+              $ref: '#/components/schemas/PatchedOfficials'
       security:
       - cookieAuth: []
       responses:
@@ -1337,13 +1336,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PartiesRequest'
+              $ref: '#/components/schemas/Parties'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PartiesRequest'
+              $ref: '#/components/schemas/Parties'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PartiesRequest'
+              $ref: '#/components/schemas/Parties'
       security:
       - cookieAuth: []
       responses:
@@ -1390,13 +1389,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PartiesRequest'
+              $ref: '#/components/schemas/Parties'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PartiesRequest'
+              $ref: '#/components/schemas/Parties'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PartiesRequest'
+              $ref: '#/components/schemas/Parties'
       security:
       - cookieAuth: []
       responses:
@@ -1421,13 +1420,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedPartiesRequest'
+              $ref: '#/components/schemas/PatchedParties'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedPartiesRequest'
+              $ref: '#/components/schemas/PatchedParties'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedPartiesRequest'
+              $ref: '#/components/schemas/PatchedParties'
       security:
       - cookieAuth: []
       responses:
@@ -1495,13 +1494,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RalliesRequest'
+              $ref: '#/components/schemas/Rallies'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/RalliesRequest'
+              $ref: '#/components/schemas/Rallies'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/RalliesRequest'
+              $ref: '#/components/schemas/Rallies'
         required: true
       security:
       - cookieAuth: []
@@ -1548,13 +1547,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RalliesRequest'
+              $ref: '#/components/schemas/Rallies'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/RalliesRequest'
+              $ref: '#/components/schemas/Rallies'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/RalliesRequest'
+              $ref: '#/components/schemas/Rallies'
         required: true
       security:
       - cookieAuth: []
@@ -1580,13 +1579,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedRalliesRequest'
+              $ref: '#/components/schemas/PatchedRallies'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedRalliesRequest'
+              $ref: '#/components/schemas/PatchedRallies'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedRalliesRequest'
+              $ref: '#/components/schemas/PatchedRallies'
       security:
       - cookieAuth: []
       responses:
@@ -1654,13 +1653,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResourceTypesRequest'
+              $ref: '#/components/schemas/ResourceTypes'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ResourceTypesRequest'
+              $ref: '#/components/schemas/ResourceTypes'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ResourceTypesRequest'
+              $ref: '#/components/schemas/ResourceTypes'
       security:
       - cookieAuth: []
       responses:
@@ -1707,13 +1706,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResourceTypesRequest'
+              $ref: '#/components/schemas/ResourceTypes'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ResourceTypesRequest'
+              $ref: '#/components/schemas/ResourceTypes'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ResourceTypesRequest'
+              $ref: '#/components/schemas/ResourceTypes'
       security:
       - cookieAuth: []
       responses:
@@ -1738,13 +1737,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedResourceTypesRequest'
+              $ref: '#/components/schemas/PatchedResourceTypes'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedResourceTypesRequest'
+              $ref: '#/components/schemas/PatchedResourceTypes'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedResourceTypesRequest'
+              $ref: '#/components/schemas/PatchedResourceTypes'
       security:
       - cookieAuth: []
       responses:
@@ -1811,13 +1810,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResourcesRequest'
+              $ref: '#/components/schemas/Resources'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ResourcesRequest'
+              $ref: '#/components/schemas/Resources'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ResourcesRequest'
+              $ref: '#/components/schemas/Resources'
         required: true
       security:
       - cookieAuth: []
@@ -1864,13 +1863,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResourcesRequest'
+              $ref: '#/components/schemas/Resources'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ResourcesRequest'
+              $ref: '#/components/schemas/Resources'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ResourcesRequest'
+              $ref: '#/components/schemas/Resources'
         required: true
       security:
       - cookieAuth: []
@@ -1896,13 +1895,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedResourcesRequest'
+              $ref: '#/components/schemas/PatchedResources'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedResourcesRequest'
+              $ref: '#/components/schemas/PatchedResources'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedResourcesRequest'
+              $ref: '#/components/schemas/PatchedResources'
       security:
       - cookieAuth: []
       responses:
@@ -1970,13 +1969,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RoomsRequest'
+              $ref: '#/components/schemas/Rooms'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/RoomsRequest'
+              $ref: '#/components/schemas/Rooms'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/RoomsRequest'
+              $ref: '#/components/schemas/Rooms'
         required: true
       security:
       - cookieAuth: []
@@ -2023,13 +2022,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RoomsRequest'
+              $ref: '#/components/schemas/Rooms'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/RoomsRequest'
+              $ref: '#/components/schemas/Rooms'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/RoomsRequest'
+              $ref: '#/components/schemas/Rooms'
         required: true
       security:
       - cookieAuth: []
@@ -2055,13 +2054,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedRoomsRequest'
+              $ref: '#/components/schemas/PatchedRooms'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedRoomsRequest'
+              $ref: '#/components/schemas/PatchedRooms'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedRoomsRequest'
+              $ref: '#/components/schemas/PatchedRooms'
       security:
       - cookieAuth: []
       responses:
@@ -2087,6 +2086,151 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/schema:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/stakeholders:
     get:
       operationId: api_stakeholders_list
@@ -2129,13 +2273,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StakeholdersRequest'
+              $ref: '#/components/schemas/Stakeholders'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/StakeholdersRequest'
+              $ref: '#/components/schemas/Stakeholders'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/StakeholdersRequest'
+              $ref: '#/components/schemas/Stakeholders'
       security:
       - cookieAuth: []
       responses:
@@ -2182,13 +2326,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StakeholdersRequest'
+              $ref: '#/components/schemas/Stakeholders'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/StakeholdersRequest'
+              $ref: '#/components/schemas/Stakeholders'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/StakeholdersRequest'
+              $ref: '#/components/schemas/Stakeholders'
       security:
       - cookieAuth: []
       responses:
@@ -2213,13 +2357,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedStakeholdersRequest'
+              $ref: '#/components/schemas/PatchedStakeholders'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedStakeholdersRequest'
+              $ref: '#/components/schemas/PatchedStakeholders'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedStakeholdersRequest'
+              $ref: '#/components/schemas/PatchedStakeholders'
       security:
       - cookieAuth: []
       responses:
@@ -2287,13 +2431,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StatesRequest'
+              $ref: '#/components/schemas/States'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/StatesRequest'
+              $ref: '#/components/schemas/States'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/StatesRequest'
+              $ref: '#/components/schemas/States'
       security:
       - cookieAuth: []
       responses:
@@ -2340,13 +2484,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StatesRequest'
+              $ref: '#/components/schemas/States'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/StatesRequest'
+              $ref: '#/components/schemas/States'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/StatesRequest'
+              $ref: '#/components/schemas/States'
       security:
       - cookieAuth: []
       responses:
@@ -2371,13 +2515,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedStatesRequest'
+              $ref: '#/components/schemas/PatchedStates'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedStatesRequest'
+              $ref: '#/components/schemas/PatchedStates'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedStatesRequest'
+              $ref: '#/components/schemas/PatchedStates'
       security:
       - cookieAuth: []
       responses:
@@ -2445,13 +2589,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubscriptionsRequest'
+              $ref: '#/components/schemas/Subscriptions'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/SubscriptionsRequest'
+              $ref: '#/components/schemas/Subscriptions'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/SubscriptionsRequest'
+              $ref: '#/components/schemas/Subscriptions'
         required: true
       security:
       - cookieAuth: []
@@ -2498,13 +2642,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubscriptionsRequest'
+              $ref: '#/components/schemas/Subscriptions'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/SubscriptionsRequest'
+              $ref: '#/components/schemas/Subscriptions'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/SubscriptionsRequest'
+              $ref: '#/components/schemas/Subscriptions'
         required: true
       security:
       - cookieAuth: []
@@ -2530,13 +2674,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedSubscriptionsRequest'
+              $ref: '#/components/schemas/PatchedSubscriptions'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedSubscriptionsRequest'
+              $ref: '#/components/schemas/PatchedSubscriptions'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedSubscriptionsRequest'
+              $ref: '#/components/schemas/PatchedSubscriptions'
       security:
       - cookieAuth: []
       responses:
@@ -2604,13 +2748,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TopicsRequest'
+              $ref: '#/components/schemas/Topics'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TopicsRequest'
+              $ref: '#/components/schemas/Topics'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TopicsRequest'
+              $ref: '#/components/schemas/Topics'
       security:
       - cookieAuth: []
       responses:
@@ -2657,13 +2801,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TopicsRequest'
+              $ref: '#/components/schemas/Topics'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TopicsRequest'
+              $ref: '#/components/schemas/Topics'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TopicsRequest'
+              $ref: '#/components/schemas/Topics'
       security:
       - cookieAuth: []
       responses:
@@ -2688,13 +2832,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedTopicsRequest'
+              $ref: '#/components/schemas/PatchedTopics'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedTopicsRequest'
+              $ref: '#/components/schemas/PatchedTopics'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedTopicsRequest'
+              $ref: '#/components/schemas/PatchedTopics'
       security:
       - cookieAuth: []
       responses:
@@ -2761,13 +2905,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UsersRequest'
+              $ref: '#/components/schemas/Users'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UsersRequest'
+              $ref: '#/components/schemas/Users'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UsersRequest'
+              $ref: '#/components/schemas/Users'
         required: true
       security:
       - cookieAuth: []
@@ -2814,13 +2958,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UsersRequest'
+              $ref: '#/components/schemas/Users'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UsersRequest'
+              $ref: '#/components/schemas/Users'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UsersRequest'
+              $ref: '#/components/schemas/Users'
         required: true
       security:
       - cookieAuth: []
@@ -2846,13 +2990,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedUsersRequest'
+              $ref: '#/components/schemas/PatchedUsers'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedUsersRequest'
+              $ref: '#/components/schemas/PatchedUsers'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedUsersRequest'
+              $ref: '#/components/schemas/PatchedUsers'
       security:
       - cookieAuth: []
       responses:
@@ -2967,13 +3111,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
         required: true
       security:
       - cookieAuth: []
@@ -3022,13 +3166,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
         required: true
       security:
       - cookieAuth: []
@@ -3055,13 +3199,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedSchemaVersionRequest'
+              $ref: '#/components/schemas/PatchedSchemaVersion'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedSchemaVersionRequest'
+              $ref: '#/components/schemas/PatchedSchemaVersion'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedSchemaVersionRequest'
+              $ref: '#/components/schemas/PatchedSchemaVersion'
       security:
       - cookieAuth: []
       - {}
@@ -3148,13 +3292,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
         required: true
       security:
       - cookieAuth: []
@@ -3177,13 +3321,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/SchemaVersionRequest'
+              $ref: '#/components/schemas/SchemaVersion'
         required: true
       security:
       - cookieAuth: []
@@ -3204,13 +3348,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PhoneNumberRequest'
+              $ref: '#/components/schemas/PhoneNumber'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PhoneNumberRequest'
+              $ref: '#/components/schemas/PhoneNumber'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PhoneNumberRequest'
+              $ref: '#/components/schemas/PhoneNumber'
         required: true
       security:
       - cookieAuth: []
@@ -3229,13 +3373,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyPhoneRequest'
+              $ref: '#/components/schemas/VerifyPhone'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/VerifyPhoneRequest'
+              $ref: '#/components/schemas/VerifyPhone'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/VerifyPhoneRequest'
+              $ref: '#/components/schemas/VerifyPhone'
         required: true
       security:
       - cookieAuth: []
@@ -3253,6 +3397,11 @@ components:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -3292,74 +3441,110 @@ components:
           type: string
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         rally:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         coauthors:
           type: array
           items:
-            type: integer
-            title: CoAuthors
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
       required:
+      - _type
+      - author
+      - coauthors
       - created_at
       - id
       - modified_at
       - prerequisites
-    ActionPlansRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          nullable: true
-          maxLength: 255
-        recommendation:
-          type: string
-          nullable: true
-        exe_summary:
-          type: string
-          nullable: true
-          title: Executive Summary
-        analysis:
-          type: string
-          nullable: true
-          title: Analysis and Policy Alternatives / Proposal
-        background:
-          type: string
-          nullable: true
-          title: Background / Legislative History / Problem Statement
-        pro_argument:
-          type: string
-          nullable: true
-        con_argument:
-          type: string
-          nullable: true
-        prerequisites:
-          type: string
-          minLength: 1
-        timeline:
-          type: string
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-        rally:
-          type: integer
-          nullable: true
-        coauthors:
-          type: array
-          items:
-            type: integer
-            title: CoAuthors
-      required:
-      - prerequisites
+      - rally
     Attendees:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -3401,59 +3586,69 @@ components:
           type: boolean
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         room_id:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
+      - author
       - created_at
       - id
       - modified_at
       - role
-    AttendeesRequest:
-      type: object
-      properties:
-        display_name:
-          type: string
-          nullable: true
-          maxLength: 255
-        display_bg:
-          type: string
-          format: binary
-          nullable: true
-        role:
-          $ref: '#/components/schemas/RoleEnum'
-        stream:
-          type: string
-          nullable: true
-          maxLength: 255
-        is_muted:
-          type: boolean
-          nullable: true
-        sharing_video:
-          type: boolean
-          nullable: true
-        sharing_audio:
-          type: boolean
-          nullable: true
-        sharing_screen:
-          type: boolean
-          nullable: true
-        hand_raised:
-          type: boolean
-          nullable: true
-        is_typing:
-          type: boolean
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-        room_id:
-          type: integer
-          nullable: true
-      required:
-      - role
+      - room_id
     BlankEnum:
       enum:
       - ''
@@ -3463,6 +3658,11 @@ components:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -3552,135 +3752,141 @@ components:
           title: Functional Status
           maxLength: 1
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         state_id:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-          title: State
         sponsors:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         officials:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
       required:
+      - _type
+      - author
       - created_at
       - id
       - modified_at
       - name
+      - officials
       - postal_address
-    CitiesRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-        description:
-          type: string
-          nullable: true
-        postal_address:
-          type: string
-          minLength: 1
-          maxLength: 255
-        picture:
-          type: string
-          format: binary
-          nullable: true
-        cover_photo:
-          type: string
-          format: binary
-          nullable: true
-        website:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        population:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-        census2010_pop:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-          title: 2010 Census Population
-        altitude:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-        county:
-          type: string
-          nullable: true
-          maxLength: 255
-        land_area:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-        water_area:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-        total_area:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-        density:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-        timezone:
-          type: string
-          nullable: true
-          maxLength: 255
-        place_code:
-          type: string
-          nullable: true
-          maxLength: 7
-        sumlev:
-          type: string
-          nullable: true
-          title: Summary Level
-          maxLength: 3
-        funcstat:
-          type: string
-          nullable: true
-          title: Functional Status
-          maxLength: 1
-        author:
-          type: integer
-          nullable: true
-        state_id:
-          type: integer
-          nullable: true
-          title: State
-        sponsors:
-          type: array
-          items:
-            type: integer
-        officials:
-          type: array
-          items:
-            type: integer
-      required:
-      - name
-      - postal_address
+      - sponsors
+      - state_id
     Invites:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -3692,41 +3898,127 @@ components:
         status:
           $ref: '#/components/schemas/InvitesStatusEnum'
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         meeting:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         user:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         invited_by:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
+      - author
       - created_at
       - id
+      - invited_by
+      - meeting
       - modified_at
       - status
-    InvitesRequest:
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/InvitesStatusEnum'
-        author:
-          type: integer
-          nullable: true
-        meeting:
-          type: integer
-          nullable: true
-        user:
-          type: integer
-          nullable: true
-        invited_by:
-          type: integer
-          nullable: true
-      required:
-      - status
+      - user
     InvitesStatusEnum:
       enum:
       - invited
@@ -3745,6 +4037,11 @@ components:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -3758,28 +4055,50 @@ components:
           nullable: true
           maxLength: 255
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
+      - author
       - created_at
       - id
       - modified_at
-    MeetingTypesRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        author:
-          type: integer
-          nullable: true
     Meetings:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -3814,90 +4133,189 @@ components:
           minimum: -2147483648
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         rally:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         meeting_type:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         speakers:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         moderators:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         sponsors:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
       required:
+      - _type
       - address
+      - author
       - created_at
       - end
       - id
+      - meeting_type
       - moderators
       - modified_at
+      - rally
       - speakers
-      - start
-    MeetingsRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          nullable: true
-          maxLength: 255
-        address:
-          type: string
-          minLength: 1
-          maxLength: 255
-        start:
-          type: string
-          format: date-time
-        end:
-          type: string
-          format: date-time
-        agenda_json:
-          nullable: true
-        duration:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-        privacy:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-        rally:
-          type: integer
-          nullable: true
-        meeting_type:
-          type: integer
-          nullable: true
-        speakers:
-          type: array
-          items:
-            type: integer
-        moderators:
-          type: array
-          items:
-            type: integer
-        sponsors:
-          type: array
-          items:
-            type: integer
-      required:
-      - address
-      - end
-      - moderators
-      - speakers
+      - sponsors
       - start
     NullEnum:
       enum:
@@ -3908,6 +4326,11 @@ components:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         last_login:
           type: string
           format: date-time
@@ -3969,99 +4392,66 @@ components:
         groups:
           type: array
           items:
-            type: integer
-          description: The groups this user belongs to. A user will get all permissions
-            granted to each of their groups.
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         user_permissions:
           type: array
           items:
-            type: integer
-          description: Specific permissions for this user.
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         resources:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
       required:
+      - _type
+      - groups
       - id
-      - username
-    OATesterRequest:
-      type: object
-      properties:
-        last_login:
-          type: string
-          format: date-time
-          nullable: true
-        is_superuser:
-          type: boolean
-          title: Superuser status
-          description: Designates that this user has all permissions without explicitly
-            assigning them.
-        username:
-          type: string
-          minLength: 1
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-        first_name:
-          type: string
-          maxLength: 150
-        last_name:
-          type: string
-          maxLength: 150
-        email:
-          type: string
-          format: email
-          title: Email address
-          maxLength: 254
-        is_staff:
-          type: boolean
-          title: Staff status
-          description: Designates whether the user can log into this admin site.
-        is_active:
-          type: boolean
-          title: Active
-          description: Designates whether this user should be treated as active. Unselect
-            this instead of deleting accounts.
-        date_joined:
-          type: string
-          format: date-time
-        phone:
-          type: string
-          nullable: true
-          maxLength: 16
-        website:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        bio:
-          type: string
-          nullable: true
-        picture:
-          type: string
-          format: binary
-          nullable: true
-        cover_photo:
-          type: string
-          format: binary
-          nullable: true
-        groups:
-          type: array
-          items:
-            type: integer
-          description: The groups this user belongs to. A user will get all permissions
-            granted to each of their groups.
-        user_permissions:
-          type: array
-          items:
-            type: integer
-          description: Specific permissions for this user.
-        resources:
-          type: array
-          items:
-            type: integer
-      required:
+      - resources
+      - user_permissions
       - username
     Officials:
       type: object
@@ -4069,6 +4459,11 @@ components:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -4097,58 +4492,98 @@ components:
           title: Social Media links
           maxLength: 200
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         party_affiliation:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-          title: Party
         city:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
       required:
+      - _type
+      - author
       - city
       - created_at
       - id
       - modified_at
-      - title
-    OfficialsRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          minLength: 1
-          title: Job Title
-          maxLength: 255
-        office_phone:
-          type: string
-          nullable: true
-          maxLength: 16
-        office_email:
-          type: string
-          format: email
-          nullable: true
-          maxLength: 254
-        social_links:
-          type: string
-          format: uri
-          nullable: true
-          title: Social Media links
-          maxLength: 200
-        author:
-          type: integer
-          nullable: true
-        party_affiliation:
-          type: integer
-          nullable: true
-          title: Party
-        city:
-          type: array
-          items:
-            type: integer
-      required:
-      - city
+      - party_affiliation
       - title
     PaginatedActionPlansList:
       type: object
@@ -4593,6 +5028,11 @@ components:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -4615,34 +5055,58 @@ components:
           nullable: true
           maxLength: 200
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
+      - author
       - created_at
       - id
       - modified_at
-    PartiesRequest:
+    PatchedActionPlans:
       type: object
       properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        logo:
-          type: string
-          format: binary
-          nullable: true
-        website:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        author:
+        id:
           type: integer
-          nullable: true
-    PatchedActionPlansRequest:
-      type: object
-      properties:
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
         title:
           type: string
           nullable: true
@@ -4670,31 +5134,120 @@ components:
           nullable: true
         prerequisites:
           type: string
-          minLength: 1
         timeline:
           type: string
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         rally:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         coauthors:
           type: array
           items:
-            type: integer
-            title: CoAuthors
-    PatchedAttendeesRequest:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+    PatchedAttendees:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
         display_name:
           type: string
           nullable: true
           maxLength: 255
         display_bg:
           type: string
-          format: binary
+          format: uri
           nullable: true
         role:
           $ref: '#/components/schemas/RoleEnum'
@@ -4721,32 +5274,96 @@ components:
           type: boolean
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         room_id:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-    PatchedCitiesRequest:
+    PatchedCities:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
         name:
           type: string
-          minLength: 1
           maxLength: 255
         description:
           type: string
           nullable: true
         postal_address:
           type: string
-          minLength: 1
           maxLength: 255
         picture:
           type: string
-          format: binary
+          format: uri
           nullable: true
         cover_photo:
           type: string
-          format: binary
+          format: uri
           nullable: true
         website:
           type: string
@@ -4812,57 +5429,328 @@ components:
           title: Functional Status
           maxLength: 1
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         state_id:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-          title: State
         sponsors:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         officials:
           type: array
           items:
-            type: integer
-    PatchedInvitesRequest:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+    PatchedInvites:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
         status:
           $ref: '#/components/schemas/InvitesStatusEnum'
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         meeting:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         user:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         invited_by:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-    PatchedMeetingTypesRequest:
+    PatchedMeetingTypes:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
         name:
           type: string
           nullable: true
           maxLength: 255
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-    PatchedMeetingsRequest:
+    PatchedMeetings:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
         title:
           type: string
           nullable: true
           maxLength: 255
         address:
           type: string
-          minLength: 1
           maxLength: 255
         start:
           type: string
@@ -4883,29 +5771,187 @@ components:
           minimum: -2147483648
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         rally:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         meeting_type:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         speakers:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         moderators:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         sponsors:
           type: array
           items:
-            type: integer
-    PatchedOATesterRequest:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+    PatchedOATester:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         last_login:
           type: string
           format: date-time
@@ -4917,7 +5963,6 @@ components:
             assigning them.
         username:
           type: string
-          minLength: 1
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
           pattern: ^[\w.@+-]+$
@@ -4959,33 +6004,90 @@ components:
           nullable: true
         picture:
           type: string
-          format: binary
+          format: uri
           nullable: true
         cover_photo:
           type: string
-          format: binary
+          format: uri
           nullable: true
         groups:
           type: array
           items:
-            type: integer
-          description: The groups this user belongs to. A user will get all permissions
-            granted to each of their groups.
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         user_permissions:
           type: array
           items:
-            type: integer
-          description: Specific permissions for this user.
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         resources:
           type: array
           items:
-            type: integer
-    PatchedOfficialsRequest:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+    PatchedOfficials:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
         title:
           type: string
-          minLength: 1
           title: Job Title
           maxLength: 255
         office_phone:
@@ -5004,26 +6106,116 @@ components:
           title: Social Media links
           maxLength: 200
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         party_affiliation:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-          title: Party
         city:
           type: array
           items:
-            type: integer
-    PatchedPartiesRequest:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+    PatchedParties:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
         name:
           type: string
           nullable: true
           maxLength: 255
         logo:
           type: string
-          format: binary
+          format: uri
           nullable: true
         website:
           type: string
@@ -5031,382 +6223,44 @@ components:
           nullable: true
           maxLength: 200
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-    PatchedRalliesRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 255
-        description:
-          type: string
-          minLength: 1
-        media:
-          type: string
-          format: binary
-          nullable: true
-        comments:
-          type: string
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-        topics:
-          type: array
-          items:
-            type: integer
-    PatchedResourceTypesRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        author:
-          type: integer
-          nullable: true
-    PatchedResourcesRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 255
-        description_html:
-          type: string
-          minLength: 1
-        image:
-          type: string
-          format: binary
-        postal_address:
-          type: string
-          nullable: true
-          maxLength: 255
-        price_ccoin:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          title: Price (citizencoin)
-        author:
-          type: integer
-          nullable: true
-        cities:
-          type: array
-          items:
-            type: integer
-        resource_type:
-          type: array
-          items:
-            type: integer
-            title: Resource Type
-    PatchedRoomsRequest:
-      type: object
-      properties:
-        start:
-          type: string
-          format: date-time
-        end:
-          type: string
-          format: date-time
-        privacy:
-          nullable: true
-          oneOf:
-          - $ref: '#/components/schemas/RoomsPrivacyEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
-        status:
-          nullable: true
-          oneOf:
-          - $ref: '#/components/schemas/RoomsStatusEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
-        chat_thread:
-          type: string
-          nullable: true
-          maxLength: 255
-        recording:
-          type: string
-          format: binary
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-          title: Owner
-        rally:
-          type: integer
-          nullable: true
-        meeting:
-          type: integer
-          nullable: true
-    PatchedSchemaVersionRequest:
-      type: object
-      properties:
-        prompt:
-          type: string
-          minLength: 1
-          maxLength: 4000
-        privacy:
-          nullable: true
-          oneOf:
-          - $ref: '#/components/schemas/SchemaVersionPrivacyEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
-        assistant_id:
-          type: string
-          minLength: 1
-          maxLength: 100
-        thread_id:
-          type: string
-          nullable: true
-          maxLength: 100
-        message_id:
-          type: string
-          nullable: true
-          maxLength: 100
-        run_id:
-          type: string
-          nullable: true
-          maxLength: 100
-        openai_model:
-          type: string
-          nullable: true
-          maxLength: 100
-        reasoning:
-          type: string
-          nullable: true
-        schema:
-          nullable: true
-        version_notes:
-          type: string
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-        project:
-          type: integer
-          nullable: true
-        parent:
-          type: integer
-          nullable: true
-    PatchedStakeholdersRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        image:
-          type: string
-          format: binary
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-    PatchedStatesRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        state_code:
-          type: string
-          nullable: true
-          maxLength: 2
-        website:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        icon:
-          type: string
-          format: binary
-          nullable: true
-        population:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-          title: State Population
-        census2010_pop:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-          title: 2010 Census Population
-        city_count:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-          title: Number of Cities
-        total_city_population:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-        avg_city_population:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-          title: Average City Population
-        state_area:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-          title: State Area (sq km)
-        population_density:
-          type: number
-          format: double
-          nullable: true
-        urban_population:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-        rural_population:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-        urban_percentage:
-          type: number
-          format: double
-          nullable: true
-          title: Urban Population Percentage
-        growth_rate:
-          type: number
-          format: double
-          nullable: true
-          title: Annual Growth Rate (%)
-        author:
-          type: integer
-          nullable: true
-        largest_city:
-          type: integer
-          nullable: true
-        smallest_city:
-          type: integer
-          nullable: true
-        fastest_growing_city:
-          type: integer
-          nullable: true
-    PatchedSubscriptionsRequest:
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/SubscriptionsStatusEnum'
-        author:
-          type: integer
-          nullable: true
-        subscriber:
-          type: integer
-          nullable: true
-        rally:
-          type: integer
-          nullable: true
-        meeting:
-          type: integer
-          nullable: true
-    PatchedTopicsRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        icon:
-          type: string
-          format: binary
-          nullable: true
-        photo:
-          type: string
-          format: binary
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-    PatchedUsersRequest:
-      type: object
-      properties:
-        last_login:
-          type: string
-          format: date-time
-          nullable: true
-        username:
-          type: string
-          minLength: 1
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-        first_name:
-          type: string
-          maxLength: 150
-        last_name:
-          type: string
-          maxLength: 150
-        date_joined:
-          type: string
-          format: date-time
-        phone:
-          type: string
-          nullable: true
-          maxLength: 16
-        website:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        bio:
-          type: string
-          nullable: true
-        picture:
-          type: string
-          format: binary
-          nullable: true
-        cover_photo:
-          type: string
-          format: binary
-          nullable: true
-        groups:
-          type: array
-          items:
-            type: integer
-          description: The groups this user belongs to. A user will get all permissions
-            granted to each of their groups.
-        user_permissions:
-          type: array
-          items:
-            type: integer
-          description: Specific permissions for this user.
-        resources:
-          type: array
-          items:
-            type: integer
-    PhoneNumberRequest:
-      type: object
-      properties:
-        phone:
-          type: string
-          minLength: 1
-      required:
-      - phone
-    Rallies:
+    PatchedRallies:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -5428,53 +6282,73 @@ components:
           type: string
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         topics:
           type: array
           items:
-            type: integer
-      required:
-      - created_at
-      - description
-      - id
-      - modified_at
-      - title
-      - topics
-    RalliesRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 255
-        description:
-          type: string
-          minLength: 1
-        media:
-          type: string
-          format: binary
-          nullable: true
-        comments:
-          type: string
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-        topics:
-          type: array
-          items:
-            type: integer
-      required:
-      - description
-      - title
-      - topics
-    ResourceTypes:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+    PatchedResourceTypes:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -5488,28 +6362,44 @@ components:
           nullable: true
           maxLength: 255
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-      required:
-      - created_at
-      - id
-      - modified_at
-    ResourceTypesRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        author:
-          type: integer
-          nullable: true
-    Resources:
+    PatchedResources:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -5536,86 +6426,102 @@ components:
           minimum: -2147483648
           title: Price (citizencoin)
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         cities:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         resource_type:
           type: array
           items:
-            type: integer
-            title: Resource Type
-      required:
-      - cities
-      - created_at
-      - description_html
-      - id
-      - image
-      - modified_at
-      - price_ccoin
-      - resource_type
-      - title
-    ResourcesRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 255
-        description_html:
-          type: string
-          minLength: 1
-        image:
-          type: string
-          format: binary
-        postal_address:
-          type: string
-          nullable: true
-          maxLength: 255
-        price_ccoin:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          title: Price (citizencoin)
-        author:
-          type: integer
-          nullable: true
-        cities:
-          type: array
-          items:
-            type: integer
-        resource_type:
-          type: array
-          items:
-            type: integer
-            title: Resource Type
-      required:
-      - cities
-      - description_html
-      - image
-      - price_ccoin
-      - resource_type
-      - title
-    RoleEnum:
-      enum:
-      - viewer
-      - presenter
-      - admin
-      - chat_moderator
-      type: string
-      description: |-
-        * `viewer` - Viewer
-        * `presenter` -  presenter
-        * `admin` -  admin
-        * `chat_moderator` -  chat moderator
-    Rooms:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+    PatchedRooms:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -5651,89 +6557,100 @@ components:
           format: uri
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-          title: Owner
         rally:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         meeting:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
-      required:
-      - created_at
-      - end
-      - id
-      - modified_at
-      - start
-    RoomsPrivacyEnum:
-      enum:
-      - public
-      - inviteonly
-      - requests
-      type: string
-      description: |-
-        * `public` - Public
-        * `inviteonly` -  invite-only
-        * `requests` -  requests
-    RoomsRequest:
-      type: object
-      properties:
-        start:
-          type: string
-          format: date-time
-        end:
-          type: string
-          format: date-time
-        privacy:
-          nullable: true
-          oneOf:
-          - $ref: '#/components/schemas/RoomsPrivacyEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
-        status:
-          nullable: true
-          oneOf:
-          - $ref: '#/components/schemas/RoomsStatusEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
-        chat_thread:
-          type: string
-          nullable: true
-          maxLength: 255
-        recording:
-          type: string
-          format: binary
-          nullable: true
-        author:
-          type: integer
-          nullable: true
-          title: Owner
-        rally:
-          type: integer
-          nullable: true
-        meeting:
-          type: integer
-          nullable: true
-      required:
-      - end
-      - start
-    RoomsStatusEnum:
-      enum:
-      - live
-      - scheduled
-      - ended
-      type: string
-      description: |-
-        * `live` - Live
-        * `scheduled` -  scheduled
-        * `ended` -  ended
-    SchemaVersion:
+    PatchedSchemaVersion:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         versions_count:
           type: string
           readOnly: true
@@ -5781,43 +6698,1144 @@ components:
           type: string
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         project:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         parent:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+    PatchedStakeholders:
+      type: object
+      properties:
+        id:
           type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        image:
+          type: string
+          format: uri
+          nullable: true
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+    PatchedStates:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        state_code:
+          type: string
+          nullable: true
+          maxLength: 2
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        icon:
+          type: string
+          format: uri
+          nullable: true
+        population:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+          title: State Population
+        census2010_pop:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+          title: 2010 Census Population
+        city_count:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+          title: Number of Cities
+        total_city_population:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        avg_city_population:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+          title: Average City Population
+        state_area:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+          title: State Area (sq km)
+        population_density:
+          type: number
+          format: double
+          nullable: true
+        urban_population:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        rural_population:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        urban_percentage:
+          type: number
+          format: double
+          nullable: true
+          title: Urban Population Percentage
+        growth_rate:
+          type: number
+          format: double
+          nullable: true
+          title: Annual Growth Rate (%)
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        largest_city:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        smallest_city:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        fastest_growing_city:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+    PatchedSubscriptions:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/SubscriptionsStatusEnum'
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        subscriber:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        rally:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        meeting:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+    PatchedTopics:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        icon:
+          type: string
+          format: uri
+          nullable: true
+        photo:
+          type: string
+          format: uri
+          nullable: true
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+    PatchedUsers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        date_joined:
+          type: string
+          format: date-time
+        phone:
+          type: string
+          nullable: true
+          maxLength: 16
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        bio:
+          type: string
+          nullable: true
+        picture:
+          type: string
+          format: uri
+          nullable: true
+        cover_photo:
+          type: string
+          format: uri
+          nullable: true
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+        user_permissions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+        resources:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+    PhoneNumber:
+      type: object
+      properties:
+        phone:
+          type: string
+      required:
+      - phone
+    Rallies:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        media:
+          type: string
+          format: uri
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        topics:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+      required:
+      - _type
+      - author
+      - created_at
+      - description
+      - id
+      - modified_at
+      - title
+      - topics
+    ResourceTypes:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
-      - assistant_id
+      - _type
+      - author
       - created_at
       - id
-      - prompt
-      - version_tree
-      - versions_count
-    SchemaVersionPrivacyEnum:
+      - modified_at
+    Resources:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description_html:
+          type: string
+        image:
+          type: string
+          format: uri
+        postal_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        price_ccoin:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: Price (citizencoin)
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        cities:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+        resource_type:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+              entity:
+                type: object
+                additionalProperties: true
+                description: Additional fields based on query parameters
+                nullable: true
+              img:
+                type: string
+                format: uri
+                description: Image URL if available
+                nullable: true
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
+      required:
+      - _type
+      - author
+      - cities
+      - created_at
+      - description_html
+      - id
+      - image
+      - modified_at
+      - price_ccoin
+      - resource_type
+      - title
+    RoleEnum:
+      enum:
+      - viewer
+      - presenter
+      - admin
+      - chat_moderator
+      type: string
+      description: |-
+        * `viewer` - Viewer
+        * `presenter` -  presenter
+        * `admin` -  admin
+        * `chat_moderator` -  chat moderator
+    Rooms:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        privacy:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoomsPrivacyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        status:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoomsStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        chat_thread:
+          type: string
+          nullable: true
+          maxLength: 255
+        recording:
+          type: string
+          format: uri
+          nullable: true
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        rally:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+        meeting:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
+          nullable: true
+      required:
+      - _type
+      - author
+      - created_at
+      - end
+      - id
+      - meeting
+      - modified_at
+      - rally
+      - start
+    RoomsPrivacyEnum:
       enum:
       - public
-      - unlisted
       - inviteonly
-      - authusers
-      - onlyme
-      - archived
+      - requests
       type: string
       description: |-
         * `public` - Public
-        * `unlisted` - Unlisted
-        * `inviteonly` - Invite Only
-        * `authusers` - Authenticated Users
-        * `onlyme` - Only Me
-        * `archived` - archived
-    SchemaVersionRequest:
+        * `inviteonly` -  invite-only
+        * `requests` -  requests
+    RoomsStatusEnum:
+      enum:
+      - live
+      - scheduled
+      - ended
+      type: string
+      description: |-
+        * `live` - Live
+        * `scheduled` -  scheduled
+        * `ended` -  ended
+    SchemaVersion:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
+        versions_count:
+          type: string
+          readOnly: true
+        version_tree:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
         prompt:
           type: string
-          minLength: 1
           maxLength: 4000
         privacy:
           nullable: true
@@ -5827,7 +7845,6 @@ components:
           - $ref: '#/components/schemas/NullEnum'
         assistant_id:
           type: string
-          minLength: 1
           maxLength: 100
         thread_id:
           type: string
@@ -5854,23 +7871,127 @@ components:
           type: string
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         project:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         parent:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
       - assistant_id
+      - author
+      - created_at
+      - id
+      - parent
+      - project
       - prompt
+      - version_tree
+      - versions_count
+    SchemaVersionPrivacyEnum:
+      enum:
+      - public
+      - unlisted
+      - inviteonly
+      - authusers
+      - onlyme
+      - archived
+      type: string
+      description: |-
+        * `public` - Public
+        * `unlisted` - Unlisted
+        * `inviteonly` - Invite Only
+        * `authusers` - Authenticated Users
+        * `onlyme` - Only Me
+        * `archived` - archived
     Stakeholders:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -5888,32 +8009,50 @@ components:
           format: uri
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
+      - author
       - created_at
       - id
       - modified_at
-    StakeholdersRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        image:
-          type: string
-          format: binary
-          nullable: true
-        author:
-          type: integer
-          nullable: true
     States:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -6004,123 +8143,137 @@ components:
           nullable: true
           title: Annual Growth Rate (%)
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         largest_city:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         smallest_city:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         fastest_growing_city:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
+      - author
       - created_at
+      - fastest_growing_city
       - id
+      - largest_city
       - modified_at
-    StatesRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        state_code:
-          type: string
-          nullable: true
-          maxLength: 2
-        website:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        icon:
-          type: string
-          format: binary
-          nullable: true
-        population:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-          title: State Population
-        census2010_pop:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-          title: 2010 Census Population
-        city_count:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-          title: Number of Cities
-        total_city_population:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-        avg_city_population:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-          title: Average City Population
-        state_area:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
-          title: State Area (sq km)
-        population_density:
-          type: number
-          format: double
-          nullable: true
-        urban_population:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-        rural_population:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-          nullable: true
-        urban_percentage:
-          type: number
-          format: double
-          nullable: true
-          title: Urban Population Percentage
-        growth_rate:
-          type: number
-          format: double
-          nullable: true
-          title: Annual Growth Rate (%)
-        author:
-          type: integer
-          nullable: true
-        largest_city:
-          type: integer
-          nullable: true
-        smallest_city:
-          type: integer
-          nullable: true
-        fastest_growing_city:
-          type: integer
-          nullable: true
+      - smallest_city
     Subscriptions:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -6132,41 +8285,127 @@ components:
         status:
           $ref: '#/components/schemas/SubscriptionsStatusEnum'
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         subscriber:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         rally:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
         meeting:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
+      - author
       - created_at
       - id
+      - meeting
       - modified_at
+      - rally
       - status
-    SubscriptionsRequest:
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/SubscriptionsStatusEnum'
-        author:
-          type: integer
-          nullable: true
-        subscriber:
-          type: integer
-          nullable: true
-        rally:
-          type: integer
-          nullable: true
-        meeting:
-          type: integer
-          nullable: true
-      required:
-      - status
+      - subscriber
     SubscriptionsStatusEnum:
       enum:
       - approved
@@ -6185,6 +8424,11 @@ components:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         created_at:
           type: string
           format: date-time
@@ -6206,36 +8450,50 @@ components:
           format: uri
           nullable: true
         author:
-          type: integer
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Primary key of the related object
+            str:
+              type: string
+              description: String representation of the related object
+            _type:
+              type: string
+              description: Type name of the related object
+            entity:
+              type: object
+              additionalProperties: true
+              description: Additional fields based on query parameters
+              nullable: true
+            img:
+              type: string
+              format: uri
+              description: Image URL if available
+              nullable: true
+          required:
+          - id
+          - str
+          - _type
+          readOnly: true
           nullable: true
       required:
+      - _type
+      - author
       - created_at
       - id
       - modified_at
-    TopicsRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-          maxLength: 255
-        icon:
-          type: string
-          format: binary
-          nullable: true
-        photo:
-          type: string
-          format: binary
-          nullable: true
-        author:
-          type: integer
-          nullable: true
     Users:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        _type:
+          type: string
+          readOnly: true
+          title: ' type'
+          description: Model type name
         last_login:
           type: string
           format: date-time
@@ -6278,90 +8536,74 @@ components:
         groups:
           type: array
           items:
-            type: integer
-          description: The groups this user belongs to. A user will get all permissions
-            granted to each of their groups.
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         user_permissions:
           type: array
           items:
-            type: integer
-          description: Specific permissions for this user.
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
         resources:
           type: array
           items:
-            type: integer
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Primary key of the related object
+              str:
+                type: string
+                description: String representation of the related object
+              _type:
+                type: string
+                description: Type name of the related object
+            required:
+            - id
+            - str
+            - _type
+          readOnly: true
       required:
+      - _type
+      - groups
       - id
+      - resources
+      - user_permissions
       - username
-    UsersRequest:
-      type: object
-      properties:
-        last_login:
-          type: string
-          format: date-time
-          nullable: true
-        username:
-          type: string
-          minLength: 1
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-        first_name:
-          type: string
-          maxLength: 150
-        last_name:
-          type: string
-          maxLength: 150
-        date_joined:
-          type: string
-          format: date-time
-        phone:
-          type: string
-          nullable: true
-          maxLength: 16
-        website:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        bio:
-          type: string
-          nullable: true
-        picture:
-          type: string
-          format: binary
-          nullable: true
-        cover_photo:
-          type: string
-          format: binary
-          nullable: true
-        groups:
-          type: array
-          items:
-            type: integer
-          description: The groups this user belongs to. A user will get all permissions
-            granted to each of their groups.
-        user_permissions:
-          type: array
-          items:
-            type: integer
-          description: Specific permissions for this user.
-        resources:
-          type: array
-          items:
-            type: integer
-      required:
-      - username
-    VerifyPhoneRequest:
+    VerifyPhone:
       type: object
       properties:
         phone:
           type: string
-          minLength: 1
         code:
           type: string
-          minLength: 1
       required:
       - code
       - phone

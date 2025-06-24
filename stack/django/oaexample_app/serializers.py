@@ -2,6 +2,10 @@
 
 from django.db.models import ImageField
 from rest_framework import serializers
+from drf_spectacular.extensions import OpenApiSerializerExtension
+from drf_spectacular.plumbing import build_object_type, build_array_type
+from drf_spectacular.openapi import AutoSchema
+from drf_spectacular.utils import extend_schema_field
 
 from .models import ActionPlans
 from .models import Attendees
@@ -27,8 +31,120 @@ logger = logging.getLogger(__name__)
 from django.core.exceptions import FieldDoesNotExist
 from google.auth.exceptions import DefaultCredentialsError
 
+
+# Custom field classes to represent the transformed relationship objects
+
+class RelationObjectField(serializers.Field):
+    """Field that represents a rich relationship object"""
+    
+    def __init__(self, **kwargs):
+        kwargs['read_only'] = True
+        super().__init__(**kwargs)
+    
+    def to_representation(self, value):
+        # This should never be called as it's handled by CustomSerializer.to_representation
+        return value
+
+class ManyRelationObjectField(serializers.ListField):
+    """Field that represents a list of rich relationship objects"""
+    
+    def __init__(self, **kwargs):
+        kwargs['read_only'] = True
+        kwargs['child'] = RelationObjectField()
+        super().__init__(**kwargs)
+
+# Schema definitions for the relationship objects
+RELATION_OBJECT_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'id': {
+            'type': 'integer',
+            'description': 'Primary key of the related object'
+        },
+        'str': {
+            'type': 'string',
+            'description': 'String representation of the related object'
+        },
+        '_type': {
+            'type': 'string',
+            'description': 'Type name of the related object'
+        },
+        'entity': {
+            'type': 'object',
+            'additionalProperties': True,
+            'description': 'Additional fields based on query parameters',
+            'nullable': True
+        },
+        'img': {
+            'type': 'string',
+            'format': 'uri',
+            'description': 'Image URL if available',
+            'nullable': True
+        }
+    },
+    'required': ['id', 'str', '_type']
+}
+
+SIMPLE_RELATION_OBJECT_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'id': {
+            'type': 'integer',
+            'description': 'Primary key of the related object'
+        },
+        'str': {
+            'type': 'string',
+            'description': 'String representation of the related object'
+        },
+        '_type': {
+            'type': 'string',
+            'description': 'Type name of the related object'
+        }
+    },
+    'required': ['id', 'str', '_type']
+}
+
+# Extend the schema field decorators
+@extend_schema_field(RELATION_OBJECT_SCHEMA)
+class EnhancedRelationObjectField(RelationObjectField):
+    pass
+
+@extend_schema_field({
+    'type': 'array',
+    'items': RELATION_OBJECT_SCHEMA
+})
+class EnhancedManyRelationObjectField(ManyRelationObjectField):
+    pass
+
+@extend_schema_field(SIMPLE_RELATION_OBJECT_SCHEMA)
+class SimpleRelationObjectField(RelationObjectField):
+    pass
+
+@extend_schema_field({
+    'type': 'array',
+    'items': SIMPLE_RELATION_OBJECT_SCHEMA
+})
+class SimpleManyRelationObjectField(ManyRelationObjectField):
+    pass
+
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
 class CustomUsersSerializer(serializers.ModelSerializer):
+    # Add _type field to all responses
+    _type = serializers.CharField(read_only=True, help_text="Model type name")
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Replace relationship fields with simple custom fields in the response schema
+        if hasattr(self.Meta, 'model'):
+            for field in self.Meta.model._meta.get_fields():
+                if field.is_relation and not field.auto_created and hasattr(self, 'fields') and field.name in self.fields:
+                    if field.many_to_one:
+                        # Replace ForeignKey field with our simple custom field
+                        self.fields[field.name] = SimpleRelationObjectField(allow_null=True)
+                    elif field.many_to_many:
+                        # Replace ManyToMany field with our simple custom field
+                        self.fields[field.name] = SimpleManyRelationObjectField()
+
     def to_representation(self, instance):
         # Get the original representation
         representation = super().to_representation(instance)
@@ -60,7 +176,22 @@ class CustomUsersSerializer(serializers.ModelSerializer):
         return representation
 
 class CustomSerializer(serializers.ModelSerializer):
-    # serializer_related_field = SubFieldRelatedField
+    # Add _type field to all responses
+    _type = serializers.CharField(read_only=True, help_text="Model type name")
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Replace relationship fields with custom fields in the response schema
+        if hasattr(self.Meta, 'model'):
+            for field in self.Meta.model._meta.get_fields():
+                if field.is_relation and not field.auto_created and hasattr(self, 'fields') and field.name in self.fields:
+                    if field.many_to_one:
+                        # Replace ForeignKey field with our custom field
+                        self.fields[field.name] = EnhancedRelationObjectField(allow_null=True)
+                    elif field.many_to_many:
+                        # Replace ManyToMany field with our custom field
+                        self.fields[field.name] = EnhancedManyRelationObjectField()
+
     def create(self, validated_data):
         request = self.context.get('request', None)
         if request and hasattr(request, 'user') and request.user.is_authenticated:

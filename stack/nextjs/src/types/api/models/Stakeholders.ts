@@ -4,10 +4,35 @@
 /* eslint-disable */
 export type Stakeholders = {
   readonly id: number;
+  /**
+   * Model type name
+   */
+  readonly _type: string;
   readonly created_at: string;
   readonly modified_at: string;
   name?: string | null;
   image?: string | null;
-  author?: number | null;
+  readonly author: {
+    /**
+     * Primary key of the related object
+     */
+    id: number;
+    /**
+     * String representation of the related object
+     */
+    str: string;
+    /**
+     * Type name of the related object
+     */
+    _type: string;
+    /**
+     * Additional fields based on query parameters
+     */
+    entity?: Record<string, any> | null;
+    /**
+     * Image URL if available
+     */
+    img?: string | null;
+  } | null;
 };
 

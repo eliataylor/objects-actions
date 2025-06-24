@@ -4,13 +4,59 @@
 /* eslint-disable */
 export type Rallies = {
   readonly id: number;
+  /**
+   * Model type name
+   */
+  readonly _type: string;
   readonly created_at: string;
   readonly modified_at: string;
   title: string;
   description: string;
   media?: string | null;
   comments?: string | null;
-  author?: number | null;
-  topics: Array<number>;
+  readonly author: {
+    /**
+     * Primary key of the related object
+     */
+    id: number;
+    /**
+     * String representation of the related object
+     */
+    str: string;
+    /**
+     * Type name of the related object
+     */
+    _type: string;
+    /**
+     * Additional fields based on query parameters
+     */
+    entity?: Record<string, any> | null;
+    /**
+     * Image URL if available
+     */
+    img?: string | null;
+  } | null;
+  readonly topics: Array<{
+    /**
+     * Primary key of the related object
+     */
+    id: number;
+    /**
+     * String representation of the related object
+     */
+    str: string;
+    /**
+     * Type name of the related object
+     */
+    _type: string;
+    /**
+     * Additional fields based on query parameters
+     */
+    entity?: Record<string, any> | null;
+    /**
+     * Image URL if available
+     */
+    img?: string | null;
+  }>;
 };
 
