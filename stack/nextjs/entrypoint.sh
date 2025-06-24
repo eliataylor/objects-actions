@@ -9,4 +9,4 @@ fi
 # Set environment variable to indicate Docker execution
 export DOCKER_ENV=true
 
-npm run dev
+npm run dev-https
