@@ -1,3 +1,5 @@
+"use client";
+
 // autocompleteRender.tsx
 import { Avatar, CircularProgress, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { Add, Search } from "@mui/icons-material";

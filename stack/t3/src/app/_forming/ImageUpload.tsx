@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ChangeEvent, useRef, useState } from "react";
 import { Button, Grid } from "@mui/material";
 import { AudioFile, PhotoCamera, Videocam } from "@mui/icons-material";
@@ -71,7 +73,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         </label>
       </Grid>
       {image && (
-        <Grid item p={1}>
+        <Grid p={1}>
           {mime_type === "image" ?
             <img
               src={image.url}

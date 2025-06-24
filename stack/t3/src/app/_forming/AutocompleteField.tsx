@@ -1,9 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
 import { Autocomplete, TextField } from "@mui/material";
-import { ModelName, ModelType, RelEntity } from "../types/types";
-import { AcOption, Api2Options, BaseAcFieldProps, useAutocomplete } from "./AutoCompleteUtils";
+import { type ModelName, type ModelType, type RelEntity } from "~/types/types";
+import { type AcOption, Api2Options, type BaseAcFieldProps, useAutocomplete } from "./AutoCompleteUtils";
 import { renderInputAdornments, renderOption } from "./AutoCompleteElements";
-import NewFormDialog from "./NewFormDialog";
 
 interface SingleAcFieldProps<T extends ModelName> extends BaseAcFieldProps<T> {
   selected: RelEntity<T> | null;
@@ -40,19 +41,14 @@ export default function AutocompleteField<T extends ModelName>({
 
   const onNestedCreated = (entity: ModelType<T>) => {
     const option = Api2Options([entity], search_fields, image_field)[0];
-    setSelectedOption(option);
-    onSelect({ id: option.value, str: option.label, _type: type }, field_name);
+    if (option) {
+      setSelectedOption(option);
+      onSelect({ id: option.value, str: option.label, _type: type }, field_name);
+    }
   };
 
   return (
     <React.Fragment>
-      {typeof nestedForm !== "boolean" && (
-        <NewFormDialog
-          entity={nestedForm}
-          onClose={() => setNestedForm(false)}
-          onCreated={onNestedCreated}
-        />
-      )}
 
       <Autocomplete
         options={options}

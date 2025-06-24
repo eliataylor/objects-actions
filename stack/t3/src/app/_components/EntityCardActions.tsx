@@ -1,5 +1,5 @@
 import { Grid, IconButton } from "@mui/material";
-import { Edit, ReadMore } from "@mui/icons-material";
+import { Edit, ReadMore, Delete } from "@mui/icons-material";
 import Link from "next/link";
 import { type NavItem, type ModelName } from "../../types/types";
 
@@ -8,9 +8,9 @@ interface EntityCardActionsProps<T extends ModelName> {
   entityId: string | number;
 }
 
-export default function EntityCardActions<T extends ModelName>({ 
-  hasUrl, 
-  entityId 
+export default function EntityCardActions<T extends ModelName>({
+  hasUrl,
+  entityId
 }: EntityCardActionsProps<T>) {
   return (
     <Grid container gap={2}>
@@ -29,6 +29,14 @@ export default function EntityCardActions<T extends ModelName>({
         href={`/forms/${hasUrl.segment}/${entityId}/edit`}
       >
         <Edit />
+      </IconButton>
+      <IconButton
+        color="error"
+        size="small"
+        component={Link}
+        href={`/forms/${hasUrl.segment}/${entityId}/delete`}
+      >
+        <Delete />
       </IconButton>
     </Grid>
   );

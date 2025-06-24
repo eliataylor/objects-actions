@@ -7,7 +7,7 @@ import path from 'node:path';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
+const hostname = '0.0.0.0';
 const port = 3003;
 
 // Get SSL certificate paths
@@ -29,9 +29,9 @@ const httpsAgent = new https.Agent({
   timeout: 10000
 });
 
-// Configure proxy middleware
+// Configure proxy middleware for API requests only
 const apiProxy = createProxyMiddleware({
-  target: 'https://localapi.oaexample.com:8081',
+  target: 'https://localapi.oaexample.com:8080',
   changeOrigin: true,
   secure: false,
   agent: httpsAgent,
@@ -39,7 +39,7 @@ const apiProxy = createProxyMiddleware({
     '^/api': '/api',
   },
   onProxyReq: (proxyReq) => {
-    proxyReq.setHeader('host', 'localapi.oaexample.com:8081');
+    proxyReq.setHeader('host', 'localapi.oaexample.com:8080');
   },
 });
 

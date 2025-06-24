@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardMedia, Dialog, DialogContent, Grid, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { TightButton } from "../../theme/StyledFields";
+import { TightButton } from "../../styles/StyledFields";
 
 const SpreadsheetCards: React.FC = () => {
   const [open, setOpen] = useState(false);

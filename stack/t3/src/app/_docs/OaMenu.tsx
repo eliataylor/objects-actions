@@ -4,11 +4,11 @@ import InstallIcon from "@mui/icons-material/Download";
 import CustomizeIcon from "@mui/icons-material/Build";
 import ExtendIcon from "@mui/icons-material/Extension";
 import ContributeIcon from "@mui/icons-material/VolunteerActivism";
-import { NavBarItem } from "../../components/AuthMenu";
-import LightDarkImg from "../../components/LightDarkImg";
+import { NavBarItem } from "../_components/AuthMenu";
 import { Box, Divider } from "@mui/material";
-import ThemeSwitcher from "../../theme/ThemeSwitcher";
-import FontSelector from "../../theme/FontSelector";
+import ThemeSwitcher from "../_components/ThemeSwitcher";
+import FontSelector from "../_components/FontSelector";
+import LightDarkImg from "../_components/LightDarkImg";
 
 const OaMenu: React.FC<{ handleClick: () => void }> = ({ handleClick = undefined }) => {
 

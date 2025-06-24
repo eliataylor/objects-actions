@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import ApiClient, { HttpResponse } from "../../config/ApiClient";
-import { ApiListResponse, ModelName, ModelType, NavItem, NAVITEMS, RelEntity } from "../types/types";
+import { api } from "~/trpc/react";
+import { type ModelName, type ModelType, type NavItem, NAVITEMS, type RelEntity } from "~/types/types";
 
 export interface AcOption {
   label: string;
@@ -15,11 +17,6 @@ export interface BaseAcFieldProps<T extends ModelName> {
   image_field?: keyof ModelType<T>;
   search_fields: string[];
   field_label: string;
-}
-
-export function getBasePath<T extends ModelName>(type: T): string {
-  const hasUrl = NAVITEMS.find((nav) => nav.type === type) as NavItem<T>;
-  return hasUrl?.api ?? `/api/${type}`;
 }
 
 export function Api2Options<T extends ModelName>(
@@ -56,53 +53,48 @@ export function createBaseEntity<T extends ModelName>(type: T) {
   } as unknown as ModelType<T>;
 }
 
-// Custom hook for handling autocomplete state and API calls
+// Custom hook for handling autocomplete state and API calls using tRPC
 export function useAutocomplete<T extends ModelName>({
                                                        type,
                                                        search_fields,
                                                        image_field
                                                      }: BaseAcFieldProps<T>) {
-  const [options, setOptions] = useState<AcOption[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [loading, setLoading] = useState(false);
   const [nestedForm, setNestedForm] = useState<ModelType<T> | boolean>(false);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const basePath = getBasePath(type);
-
-  const fetchOptions = async (search: string) => {
-    setLoading(true);
-    try {
-      const response: HttpResponse<ApiListResponse<T>> = await ApiClient.get(`${basePath}?search=${search}`);
-      if (response.success && response.data?.results) {
-        const options = Api2Options(response.data.results, search_fields, image_field);
-        setOptions(options);
-      }
-    } catch (error) {
-      console.error("Error fetching options:", error);
-      setOptions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Debounce the search input
   const debounceFetch = useMemo(
-    () => debounce((search: string) => fetchOptions(search), 300),
-    // Remove the dependency on fetchOptions which changes on every render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [basePath]
+    () => debounce((search: string) => setDebouncedSearch(search), 300),
+    []
   );
 
   useEffect(() => {
-    // Only fetch if inputValue is not empty
     if (inputValue.trim() !== "") {
       debounceFetch(inputValue);
     } else {
-      // Clear options when input is empty without making an API call
-      setOptions([]);
+      setDebouncedSearch("");
     }
-    // This effect should only run when inputValue changes, not on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputValue]);
+  }, [inputValue, debounceFetch]);
+
+  // Use tRPC query to fetch options
+  const { data: entityData, isLoading } = api.entities.list.useQuery(
+    {
+      entityType: type,
+      search: debouncedSearch,
+      limit: 50, // Reasonable limit for autocomplete
+      offset: 0,
+    },
+    {
+      enabled: debouncedSearch.trim() !== "", // Only fetch when there's a search term
+    }
+  );
+
+  // Transform API data to options
+  const options = useMemo(() => {
+    if (!entityData?.results) return [];
+    return Api2Options(entityData.results as ModelType<T>[], search_fields, image_field);
+  }, [entityData?.results, search_fields, image_field]);
 
   // Wrapper function to update inputValue
   const handleInputChange = (value: string) => {
@@ -116,11 +108,11 @@ export function useAutocomplete<T extends ModelName>({
   return {
     options,
     inputValue,
-    loading,
+    loading: isLoading,
     nestedForm,
     setInputValue: handleInputChange,
     setNestedForm,
     setNestedEntity,
-    setOptions
+    setOptions: () => {} // Keep for compatibility but not needed with tRPC
   };
 }

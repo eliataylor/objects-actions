@@ -6,7 +6,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
   client: {
-    NEXT_PUBLIC_API_HOST: z.string().default("https://localapi.oaexample.com:8081"),
+    NEXT_PUBLIC_API_HOST: z.string().default("https://localapi.oaexample.com:8080"),
     NEXT_PUBLIC_APP_HOST: z.string().default("https://localhost.oaexample.com:3003"),
   },
   runtimeEnv: {

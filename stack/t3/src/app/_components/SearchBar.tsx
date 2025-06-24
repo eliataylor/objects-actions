@@ -91,7 +91,7 @@ export default function SearchBar({
 
   return (
     <Paper elevation={1} sx={{ mb: 2 }}>
-      <Box sx={{ p: 2 }}>
+      <Box>
         <form onSubmit={handleSearchSubmit}>
           <TextField
             fullWidth
@@ -128,14 +128,8 @@ export default function SearchBar({
         {searchQuery && (
           <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="caption" color="text.secondary">
-              Searching in: {currentNavItem?.search_fields?.join(', ')}
+              Searching {currentNavItem?.search_fields?.join(', ')} by {`"${searchQuery}"`} 
             </Typography>
-            <Chip
-              size="small"
-              label={`"${searchQuery}"`}
-              onDelete={handleClear}
-              variant="outlined"
-            />
           </Box>
         )}
       </Box>
