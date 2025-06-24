@@ -5,18 +5,18 @@
 import type { PhoneNumberRequest } from '../models/PhoneNumberRequest';
 import type { VerifyPhoneRequest } from '../models/VerifyPhoneRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
-import { request as __request } from '../core/request';
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class ObjectactionsService {
+  constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
    * @param requestBody
    * @returns any SMS sent successfully
    * @throws ApiError
    */
-  public static objectactionsAuthSmsCreate(
+  public objectactionsAuthSmsCreate(
     requestBody: PhoneNumberRequest,
   ): CancelablePromise<any> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/objectactions/auth/sms',
       body: requestBody,
@@ -31,10 +31,10 @@ export class ObjectactionsService {
    * @returns any SMS sent successfully
    * @throws ApiError
    */
-  public static objectactionsAuthVerifySmsCreate(
+  public objectactionsAuthVerifySmsCreate(
     requestBody: VerifyPhoneRequest,
   ): CancelablePromise<any> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/objectactions/auth/verify-sms',
       body: requestBody,

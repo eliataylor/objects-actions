@@ -13,9 +13,9 @@ const ContentMenu: React.FC = () => {
   const router = useRouter();
   const { navModelTypes } = useNavDrawer();
 
-  const handleNavClick = (segment: string) => {
+  const handleNavClick = async (segment: string) => {
     console.log(`[ContentMenu] Navigating to: /${segment}`);
-    router.push(`/${segment}`);
+    router.push(`${segment}`);
   };
 
   return (

@@ -79,9 +79,9 @@ import type { TopicsRequest } from '../models/TopicsRequest';
 import type { Users } from '../models/Users';
 import type { UsersRequest } from '../models/UsersRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
-import { request as __request } from '../core/request';
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class ApiService {
+  constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
    * @param limit Number of results to return per page.
    * @param offset The initial index from which to return the results.
@@ -89,12 +89,12 @@ export class ApiService {
    * @returns PaginatedActionPlansList
    * @throws ApiError
    */
-  public static apiActionPlansList(
+  public apiActionPlansList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedActionPlansList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/action-plans',
       query: {
@@ -109,10 +109,10 @@ export class ApiService {
    * @returns ActionPlans
    * @throws ApiError
    */
-  public static apiActionPlansCreate(
+  public apiActionPlansCreate(
     requestBody: ActionPlansRequest,
   ): CancelablePromise<ActionPlans> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/action-plans',
       body: requestBody,
@@ -124,10 +124,10 @@ export class ApiService {
    * @returns ActionPlans
    * @throws ApiError
    */
-  public static apiActionPlansRetrieve(
+  public apiActionPlansRetrieve(
     id: number,
   ): CancelablePromise<ActionPlans> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/action-plans/{id}',
       path: {
@@ -141,11 +141,11 @@ export class ApiService {
    * @returns ActionPlans
    * @throws ApiError
    */
-  public static apiActionPlansUpdate(
+  public apiActionPlansUpdate(
     id: number,
     requestBody: ActionPlansRequest,
   ): CancelablePromise<ActionPlans> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/action-plans/{id}',
       path: {
@@ -161,11 +161,11 @@ export class ApiService {
    * @returns ActionPlans
    * @throws ApiError
    */
-  public static apiActionPlansPartialUpdate(
+  public apiActionPlansPartialUpdate(
     id: number,
     requestBody?: PatchedActionPlansRequest,
   ): CancelablePromise<ActionPlans> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/action-plans/{id}',
       path: {
@@ -180,10 +180,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiActionPlansDestroy(
+  public apiActionPlansDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/action-plans/{id}',
       path: {
@@ -197,11 +197,11 @@ export class ApiService {
    * @returns PaginatedAttendeesList
    * @throws ApiError
    */
-  public static apiAttendeesList(
+  public apiAttendeesList(
     limit?: number,
     offset?: number,
   ): CancelablePromise<PaginatedAttendeesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/attendees',
       query: {
@@ -215,10 +215,10 @@ export class ApiService {
    * @returns Attendees
    * @throws ApiError
    */
-  public static apiAttendeesCreate(
+  public apiAttendeesCreate(
     requestBody: AttendeesRequest,
   ): CancelablePromise<Attendees> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/attendees',
       body: requestBody,
@@ -230,10 +230,10 @@ export class ApiService {
    * @returns Attendees
    * @throws ApiError
    */
-  public static apiAttendeesRetrieve(
+  public apiAttendeesRetrieve(
     id: number,
   ): CancelablePromise<Attendees> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/attendees/{id}',
       path: {
@@ -247,11 +247,11 @@ export class ApiService {
    * @returns Attendees
    * @throws ApiError
    */
-  public static apiAttendeesUpdate(
+  public apiAttendeesUpdate(
     id: number,
     requestBody: AttendeesRequest,
   ): CancelablePromise<Attendees> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/attendees/{id}',
       path: {
@@ -267,11 +267,11 @@ export class ApiService {
    * @returns Attendees
    * @throws ApiError
    */
-  public static apiAttendeesPartialUpdate(
+  public apiAttendeesPartialUpdate(
     id: number,
     requestBody?: PatchedAttendeesRequest,
   ): CancelablePromise<Attendees> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/attendees/{id}',
       path: {
@@ -286,10 +286,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiAttendeesDestroy(
+  public apiAttendeesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/attendees/{id}',
       path: {
@@ -304,12 +304,12 @@ export class ApiService {
    * @returns PaginatedCitiesList
    * @throws ApiError
    */
-  public static apiCitiesList(
+  public apiCitiesList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedCitiesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/cities',
       query: {
@@ -324,10 +324,10 @@ export class ApiService {
    * @returns Cities
    * @throws ApiError
    */
-  public static apiCitiesCreate(
+  public apiCitiesCreate(
     requestBody: CitiesRequest,
   ): CancelablePromise<Cities> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/cities',
       body: requestBody,
@@ -339,10 +339,10 @@ export class ApiService {
    * @returns Cities
    * @throws ApiError
    */
-  public static apiCitiesRetrieve(
+  public apiCitiesRetrieve(
     id: number,
   ): CancelablePromise<Cities> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/cities/{id}',
       path: {
@@ -356,11 +356,11 @@ export class ApiService {
    * @returns Cities
    * @throws ApiError
    */
-  public static apiCitiesUpdate(
+  public apiCitiesUpdate(
     id: number,
     requestBody: CitiesRequest,
   ): CancelablePromise<Cities> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/cities/{id}',
       path: {
@@ -376,11 +376,11 @@ export class ApiService {
    * @returns Cities
    * @throws ApiError
    */
-  public static apiCitiesPartialUpdate(
+  public apiCitiesPartialUpdate(
     id: number,
     requestBody?: PatchedCitiesRequest,
   ): CancelablePromise<Cities> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/cities/{id}',
       path: {
@@ -395,10 +395,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiCitiesDestroy(
+  public apiCitiesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/cities/{id}',
       path: {
@@ -413,12 +413,12 @@ export class ApiService {
    * @returns PaginatedInvitesList
    * @throws ApiError
    */
-  public static apiInvitesList(
+  public apiInvitesList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedInvitesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/invites',
       query: {
@@ -433,10 +433,10 @@ export class ApiService {
    * @returns Invites
    * @throws ApiError
    */
-  public static apiInvitesCreate(
+  public apiInvitesCreate(
     requestBody: InvitesRequest,
   ): CancelablePromise<Invites> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/invites',
       body: requestBody,
@@ -448,10 +448,10 @@ export class ApiService {
    * @returns Invites
    * @throws ApiError
    */
-  public static apiInvitesRetrieve(
+  public apiInvitesRetrieve(
     id: number,
   ): CancelablePromise<Invites> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/invites/{id}',
       path: {
@@ -465,11 +465,11 @@ export class ApiService {
    * @returns Invites
    * @throws ApiError
    */
-  public static apiInvitesUpdate(
+  public apiInvitesUpdate(
     id: number,
     requestBody: InvitesRequest,
   ): CancelablePromise<Invites> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/invites/{id}',
       path: {
@@ -485,11 +485,11 @@ export class ApiService {
    * @returns Invites
    * @throws ApiError
    */
-  public static apiInvitesPartialUpdate(
+  public apiInvitesPartialUpdate(
     id: number,
     requestBody?: PatchedInvitesRequest,
   ): CancelablePromise<Invites> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/invites/{id}',
       path: {
@@ -504,10 +504,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiInvitesDestroy(
+  public apiInvitesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/invites/{id}',
       path: {
@@ -522,12 +522,12 @@ export class ApiService {
    * @returns PaginatedMeetingTypesList
    * @throws ApiError
    */
-  public static apiMeetingTypesList(
+  public apiMeetingTypesList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedMeetingTypesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/meeting-types',
       query: {
@@ -542,10 +542,10 @@ export class ApiService {
    * @returns MeetingTypes
    * @throws ApiError
    */
-  public static apiMeetingTypesCreate(
+  public apiMeetingTypesCreate(
     requestBody?: MeetingTypesRequest,
   ): CancelablePromise<MeetingTypes> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/meeting-types',
       body: requestBody,
@@ -557,10 +557,10 @@ export class ApiService {
    * @returns MeetingTypes
    * @throws ApiError
    */
-  public static apiMeetingTypesRetrieve(
+  public apiMeetingTypesRetrieve(
     id: number,
   ): CancelablePromise<MeetingTypes> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/meeting-types/{id}',
       path: {
@@ -574,11 +574,11 @@ export class ApiService {
    * @returns MeetingTypes
    * @throws ApiError
    */
-  public static apiMeetingTypesUpdate(
+  public apiMeetingTypesUpdate(
     id: number,
     requestBody?: MeetingTypesRequest,
   ): CancelablePromise<MeetingTypes> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/meeting-types/{id}',
       path: {
@@ -594,11 +594,11 @@ export class ApiService {
    * @returns MeetingTypes
    * @throws ApiError
    */
-  public static apiMeetingTypesPartialUpdate(
+  public apiMeetingTypesPartialUpdate(
     id: number,
     requestBody?: PatchedMeetingTypesRequest,
   ): CancelablePromise<MeetingTypes> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/meeting-types/{id}',
       path: {
@@ -613,10 +613,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiMeetingTypesDestroy(
+  public apiMeetingTypesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/meeting-types/{id}',
       path: {
@@ -631,12 +631,12 @@ export class ApiService {
    * @returns PaginatedMeetingsList
    * @throws ApiError
    */
-  public static apiMeetingsList(
+  public apiMeetingsList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedMeetingsList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/meetings',
       query: {
@@ -651,10 +651,10 @@ export class ApiService {
    * @returns Meetings
    * @throws ApiError
    */
-  public static apiMeetingsCreate(
+  public apiMeetingsCreate(
     requestBody: MeetingsRequest,
   ): CancelablePromise<Meetings> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/meetings',
       body: requestBody,
@@ -666,10 +666,10 @@ export class ApiService {
    * @returns Meetings
    * @throws ApiError
    */
-  public static apiMeetingsRetrieve(
+  public apiMeetingsRetrieve(
     id: number,
   ): CancelablePromise<Meetings> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/meetings/{id}',
       path: {
@@ -683,11 +683,11 @@ export class ApiService {
    * @returns Meetings
    * @throws ApiError
    */
-  public static apiMeetingsUpdate(
+  public apiMeetingsUpdate(
     id: number,
     requestBody: MeetingsRequest,
   ): CancelablePromise<Meetings> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/meetings/{id}',
       path: {
@@ -703,11 +703,11 @@ export class ApiService {
    * @returns Meetings
    * @throws ApiError
    */
-  public static apiMeetingsPartialUpdate(
+  public apiMeetingsPartialUpdate(
     id: number,
     requestBody?: PatchedMeetingsRequest,
   ): CancelablePromise<Meetings> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/meetings/{id}',
       path: {
@@ -722,10 +722,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiMeetingsDestroy(
+  public apiMeetingsDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/meetings/{id}',
       path: {
@@ -740,11 +740,11 @@ export class ApiService {
    * @returns PaginatedOATesterList
    * @throws ApiError
    */
-  public static apiOaTestersList(
+  public apiOaTestersList(
     page?: number,
     pageSize?: number,
   ): CancelablePromise<PaginatedOATesterList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/oa-testers',
       query: {
@@ -759,10 +759,10 @@ export class ApiService {
    * @returns OATester
    * @throws ApiError
    */
-  public static apiOaTestersCreate(
+  public apiOaTestersCreate(
     requestBody: OATesterRequest,
   ): CancelablePromise<OATester> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/oa-testers',
       body: requestBody,
@@ -775,10 +775,10 @@ export class ApiService {
    * @returns OATester
    * @throws ApiError
    */
-  public static apiOaTestersRetrieve(
+  public apiOaTestersRetrieve(
     id: number,
   ): CancelablePromise<OATester> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/oa-testers/{id}',
       path: {
@@ -793,11 +793,11 @@ export class ApiService {
    * @returns OATester
    * @throws ApiError
    */
-  public static apiOaTestersUpdate(
+  public apiOaTestersUpdate(
     id: number,
     requestBody: OATesterRequest,
   ): CancelablePromise<OATester> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/oa-testers/{id}',
       path: {
@@ -814,11 +814,11 @@ export class ApiService {
    * @returns OATester
    * @throws ApiError
    */
-  public static apiOaTestersPartialUpdate(
+  public apiOaTestersPartialUpdate(
     id: number,
     requestBody?: PatchedOATesterRequest,
   ): CancelablePromise<OATester> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/oa-testers/{id}',
       path: {
@@ -834,10 +834,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiOaTestersDestroy(
+  public apiOaTestersDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/oa-testers/{id}',
       path: {
@@ -849,8 +849,8 @@ export class ApiService {
    * @returns OATester
    * @throws ApiError
    */
-  public static apiOaTestersSearchRetrieve(): CancelablePromise<OATester> {
-    return __request(OpenAPI, {
+  public apiOaTestersSearchRetrieve(): CancelablePromise<OATester> {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/oa-testers/search',
     });
@@ -862,12 +862,12 @@ export class ApiService {
    * @returns PaginatedOfficialsList
    * @throws ApiError
    */
-  public static apiOfficialsList(
+  public apiOfficialsList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedOfficialsList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/officials',
       query: {
@@ -882,10 +882,10 @@ export class ApiService {
    * @returns Officials
    * @throws ApiError
    */
-  public static apiOfficialsCreate(
+  public apiOfficialsCreate(
     requestBody: OfficialsRequest,
   ): CancelablePromise<Officials> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/officials',
       body: requestBody,
@@ -897,10 +897,10 @@ export class ApiService {
    * @returns Officials
    * @throws ApiError
    */
-  public static apiOfficialsRetrieve(
+  public apiOfficialsRetrieve(
     id: number,
   ): CancelablePromise<Officials> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/officials/{id}',
       path: {
@@ -914,11 +914,11 @@ export class ApiService {
    * @returns Officials
    * @throws ApiError
    */
-  public static apiOfficialsUpdate(
+  public apiOfficialsUpdate(
     id: number,
     requestBody: OfficialsRequest,
   ): CancelablePromise<Officials> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/officials/{id}',
       path: {
@@ -934,11 +934,11 @@ export class ApiService {
    * @returns Officials
    * @throws ApiError
    */
-  public static apiOfficialsPartialUpdate(
+  public apiOfficialsPartialUpdate(
     id: number,
     requestBody?: PatchedOfficialsRequest,
   ): CancelablePromise<Officials> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/officials/{id}',
       path: {
@@ -953,10 +953,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiOfficialsDestroy(
+  public apiOfficialsDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/officials/{id}',
       path: {
@@ -971,12 +971,12 @@ export class ApiService {
    * @returns PaginatedPartiesList
    * @throws ApiError
    */
-  public static apiPartiesList(
+  public apiPartiesList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedPartiesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/parties',
       query: {
@@ -991,10 +991,10 @@ export class ApiService {
    * @returns Parties
    * @throws ApiError
    */
-  public static apiPartiesCreate(
+  public apiPartiesCreate(
     requestBody?: PartiesRequest,
   ): CancelablePromise<Parties> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/parties',
       body: requestBody,
@@ -1006,10 +1006,10 @@ export class ApiService {
    * @returns Parties
    * @throws ApiError
    */
-  public static apiPartiesRetrieve(
+  public apiPartiesRetrieve(
     id: number,
   ): CancelablePromise<Parties> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/parties/{id}',
       path: {
@@ -1023,11 +1023,11 @@ export class ApiService {
    * @returns Parties
    * @throws ApiError
    */
-  public static apiPartiesUpdate(
+  public apiPartiesUpdate(
     id: number,
     requestBody?: PartiesRequest,
   ): CancelablePromise<Parties> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/parties/{id}',
       path: {
@@ -1043,11 +1043,11 @@ export class ApiService {
    * @returns Parties
    * @throws ApiError
    */
-  public static apiPartiesPartialUpdate(
+  public apiPartiesPartialUpdate(
     id: number,
     requestBody?: PatchedPartiesRequest,
   ): CancelablePromise<Parties> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/parties/{id}',
       path: {
@@ -1062,10 +1062,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiPartiesDestroy(
+  public apiPartiesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/parties/{id}',
       path: {
@@ -1080,12 +1080,12 @@ export class ApiService {
    * @returns PaginatedRalliesList
    * @throws ApiError
    */
-  public static apiRalliesList(
+  public apiRalliesList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedRalliesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/rallies',
       query: {
@@ -1100,10 +1100,10 @@ export class ApiService {
    * @returns Rallies
    * @throws ApiError
    */
-  public static apiRalliesCreate(
+  public apiRalliesCreate(
     requestBody: RalliesRequest,
   ): CancelablePromise<Rallies> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/rallies',
       body: requestBody,
@@ -1115,10 +1115,10 @@ export class ApiService {
    * @returns Rallies
    * @throws ApiError
    */
-  public static apiRalliesRetrieve(
+  public apiRalliesRetrieve(
     id: number,
   ): CancelablePromise<Rallies> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/rallies/{id}',
       path: {
@@ -1132,11 +1132,11 @@ export class ApiService {
    * @returns Rallies
    * @throws ApiError
    */
-  public static apiRalliesUpdate(
+  public apiRalliesUpdate(
     id: number,
     requestBody: RalliesRequest,
   ): CancelablePromise<Rallies> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/rallies/{id}',
       path: {
@@ -1152,11 +1152,11 @@ export class ApiService {
    * @returns Rallies
    * @throws ApiError
    */
-  public static apiRalliesPartialUpdate(
+  public apiRalliesPartialUpdate(
     id: number,
     requestBody?: PatchedRalliesRequest,
   ): CancelablePromise<Rallies> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/rallies/{id}',
       path: {
@@ -1171,10 +1171,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiRalliesDestroy(
+  public apiRalliesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/rallies/{id}',
       path: {
@@ -1189,12 +1189,12 @@ export class ApiService {
    * @returns PaginatedResourceTypesList
    * @throws ApiError
    */
-  public static apiResourceTypesList(
+  public apiResourceTypesList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedResourceTypesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/resource-types',
       query: {
@@ -1209,10 +1209,10 @@ export class ApiService {
    * @returns ResourceTypes
    * @throws ApiError
    */
-  public static apiResourceTypesCreate(
+  public apiResourceTypesCreate(
     requestBody?: ResourceTypesRequest,
   ): CancelablePromise<ResourceTypes> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/resource-types',
       body: requestBody,
@@ -1224,10 +1224,10 @@ export class ApiService {
    * @returns ResourceTypes
    * @throws ApiError
    */
-  public static apiResourceTypesRetrieve(
+  public apiResourceTypesRetrieve(
     id: number,
   ): CancelablePromise<ResourceTypes> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/resource-types/{id}',
       path: {
@@ -1241,11 +1241,11 @@ export class ApiService {
    * @returns ResourceTypes
    * @throws ApiError
    */
-  public static apiResourceTypesUpdate(
+  public apiResourceTypesUpdate(
     id: number,
     requestBody?: ResourceTypesRequest,
   ): CancelablePromise<ResourceTypes> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/resource-types/{id}',
       path: {
@@ -1261,11 +1261,11 @@ export class ApiService {
    * @returns ResourceTypes
    * @throws ApiError
    */
-  public static apiResourceTypesPartialUpdate(
+  public apiResourceTypesPartialUpdate(
     id: number,
     requestBody?: PatchedResourceTypesRequest,
   ): CancelablePromise<ResourceTypes> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/resource-types/{id}',
       path: {
@@ -1280,10 +1280,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiResourceTypesDestroy(
+  public apiResourceTypesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/resource-types/{id}',
       path: {
@@ -1298,12 +1298,12 @@ export class ApiService {
    * @returns PaginatedResourcesList
    * @throws ApiError
    */
-  public static apiResourcesList(
+  public apiResourcesList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedResourcesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/resources',
       query: {
@@ -1318,10 +1318,10 @@ export class ApiService {
    * @returns Resources
    * @throws ApiError
    */
-  public static apiResourcesCreate(
+  public apiResourcesCreate(
     requestBody: ResourcesRequest,
   ): CancelablePromise<Resources> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/resources',
       body: requestBody,
@@ -1333,10 +1333,10 @@ export class ApiService {
    * @returns Resources
    * @throws ApiError
    */
-  public static apiResourcesRetrieve(
+  public apiResourcesRetrieve(
     id: number,
   ): CancelablePromise<Resources> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/resources/{id}',
       path: {
@@ -1350,11 +1350,11 @@ export class ApiService {
    * @returns Resources
    * @throws ApiError
    */
-  public static apiResourcesUpdate(
+  public apiResourcesUpdate(
     id: number,
     requestBody: ResourcesRequest,
   ): CancelablePromise<Resources> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/resources/{id}',
       path: {
@@ -1370,11 +1370,11 @@ export class ApiService {
    * @returns Resources
    * @throws ApiError
    */
-  public static apiResourcesPartialUpdate(
+  public apiResourcesPartialUpdate(
     id: number,
     requestBody?: PatchedResourcesRequest,
   ): CancelablePromise<Resources> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/resources/{id}',
       path: {
@@ -1389,10 +1389,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiResourcesDestroy(
+  public apiResourcesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/resources/{id}',
       path: {
@@ -1407,12 +1407,12 @@ export class ApiService {
    * @returns PaginatedRoomsList
    * @throws ApiError
    */
-  public static apiRoomsList(
+  public apiRoomsList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedRoomsList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/rooms',
       query: {
@@ -1427,10 +1427,10 @@ export class ApiService {
    * @returns Rooms
    * @throws ApiError
    */
-  public static apiRoomsCreate(
+  public apiRoomsCreate(
     requestBody: RoomsRequest,
   ): CancelablePromise<Rooms> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/rooms',
       body: requestBody,
@@ -1442,10 +1442,10 @@ export class ApiService {
    * @returns Rooms
    * @throws ApiError
    */
-  public static apiRoomsRetrieve(
+  public apiRoomsRetrieve(
     id: number,
   ): CancelablePromise<Rooms> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/rooms/{id}',
       path: {
@@ -1459,11 +1459,11 @@ export class ApiService {
    * @returns Rooms
    * @throws ApiError
    */
-  public static apiRoomsUpdate(
+  public apiRoomsUpdate(
     id: number,
     requestBody: RoomsRequest,
   ): CancelablePromise<Rooms> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/rooms/{id}',
       path: {
@@ -1479,11 +1479,11 @@ export class ApiService {
    * @returns Rooms
    * @throws ApiError
    */
-  public static apiRoomsPartialUpdate(
+  public apiRoomsPartialUpdate(
     id: number,
     requestBody?: PatchedRoomsRequest,
   ): CancelablePromise<Rooms> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/rooms/{id}',
       path: {
@@ -1498,10 +1498,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiRoomsDestroy(
+  public apiRoomsDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/rooms/{id}',
       path: {
@@ -1516,12 +1516,12 @@ export class ApiService {
    * @returns PaginatedStakeholdersList
    * @throws ApiError
    */
-  public static apiStakeholdersList(
+  public apiStakeholdersList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedStakeholdersList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/stakeholders',
       query: {
@@ -1536,10 +1536,10 @@ export class ApiService {
    * @returns Stakeholders
    * @throws ApiError
    */
-  public static apiStakeholdersCreate(
+  public apiStakeholdersCreate(
     requestBody?: StakeholdersRequest,
   ): CancelablePromise<Stakeholders> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/stakeholders',
       body: requestBody,
@@ -1551,10 +1551,10 @@ export class ApiService {
    * @returns Stakeholders
    * @throws ApiError
    */
-  public static apiStakeholdersRetrieve(
+  public apiStakeholdersRetrieve(
     id: number,
   ): CancelablePromise<Stakeholders> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/stakeholders/{id}',
       path: {
@@ -1568,11 +1568,11 @@ export class ApiService {
    * @returns Stakeholders
    * @throws ApiError
    */
-  public static apiStakeholdersUpdate(
+  public apiStakeholdersUpdate(
     id: number,
     requestBody?: StakeholdersRequest,
   ): CancelablePromise<Stakeholders> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/stakeholders/{id}',
       path: {
@@ -1588,11 +1588,11 @@ export class ApiService {
    * @returns Stakeholders
    * @throws ApiError
    */
-  public static apiStakeholdersPartialUpdate(
+  public apiStakeholdersPartialUpdate(
     id: number,
     requestBody?: PatchedStakeholdersRequest,
   ): CancelablePromise<Stakeholders> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/stakeholders/{id}',
       path: {
@@ -1607,10 +1607,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiStakeholdersDestroy(
+  public apiStakeholdersDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/stakeholders/{id}',
       path: {
@@ -1625,12 +1625,12 @@ export class ApiService {
    * @returns PaginatedStatesList
    * @throws ApiError
    */
-  public static apiStatesList(
+  public apiStatesList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedStatesList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/states',
       query: {
@@ -1645,10 +1645,10 @@ export class ApiService {
    * @returns States
    * @throws ApiError
    */
-  public static apiStatesCreate(
+  public apiStatesCreate(
     requestBody?: StatesRequest,
   ): CancelablePromise<States> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/states',
       body: requestBody,
@@ -1660,10 +1660,10 @@ export class ApiService {
    * @returns States
    * @throws ApiError
    */
-  public static apiStatesRetrieve(
+  public apiStatesRetrieve(
     id: number,
   ): CancelablePromise<States> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/states/{id}',
       path: {
@@ -1677,11 +1677,11 @@ export class ApiService {
    * @returns States
    * @throws ApiError
    */
-  public static apiStatesUpdate(
+  public apiStatesUpdate(
     id: number,
     requestBody?: StatesRequest,
   ): CancelablePromise<States> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/states/{id}',
       path: {
@@ -1697,11 +1697,11 @@ export class ApiService {
    * @returns States
    * @throws ApiError
    */
-  public static apiStatesPartialUpdate(
+  public apiStatesPartialUpdate(
     id: number,
     requestBody?: PatchedStatesRequest,
   ): CancelablePromise<States> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/states/{id}',
       path: {
@@ -1716,10 +1716,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiStatesDestroy(
+  public apiStatesDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/states/{id}',
       path: {
@@ -1734,12 +1734,12 @@ export class ApiService {
    * @returns PaginatedSubscriptionsList
    * @throws ApiError
    */
-  public static apiSubscriptionsList(
+  public apiSubscriptionsList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedSubscriptionsList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/subscriptions',
       query: {
@@ -1754,10 +1754,10 @@ export class ApiService {
    * @returns Subscriptions
    * @throws ApiError
    */
-  public static apiSubscriptionsCreate(
+  public apiSubscriptionsCreate(
     requestBody: SubscriptionsRequest,
   ): CancelablePromise<Subscriptions> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/subscriptions',
       body: requestBody,
@@ -1769,10 +1769,10 @@ export class ApiService {
    * @returns Subscriptions
    * @throws ApiError
    */
-  public static apiSubscriptionsRetrieve(
+  public apiSubscriptionsRetrieve(
     id: number,
   ): CancelablePromise<Subscriptions> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/subscriptions/{id}',
       path: {
@@ -1786,11 +1786,11 @@ export class ApiService {
    * @returns Subscriptions
    * @throws ApiError
    */
-  public static apiSubscriptionsUpdate(
+  public apiSubscriptionsUpdate(
     id: number,
     requestBody: SubscriptionsRequest,
   ): CancelablePromise<Subscriptions> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/subscriptions/{id}',
       path: {
@@ -1806,11 +1806,11 @@ export class ApiService {
    * @returns Subscriptions
    * @throws ApiError
    */
-  public static apiSubscriptionsPartialUpdate(
+  public apiSubscriptionsPartialUpdate(
     id: number,
     requestBody?: PatchedSubscriptionsRequest,
   ): CancelablePromise<Subscriptions> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/subscriptions/{id}',
       path: {
@@ -1825,10 +1825,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiSubscriptionsDestroy(
+  public apiSubscriptionsDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/subscriptions/{id}',
       path: {
@@ -1843,12 +1843,12 @@ export class ApiService {
    * @returns PaginatedTopicsList
    * @throws ApiError
    */
-  public static apiTopicsList(
+  public apiTopicsList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedTopicsList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/topics',
       query: {
@@ -1863,10 +1863,10 @@ export class ApiService {
    * @returns Topics
    * @throws ApiError
    */
-  public static apiTopicsCreate(
+  public apiTopicsCreate(
     requestBody?: TopicsRequest,
   ): CancelablePromise<Topics> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/topics',
       body: requestBody,
@@ -1878,10 +1878,10 @@ export class ApiService {
    * @returns Topics
    * @throws ApiError
    */
-  public static apiTopicsRetrieve(
+  public apiTopicsRetrieve(
     id: number,
   ): CancelablePromise<Topics> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/topics/{id}',
       path: {
@@ -1895,11 +1895,11 @@ export class ApiService {
    * @returns Topics
    * @throws ApiError
    */
-  public static apiTopicsUpdate(
+  public apiTopicsUpdate(
     id: number,
     requestBody?: TopicsRequest,
   ): CancelablePromise<Topics> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/topics/{id}',
       path: {
@@ -1915,11 +1915,11 @@ export class ApiService {
    * @returns Topics
    * @throws ApiError
    */
-  public static apiTopicsPartialUpdate(
+  public apiTopicsPartialUpdate(
     id: number,
     requestBody?: PatchedTopicsRequest,
   ): CancelablePromise<Topics> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/topics/{id}',
       path: {
@@ -1934,10 +1934,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiTopicsDestroy(
+  public apiTopicsDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/topics/{id}',
       path: {
@@ -1952,12 +1952,12 @@ export class ApiService {
    * @returns PaginatedUsersList
    * @throws ApiError
    */
-  public static apiUsersList(
+  public apiUsersList(
     limit?: number,
     offset?: number,
     search?: string,
   ): CancelablePromise<PaginatedUsersList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/users',
       query: {
@@ -1972,10 +1972,10 @@ export class ApiService {
    * @returns Users
    * @throws ApiError
    */
-  public static apiUsersCreate(
+  public apiUsersCreate(
     requestBody: UsersRequest,
   ): CancelablePromise<Users> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/users',
       body: requestBody,
@@ -1987,10 +1987,10 @@ export class ApiService {
    * @returns Users
    * @throws ApiError
    */
-  public static apiUsersRetrieve(
+  public apiUsersRetrieve(
     id: number,
   ): CancelablePromise<Users> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/users/{id}',
       path: {
@@ -2004,11 +2004,11 @@ export class ApiService {
    * @returns Users
    * @throws ApiError
    */
-  public static apiUsersUpdate(
+  public apiUsersUpdate(
     id: number,
     requestBody: UsersRequest,
   ): CancelablePromise<Users> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/users/{id}',
       path: {
@@ -2024,11 +2024,11 @@ export class ApiService {
    * @returns Users
    * @throws ApiError
    */
-  public static apiUsersPartialUpdate(
+  public apiUsersPartialUpdate(
     id: number,
     requestBody?: PatchedUsersRequest,
   ): CancelablePromise<Users> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/users/{id}',
       path: {
@@ -2043,10 +2043,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiUsersDestroy(
+  public apiUsersDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/users/{id}',
       path: {
@@ -2061,12 +2061,12 @@ export class ApiService {
    * @returns any
    * @throws ApiError
    */
-  public static apiUsersListRetrieve(
+  public apiUsersListRetrieve(
     modelName: string,
     userId: number,
     search?: string,
   ): CancelablePromise<Record<string, any>> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/users/{user_id}/{model_name}/list',
       path: {
@@ -2084,11 +2084,11 @@ export class ApiService {
    * @returns any No response body
    * @throws ApiError
    */
-  public static apiUsersStatsRetrieve(
+  public apiUsersStatsRetrieve(
     modelName: string,
     userId: number,
   ): CancelablePromise<any> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/users/{user_id}/{model_name}/stats',
       path: {
@@ -2103,11 +2103,11 @@ export class ApiService {
    * @returns PaginatedSchemaVersionList
    * @throws ApiError
    */
-  public static apiWorksheetsList(
+  public apiWorksheetsList(
     limit?: number,
     offset?: number,
   ): CancelablePromise<PaginatedSchemaVersionList> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/worksheets',
       query: {
@@ -2121,10 +2121,10 @@ export class ApiService {
    * @returns SchemaVersion
    * @throws ApiError
    */
-  public static apiWorksheetsCreate(
+  public apiWorksheetsCreate(
     requestBody: SchemaVersionRequest,
   ): CancelablePromise<SchemaVersion> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/worksheets',
       body: requestBody,
@@ -2136,10 +2136,10 @@ export class ApiService {
    * @returns SchemaVersion
    * @throws ApiError
    */
-  public static apiWorksheetsRetrieve(
+  public apiWorksheetsRetrieve(
     id: number,
   ): CancelablePromise<SchemaVersion> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/worksheets/{id}',
       path: {
@@ -2153,11 +2153,11 @@ export class ApiService {
    * @returns SchemaVersion
    * @throws ApiError
    */
-  public static apiWorksheetsUpdate(
+  public apiWorksheetsUpdate(
     id: number,
     requestBody: SchemaVersionRequest,
   ): CancelablePromise<SchemaVersion> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PUT',
       url: '/api/worksheets/{id}',
       path: {
@@ -2173,11 +2173,11 @@ export class ApiService {
    * @returns SchemaVersion
    * @throws ApiError
    */
-  public static apiWorksheetsPartialUpdate(
+  public apiWorksheetsPartialUpdate(
     id: number,
     requestBody?: PatchedSchemaVersionRequest,
   ): CancelablePromise<SchemaVersion> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'PATCH',
       url: '/api/worksheets/{id}',
       path: {
@@ -2192,10 +2192,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiWorksheetsDestroy(
+  public apiWorksheetsDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/worksheets/{id}',
       path: {
@@ -2210,10 +2210,10 @@ export class ApiService {
    * @returns void
    * @throws ApiError
    */
-  public static apiWorksheetsDeleteVersionDestroy(
+  public apiWorksheetsDeleteVersionDestroy(
     id: number,
   ): CancelablePromise<void> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'DELETE',
       url: '/api/worksheets/{id}/delete-version',
       path: {
@@ -2226,10 +2226,10 @@ export class ApiService {
    * @returns SchemaVersion
    * @throws ApiError
    */
-  public static apiWorksheetsDownloadRetrieve(
+  public apiWorksheetsDownloadRetrieve(
     id: number,
   ): CancelablePromise<SchemaVersion> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'GET',
       url: '/api/worksheets/{id}/download',
       path: {
@@ -2243,11 +2243,11 @@ export class ApiService {
    * @returns SchemaVersion
    * @throws ApiError
    */
-  public static apiWorksheetsEnhanceCreate(
+  public apiWorksheetsEnhanceCreate(
     id: number,
     requestBody: SchemaVersionRequest,
   ): CancelablePromise<SchemaVersion> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/worksheets/{id}/enhance',
       path: {
@@ -2263,10 +2263,10 @@ export class ApiService {
    * @returns SchemaVersion
    * @throws ApiError
    */
-  public static apiWorksheetsGenerateCreate(
+  public apiWorksheetsGenerateCreate(
     requestBody: SchemaVersionRequest,
   ): CancelablePromise<SchemaVersion> {
-    return __request(OpenAPI, {
+    return this.httpRequest.request({
       method: 'POST',
       url: '/api/worksheets/generate',
       body: requestBody,

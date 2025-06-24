@@ -19,7 +19,7 @@
     "test": "vitest",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
-    "generate:api-types": "NODE_OPTIONS='--loader ts-node/esm' ts-node --esm scripts/generate-api-types.ts"
+    "generate:api-types": "tsx scripts/generate-api-types.ts"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -41,6 +41,7 @@
     "react-dom": "^19.0.0",
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
+    "ts-node": "^10.9.2",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -50,7 +51,9 @@
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.3",
+    "openapi-typescript-codegen": "^0.29.0",
     "prettier": "^3.5.3",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.27.0"
   },
