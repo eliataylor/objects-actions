@@ -8,7 +8,6 @@ import EntityCard from "../_components/EntityCard";
 import TablePaginator from "../_components/TablePaginator";
 import PermissionError from "../_components/PermissionError";
 import SearchBar from "../_components/SearchBar";
-import { auth } from "~/server/auth";
 import { canDo, canAddEntity } from "~/lib/permissions";
 import { AppBar, Box, Fab, Typography, CircularProgress } from "@mui/material";
 import { Add } from "@mui/icons-material";
@@ -89,7 +88,15 @@ async function EntityListContent({
   limit: number; 
   searchQuery?: string;
 }) {
-  const session = await auth();
+  // Mock session data - replace with real auth when allauth is integrated
+  const mockSession = {
+    user: {
+      id: "mock-user-1",
+      name: "Mock User",
+      email: "mock@example.com",
+      role: "admin" // Change to "user" to test different permission levels
+    }
+  };
   
   // Build API URL with pagination and search
   const params = new URLSearchParams();
@@ -125,7 +132,7 @@ async function EntityListContent({
   // Check permissions for the first result (if any)
   let permissionError: string | null = null;
   if (results.length > 0) {
-    const canView = canDo("view", results[0] as ModelType<ModelName>, session?.user);
+    const canView = canDo("view", results[0] as ModelType<ModelName>, mockSession.user);
     if (typeof canView === "string") {
       permissionError = canView;
     }
@@ -136,7 +143,7 @@ async function EntityListContent({
   }
 
   // Check if user can add new items
-  const canAdd = canAddEntity(navItem.type as ModelName, session?.user);
+  const canAdd = canAddEntity(navItem.type as ModelName, mockSession.user);
   const currentPage = Math.floor(offset / limit);
 
   return (

@@ -2,8 +2,6 @@ import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
-import { auth } from "~/server/auth";
-import { SessionProvider } from "next-auth/react";
 import Navigation from "./_components/Navigation";
 import ThemeRegistry from "./_components/ThemeRegistry";
 import { SelectionProvider } from "~/contexts/SelectionContext";
@@ -19,32 +17,43 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+// Mock session data - replace with real auth when allauth is integrated
+function getMockSession() {
+  return {
+    user: {
+      id: "mock-user-1",
+      name: "Mock User",
+      email: "mock@example.com",
+      role: "admin" // Change to "user" to test different permission levels
+    }
+  };
+}
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const session = await auth();
+  // Use mock session for development
+  const session = getMockSession();
 
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <SessionProvider session={session}>
-          <TRPCReactProvider>
-            <ThemeRegistry>
-              <SelectionProvider>
-                <Navigation 
-                  isAuthenticated={!!session}
-                  isAdmin={session?.user?.role === 'admin'}
-                  userName={session?.user?.name ?? undefined}
-                />
-                <main>
-                  {children}
-                </main>
-              </SelectionProvider>
-            </ThemeRegistry>
-          </TRPCReactProvider>
-        </SessionProvider>
+        <TRPCReactProvider>
+          <ThemeRegistry>
+            <SelectionProvider>
+              <Navigation 
+                isAuthenticated={!!session}
+                isAdmin={session?.user?.role === 'admin'}
+                userName={session?.user?.name}
+              />
+              <main>
+                {children}
+              </main>
+            </SelectionProvider>
+          </ThemeRegistry>
+        </TRPCReactProvider>
       </body>
     </html>
   );
