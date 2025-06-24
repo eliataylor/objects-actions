@@ -86,11 +86,11 @@ const EntityCard = <T extends ModelName>({ entity }: EntityCardProps<T>) => {
             const relNavItem = NAVITEMS.find((nav) => nav.type === v._type);
             if (relNavItem) {
               return (
-                <div key={`rel-${v.id}`}>
+                <span key={`rel-${v.id}`} style={{ display: 'block' }}>
                   <Link href={`${relNavItem.segment}/${v.id}`}>
                     {v.str}
                   </Link>
-                </div>
+                </span>
               );
             }
             return null;

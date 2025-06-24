@@ -8,7 +8,7 @@
     "build": "next build",
     "check": "next lint && tsc --noEmit",
     "dev-https": "NODE_TLS_REJECT_UNAUTHORIZED=0 HTTPS=true next dev  --experimental-https --turbo --port 3003 --hostname localhost.oaexample.com",
-    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 HTTPS=true node server.mjs",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 HTTPS=true node server.js",
     "dev:next": "next dev",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",

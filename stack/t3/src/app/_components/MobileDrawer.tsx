@@ -10,8 +10,6 @@ import {
   ListItemButton,
   ListItemText,
   Typography,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import Link from "next/link"
@@ -31,23 +29,14 @@ export function MobileDrawer({
   isAdmin = false,
   userName 
 }: MobileDrawerProps) {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
 
   // Filter nav items based on permissions (same logic as main nav)
-  const visibleNavItems = NAVITEMS.filter(item => {
-    // For now, show all items since permissions might be custom
-    return true
-  })
+  const visibleNavItems = NAVITEMS.filter(item => item.model_type !== 'vocabulary')
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
-  }
-
-  if (!isMobile) {
-    return null
   }
 
   const drawer = (

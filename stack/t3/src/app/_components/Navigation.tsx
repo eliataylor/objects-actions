@@ -24,11 +24,7 @@ export default function Navigation({
 }: NavigationProps) {
   
   // Filter nav items based on permissions (server-side logic)
-  const visibleNavItems = NAVITEMS.filter(item => {
-    // For now, show all items since permissions might be custom
-    // This would be implemented based on your permission system
-    return true
-  })
+  const visibleNavItems = NAVITEMS.filter(item => item.model_type !== 'vocabulary')
 
   return (
     <AppBar

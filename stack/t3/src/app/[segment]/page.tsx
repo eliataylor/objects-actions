@@ -1,82 +1,25 @@
-import { type Metadata } from "next";
-import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { NAVITEMS, type ModelName, type ModelType, type ApiListResponse } from "~/types/types";
-import PageLayout from "~/app/_components/PageLayout";
-import ApiClient from "~/app/_components/ApiClient";
-import EntityCard from "../_components/EntityCard";
-import TablePaginator from "../_components/TablePaginator";
-import PermissionError from "../_components/PermissionError";
-import SearchBar from "../_components/SearchBar";
-import { canDo, canAddEntity } from "~/lib/permissions";
+import { notFound } from "next/navigation";
+import { type Metadata } from "next";
 import { AppBar, Box, Fab, Typography, CircularProgress } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Link from "next/link";
 
+import { NAVITEMS, type ModelName, type ModelType } from "~/types/types";
+import EntityCard from "../_components/EntityCard";
+import PageLayout from "../_components/PageLayout";
+import TablePaginator from "../_components/TablePaginator";
+import PermissionError from "../_components/PermissionError";
+import SearchBar from "../_components/SearchBar";
+import { canDo, canAddEntity } from "~/lib/permissions";
+import { api, HydrateClient } from "~/trpc/server";
+
 type Props = {
-  params: { segment: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ segment: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-// Validate the segment exists in our nav items
-const validateSegment = (segment: string) => {
-  return NAVITEMS.some(item => item.segment === segment);
-};
-
-// Generate metadata for the page
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const segment = params.segment;
-  
-  if (!validateSegment(segment)) {
-    return {
-      title: "Not Found",
-    };
-  }
-
-  const navItem = NAVITEMS.find(item => item.segment === segment);
-  return {
-    title: navItem?.plural || "Page Not Found",
-    description: `Browse and manage ${navItem?.plural?.toLowerCase() || 'items'}`,
-  };
-}
-
-// Generate static params for all valid segments
-export function generateStaticParams() {
-  return NAVITEMS.map((item) => ({
-    segment: item.segment,
-  }));
-}
-
-// This enables dynamic data fetching at request time
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-// Loading component for Suspense
-function EntityListSkeleton() {
-  return (
-    <Box sx={{ p: 2 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Box
-            key={i}
-            sx={{
-              height: 100,
-              bgcolor: 'grey.100',
-              borderRadius: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <CircularProgress size={24} />
-          </Box>
-        ))}
-      </Box>
-    </Box>
-  );
-}
-
-// Entity list content component
+// Server-side component with tRPC prefetching
 async function EntityListContent({ 
   navItem, 
   offset, 
@@ -88,48 +31,27 @@ async function EntityListContent({
   limit: number; 
   searchQuery?: string;
 }) {
-  // Mock session data - replace with real auth when allauth is integrated
+  // Mock session data
   const mockSession = {
     user: {
       id: "mock-user-1",
-      name: "Mock User",
+      name: "Mock User", 
       email: "mock@example.com",
-      role: "admin" // Change to "user" to test different permission levels
+      role: "admin"
     }
   };
-  
-  // Build API URL with pagination and search
-  const params = new URLSearchParams();
-  if (offset > 0) params.set("offset", offset.toString());
-  if (limit > 0) params.set("limit", limit.toString());
-  if (searchQuery) params.set("search", searchQuery);
-  
-  const apiUrl = `${navItem.api}${params.toString() ? `?${params.toString()}` : ''}`;
-  const response = await ApiClient.get<ApiListResponse<ModelName>>(apiUrl);
 
-  if (response.error) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography color="error" variant="h6">
-          Error loading data: {response.error}
-        </Typography>
-      </Box>
-    );
-  }
+  // 🚀 Use tRPC for server-side data fetching
+  const entityData = await api.entities.list({
+    entityType: navItem.type as ModelName,
+    limit,
+    offset,
+    search: searchQuery,
+  });
 
-  if (!response.success || !response.data) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography color="error" variant="h6">
-          Failed to load data
-        </Typography>
-      </Box>
-    );
-  }
+  const { results, count } = entityData;
 
-  const { results, count } = response.data;
-
-  // Check permissions for the first result (if any)
+  // Check permissions
   let permissionError: string | null = null;
   if (results.length > 0) {
     const canView = canDo("view", results[0] as ModelType<ModelName>, mockSession.user);
@@ -142,7 +64,6 @@ async function EntityListContent({
     return <PermissionError error={permissionError} />;
   }
 
-  // Check if user can add new items
   const canAdd = canAddEntity(navItem.type as ModelName, mockSession.user);
   const currentPage = Math.floor(offset / limit);
 
@@ -151,7 +72,7 @@ async function EntityListContent({
       {/* Search Bar */}
       <SearchBar currentType={navItem.type as ModelName} />
 
-      {/* Header with pagination */}
+      {/* Header */}
       <AppBar position="sticky" sx={{ mb: 2 }} color="inherit" elevation={1}>
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
@@ -193,11 +114,11 @@ async function EntityListContent({
         )}
       </Box>
 
-      {/* Floating Action Button */}
+      {/* FAB */}
       {canAdd && (
         <Fab
           color="secondary"
-          size="small"
+          size="small" 
           sx={{ position: "fixed", right: 20, bottom: 20 }}
           component={Link}
           href={`/forms/${navItem.segment}/0/add`}
@@ -209,37 +130,41 @@ async function EntityListContent({
   );
 }
 
-// Main page component
-export default async function DynamicPage({ params, searchParams }: Props) {
-  const { segment } = params;
+// Main page with tRPC prefetching
+export default async function DynamicPageWithTRPC({ params, searchParams }: Props) {
+  // Await params and searchParams as required by Next.js 15
+  const { segment } = await params;
+  const searchParamsResolved = await searchParams;
   
-  // Parse URL parameters
-  const offsetParam = searchParams.offset;
-  const limitParam = searchParams.limit;
-  const searchParam = searchParams.search;
-  
-  const offset = typeof offsetParam === 'string' ? parseInt(offsetParam) || 0 : 0;
-  const limit = typeof limitParam === 'string' ? parseInt(limitParam) || 10 : 10;
-  const searchQuery = typeof searchParam === 'string' ? searchParam : undefined;
+  const offset = typeof searchParamsResolved.offset === 'string' ? parseInt(searchParamsResolved.offset) || 0 : 0;
+  const limit = typeof searchParamsResolved.limit === 'string' ? parseInt(searchParamsResolved.limit) || 10 : 10;
+  const searchQuery = typeof searchParamsResolved.search === 'string' ? searchParamsResolved.search : undefined;
 
   const navItem = NAVITEMS.find(item => item.segment === segment);
+  if (!navItem) notFound();
 
-  if (!navItem) {
-    notFound();
-  }
+  // 🚀 Prefetch data for instant loading
+  void api.entities.list.prefetch({
+    entityType: navItem.type as ModelName,
+    limit,
+    offset,
+    search: searchQuery,
+  });
 
   return (
-    <PageLayout navItem={navItem}>
-      <Box id="EntityList">
-        <Suspense fallback={<EntityListSkeleton />}>
-          <EntityListContent 
-            navItem={navItem} 
-            offset={offset} 
-            limit={limit} 
-            searchQuery={searchQuery}
-          />
-        </Suspense>
-      </Box>
-    </PageLayout>
+    <HydrateClient>
+      <PageLayout navItem={navItem}>
+        <Box id="EntityList">
+          <Suspense fallback={<div>Loading...</div>}>
+            <EntityListContent 
+              navItem={navItem}
+              offset={offset}
+              limit={limit}
+              searchQuery={searchQuery}
+            />
+          </Suspense>
+        </Box>
+      </PageLayout>
+    </HydrateClient>
   );
 } 
