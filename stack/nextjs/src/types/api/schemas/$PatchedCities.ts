@@ -8,11 +8,6 @@ export const $PatchedCities = {
       type: 'number',
       isReadOnly: true,
     },
-    _type: {
-      type: 'string',
-      description: `Model type name`,
-      isReadOnly: true,
-    },
     created_at: {
       type: 'string',
       isReadOnly: true,
@@ -119,148 +114,24 @@ export const $PatchedCities = {
       maxLength: 1,
     },
     author: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
+      type: 'number',
       isNullable: true,
     },
     state_id: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
+      type: 'number',
       isNullable: true,
     },
     sponsors: {
       type: 'array',
       contains: {
-        properties: {
-          id: {
-            type: 'number',
-            description: `Primary key of the related object`,
-            isRequired: true,
-          },
-          str: {
-            type: 'string',
-            description: `String representation of the related object`,
-            isRequired: true,
-          },
-          _type: {
-            type: 'string',
-            description: `Type name of the related object`,
-            isRequired: true,
-          },
-          entity: {
-            type: 'dictionary',
-            contains: {
-              properties: {
-              },
-            },
-            isNullable: true,
-          },
-          img: {
-            type: 'string',
-            description: `Image URL if available`,
-            isNullable: true,
-            format: 'uri',
-          },
-        },
+        type: 'number',
       },
-      isReadOnly: true,
     },
     officials: {
       type: 'array',
       contains: {
-        properties: {
-          id: {
-            type: 'number',
-            description: `Primary key of the related object`,
-            isRequired: true,
-          },
-          str: {
-            type: 'string',
-            description: `String representation of the related object`,
-            isRequired: true,
-          },
-          _type: {
-            type: 'string',
-            description: `Type name of the related object`,
-            isRequired: true,
-          },
-          entity: {
-            type: 'dictionary',
-            contains: {
-              properties: {
-              },
-            },
-            isNullable: true,
-          },
-          img: {
-            type: 'string',
-            description: `Image URL if available`,
-            isNullable: true,
-            format: 'uri',
-          },
-        },
+        type: 'number',
       },
-      isReadOnly: true,
     },
   },
 } as const;

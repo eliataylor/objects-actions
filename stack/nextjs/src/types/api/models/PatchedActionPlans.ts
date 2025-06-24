@@ -4,10 +4,6 @@
 /* eslint-disable */
 export type PatchedActionPlans = {
   readonly id?: number;
-  /**
-   * Model type name
-   */
-  readonly _type?: string;
   readonly created_at?: string;
   readonly modified_at?: string;
   title?: string | null;
@@ -19,71 +15,8 @@ export type PatchedActionPlans = {
   con_argument?: string | null;
   prerequisites?: string;
   timeline?: string | null;
-  readonly author?: {
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  } | null;
-  readonly rally?: {
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  } | null;
-  readonly coauthors?: Array<{
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  }>;
+  author?: number | null;
+  rally?: number | null;
+  coauthors?: Array<number>;
 };
 

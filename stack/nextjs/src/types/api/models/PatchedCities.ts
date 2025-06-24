@@ -4,10 +4,6 @@
 /* eslint-disable */
 export type PatchedCities = {
   readonly id?: number;
-  /**
-   * Model type name
-   */
-  readonly _type?: string;
   readonly created_at?: string;
   readonly modified_at?: string;
   name?: string;
@@ -28,93 +24,9 @@ export type PatchedCities = {
   place_code?: string | null;
   sumlev?: string | null;
   funcstat?: string | null;
-  readonly author?: {
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  } | null;
-  readonly state_id?: {
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  } | null;
-  readonly sponsors?: Array<{
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  }>;
-  readonly officials?: Array<{
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  }>;
+  author?: number | null;
+  state_id?: number | null;
+  sponsors?: Array<number>;
+  officials?: Array<number>;
 };
 

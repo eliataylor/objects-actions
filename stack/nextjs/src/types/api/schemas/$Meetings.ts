@@ -9,12 +9,6 @@ export const $Meetings = {
       isReadOnly: true,
       isRequired: true,
     },
-    _type: {
-      type: 'string',
-      description: `Model type name`,
-      isReadOnly: true,
-      isRequired: true,
-    },
     created_at: {
       type: 'string',
       isReadOnly: true,
@@ -65,226 +59,36 @@ export const $Meetings = {
       minimum: -2147483648,
     },
     author: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
-      isRequired: true,
+      type: 'number',
       isNullable: true,
     },
     rally: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
-      isRequired: true,
+      type: 'number',
       isNullable: true,
     },
     meeting_type: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
-      isRequired: true,
+      type: 'number',
       isNullable: true,
     },
     speakers: {
       type: 'array',
       contains: {
-        properties: {
-          id: {
-            type: 'number',
-            description: `Primary key of the related object`,
-            isRequired: true,
-          },
-          str: {
-            type: 'string',
-            description: `String representation of the related object`,
-            isRequired: true,
-          },
-          _type: {
-            type: 'string',
-            description: `Type name of the related object`,
-            isRequired: true,
-          },
-          entity: {
-            type: 'dictionary',
-            contains: {
-              properties: {
-              },
-            },
-            isNullable: true,
-          },
-          img: {
-            type: 'string',
-            description: `Image URL if available`,
-            isNullable: true,
-            format: 'uri',
-          },
-        },
+        type: 'number',
       },
-      isReadOnly: true,
       isRequired: true,
     },
     moderators: {
       type: 'array',
       contains: {
-        properties: {
-          id: {
-            type: 'number',
-            description: `Primary key of the related object`,
-            isRequired: true,
-          },
-          str: {
-            type: 'string',
-            description: `String representation of the related object`,
-            isRequired: true,
-          },
-          _type: {
-            type: 'string',
-            description: `Type name of the related object`,
-            isRequired: true,
-          },
-          entity: {
-            type: 'dictionary',
-            contains: {
-              properties: {
-              },
-            },
-            isNullable: true,
-          },
-          img: {
-            type: 'string',
-            description: `Image URL if available`,
-            isNullable: true,
-            format: 'uri',
-          },
-        },
+        type: 'number',
       },
-      isReadOnly: true,
       isRequired: true,
     },
     sponsors: {
       type: 'array',
       contains: {
-        properties: {
-          id: {
-            type: 'number',
-            description: `Primary key of the related object`,
-            isRequired: true,
-          },
-          str: {
-            type: 'string',
-            description: `String representation of the related object`,
-            isRequired: true,
-          },
-          _type: {
-            type: 'string',
-            description: `Type name of the related object`,
-            isRequired: true,
-          },
-          entity: {
-            type: 'dictionary',
-            contains: {
-              properties: {
-              },
-            },
-            isNullable: true,
-          },
-          img: {
-            type: 'string',
-            description: `Image URL if available`,
-            isNullable: true,
-            format: 'uri',
-          },
-        },
+        type: 'number',
       },
-      isReadOnly: true,
-      isRequired: true,
     },
   },
 } as const;

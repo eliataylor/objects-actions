@@ -9,12 +9,6 @@ export const $Invites = {
       isReadOnly: true,
       isRequired: true,
     },
-    _type: {
-      type: 'string',
-      description: `Model type name`,
-      isReadOnly: true,
-      isRequired: true,
-    },
     created_at: {
       type: 'string',
       isReadOnly: true,
@@ -32,147 +26,19 @@ export const $Invites = {
       isRequired: true,
     },
     author: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
-      isRequired: true,
+      type: 'number',
       isNullable: true,
     },
     meeting: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
-      isRequired: true,
+      type: 'number',
       isNullable: true,
     },
     user: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
-      isRequired: true,
+      type: 'number',
       isNullable: true,
     },
     invited_by: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
-      isRequired: true,
+      type: 'number',
       isNullable: true,
     },
   },

@@ -4,10 +4,6 @@
 /* eslint-disable */
 export type Users = {
   readonly id: number;
-  /**
-   * Model type name
-   */
-  readonly _type: string;
   last_login?: string | null;
   /**
    * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
@@ -21,47 +17,14 @@ export type Users = {
   bio?: string | null;
   picture?: string | null;
   cover_photo?: string | null;
-  readonly groups: Array<{
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-  }>;
-  readonly user_permissions: Array<{
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-  }>;
-  readonly resources: Array<{
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-  }>;
+  /**
+   * The groups this user belongs to. A user will get all permissions granted to each of their groups.
+   */
+  groups?: Array<number>;
+  /**
+   * Specific permissions for this user.
+   */
+  user_permissions?: Array<number>;
+  resources?: Array<number>;
 };
 

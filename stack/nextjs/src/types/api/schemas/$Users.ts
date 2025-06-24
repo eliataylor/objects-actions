@@ -9,12 +9,6 @@ export const $Users = {
       isReadOnly: true,
       isRequired: true,
     },
-    _type: {
-      type: 'string',
-      description: `Model type name`,
-      isReadOnly: true,
-      isRequired: true,
-    },
     last_login: {
       type: 'string',
       isNullable: true,
@@ -67,74 +61,20 @@ export const $Users = {
     groups: {
       type: 'array',
       contains: {
-        properties: {
-          id: {
-            type: 'number',
-            description: `Primary key of the related object`,
-            isRequired: true,
-          },
-          str: {
-            type: 'string',
-            description: `String representation of the related object`,
-            isRequired: true,
-          },
-          _type: {
-            type: 'string',
-            description: `Type name of the related object`,
-            isRequired: true,
-          },
-        },
+        type: 'number',
       },
-      isReadOnly: true,
-      isRequired: true,
     },
     user_permissions: {
       type: 'array',
       contains: {
-        properties: {
-          id: {
-            type: 'number',
-            description: `Primary key of the related object`,
-            isRequired: true,
-          },
-          str: {
-            type: 'string',
-            description: `String representation of the related object`,
-            isRequired: true,
-          },
-          _type: {
-            type: 'string',
-            description: `Type name of the related object`,
-            isRequired: true,
-          },
-        },
+        type: 'number',
       },
-      isReadOnly: true,
-      isRequired: true,
     },
     resources: {
       type: 'array',
       contains: {
-        properties: {
-          id: {
-            type: 'number',
-            description: `Primary key of the related object`,
-            isRequired: true,
-          },
-          str: {
-            type: 'string',
-            description: `String representation of the related object`,
-            isRequired: true,
-          },
-          _type: {
-            type: 'string',
-            description: `Type name of the related object`,
-            isRequired: true,
-          },
-        },
+        type: 'number',
       },
-      isReadOnly: true,
-      isRequired: true,
     },
   },
 } as const;

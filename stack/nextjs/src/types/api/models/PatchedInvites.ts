@@ -5,100 +5,12 @@
 import type { InvitesStatusEnum } from './InvitesStatusEnum';
 export type PatchedInvites = {
   readonly id?: number;
-  /**
-   * Model type name
-   */
-  readonly _type?: string;
   readonly created_at?: string;
   readonly modified_at?: string;
   status?: InvitesStatusEnum;
-  readonly author?: {
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  } | null;
-  readonly meeting?: {
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  } | null;
-  readonly user?: {
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  } | null;
-  readonly invited_by?: {
-    /**
-     * Primary key of the related object
-     */
-    id: number;
-    /**
-     * String representation of the related object
-     */
-    str: string;
-    /**
-     * Type name of the related object
-     */
-    _type: string;
-    /**
-     * Additional fields based on query parameters
-     */
-    entity?: Record<string, any> | null;
-    /**
-     * Image URL if available
-     */
-    img?: string | null;
-  } | null;
+  author?: number | null;
+  meeting?: number | null;
+  user?: number | null;
+  invited_by?: number | null;
 };
 

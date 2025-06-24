@@ -8,11 +8,6 @@ export const $PatchedStates = {
       type: 'number',
       isReadOnly: true,
     },
-    _type: {
-      type: 'string',
-      description: `Model type name`,
-      isReadOnly: true,
-    },
     created_at: {
       type: 'string',
       isReadOnly: true,
@@ -113,143 +108,19 @@ export const $PatchedStates = {
       format: 'double',
     },
     author: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
+      type: 'number',
       isNullable: true,
     },
     largest_city: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
+      type: 'number',
       isNullable: true,
     },
     smallest_city: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
+      type: 'number',
       isNullable: true,
     },
     fastest_growing_city: {
-      properties: {
-        id: {
-          type: 'number',
-          description: `Primary key of the related object`,
-          isRequired: true,
-        },
-        str: {
-          type: 'string',
-          description: `String representation of the related object`,
-          isRequired: true,
-        },
-        _type: {
-          type: 'string',
-          description: `Type name of the related object`,
-          isRequired: true,
-        },
-        entity: {
-          type: 'dictionary',
-          contains: {
-            properties: {
-            },
-          },
-          isNullable: true,
-        },
-        img: {
-          type: 'string',
-          description: `Image URL if available`,
-          isNullable: true,
-          format: 'uri',
-        },
-      },
-      isReadOnly: true,
+      type: 'number',
       isNullable: true,
     },
   },
