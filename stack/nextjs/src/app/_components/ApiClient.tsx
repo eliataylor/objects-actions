@@ -132,7 +132,7 @@ class ApiClient {
     // Add mobile app headers if available
     if (isBrowser) {
       const appOS = window.localStorage.getItem("appOS");
-      const token = window.localStorage.getItem("helixai_token");
+      const token = window.localStorage.getItem("oaexample_token");
       if (appOS && token) {
         allheaders["X-App-Client"] = appOS;
         allheaders["Authorization"] = `Bearer ${token}`;

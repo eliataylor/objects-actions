@@ -1,35 +1,12 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { type ModelName, NAVITEMS, type ApiListResponse } from "~/types/types";
-import { env } from "~/env";
+import ApiClient from "~/app/_components/ApiClient";
 
 // Create enum from nav item types for validation
 const ModelNameEnum = z.enum(
   NAVITEMS.map(item => item.type) as [ModelName, ...ModelName[]]
 );
-
-// Generic API client for Django backend
-async function callDjangoAPI<T = any>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const baseUrl = env.NEXT_PUBLIC_API_HOST;
-  const url = `${baseUrl}${endpoint}`;
-  
-  const response = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  });
-
-  if (!response.ok) {
-    throw new Error(`API call failed: ${response.status} ${response.statusText}`);
-  }
-
-  return response.json();
-}
 
 export const entitiesRouter = createTRPCRouter({
   // List entities with pagination and search
@@ -63,14 +40,18 @@ export const entitiesRouter = createTRPCRouter({
       }
 
       const endpoint = `${navItem.api}?${params.toString()}`;
-      const response = await callDjangoAPI<ApiListResponse<typeof input.entityType>>(endpoint);
+      const response = await ApiClient.get<ApiListResponse<typeof input.entityType>>(endpoint);
+      
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to fetch entities');
+      }
       
       return {
-        results: response.results,
-        count: response.count,
+        results: response.data.results,
+        count: response.data.count,
         offset: input.offset,
         limit: input.limit,
-        hasMore: input.offset + input.limit < response.count,
+        hasMore: input.offset + input.limit < response.data.count,
         entityType: input.entityType,
       };
     }),
@@ -88,7 +69,13 @@ export const entitiesRouter = createTRPCRouter({
       }
 
       const endpoint = `${navItem.api}/${input.id}`;
-      return await callDjangoAPI(endpoint);
+      const response = await ApiClient.get(endpoint);
+      
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to fetch entity');
+      }
+      
+      return response.data;
     }),
 
   // Create new entity
@@ -104,10 +91,13 @@ export const entitiesRouter = createTRPCRouter({
       }
 
       const endpoint = `${navItem.api}`;
-      return await callDjangoAPI(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(input.data),
-      });
+      const response = await ApiClient.post(endpoint, input.data);
+      
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to create entity');
+      }
+      
+      return response.data;
     }),
 
   // Update existing entity
@@ -124,10 +114,13 @@ export const entitiesRouter = createTRPCRouter({
       }
 
       const endpoint = `${navItem.api}/${input.id}`;
-      return await callDjangoAPI(endpoint, {
-        method: 'PATCH',
-        body: JSON.stringify(input.data),
-      });
+      const response = await ApiClient.patch(endpoint, input.data);
+      
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to update entity');
+      }
+      
+      return response.data;
     }),
 
   // Delete entity
@@ -143,9 +136,11 @@ export const entitiesRouter = createTRPCRouter({
       }
 
       const endpoint = `${navItem.api}/${input.id}`;
-      await callDjangoAPI(endpoint, {
-        method: 'DELETE',
-      });
+      const response = await ApiClient.delete(endpoint);
+      
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to delete entity');
+      }
       
       return { success: true, id: input.id };
     }),

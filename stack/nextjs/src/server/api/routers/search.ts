@@ -1,8 +1,8 @@
 import { z } from "zod"
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc"
 import { type ModelName, NAVITEMS } from "~/types/types"
-import ApiClient from "~/app/_components/ApiClient"
 import { type ApiListResponse } from "~/types/types"
+import ApiClient from "~/app/_components/ApiClient"
 
 // Get searchable nav items
 const searchableNavItems = NAVITEMS.filter(item =>
@@ -100,7 +100,7 @@ export const searchRouter = createTRPCRouter({
       try {
         const response = await ApiClient.get<ApiListResponse<typeof input.type>>(apiUrl);
         
-        if (!response.success || !response.data) {
+        if (!response.success || !response.data?.results) {
           return [];
         }
 
@@ -138,8 +138,8 @@ export const searchRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const results: any[] = [];
       
-      // Search across multiple content types
-      for (const navItem of searchableNavItems.slice(0, 3)) { // Limit to first 3 types for performance
+      // Search across multiple content types IN PARALLEL for better performance
+      const searchPromises = searchableNavItems.slice(0, 3).map(async (navItem) => {
         try {
           const params = new URLSearchParams();
           params.set("search", input.query);
@@ -149,7 +149,7 @@ export const searchRouter = createTRPCRouter({
           const response = await ApiClient.get<ApiListResponse<ModelName>>(apiUrl);
           
           if (response.success && response.data?.results) {
-            const typeResults = response.data.results.map((item: any) => {
+            return response.data.results.map((item: any) => {
               const searchFields = navItem.search_fields || ['name'];
               let label = searchFields.map((field) => item[field]);
               if (label.length === 0) label = [item.id];
@@ -162,13 +162,19 @@ export const searchRouter = createTRPCRouter({
                 category: navItem.plural,
               };
             });
-            
-            results.push(...typeResults);
           }
+          return [];
         } catch (error) {
           console.error(`Search error for ${navItem.type}:`, error);
+          return [];
         }
-      }
+      });
+
+      // Wait for all searches to complete in parallel
+      const searchResults = await Promise.all(searchPromises);
+      searchResults.forEach(typeResults => {
+        results.push(...typeResults);
+      });
       
       return results.slice(0, input.limit);
     }),

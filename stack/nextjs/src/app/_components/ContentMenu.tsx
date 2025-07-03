@@ -1,37 +1,45 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ListItemAvatar, ListItemButton, ListItemText } from "@mui/material";
 import { NAVITEMS } from "~/types/types";
-import { useNavDrawer } from "~/contexts/NavDrawerContext";
 import MuiIcon from "~/app/_components/MuiIcon";
+import Link from "next/link";
+import { ListItemButton, ListItemAvatar, ListItemText } from "@mui/material";
 
-const ContentMenu: React.FC = () => {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { navModelTypes } = useNavDrawer();
+interface ContentMenuProps {
+  navModelTypes?: string[];
+}
 
-  const handleNavClick = async (segment: string) => {
-    console.log(`[ContentMenu] Navigating to: /${segment}`);
-    router.push(`${segment}`);
-  };
-
+const ContentMenu: React.FC<ContentMenuProps> = ({ 
+  navModelTypes = ['contenttype'] 
+}) => {
   return (
     <div id={"OAMenuListItems"}>
       {NAVITEMS.map((item) => {
         const type = item.model_type ? item.model_type : "contenttype";
         if (navModelTypes.indexOf(type) === -1) return null;
+        
         return (
           <ListItemButton
             key={`ContentMenu-${item.segment}`}
-            selected={pathname === `/${item.segment}`}
-            sx={{ textDecoration: "none", color: "inherit" }}
-            onClick={() => handleNavClick(item.segment)}
+            component={Link}
+            href={`/${item.segment}`}
+            dense={true}
+            alignItems={"center"}
+            sx={{
+              // Active state styling using CSS - Next.js automatically adds aria-current="page"
+              '&[aria-current="page"]': {
+                backgroundColor: 'primary.light',
+                color: 'primary.contrastText',
+              },
+              // Hover state
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            }}
           >
             {item.icon && (
-              <ListItemAvatar style={{ display: "flex" }}>
+              <ListItemAvatar sx={{ minWidth: 40 }}>
                 <MuiIcon fontSize={"small"} icon={item.icon} />
               </ListItemAvatar>
             )}

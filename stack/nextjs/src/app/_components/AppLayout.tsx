@@ -218,10 +218,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             </IconButton>
           </DrawerHeader>
           <AllMenus 
-            isAuthenticated={isAuthenticated}
-            isAdmin={isAdmin}
-            userName={userName}
-            userId={userId}
+            isAuthenticated={false}
+            isAdmin={false}
+            userName={undefined}
+            userId={undefined}
           />
         </StyledDrawer>
       )}

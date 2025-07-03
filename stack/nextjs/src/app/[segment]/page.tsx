@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { AppBar, Box, Fab, Typography } from "@mui/material";
+import { AppBar, Box, Fab, LinearProgress, Typography } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Link from "next/link";
 
@@ -125,7 +125,7 @@ export default async function DynamicPageWithTRPC({ params, searchParams }: Prop
     <HydrateClient>
       <PageLayout navItem={navItem}>
         <Box id="EntityList">
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<LinearProgress />}>
             <EntityListContent
               navItem={navItem}
               offset={offset}

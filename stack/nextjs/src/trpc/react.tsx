@@ -9,6 +9,7 @@ import SuperJSON from "superjson";
 
 import { type AppRouter } from "~/server/api/root";
 import { createQueryClient } from "./query-client";
+import { getAuthHeaders } from "~/lib/auth-headers";
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
@@ -55,7 +56,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
           headers: () => {
             const headers = new Headers();
             headers.set("x-trpc-source", "nextjs-react");
-            return headers;
+            
+            // 🔐 Add authentication headers (CSRF, Authorization, etc.)
+            return getAuthHeaders(headers);
           },
         }),
       ],

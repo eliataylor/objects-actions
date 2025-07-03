@@ -8,7 +8,7 @@
         "program": "${workspaceFolder}/stack/django/manage.py",
         "args": [
           "runserver_plus", 
-          "127.0.0.1:8083",
+          "localapi.oaexample.com:8080",
           "--cert-file", "${env:HOME}/.ssl/certificate.crt",
           "--key-file", "${env:HOME}/.ssl/certificate.key"
         ],

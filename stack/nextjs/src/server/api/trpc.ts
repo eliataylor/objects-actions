@@ -10,6 +10,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { getServerAuthHeaders } from "~/lib/auth-headers";
 
 /**
  * 1. CONTEXT
@@ -24,8 +25,12 @@ import { ZodError } from "zod";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  // 🔐 Extract and prepare authentication headers for Django requests
+  const authHeaders = getServerAuthHeaders(opts.headers);
+  
   return {
-    ...opts,
+    headers: opts.headers,
+    authHeaders, // These will be used by the API client to authenticate with Django
   };
 };
 
@@ -76,12 +81,6 @@ export const createTRPCRouter = t.router;
  */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
   const start = Date.now();
-
-  if (t._config.isDev) {
-    // artificial delay in dev to simulate a slow network
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-  }
 
   const result = await next();
 
