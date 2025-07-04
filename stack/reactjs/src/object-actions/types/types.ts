@@ -1602,7 +1602,7 @@ export interface NavItem<T extends ModelName = ModelName> {
   plural: string;
   segment: string;
   api: string;
-  icon?: string;
+  icon?: string; // WARN: this should be a React.ReactNode of the icon so the entire icon library is not embedded.
   type: T;
   model_type?: "vocabulary" | string;
   search_fields: string[];

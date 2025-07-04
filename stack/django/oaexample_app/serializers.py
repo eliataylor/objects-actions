@@ -2,6 +2,7 @@
 
 from django.db.models import ImageField
 from rest_framework import serializers
+from .schema_annotations import custom_serializer_schema
 
 from .models import ActionPlans
 from .models import Attendees
@@ -26,6 +27,7 @@ import logging
 logger = logging.getLogger(__name__)
 from django.core.exceptions import FieldDoesNotExist
 from google.auth.exceptions import DefaultCredentialsError
+
 
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
 class CustomUsersSerializer(serializers.ModelSerializer):
@@ -160,71 +162,165 @@ class CustomSerializer(serializers.ModelSerializer):
 
         return representation
 
-class TopicsSerializer(CustomSerializer):
+@custom_serializer_schema(
+        author=False,  # Single relation
+)
+class TopicsSerializer(CustomSerializer):    
     class Meta:
         model = Topics
         fields = '__all__'
+
+
+@custom_serializer_schema(
+        author=False,  # Single relation
+)
 class ResourceTypesSerializer(CustomSerializer):
     class Meta:
         model = ResourceTypes
         fields = '__all__'
 
+@custom_serializer_schema(
+    author=False,
+)
 class MeetingTypesSerializer(CustomSerializer):
     class Meta:
         model = MeetingTypes
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    largest_city=False,
+    smallest_city=False,
+    fastest_growing_city=False,
+)
 class StatesSerializer(CustomSerializer):
     class Meta:
         model = States
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+)
 class PartiesSerializer(CustomSerializer):
     class Meta:
         model = Parties
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+)
 class StakeholdersSerializer(CustomSerializer):
     class Meta:
         model = Stakeholders
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    cities=True,
+    resource_type=True,
+)
 class ResourcesSerializer(CustomSerializer):
     class Meta:
         model = Resources
         fields = '__all__'
+
+@custom_serializer_schema(
+    resources=True,
+)
 class UsersSerializer(CustomUsersSerializer):
     class Meta:
         model = Users
         exclude = ('password', 'email', 'is_active', 'is_staff', 'is_superuser')
+
+@custom_serializer_schema(
+    author=False,
+    state_id=False,
+    sponsors=True,
+    officials=True,
+)
 class CitiesSerializer(CustomSerializer):
     class Meta:
         model = Cities
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    party_affiliation=False,
+    city=True,
+)
 class OfficialsSerializer(CustomSerializer):
     class Meta:
         model = Officials
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    topics=True,
+)
 class RalliesSerializer(CustomSerializer):
     class Meta:
         model = Rallies
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    rally=False,
+    coauthors=True,
+)
 class ActionPlansSerializer(CustomSerializer):
     class Meta:
         model = ActionPlans
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    rally=False,
+    meeting_type=False,
+    speakers=True,
+    moderators=True,
+    sponsors=True,
+)
 class MeetingsSerializer(CustomSerializer):
     class Meta:
         model = Meetings
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    meeting=False,
+    user=False,
+    invited_by=False,
+)
 class InvitesSerializer(CustomSerializer):
     class Meta:
         model = Invites
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    subscriber=False,
+    rally=False,
+    meeting=False,
+)
 class SubscriptionsSerializer(CustomSerializer):
     class Meta:
         model = Subscriptions
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    rally=False,
+    meeting=False,
+)
 class RoomsSerializer(CustomSerializer):
     class Meta:
         model = Rooms
         fields = '__all__'
+
+@custom_serializer_schema(
+    author=False,
+    room_id=False,
+)
 class AttendeesSerializer(CustomSerializer):
     class Meta:
         model = Attendees

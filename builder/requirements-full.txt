@@ -1,0 +1,13 @@
+inflect==7.4.0
+loguru==0.7.2
+more-itertools==10.5.0
+numpy==2.2.0
+pandas==2.2.3
+python-dateutil==2.9.0.post0
+pytz==2024.2
+setuptools==75.6.0
+six==1.17.0
+typeguard==4.4.1
+typing_extensions==4.12.2
+tzdata==2024.2
+wheel==0.45.1

@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Django HTTPS (Local + Docker DB)",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/stack/django/manage.py",
+        "args": [
+          "runserver_plus", 
+          "localapi.oaexample.com:8080",
+          "--cert-file", "${env:HOME}/.ssl/certificate.crt",
+          "--key-file", "${env:HOME}/.ssl/certificate.key"
+        ],
+        "django": true,
+        "cwd": "${workspaceFolder}/stack/django",
+        "envFile": "${workspaceFolder}/stack/django/.env",
+        "python": "${workspaceFolder}/stack/django/.venv/bin/python"
+      }
+    ]
+  }

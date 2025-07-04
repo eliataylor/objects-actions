@@ -166,6 +166,8 @@ for replacement in "${REPLACEMENTS[@]}"; do
     IFS="|" read -r find replace <<< "$replacement"
     echo "  Replacing '$find' with '$replace'"
 
+    # TODO: skip PORT replacements in the deplo folders
+
     # Use -l to list files with matches, then process them
     grep -rl "$find" "$STACK_PATH" 2>/dev/null | while read -r file; do
         # Handle sed -i correctly for macOS vs Linux

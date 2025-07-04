@@ -104,7 +104,7 @@ class ModelBuilder:
 
             field_code = self.infer_field_type(field_type, field_name, field)
 
-            if field_code.startswith("models."):
+            if field_code.startswith("models.") or field_code.startswith("MoneyField("):
                 field_code = f"{field_name} = {field_code}"
 
                 if field_type == 'id_auto_increment' or field_name == 'id':
@@ -168,13 +168,19 @@ class ModelBuilder:
         if field_type == "id_auto_increment":
             return "models.AutoField(primary_key=True)"
         elif field_type == 'user_profile' or field_type == 'user_account':
-            return f"models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
-            # return f"models.ManyToManyField(get_user_model(), related_name='{field_name}_to_{field_type}')"
+            if (field['How Many'] > 1):
+                return f"models.ManyToManyField(get_user_model(), related_name='{field_name}_to_{field_type}')"
+            else:
+                return f"models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
         elif field_type == "vocabulary_reference" or field_type == field_type == "type_reference":
-            # TODO?: support models.ManyToManyField
             model_name = create_object_name(field['Relationship'])
             model_name = 'get_user_model()' if model_name == 'User Account' else f"'{model_name}'"
-            return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
+
+            if (field['How Many'] > 1):
+                return f"models.ManyToManyField({model_name}, related_name='{field_name}_to_{field_type}')"
+            else:
+                return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
+
         elif field_type == "text" or field_type == "string":
             return "models.CharField(max_length=255)"  # Adjust max_length as needed
         elif field_type == "textarea":
@@ -260,7 +266,7 @@ class ModelBuilder:
 \t\tif '{slugified}' in kwargs:
 \t\t\tself.{slugified} = kwargs.pop('{slugified}')
 
-\t\tbase_slug = slugify(self.{slugified})
+\t\tbase_slug = slugify(self.{slugified})[:50]
 \t\tslug = base_slug
 \t\tcount = 1
 

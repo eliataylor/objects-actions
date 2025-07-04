@@ -1,0 +1,4 @@
+{
+    "python.defaultInterpreterPath": "./stack/django/.venv/bin/python",
+    "python.terminal.activateEnvironment": true
+  }
