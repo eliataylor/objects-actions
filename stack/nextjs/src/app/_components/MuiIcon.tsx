@@ -1,33 +1,23 @@
-import React, { lazy, Suspense } from "react";
+import React from "react";
 import { SvgIcon } from "@mui/material";
 import type { SvgIconProps } from "@mui/material";
-import type { OverridableComponent } from "@mui/material/OverridableComponent";
-import type { SvgIconTypeMap } from "@mui/material/SvgIcon";
-
-const loadMuiIcon = (iconName: string) => {
-  return lazy(() =>
-    import("@mui/icons-material").then((module) => {
-      const Icon = module[iconName as keyof typeof module] as
-        | OverridableComponent<SvgIconTypeMap<Record<string, never> | object, "svg">>
-        | undefined;
-      if (!Icon) throw new Error(`MUI Icon "${iconName}" not found.`);
-      return { default: Icon };
-    })
-  );
-};
+import * as MuiIcons from "@mui/icons-material";
+// WARN: This will likely embed the entire icon library. Consider changing NAVITTEM.icon to the MUI Icon for tree shaking. 
 
 interface DynamicMuiIconProps extends SvgIconProps {
   icon: string;
 }
 
 const MuiIcon: React.FC<DynamicMuiIconProps> = ({ icon, ...props }) => {
-  const IconComponent = loadMuiIcon(icon);
+  // Get the icon component from the static imports
+  const IconComponent = MuiIcons[icon as keyof typeof MuiIcons] as React.ComponentType<SvgIconProps> | undefined;
 
-  return (
-    <Suspense fallback={<SvgIcon {...props} />}>
-      <IconComponent {...props} />
-    </Suspense>
-  );
+  if (!IconComponent) {
+    console.warn(`MUI Icon "${icon}" not found.`);
+    return <SvgIcon {...props} />;
+  }
+
+  return <IconComponent {...props} />;
 };
 
 export default MuiIcon; 
