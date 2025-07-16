@@ -84,7 +84,11 @@ const NewSchemaForm: React.FC = () => {
           if (chunk.error) {
             setError(chunk.error);
           }
-          if (chunk.type === "keep_alive") {
+
+          if (chunk.type === "error") {
+            console.error("STREAM ERROR ", chunk);
+            setError(chunk.content as string);
+          } else if (chunk.type === "keep_alive") {
             enqueueSnackbar("Still working...", { variant: "info" });
           } else if (chunk.type === "reasoning" && chunk.content) {
             setReasoning(chunk.content);

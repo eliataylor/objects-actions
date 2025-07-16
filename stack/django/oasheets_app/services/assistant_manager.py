@@ -7,6 +7,8 @@ import openai
 from django.conf import settings
 from openai import OpenAIError
 from pydantic import BaseModel
+import logging
+logger = logging.getLogger(__name__)
 
 from .schema_validator import SchemaValidator
 
@@ -159,7 +161,7 @@ class OpenAIPromptManager:
             assistant = self.client.beta.assistants.retrieve(assistant_id)
             return assistant
         except Exception as e:
-            print(f"assistant_id is missing {assistant_id}")
+            logger.warning(f"assistant_id is missing {assistant_id}")
             return None
 
     """Only called when there is no other version with an active assistant ID"""
@@ -192,7 +194,7 @@ When responding to a prompt, you will:
             return assistant
 
         except OpenAIError as e:
-            print(f"Error creating assistant: {e}")
+            logger.error(f"Error creating assistant: {e}")
             return None
 
     def get_openai_ids(self):
@@ -208,7 +210,7 @@ When responding to a prompt, you will:
             try:
                 thread = self.client.beta.threads.retrieve(self.ids["thread_id"])
             except Exception as e:
-                print(f"thread_id is missing {self.ids["thread_id"]}")
+                logger.info(f"thread_id is missing {self.ids["thread_id"]}")
 
         if thread is None:
             thread = self.client.beta.threads.create()
@@ -235,6 +237,7 @@ When responding to a prompt, you will:
             ) as stream:
                 for event in stream:
                     if hasattr(event, 'event'):
+                        logger.info(event)
                         allEventTypes[event.event] = 1
                         if event.event == "thread.message.delta":
                             message_text = self.extract_message_text(event)
@@ -256,7 +259,7 @@ When responding to a prompt, you will:
                                 }
                             self.ids["run_id"] = event.data.run_id
                             if self.ids["thread_id"] != event.data.thread_id and event.data.thread_id:
-                                print(f"Thread ID changed to {event.data.thread_id}")
+                                logger.info(f"Thread ID changed to {event.data.thread_id}")
                                 self.ids["thread_id"] = event.data.thread_id
 
                             yield {"type": "reasoning", "event": event.event, "content": message_text,
@@ -315,8 +318,28 @@ When responding to a prompt, you will:
                         elif event.event == "tool_calls.function.arguments.done":
                             final_args = getattr(event.data, "arguments", {})
                             yield {"type": "final_function_call", "event": event.event, "content": final_args}
-
-                print(allEventTypes)
+                        elif event.event == "thread.run.created":
+                            pass
+                        elif event.event == "thread.run.queued":
+                            pass
+                        elif event.event == "thread.run.in_progress":
+                            pass
+                        elif event.event == "thread.run.completed":
+                            pass
+                        elif event.event == "thread.run.failed":
+                            yield {"type": "error", "event": event.event, "content": event.data.last_error.message}
+                            logger.error(f"Thread run failed: {event.data.last_error.message}")
+                        elif event.event == "thread.run.requires_action":
+                            pass
+                        elif event.event == "thread.run.cancelled":
+                            pass
+                        elif event.event == "thread.run.cancelled":
+                            logger.info(f"Unknown event: {event.event}")
+                            pass
+                    else:
+                        logger.info(f"No event on stream object: {event}")
+                        
+                logger.info(allEventTypes)
 
         except OpenAIError as e:
             yield {"error": f"OpenAI Assistant Error: {str(e)}", "type": "error"}
@@ -331,7 +354,7 @@ When responding to a prompt, you will:
 
             if run.status != "completed":
                 err = f"Assistant run failed with status: {run.status}"
-                print(err)
+                logger.info(err)
                 return err, None
 
             messages = self.client.beta.threads.messages.list(
@@ -352,7 +375,7 @@ When responding to a prompt, you will:
             return content, schema_json
 
         except OpenAIError as e:
-            print(f"OpenAI Assistant Error: {e}")
+            logger.info(f"OpenAI Assistant Error: {e}")
             return str(e), None
 
     def get_or_create_run(self, prompt):
@@ -436,7 +459,7 @@ When responding to a prompt, you will:
                         return content_block.text.value  # Extract text safely
             return None  # No valid text found
         except Exception as e:
-            print(f"Error extracting text: {e}")
+            logger.info(f"Error extracting text: {e}")
         return None
 
     def extract_json(self, text):
@@ -451,7 +474,7 @@ When responding to a prompt, you will:
             # Get the first valid occurrence
             start = min(filter(lambda x: x != -1, json_start_markers), default=-1)
             if start == -1:
-                print("No JSON object found in the string.")
+                logger.info("No JSON object found in the string.")
                 return None
 
             # Determine correct closing character
@@ -467,10 +490,10 @@ When responding to a prompt, you will:
                     return json_obj["schema"]
                 return json_obj
 
-            print("Invalid JSON object format.")
+            logger.info("Invalid JSON object format.")
             return None
         except json.JSONDecodeError as e:
-            print("Error decoding JSON:", e)
+            logger.info("Error decoding JSON:", e)
             return None
 
     def remove_json(self, text):
@@ -484,7 +507,7 @@ When responding to a prompt, you will:
         # Get the first valid occurrence
         start = min(filter(lambda x: x != -1, json_start_markers), default=-1)
         if start == -1:
-            print("No JSON object found in the string.")
+            logger.info("No JSON object found in the string.")
             return None
 
         # Determine correct closing character

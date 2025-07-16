@@ -77,7 +77,7 @@ interface VersionTree {
 }
 
 export type StreamChunk = {
-  type: "message" | "tool_result" | "corrected_schema" | "done" | "reasoning" | "keep_alive";
+  type: "message" | "tool_result" | "corrected_schema" | "done" | "reasoning" | "keep_alive" | "error";
   event?: string;
   content?: string;
   schema?: AiSchemaResponse

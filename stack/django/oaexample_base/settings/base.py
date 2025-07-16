@@ -63,7 +63,7 @@ if DEBUG == True or DJANGO_ENV != 'production':
         'disable_existing_loggers': False,
         'handlers': {
             'console': {
-                'level': 'INFO',
+                'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
             },
         },
