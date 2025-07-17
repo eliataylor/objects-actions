@@ -19,8 +19,8 @@ class PostedPromptSerializer(serializers.Serializer):
 
 
 class SchemaVersionSerializer(CustomSerializer):
-    versions_count = serializers.SerializerMethodField()
-    version_tree = serializers.SerializerMethodField()
+    # versions_count = serializers.SerializerMethodField()
+    # version_tree = serializers.SerializerMethodField()
 
     class Meta:
         model = SchemaVersions
@@ -31,8 +31,8 @@ class SchemaVersionSerializer(CustomSerializer):
             'version_tree'
         ]
 
+    """ done as computed fields on save
     def get_version_tree(self, obj):
-        """Retrieve version tree"""
         root = obj
         while root.parent:
             root = root.parent
@@ -51,10 +51,9 @@ class SchemaVersionSerializer(CustomSerializer):
         return build_tree(root)
 
     def get_versions_count(self, obj):
-        """Get the count of all direct and indirect child versions for this schema"""
-
         def count_children(schema):
             children = SchemaVersions.objects.filter(parent=schema)
             return children.count() + sum(count_children(child) for child in children)
 
         return count_children(obj)
+    """
