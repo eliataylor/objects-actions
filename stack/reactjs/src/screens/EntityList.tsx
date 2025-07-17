@@ -84,7 +84,7 @@ const EntityList = <T extends ModelName>({
     const offset = params.has("offset") ? parseInt(params.get("offset") || "0") : 0;
     const limit = params.has("limit") ? parseInt(params.get("limit") || "10") : 10;
     fetchData(offset, limit);
-  }, [model, fetchData, location.pathname, location.search]);
+  }, [model, location.pathname, location.search]);
 
   if (!hasUrl) return <div>Invalid URL...</div>;
 

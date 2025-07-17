@@ -4,7 +4,7 @@ import time
 
 from ..models import SchemaVersions
 from ..serializers import SchemaVersionSerializer
-from ..services.assistant_manager import OpenAIPromptManager
+from ..services.assistant_manager import OpenAIPromptManager, build_assistant_config
 
 
 class SchemaGenerator:
@@ -22,6 +22,11 @@ class SchemaGenerator:
 
         if self.assistant is None:
             self.assistant = self.assistant_manager.create_assistant()
+        else:
+            config_in_code = build_assistant_config()
+            server_says = self.assistant.model_dump()
+            if config_in_code['instructions'] != server_says['instructions'] or json.dumps(server_says['tools'][0]['function']['parameters']['properties']['schema']) != json.dumps(config_in_code['tools'][0]['function']['parameters']['properties']['schema']):
+                self.assistant = self.assistant_manager.create_assistant()
 
         self.version = SchemaVersions.objects.create(
             author=user if user.is_authenticated else None,
@@ -135,7 +140,7 @@ class SchemaGenerator:
             # cleanup potential json inside reasoning body:
             schema_json = self.assistant_manager.extract_json(self.version.reasoning)
             if schema_json:
-                self.version.reasoning = self.assistant_manager.remove_json(self.version.reasoning)
+                self.version.reasoning = self.version.reasoning.replace(schema_json[1], "")
                 self.doSave = True
 
         if self.doSave:

@@ -1,9 +1,7 @@
-Django==5.0.7
-django-extensions==3.2.3
+Django==5.1.10
 django-filter==24.2
 django-storages==1.14.4
 djangorestframework==3.15.2
-drf-spectacular==0.27.2
 django-cors-headers==4.4.0
 
 django-environ==0.11.2
@@ -14,14 +12,14 @@ django-allauth[mfa,socialaccount]>=64.1.0
 django-money==3.5.4
 
 google-cloud-storage==2.17.0
-gunicorn==22.0.0
+gunicorn==23.0.0
 
 django_csp==3.8
 
 drf_spectacular==0.27.2
 python-dotenv==1.0.1
 
-spotipy==2.24.0
+spotipy==2.25.1
 mysqlclient==2.2.4
 twilio==9.2.2
 pyOpenSSL==24.1.0

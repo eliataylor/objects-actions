@@ -76,8 +76,8 @@ class PaginatedViewSet(viewsets.ModelViewSet):
             'count': paginator.count,  # Total number of items
             'limit': paginator.limit,  # Number of items per page
             'offset': paginator.offset,  # Starting position of the current page
-            #            'next': paginator.get_next_link(),  # Link to the next page, if available
-            #            'previous': paginator.get_previous_link(),  # Link to the previous page, if available
+            #  'next': paginator.get_next_link(),  # Link to the next page, if available
+            #  'previous': paginator.get_previous_link(),  # Link to the previous page, if available
             'results': serializer.data
         }
 

@@ -9,6 +9,7 @@ import { useAuth } from "../../allauth/auth";
 import ReactMarkdown from "react-markdown";
 import SchemaTables from "./SchemaTables";
 import { useSnackbar } from "notistack";
+import { extractJson } from "./WorksheetLoader";
 
 const NewSchemaForm: React.FC = () => {
 
@@ -16,7 +17,7 @@ const NewSchemaForm: React.FC = () => {
   const me = useAuth()?.data?.user;
   const navigate = useNavigate();
   const [promptInput, setPromptInput] = useState<string>("");
-  const [privacy, setPrivacy] = useState<string>("public");
+  const [privacy, setPrivacy] = useState<string>(me ? "authusers" : "public");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,11 +39,18 @@ const NewSchemaForm: React.FC = () => {
     ApiClient.get(`/api/worksheets/${versionIdRef.current}`).then(response => {
       if (response.success && response.data) {
         const newWorksheet = response.data as SchemaVersions;
+        const json = extractJson(newWorksheet.reasoning ?? "");
+        if (Array.isArray(json)) {
+          newWorksheet.schema = json[0] as AiSchemaResponse;
+          newWorksheet.reasoning = newWorksheet.reasoning?.replace(json[1], "");
+        }
         if (newWorksheet.schema && newWorksheet.reasoning) {
-          enqueueSnackbar("Successful.", { variant: "success" });
+          enqueueSnackbar("Successful.", { variant: "success" });          
           return navigate(`/oa/schemas/${newWorksheet.id}`);
-        } else {
-          enqueueSnackbar("Incomplete answer. Use this page to try again, or click Request Edits to continue the thread.", { variant: "warning" });
+        }
+        enqueueSnackbar("Incomplete answer. Use this page to try again, or click Request Edits to continue the thread.", { variant: "warning" });
+        if (newWorksheet.schema || newWorksheet.reasoning) {
+          navigate(`/oa/schemas/${newWorksheet.id}`);
         }
       } else {
         setError("Got invalid worksheet from database.");
@@ -82,9 +90,11 @@ const NewSchemaForm: React.FC = () => {
       ApiClient.stream<StreamChunk>("/api/worksheets/generate", toPass,
         (chunk) => {
           if (chunk.error) {
-            setError(chunk.error);
-          }
-          if (chunk.type === "keep_alive") {
+            setError(chunk.error); 
+          } else if (chunk.type === "error") {
+            console.error("STREAM ERROR ", chunk);
+            setError(chunk.content as string);
+          } else if (chunk.type === "keep_alive") {
             enqueueSnackbar("Still working...", { variant: "info" });
           } else if (chunk.type === "reasoning" && chunk.content) {
             setReasoning(chunk.content);
