@@ -1,45 +1,17 @@
 import json
-
+import os
+from django.conf import settings
 
 class SchemaValidator:
     """Validates schemas for completeness and correctness"""
 
     def __init__(self):
-#        with open(os.path.join(settings.ROOT_DIR, 'oasheets_app/fixtures/field_types_definitions.json'), "r") as f:
-#            field_types_data = json.load(f)
+
+        with open(os.path.join(settings.ROOT_DIR, 'oasheets_app/fixtures/field_types_definitions.json'), "r") as f:
+            field_types_data = json.load(f)
 
         # Extract field names as a list
-        self.valid_field_types = [
-                          "user_profile",
-                          "user_account",
-                          "type_reference",
-                          "vocabulary_reference",
-                          "id_auto_increment",
-                          "slug",
-                          "text",
-                          "textarea",
-                          "integer",
-                          "decimal",
-                          "price",
-                          "boolean",
-                          "email",
-                          "phone",
-                          "address",
-                          "password",
-                          "url",
-                          "date",
-                          "date_time",
-                          "time",
-                          "date_range",
-                          "image",
-                          "video",
-                          "media",
-                          "enum",
-                          "flat_list",
-                          "json",
-                          "base64_string",
-                          "coordinates"
-                        ]
+        self.valid_field_types = [field["label"] for field in field_types_data]
 
     def validate_schema(self, schema):
         """

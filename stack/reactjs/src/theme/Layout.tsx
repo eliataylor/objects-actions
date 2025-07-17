@@ -85,7 +85,7 @@ const Layout: React.FC = () => {
     } else {
       document.title = formatPathnameToDocTitle(location.pathname);
     }
-  }, [location.pathname, isOaPage]);
+  }, [location.pathname]);
 
   const MainLogo = isOaPage() ? OALogo : Logo;
 

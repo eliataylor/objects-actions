@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 import LightDarkImg from "../../components/LightDarkImg";
 import ReactMarkdown from "react-markdown";
 
-const SchemaContent: React.FC<{ worksheet: SchemaVersions }> = ({ worksheet }) => {
+const SchemaContent: React.FC<{ worksheet: SchemaVersions, loading: boolean }> = ({ worksheet, loading }) => {
   const [reasoningExpanded, setReasoningExpanded] = useState<boolean>(true);
   const [forceExpanded, setForceExpanded] = useState<boolean>(true);
 
@@ -25,16 +25,22 @@ const SchemaContent: React.FC<{ worksheet: SchemaVersions }> = ({ worksheet }) =
     document.body.removeChild(link);
   };
 
+  if (loading) {
+    return renderOpenAiLinks(worksheet)
+  }
+
 
   return (
     <Grid>
       <Grid container alignItems={"center"} justifyContent={"space-between"} sx={{ mb: 1 }}>
-        <Grid item>
-          <ButtonGroup size={"small"} variant="outlined" color={"secondary"}>
-            <Button startIcon={<ExpandMore />} onClick={() => toggleAll(true)}>Expand All</Button>
-            <Button endIcon={<ExpandLess />} onClick={() => toggleAll(false)}>Collapse All</Button>
-          </ButtonGroup>
-        </Grid>
+        {worksheet.schema &&
+          <Grid item>
+            <ButtonGroup size={"small"} variant="outlined" color={"secondary"}>
+              <Button startIcon={<ExpandMore />} onClick={() => toggleAll(true)}>Expand All</Button>
+              <Button endIcon={<ExpandLess />} onClick={() => toggleAll(false)}>Collapse All</Button>
+            </ButtonGroup>
+          </Grid>
+        }
         <Grid item>
           {renderOpenAiLinks(worksheet)}
           <Button
@@ -49,8 +55,8 @@ const SchemaContent: React.FC<{ worksheet: SchemaVersions }> = ({ worksheet }) =
         </Grid>
       </Grid>
       <Accordion variant={"elevation"} expanded={reasoningExpanded}
-                 sx={{ mb: 2, mt: 2 }}
-                 onChange={() => setReasoningExpanded(!reasoningExpanded)}>
+        sx={{ mb: 2, mt: 2 }}
+        onChange={() => setReasoningExpanded(!reasoningExpanded)}>
         <AccordionSummary expandIcon={<ExpandMore />}>AI Reasoning</AccordionSummary>
         <AccordionDetails>
           <ReactMarkdown>
@@ -60,7 +66,7 @@ const SchemaContent: React.FC<{ worksheet: SchemaVersions }> = ({ worksheet }) =
       </Accordion>
       {worksheet.schema?.content_types?.map((w) => (
         <SchemaTables forceExpand={forceExpanded} key={`schematable-${w.model_name}`}  {...w} />
-      )) || <Typography>{worksheet.reasoning}</Typography>}
+      ))}
     </Grid>
   );
 };

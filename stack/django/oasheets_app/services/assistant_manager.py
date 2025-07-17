@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os
-from typing import List
+from typing import Any, Optional, List, Union
 
 import openai
 from django.conf import settings
@@ -33,13 +33,13 @@ class ValidateSchema(BaseModel):
     content_types: List[ContentTypeSchema]
 
 
-def build_tools():
+def build_assistant_config():
     # Load field types from JSON
     with open(os.path.join(settings.ROOT_DIR, 'oasheets_app/fixtures/field_types_definitions.json'), "r") as f:
         field_types_data = json.load(f)
 
     # Extract field names as a list
-    valid_field_types = [field["name"] for field in field_types_data]
+    valid_field_types = [field["label"] for field in field_types_data]
 
     tools = [
         {"type": "function",
@@ -132,8 +132,32 @@ def build_tools():
              }
          }}
     ]
+    
+    field_type_list = ", ".join(valid_field_types)
 
-    return tools
+    assistantProps = {"name": f"Data Schema Designer",
+                              "description": "Agent for generating data schemas for app ideas", "model": "gpt-4o-mini",
+                              "tools": tools,
+                              "instructions": f"""You are a relational database schema expert and educator. Your job is to generate a scalable database schema for a given app idea and provide reasoning for your choices.
+
+When responding to a prompt, you will:
+1. Analyzing the prompt as if building a scalable application with a database schema that supports search, filtering, and permission capabilities.
+   - Start by describing a robust list of proposed Content Types, their relationships, and interactions.
+   - Do NOT print any partial JSON in your reasoning or until the final JSON is returned.
+2. Once you have provided sufficient reasoning, follow `validate_schema` to construct a JSON schema with the following properties:
+    - "label":  "The human readable label of the field",
+    - "machine": "The machine of the field",
+    - "field_type": "The appropriate field type from the list: {field_type_list}.",
+    - "cardinality": "How many values of this field are allowed per content type. Set -1 for infinity.",
+    - "required": "Whether this field is required for an entry",
+    - "relationship": "The foreign key relationship when the field type is User Profile, User Account, Type Reference, or Vocabulary Reference",
+    - "default": "The default value for the field",
+    - "example": "An example value or the fixed list of options for  list / enum fields"
+    - The main authentication Users model should always be have a reserved machine name of "Users".
+    - The field describing ownership of a content item should be named "author" and have a relationship property value of "Users"  
+    - Use the tool function `validate_schema` to structured the JSON and follow naming conventions for field types."""} 
+    
+    return assistantProps
 
 
 class OpenAIPromptManager:
@@ -168,27 +192,7 @@ class OpenAIPromptManager:
 
     def create_assistant(self):
         try:
-
-            tools = build_tools()
-            assistantProps = {"name": f"Data Schema Designer",
-                              "description": "Agent for generating data schemas for app ideas", "model": "gpt-4o-mini",
-                              "tools": tools,
-                              "instructions": """You are a relational database schema expert and educator. Your job is to generate a database schema of based on any app idea and provide reasoning for your choices.
-
-When responding to a prompt, you will:
-1. Analyzing the prompt as if building a secure, enterprise level online application.
-   - List sufficient potential content types for any non-trivial application
-   - Describe the logic behind relationships among your fields.
-2. Once you have provided sufficient reasoning via messages, use the `validate_schema` function to generate the final structured schema.
-   - Choose the appropriate `field_type` from the enum of fields listed in the `field_type` property of the `validate_schema` function.
-   - Set the `relationship` property with the model_name of the related content type.
-   - Set the `cardinality` property number of entries a field can have for each item and use -1 for infinity.
-   - When an `enum` field is needed, set the list of options in the `example` property.
-   - The main authentication Users model should always be have a reserved machine name of "Users".
-   - The field describing ownership of a content item should be named "author" and have a relationship property value of "Users"  
-   - All models automatically have "author", "created_at", and "modified_at" properties so it is not necessary to list them unless part of your reasoning.
-   - Do NOT waste tokens including the full JSON in your reasoning, but use the tool function `validate_schema` to return the structured JSON as your last step."""}
-
+            assistantProps = build_assistant_config()
             # Create the assistant
             assistant = self.client.beta.assistants.create(**assistantProps)
             return assistant
@@ -233,7 +237,8 @@ When responding to a prompt, you will:
                     tools=[
                         openai.pydantic_function_tool(ValidateSchema, name="validate_schema"),
                     ],
-                    parallel_tool_calls=True
+                    # parallel_tool_calls=True,
+                    # metadata={"user_id": "abc123", "source": "schema_tool_ui"}
             ) as stream:
                 for event in stream:
                     if hasattr(event, 'event'):
@@ -246,11 +251,10 @@ When responding to a prompt, you will:
                         elif event.event == "thread.message.completed":
                             message_text = event.data.content[0].text.value
                             schema_json = self.extract_json(message_text)
-                            if schema_json:
-                                message_text = self.remove_json(
-                                    message_text)  # strip it from response now that we have it parsed out
+                            if schema_json is not None:
+                                message_text = message_text.replace(schema_json[1], "")  # strip it from response now that we have it parsed out
                                 validator = SchemaValidator()
-                                validation_result = validator.validate_schema(schema_json)
+                                validation_result = validator.validate_schema(schema_json[0])
                                 yield {
                                     "type": "corrected_schema",
                                     "event": "validate_schema",
@@ -369,7 +373,8 @@ When responding to a prompt, you will:
                     content = message.content[0].text.value
                     schema_json = self.extract_json(content)
                     if schema_json is not None:
-                        content = self.remove_json(content)  # only save reasoning text here
+                        content = content.replace(schema_json[1], "")
+                        schema_json = schema_json[0]
                         break
 
             return content, schema_json
@@ -462,62 +467,62 @@ When responding to a prompt, you will:
             logger.info(f"Error extracting text: {e}")
         return None
 
-    def extract_json(self, text):
-        """Extract JSON object from a text response, handling multiple formats."""
-        try:
-            # Find JSON starting points: ```json, {, or [
-            json_start_markers = [
-                text.find("{"),
-                text.find("[")
-            ]
-
-            # Get the first valid occurrence
-            start = min(filter(lambda x: x != -1, json_start_markers), default=-1)
-            if start == -1:
-                logger.info("No JSON object found in the string.")
-                return None
-
-            # Determine correct closing character
-            end_char = ']' if text[start] == '[' else '}'
-            end = text.rfind(end_char)
-
-            # Validate the end position
-            if end != -1:
-                end += 1  # Include closing bracket/brace
-                json_str = text[start:end].strip()
-                json_obj = json.loads(json_str)
-                if "schema" in json_obj:  # WARN: hackery. fix in response_format
-                    return json_obj["schema"]
-                return json_obj
-
-            logger.info("Invalid JSON object format.")
+    
+    def extract_json(self, text: str) -> Optional[List]:
+        """
+        Extract JSON from text, handling ```json blocks and bare JSON objects/arrays.
+        
+        Returns:
+            List containing [json_object, start_index, end_index, cleaned_text] or None if no JSON found
+        """
+        json_str = ""
+        json_obj = None
+        
+        # Check for ```json blocks first
+        if "```json" in text:
+            start = text.find("```json")
+            json_str = text[start + 7:]
+            end = json_str.find("```")  # get NEXT ```, not just last or first
+            
+            if end > -1:
+                json_str = json_str[:end].strip()
+                try:
+                    json_obj = json.loads(json_str)
+                    if isinstance(json_obj, dict) and "schema" in json_obj:  # WARN: hackery. fix for response_format when schema is nested
+                        json_obj = json_obj["schema"]
+                    return [json_obj, text[start:start + end + 3]]
+                except json.JSONDecodeError as e:
+                    print(f"Error decoding JSON: {e}, {json_str}")
+        
+        # Look for bare JSON objects or arrays
+        brace_pos = text.find("{")
+        bracket_pos = text.find("[")
+        
+        # Handle case where one or both characters don't exist
+        if brace_pos == -1 and bracket_pos == -1:
+            print("No JSON object found in the string.")
             return None
-        except json.JSONDecodeError as e:
-            logger.info("Error decoding JSON:", e)
-            return None
-
-    def remove_json(self, text):
-        """remove JSON object from a text response."""
-        # Find JSON starting points: ```{, or [
-        json_start_markers = [
-            text.find("{"),
-            text.find("[")
-        ]
-
-        # Get the first valid occurrence
-        start = min(filter(lambda x: x != -1, json_start_markers), default=-1)
-        if start == -1:
-            logger.info("No JSON object found in the string.")
-            return None
-
-        # Determine correct closing character
-        end_char = ']' if text[start] == '[' else '}'
-        end = text.rfind(end_char)
-
-        # Validate the end position
-        if end != -1:
-            end += 1  # Include closing bracket/brace
-            json_str = text[start:end].strip()
-            text = text.replace(json_str, "")
-
-        return text
+        elif brace_pos == -1:
+            start = bracket_pos
+        elif bracket_pos == -1:
+            start = brace_pos
+        else:
+            start = min(brace_pos, bracket_pos)
+        
+        if start > -1:
+            # Find the matching closing character
+            closing_char = ']' if text[start] == '[' else '}'
+            end = text.rfind(closing_char)
+            
+            if end > -1:
+                json_str = text[start:end + 1]
+                try:
+                    json_obj = json.loads(json_str.strip())
+                    if isinstance(json_obj, dict) and "schema" in json_obj:  # WARN: hackery. fix in response_format
+                        json_obj = json_obj["schema"]
+                    return [json_obj, json_str]
+                except json.JSONDecodeError as e:
+                    print(f"Error decoding JSON: {e}, {json_str}")
+        
+        print("No JSON object found in the string.")
+        return None
