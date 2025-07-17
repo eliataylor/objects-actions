@@ -1,49 +1,16 @@
-class PaginatedViewSet(viewsets.ModelViewSet):
-    pagination_class = LimitOffsetPagination
-
-    def apply_pagination(self, queryset):
-        paginator = self.pagination_class()
-        paginated_queryset = paginator.paginate_queryset(queryset, self.request, view=self)
-
-        serializer_class = self.get_serializer_class_for_queryset(queryset)
-        serializer = serializer_class(paginated_queryset, many=True)
-
-        paginated_data = {
-            'count': paginator.count,  # Total number of items
-            'limit': paginator.limit,  # Number of items per page
-            'offset': paginator.offset,  # Starting position of the current page
-            #  'next': paginator.get_next_link(),  # Link to the next page, if available
-            #  'previous': paginator.get_previous_link(),  # Link to the previous page, if available
-            'results': serializer.data
+class CustomLimitOffsetPagination(LimitOffsetPagination):
+    """
+    Custom pagination class that includes limit and offset in the response.
+    This matches the expected format in the frontend types.
+    """
+    
+    def get_paginated_response(self, data):
+        return {
+            'count': self.count,
+            'limit': self.limit,
+            'offset': self.offset,
+            'results': data
         }
-
-        return paginated_data
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return JsonResponse(serializer.data)
-
-    def get_serializer_class_for_queryset(self, queryset):
-        # Use model's meta information to dynamically select the serializer
-        model = queryset.model
-
-        # Map models to serializers
-        model_to_serializer = {}
-
-        # Return the corresponding serializer class
-        return model_to_serializer.get(model, self.get_serializer_class())
-
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
 
 SEARCH_FIELDS_MAPPING = __SEARCHFIELD_MAP__
 

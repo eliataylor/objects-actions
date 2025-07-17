@@ -8,17 +8,21 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework import viewsets
+from rest_framework.pagination import LimitOffsetPagination
 
-from oaexample_app.views import PaginatedViewSet
 from .models import SchemaVersions
 from .serializers import SchemaVersionSerializer, PostedPromptSerializer
 from .services.generator_service import SchemaGenerator
 
+# Import the custom pagination class
+from oaexample_app.pagination import CustomLimitOffsetPagination
 
-class SchemaVersionsViewSet(PaginatedViewSet):
+class SchemaVersionsViewSet(viewsets.ModelViewSet):
     queryset = SchemaVersions.objects.all()
     serializer_class = SchemaVersionSerializer
     permission_classes = [AllowAny]
+    pagination_class = CustomLimitOffsetPagination
 
     def get_queryset(self):
         """
@@ -33,8 +37,8 @@ class SchemaVersionsViewSet(PaginatedViewSet):
             queryset = SchemaVersions.objects.filter(
                 models.Q(privacy__in=[SchemaVersions.PrivacyChoices.public, SchemaVersions.PrivacyChoices.unlisted,
                                       SchemaVersions.PrivacyChoices.authusers]) |
-                models.Q(privacy=SchemaVersions.PrivacyChoices.inviteonly,
-                         project__collaborators=user) |  # TODO: CRUD operations for collaborators
+#                models.Q(privacy=SchemaVersions.PrivacyChoices.inviteonly,
+#                         project__collaborators=user) |  # TODO: CRUD operations for collaborators
                 models.Q(privacy=SchemaVersions.PrivacyChoices.onlyme, author=user)
             )
 

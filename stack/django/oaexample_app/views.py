@@ -10,9 +10,8 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from rest_framework import viewsets, permissions, filters, generics
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
+from .pagination import CustomLimitOffsetPagination
 
 from .models import ActionPlans
 from .models import Attendees
@@ -62,50 +61,6 @@ from .services import send_sms
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
 
-class PaginatedViewSet(viewsets.ModelViewSet):
-    pagination_class = LimitOffsetPagination
-
-    def apply_pagination(self, queryset):
-        paginator = self.pagination_class()
-        paginated_queryset = paginator.paginate_queryset(queryset, self.request, view=self)
-
-        serializer_class = self.get_serializer_class_for_queryset(queryset)
-        serializer = serializer_class(paginated_queryset, many=True)
-
-        paginated_data = {
-            'count': paginator.count,  # Total number of items
-            'limit': paginator.limit,  # Number of items per page
-            'offset': paginator.offset,  # Starting position of the current page
-            #  'next': paginator.get_next_link(),  # Link to the next page, if available
-            #  'previous': paginator.get_previous_link(),  # Link to the previous page, if available
-            'results': serializer.data
-        }
-
-        return paginated_data
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return JsonResponse(serializer.data)
-
-    def get_serializer_class_for_queryset(self, queryset):
-        # Use model's meta information to dynamically select the serializer
-        model = queryset.model
-
-        # Map models to serializers
-        model_to_serializer = {}
-
-        # Return the corresponding serializer class
-        return model_to_serializer.get(model, self.get_serializer_class())
-
-
-
 ####OBJECT-ACTIONS-VIEWSETS-STARTS####
 class TopicsViewSet(viewsets.ModelViewSet):
     queryset = Topics.objects.all().order_by('id')
@@ -113,6 +68,7 @@ class TopicsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+    pagination_class = CustomLimitOffsetPagination
 
 
 class ResourceTypesViewSet(viewsets.ModelViewSet):
@@ -121,6 +77,7 @@ class ResourceTypesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+    pagination_class = CustomLimitOffsetPagination
 
 
 class MeetingTypesViewSet(viewsets.ModelViewSet):
@@ -129,6 +86,7 @@ class MeetingTypesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+    pagination_class = CustomLimitOffsetPagination
 
 
 class StatesViewSet(viewsets.ModelViewSet):
@@ -137,6 +95,7 @@ class StatesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+    pagination_class = CustomLimitOffsetPagination
 
 
 class PartiesViewSet(viewsets.ModelViewSet):
@@ -145,6 +104,7 @@ class PartiesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+    pagination_class = CustomLimitOffsetPagination
 
 
 class StakeholdersViewSet(viewsets.ModelViewSet):
@@ -153,6 +113,7 @@ class StakeholdersViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+    pagination_class = CustomLimitOffsetPagination
 
 
 class ResourcesViewSet(viewsets.ModelViewSet):
@@ -161,6 +122,7 @@ class ResourcesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
@@ -200,6 +162,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['first_name', 'last_name']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
@@ -223,6 +186,7 @@ class CitiesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
@@ -262,6 +226,8 @@ class OfficialsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+    pagination_class = CustomLimitOffsetPagination
+    
 
     def get_permissions(self):
         if self.action == 'list':
@@ -301,6 +267,7 @@ class RalliesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
@@ -340,6 +307,7 @@ class ActionPlansViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
@@ -379,6 +347,7 @@ class MeetingsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
@@ -418,6 +387,7 @@ class InvitesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['meeting__title']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
@@ -457,6 +427,7 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['rally__title', 'meeting__title']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
@@ -496,12 +467,13 @@ class RoomsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['rally__title', 'meeting__title']
+    pagination_class = CustomLimitOffsetPagination
 
     def get_permissions(self):
         if self.action == 'list':
             permission_classes = [permissions.IsAuthenticatedOrReadOnly]
         elif self.action == 'retrieve':
-            permission_classes = [can_view_rooms]
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
         elif self.action == 'create':
             permission_classes = [can_add_rooms]
         elif self.action in ['update', 'partial_update']:
@@ -527,20 +499,20 @@ class RoomsViewSet(viewsets.ModelViewSet):
                     serializer.save(author=author)
                 else:
                     serializer.save(author=self.request.user)
+
+
 class AttendeesViewSet(viewsets.ModelViewSet):
     queryset = Attendees.objects.all().order_by('id')
     serializer_class = AttendeesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = CustomLimitOffsetPagination
 
 
 ####OBJECT-ACTIONS-VIEWSETS-ENDS####
 
 
 ####OBJECT-ACTIONS-CORE-STARTS####
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+# Removed StandardResultsSetPagination - using default LimitOffsetPagination instead
 
 SEARCH_FIELDS_MAPPING = {
   "Topics": [
@@ -628,7 +600,7 @@ class UserStatsView(APIView):
 class UserModelListView(generics.GenericAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
+    pagination_class = CustomLimitOffsetPagination
     filter_backends = [filters.SearchFilter]
     def get(self, request, user_id, model_name):
         # Check if the model exists

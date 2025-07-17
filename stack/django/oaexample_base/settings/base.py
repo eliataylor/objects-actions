@@ -63,7 +63,7 @@ if DEBUG == True or DJANGO_ENV != 'production':
         'disable_existing_loggers': False,
         'handlers': {
             'console': {
-                'level': 'INFO',
+                'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
             },
         },
@@ -102,7 +102,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication'
     ],
     'EXCEPTION_HANDLER': 'oaexample_app.exceptions.oa_exception_handler',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'oaexample_app.pagination.CustomLimitOffsetPagination',
     'PAGE_SIZE': 15,
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
