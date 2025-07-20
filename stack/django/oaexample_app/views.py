@@ -11,7 +11,6 @@ from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from rest_framework import viewsets, permissions, filters, generics
 from rest_framework.views import APIView
-from .pagination import CustomLimitOffsetPagination
 
 from .models import ActionPlans
 from .models import Attendees
@@ -56,8 +55,7 @@ from .serializers import SubscriptionsSerializer
 from .serializers import TopicsSerializer
 from .serializers import UsersSerializer
 from .services import send_sms
-
-
+from .pagination import CustomLimitOffsetPagination
 ####OBJECT-ACTIONS-VIEWSET-IMPORTS-ENDS####
 
 
@@ -512,7 +510,6 @@ class AttendeesViewSet(viewsets.ModelViewSet):
 
 
 ####OBJECT-ACTIONS-CORE-STARTS####
-# Removed StandardResultsSetPagination - using default LimitOffsetPagination instead
 
 SEARCH_FIELDS_MAPPING = {
   "Topics": [
@@ -573,6 +570,7 @@ SERIALZE_MODEL_MAP = { "Topics": TopicsSerializer,"ResourceTypes": ResourceTypes
 
 class UserStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CustomLimitOffsetPagination
 
     def get(self, request, user_id, model_name):
         # Get the model class from the model name

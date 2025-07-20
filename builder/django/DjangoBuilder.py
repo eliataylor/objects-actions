@@ -32,11 +32,8 @@ class DjangoBuilder:
                                         "from django.core.exceptions import ObjectDoesNotExist",
                                         "from django.db.models import ManyToManyField"],
                         "views": ["from rest_framework import viewsets, permissions, filters, generics",
-                                  "from rest_framework.pagination import PageNumberPagination",
                                   "from rest_framework.views import APIView",
-                                  "from rest_framework.pagination import LimitOffsetPagination",
-                                  "from rest_framework import viewsets, permissions, filters, generics",
-                                  "from rest_framework.views import APIView",
+                                  "from .pagination import CustomLimitOffsetPagination",
                                   "from django.http import JsonResponse",
                                   "from django.core.management import call_command",
                                   "from django.apps import apps",
@@ -67,7 +64,6 @@ class DjangoBuilder:
         self.default_perm = 'IsAuthenticatedOrReadOnly'
 
         # TODO: on CREATE / UPDATE, upsert any Foreign Key relationships when the full object is passed
-        # TODO: personalize the CustomPagination class
 
     def build_django(self, types_path, matrix_path=None, default_perm='IsAuthenticatedOrReadOnly'):
         self.default_perm = default_perm

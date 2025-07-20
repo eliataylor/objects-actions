@@ -18,10 +18,10 @@ class PostedPromptSerializer(serializers.Serializer):
         return attrs
 
 
-class SchemaVersionSerializer(CustomSerializer):
-    # versions_count = serializers.SerializerMethodField()
-    # version_tree = serializers.SerializerMethodField()
-
+class SchemaVersionSerializer(serializers.ModelSerializer):
+    # Handle parent field to prevent circular reference
+    parent = serializers.SerializerMethodField()
+    
     class Meta:
         model = SchemaVersions
         fields = "__all__"
@@ -30,6 +30,16 @@ class SchemaVersionSerializer(CustomSerializer):
             'versions_count',
             'version_tree'
         ]
+    
+    def get_parent(self, obj):
+        """Handle parent field to prevent circular reference"""
+        if obj.parent:
+            return {
+                'id': obj.parent.id,
+                'str': str(obj.parent),
+                '_type': obj.parent.__class__.__name__
+            }
+        return None
 
     """ done as computed fields on save
     def get_version_tree(self, obj):

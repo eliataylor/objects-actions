@@ -168,7 +168,7 @@ class ModelBuilder:
         if field_type == "id_auto_increment":
             return "models.AutoField(primary_key=True)"
         elif field_type == 'user_profile' or field_type == 'user_account':
-            if (field['How Many'] > 1):
+            if (field['HowMany'] > 1):
                 return f"models.ManyToManyField(get_user_model(), related_name='{field_name}_to_{field_type}')"
             else:
                 return f"models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
@@ -176,8 +176,8 @@ class ModelBuilder:
             model_name = create_object_name(field['Relationship'])
             model_name = 'get_user_model()' if model_name == 'User Account' else f"'{model_name}'"
 
-            if (field['How Many'] > 1):
-                return f"models.ManyToManyField({model_name}, related_name='{field_name}_to_{field_type}')"
+            if (field['HowMany'] > 1):
+                return f"models.ManyToManyField({model_name}, related_name='{field_name}_to_{create_machine_name(self.class_name)}')"
             else:
                 return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
 

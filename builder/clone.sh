@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/builder/environment/common.sh"
+source "$(dirname "$0")/environment/common.sh"
 
 # Extract host components
 API_HOST_PROTOCOL=$(echo "$REACT_APP_API_HOST" | sed -E 's|^(https?)://.*|\1|')
@@ -16,6 +16,7 @@ EXCLUDE_PATTERNS=(
   "data"
   ".idea"
   ".venv"
+  ".next"
   "*.log"
   ".git/"
   ".DS_Store"
@@ -59,7 +60,7 @@ echo "Setting up $MACHINE_NAME at stackpath"
 rsync -av "${EXCLUDE_ARGS[@]}" "$SCRIPT_DIR/builder" "$STACK_PATH"
 
 # Directories to loop through
-STACK_DIRS=("cypress" "databuilder" "django" "k6" "reactjs")
+STACK_DIRS=("cypress" "databuilder" "django" "k6" "reactjs" "nextjs")
 
 mkdir -p "$STACK_PATH/stack"
 
@@ -81,7 +82,7 @@ for dir in "${STACK_DIRS[@]}"; do
                 echo "Deleted generated files in $dir"
                 ;;
             "databuilder")
-                rm -rf "$STACK_PATH/stack/databuilder/node_modules"
+                rm -rf "$STACK_PATH/stack/databuilder/fixtures/*"
                 echo "Deleted generated files in $dir"
                 ;;
             "django")
@@ -95,7 +96,12 @@ for dir in "${STACK_DIRS[@]}"; do
                 echo "Deleted generated files in $dir"
                 ;;
             "reactjs")
-                rm -rf "$STACK_PATH/stack/reactjs/node_modules"
+                rm -rf "$STACK_PATH/stack/reactjs/build"
+                echo "Deleted generated files in $dir"
+                ;;
+            "nextjs")
+                rm -rf "$STACK_PATH/stack/nextjs/node_modules"
+                rm -rf "$STACK_PATH/stack/nextjs/certificates"
                 echo "Deleted generated files in $dir"
                 ;;
         esac
@@ -115,7 +121,6 @@ done
 
 # Root files to copy (format: "source_file|destination_file" or just "filename" if same)
 ROOT_FILES=(
-    "load-sheets.sh"
     "set-env-vars.sh"
     ".gitignore"
     "docker-compose.yml"
@@ -189,4 +194,4 @@ echo "Your new stack is available at $STACK_PATH"
 cd "$STACK_PATH"
 
 . "$STACK_PATH/set-env-vars.sh" --env "$ENV_FILE"
-. "$STACK_PATH/load-sheets.sh" --env "$ENV_FILE"
+. "$STACK_PATH/builder/load-sheets.sh" --env "$ENV_FILE"

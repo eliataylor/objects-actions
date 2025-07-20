@@ -1,23 +1,10 @@
-class CustomLimitOffsetPagination(LimitOffsetPagination):
-    """
-    Custom pagination class that includes limit and offset in the response.
-    This matches the expected format in the frontend types.
-    """
-    
-    def get_paginated_response(self, data):
-        return {
-            'count': self.count,
-            'limit': self.limit,
-            'offset': self.offset,
-            'results': data
-        }
-
 SEARCH_FIELDS_MAPPING = __SEARCHFIELD_MAP__
 
 SERIALZE_MODEL_MAP = __SERIALIZER_MODEL_MAP__
 
 class UserStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CustomLimitOffsetPagination
 
     def get(self, request, user_id, model_name):
         # Get the model class from the model name
@@ -45,7 +32,7 @@ class UserStatsView(APIView):
 class UserModelListView(generics.GenericAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
+    pagination_class = CustomLimitOffsetPagination
     filter_backends = [filters.SearchFilter]
     def get(self, request, user_id, model_name):
         # Check if the model exists

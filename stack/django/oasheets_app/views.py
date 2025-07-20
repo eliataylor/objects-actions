@@ -9,7 +9,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import viewsets
-from rest_framework.pagination import LimitOffsetPagination
 
 from .models import SchemaVersions
 from .serializers import SchemaVersionSerializer, PostedPromptSerializer
@@ -45,10 +44,19 @@ class SchemaVersionsViewSet(viewsets.ModelViewSet):
         return queryset.order_by('created_at')
 
     def list(self, request, *args, **kwargs):
+        # Get the base queryset with privacy filtering
         queryset = self.get_queryset().filter(parent_id=None).exclude(
             privacy=SchemaVersions.PrivacyChoices.unlisted).order_by('-created_at')
-        data = self.apply_pagination(queryset)
-        return JsonResponse(data)
+        
+        # Apply pagination
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        # If no pagination, return all results
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         schema = self.get_object()
@@ -65,7 +73,7 @@ class SchemaVersionsViewSet(viewsets.ModelViewSet):
         if schema.privacy == SchemaVersions.PrivacyChoices.inviteonly and request.user not in schema.collaborators.all():
             return Response({"error": "You need an invitation to view this schema."}, status=status.HTTP_403_FORBIDDEN)
 
-        serializer = self.get_serializer(schema)
+        serializer = self.get_serializer(schema, many=False)
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])

@@ -4,7 +4,7 @@ from .base import myEnv, logger, DJANGO_ENV
 
 # the location of mysql server. options are: docker | local | gcp
 OA_ENV_DB = myEnv("OA_ENV_DB", "docker")
-logger.debug(f"[OADJANGO] DATABASE USING: {OA_ENV_DB} ")
+print(f"[OADJANGO] DATABASE USING: {OA_ENV_DB} ")
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 

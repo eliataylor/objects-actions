@@ -144,21 +144,25 @@ class CustomSerializer(serializers.ModelSerializer):
         # Add the model type
         representation['_type'] = instance.__class__.__name__
 
-        for field in self.Meta.model._meta.get_fields():
-            if field.is_relation and not field.auto_created and hasattr(instance, field.name):
-                field_name = field.name
+        try:
+            for field in self.Meta.model._meta.get_fields():
+                if field.is_relation and not field.auto_created and hasattr(instance, field.name):
+                    field_name = field.name
 
-                if field.many_to_one:
-                    related_instance = getattr(instance, field_name)
-                    if related_instance is not None:
-                        representation[field_name] = self.normalize_instance(related_instance, field_name)
+                    if field.many_to_one:
+                        related_instance = getattr(instance, field_name)
+                        if related_instance is not None:
+                            representation[field_name] = self.normalize_instance(related_instance, field_name)
 
-                elif field.many_to_many:
-                    related_instance = getattr(instance, field_name)
-                    related_instances = related_instance.all()
-                    representation[field_name] = []
-                    for related in related_instances:
-                        representation[field_name].append(self.normalize_instance(related, field_name))
+                    elif field.many_to_many:
+                        related_instance = getattr(instance, field_name)
+                        related_instances = related_instance.all()
+                        representation[field_name] = []
+                        for related in related_instances:
+                            representation[field_name].append(self.normalize_instance(related, field_name))
+        finally:
+            # Remove current instance from visited set when done
+            self._visited_instances.discard(instance.pk)
 
         return representation
 

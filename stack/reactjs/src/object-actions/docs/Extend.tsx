@@ -26,7 +26,7 @@ const Extend: React.FC = () => {
         <StyledTypography variant="subtitle2" sx={{ mb: 3 }}>
           2. Clone and rename "oaexample.com" as your own stack
         </StyledTypography>
-        <Command command="bash clone.sh --env .env" />
+        <Command command="bash builder/clone.sh --env .env" />
       </StyledPaper>
 
       {envConfig.STACK_PATH !== "." && (

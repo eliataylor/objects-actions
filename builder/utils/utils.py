@@ -37,6 +37,10 @@ def get_value(row, key, fallback=None):
         if k.lower().strip() == key:
             return row[k]
 
+    nospacekey = key.replace(' ', '')
+    if nospacekey != key:
+        return get_value(row, nospacekey, fallback)  # try again with no spaces
+
     return fallback
 
 
@@ -298,7 +302,7 @@ def build_types_from_csv(csv_file):
             }
 
             # Process HowMany
-            how_many = get_value(norm_row, 'howmany', '')
+            how_many = get_value(norm_row, 'how many', '')
             if how_many == '' or how_many == '1':
                 output_row['HowMany'] = 1
             elif how_many.strip() == 'unlimited':

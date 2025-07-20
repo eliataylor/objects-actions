@@ -36,7 +36,7 @@ const Customize: React.FC = () => {
       <StyledPaper>
         <Typography variant="h6">3. Rebuild the whole stack with your models and access rules:</Typography>
         <Command
-          command="bash load-sheets.sh --env .env"
+          command="bash builder/load-sheets.sh --env .env"
         />
       </StyledPaper>
 
