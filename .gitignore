@@ -1,5 +1,12 @@
 .idea
-.env
+# Ignore all .env files except .env.public
+.env*
+!.env.public
+
+**/.env*
+**/!.env.public
+
+
 .venv
 
 stack/cypress/cypress/e2e/examples

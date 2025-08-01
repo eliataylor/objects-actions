@@ -42,7 +42,7 @@ class SchemaVersions(models.Model):
     privacy = models.CharField(max_length=10, choices=PrivacyChoices.choices, verbose_name='Privacy', blank=True,
                                null=True, default=PrivacyChoices.onlyme)
 
-    # OpenAI ids
+    # OpenAI IDs
     assistant_id = models.CharField(max_length=100, null=False, blank=False)  # REQUIRED!
     thread_id = models.CharField(max_length=100, null=True, blank=True)
     message_id = models.CharField(max_length=100, null=True, blank=True)
