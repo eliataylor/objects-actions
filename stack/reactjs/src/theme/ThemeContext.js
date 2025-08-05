@@ -65,8 +65,8 @@ const ThemeProvider = ({ children }) => {
           h4: { fontSize: "2.0rem", fontWeight: 400 },
           h5: { fontSize: "1.5rem", fontWeight: 500 },
           h6: { fontSize: "1.0rem", fontWeight: 600 },
-          body1: { fontSize: "0.9rem", lineHeight: 1.5 },
-          body2: { fontSize: "0.8rem", lineHeight: 1.4 },
+          body1: { fontSize: "1rem", lineHeight: 1.5 },
+          body2: { fontSize: "0.9rem", lineHeight: 1.4 },
           button: {
             fontSize: "0.8rem",
             textTransform: "none",

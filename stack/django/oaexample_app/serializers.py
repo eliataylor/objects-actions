@@ -1,8 +1,10 @@
 ####OBJECT-ACTIONS-SERIALIZER-IMPORTS-STARTS####
 
+####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
+import logging
+
 from django.db.models import ImageField
 from rest_framework import serializers
-from .schema_annotations import custom_serializer_schema
 
 from .models import ActionPlans
 from .models import Attendees
@@ -21,9 +23,8 @@ from .models import States
 from .models import Subscriptions
 from .models import Topics
 from .models import Users
+from .schema_annotations import custom_serializer_schema
 
-####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
-import logging
 logger = logging.getLogger(__name__)
 from django.core.exceptions import FieldDoesNotExist
 from google.auth.exceptions import DefaultCredentialsError
@@ -60,6 +61,7 @@ class CustomUsersSerializer(serializers.ModelSerializer):
                         } for related in related_instances
                     ]
         return representation
+
 
 class CustomSerializer(serializers.ModelSerializer):
     # serializer_related_field = SubFieldRelatedField
@@ -144,44 +146,42 @@ class CustomSerializer(serializers.ModelSerializer):
         # Add the model type
         representation['_type'] = instance.__class__.__name__
 
-        try:
-            for field in self.Meta.model._meta.get_fields():
-                if field.is_relation and not field.auto_created and hasattr(instance, field.name):
-                    field_name = field.name
+        for field in self.Meta.model._meta.get_fields():
+            if field.is_relation and not field.auto_created and hasattr(instance, field.name):
+                field_name = field.name
 
-                    if field.many_to_one:
-                        related_instance = getattr(instance, field_name)
-                        if related_instance is not None:
-                            representation[field_name] = self.normalize_instance(related_instance, field_name)
+                if field.many_to_one:
+                    related_instance = getattr(instance, field_name)
+                    if related_instance is not None:
+                        representation[field_name] = self.normalize_instance(related_instance, field_name)
 
-                    elif field.many_to_many:
-                        related_instance = getattr(instance, field_name)
-                        related_instances = related_instance.all()
-                        representation[field_name] = []
-                        for related in related_instances:
-                            representation[field_name].append(self.normalize_instance(related, field_name))
-        finally:
-            # Remove current instance from visited set when done
-            self._visited_instances.discard(instance.pk)
+                elif field.many_to_many:
+                    related_instance = getattr(instance, field_name)
+                    related_instances = related_instance.all()
+                    representation[field_name] = []
+                    for related in related_instances:
+                        representation[field_name].append(self.normalize_instance(related, field_name))
 
         return representation
 
+
 @custom_serializer_schema(
-        author=False,  # Single relation
+    author=False,  # Single relation
 )
-class TopicsSerializer(CustomSerializer):    
+class TopicsSerializer(CustomSerializer):
     class Meta:
         model = Topics
         fields = '__all__'
 
 
 @custom_serializer_schema(
-        author=False,  # Single relation
+    author=False,  # Single relation
 )
 class ResourceTypesSerializer(CustomSerializer):
     class Meta:
         model = ResourceTypes
         fields = '__all__'
+
 
 @custom_serializer_schema(
     author=False,
@@ -190,6 +190,7 @@ class MeetingTypesSerializer(CustomSerializer):
     class Meta:
         model = MeetingTypes
         fields = '__all__'
+
 
 @custom_serializer_schema(
     author=False,
@@ -202,6 +203,7 @@ class StatesSerializer(CustomSerializer):
         model = States
         fields = '__all__'
 
+
 @custom_serializer_schema(
     author=False,
 )
@@ -210,6 +212,7 @@ class PartiesSerializer(CustomSerializer):
         model = Parties
         fields = '__all__'
 
+
 @custom_serializer_schema(
     author=False,
 )
@@ -217,6 +220,7 @@ class StakeholdersSerializer(CustomSerializer):
     class Meta:
         model = Stakeholders
         fields = '__all__'
+
 
 @custom_serializer_schema(
     author=False,
@@ -228,6 +232,7 @@ class ResourcesSerializer(CustomSerializer):
         model = Resources
         fields = '__all__'
 
+
 @custom_serializer_schema(
     resources=True,
 )
@@ -235,6 +240,7 @@ class UsersSerializer(CustomUsersSerializer):
     class Meta:
         model = Users
         exclude = ('password', 'email', 'is_active', 'is_staff', 'is_superuser')
+
 
 @custom_serializer_schema(
     author=False,
@@ -247,6 +253,7 @@ class CitiesSerializer(CustomSerializer):
         model = Cities
         fields = '__all__'
 
+
 @custom_serializer_schema(
     author=False,
     party_affiliation=False,
@@ -257,6 +264,7 @@ class OfficialsSerializer(CustomSerializer):
         model = Officials
         fields = '__all__'
 
+
 @custom_serializer_schema(
     author=False,
     topics=True,
@@ -265,6 +273,7 @@ class RalliesSerializer(CustomSerializer):
     class Meta:
         model = Rallies
         fields = '__all__'
+
 
 @custom_serializer_schema(
     author=False,
@@ -275,6 +284,7 @@ class ActionPlansSerializer(CustomSerializer):
     class Meta:
         model = ActionPlans
         fields = '__all__'
+
 
 @custom_serializer_schema(
     author=False,
@@ -289,6 +299,7 @@ class MeetingsSerializer(CustomSerializer):
         model = Meetings
         fields = '__all__'
 
+
 @custom_serializer_schema(
     author=False,
     meeting=False,
@@ -299,6 +310,7 @@ class InvitesSerializer(CustomSerializer):
     class Meta:
         model = Invites
         fields = '__all__'
+
 
 @custom_serializer_schema(
     author=False,
@@ -311,6 +323,7 @@ class SubscriptionsSerializer(CustomSerializer):
         model = Subscriptions
         fields = '__all__'
 
+
 @custom_serializer_schema(
     author=False,
     rally=False,
@@ -321,6 +334,7 @@ class RoomsSerializer(CustomSerializer):
         model = Rooms
         fields = '__all__'
 
+
 @custom_serializer_schema(
     author=False,
     room_id=False,
@@ -329,6 +343,8 @@ class AttendeesSerializer(CustomSerializer):
     class Meta:
         model = Attendees
         fields = '__all__'
+
+
 ####OBJECT-ACTIONS-SERIALIZERS-ENDS####
 
 
@@ -336,6 +352,7 @@ class AttendeesSerializer(CustomSerializer):
 
 class PhoneNumberSerializer(serializers.Serializer):
     phone = serializers.CharField()
+
 
 class VerifyPhoneSerializer(serializers.Serializer):
     phone = serializers.CharField()

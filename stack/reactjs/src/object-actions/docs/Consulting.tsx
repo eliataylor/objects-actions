@@ -7,20 +7,19 @@ import LightDarkImg from "../../components/LightDarkImg";
 import { ReactComponent as Linkedin } from "../../allauth/logos/linkedin.svg";
 import { Link } from "react-router-dom";
 import { useNavDrawer } from "../../NavDrawerProvider";
-import SponsorIcon from "@mui/icons-material/MonetizationOn";
 
 
 const pricingOptions = [
   {
     title: "Front & Backend Applications",
     price: "$499",
-    description: "8 hours to design your scalable database schema, and full-stack architecture.",
+    description: "8 hours to design your scalable database schema, and full-stack architecture from O/A.",
     session: "8 hours, 1-on-1, screen-sharing",
     features: [
       "Your idea's content types and fields formally documented in 4 spreadsheets.",
-      "ReactJS Web App.",
-      "Django API & CMS.",
-      "Cypress Test Suite.",
+      "You application and database connected with authentication, permission controls, and rich and dynamic forms",
+      "Data segmentation by User, Group and Content context.",
+      "Test Suite Test Suite.",
       "Fake Data Generator.",
       "AI Agent.",
       "Login with Email, SMS, MFA, Google, Facebook, LinkedIn, Spotify, & Github."
@@ -61,17 +60,18 @@ const pricingOptions = [
   {
     title: "Your Cloud Domain Deployed",
     price: "$249",
-    description: "4 hours to build your servers on Google Cloud Platform.",
+    description: "4 hours to build your app and servers on Google Cloud Platform.",
     session: "4 hours, 1-on-1, screen-sharing",
     features: [
       "Your custom domain configured.",
       "HTTPS via Load balancers with multi-region distribution.",
       "Deployment pipeline to release future improvements with 1 command.",
+      "Database and file storage",
       "Containerized services easy to integrate with your existing apps."
     ],
     notincluded: [
-      "GCP monthly hosting costs",
-      "Email / Twilio / OpenAI / other tool costs"
+      "GCP monthly hosting costs (under $50 / month out of the box)",
+      "Twilio / Stripe integration for SMS, Email, Payments, etc.",
     ]
   }
 ];
@@ -101,7 +101,7 @@ const Consulting: React.FC = () => {
     <Box p={1}>
       <Typography variant="subtitle2" align="center" sx={{ marginBottom: 2 }} style={{ fontSize: "140%" }}>
         <Typography component={"span"}
-                    sx={{ marginRight: 2, fontSize: "110%" }}>This is a <b>free & open-source</b> project designed for <b>self-starters</b>, starting from scratch.</Typography>
+                    sx={{ marginRight: 2, fontSize: "110%" }}><em>Objects / Actions</em> is a <b>free & open-source</b> project designed for <b>self-starters</b>, starting from scratch.</Typography>
         <Typography component={"span"}
                     sx={{ marginRight: 2, fontSize: "95%" }}>
           You can generate your own full-stack codebase - with your data structures and permissions - within 30 minutes following these <Link to={"/oa/customize"}>tutorials</Link>.
@@ -118,7 +118,7 @@ const Consulting: React.FC = () => {
 
       <Grid container spacing={2}>
         {pricingOptions.map((option, index) => (
-          <Grid item xs={12} md={6} lg={3} key={index}>
+          <Grid item xs={12} md={6} key={index}>
             <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
               <CardContent>
                 <Typography variant="h5" align="center" gutterBottom>
@@ -131,8 +131,11 @@ const Consulting: React.FC = () => {
                   {option.description}
                 </Typography>
                 <Box mt={2}>
-                  <Typography variant="overline" sx={{ fontSize: 9, margin: "0 0 0 0" }}>INCLUDES</Typography>
-                  <Typography variant="body2" sx={{ fontSize: 14, fontWeight: 700, margin: "0 0 10px 0" }}>{option.session}</Typography>
+                  <Typography variant="overline" sx={{ fontSize: 9, margin: "0 0 0 0", fontWeight: 700 }}>WHATS PROVIDED:</Typography>
+                  <Typography variant="body2" sx={{ display: "flex", alignItems: "flex-start", gap: .7, mb: .5 }}>
+                    <CheckCircleOutline color="secondary" fontSize="small" />
+                    {option.session}
+                  </Typography>
                   {option.features.map((feature, i) => (
 
                     <Typography key={i} variant="body2" sx={{ display: "flex", alignItems: "flex-start", gap: .7, mb: .5 }}>
@@ -143,7 +146,7 @@ const Consulting: React.FC = () => {
                   ))}
                 </Box>
                 <Box mt={2}>
-                  <Typography variant="overline" sx={{ fontSize: 9 }}>NOT YET INCLUDED</Typography>
+                  <Typography variant="overline" sx={{ fontSize: 9, fontWeight: 700 }}>WHAT YOU'D NEED NEXT:</Typography>
                   {option.notincluded.map((feature, i) => (
 
                     <Typography key={i} variant="body2" sx={{ display: "flex", alignItems: "flex-start", gap: .7, mb: .5 }}>
@@ -223,27 +226,7 @@ const Consulting: React.FC = () => {
 
         </Grid>
 
-
-        <Grid item xs={12} sx={{ mb: 3, mt: 10, textAlign: "center" }} alignItems={"center"} alignContent={"center "}>
-          <Typography variant="h6" gutterBottom={true}>
-            If you just want to fast track our development
-          </Typography>
-          <a
-            href={"https://github.com/sponsors/eliataylor"}
-            target="_blank" rel="noreferrer"
-          >
-            <TightButton
-              variant={"contained"}
-              size={"small"}
-              startIcon={<SponsorIcon fontSize={"small"} />}
-            >
-              Sponsor O/A
-            </TightButton>
-          </a>
-        </Grid>
-
       </Grid>
-
 
     </Box>
   )
