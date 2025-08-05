@@ -10,12 +10,11 @@ import { useNavDrawer } from "../NavDrawerProvider";
 import Snackbar from "@mui/material/Snackbar";
 import OALogo from "../object-actions/docs/OALogo";
 // import TrackingConsent from "../components/TrackingConsent"; // enable this if your publishing features in an area that require a cookie consent
-import { StyledDrawer } from "./StyledFields";
+import {FadedPaper, StyledDrawer} from "./StyledFields";
 import OaMenu from "../object-actions/docs/OaMenu";
 import ContentMenu from "../components/ContentMenu";
 import AuthMenu, { NavBarItem } from "../components/AuthMenu";
 import AllMenus from "../components/AllMenus";
-// import FirstVisit from "../object-actions/components/FirstVisit";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -104,7 +103,7 @@ const Layout: React.FC = () => {
 
       <Grid container justifyContent={"space-around"} flexWrap={"nowrap"}>
         {isMobile === false && (
-          <React.Fragment>
+          <div style={{position:'relative'}}>
             <Fab
               aria-label={"Menu Context Popup"}
               aria-describedby={"OA Menu Popup"}
@@ -138,9 +137,10 @@ const Layout: React.FC = () => {
             <Grid
               aria-label={"Menu Mounted"}
               item
-              sx={{ ml: 2, mt: 3 }}
-              style={{ maxWidth: 240, minWidth: 181 }}
+              sx={{ mt: 1 }}
+              style={{ maxWidth: 240, minWidth: 181, zIndex:2, position:'relative' }}
             >
+              <Box style={{marginBottom:5}}>
               {isOaPage() ?
                 <NavBarItem
                   to={`/`}
@@ -155,13 +155,14 @@ const Layout: React.FC = () => {
                   name="Your Content"
                 />
               }
+              </Box>
 
               <AuthMenu />
 
               <Divider
                 sx={{
                   marginTop: 1,
-                  backgroundColor: "primary.dark"
+                  backgroundColor: "background.dark"
                 }}
               />
 
@@ -169,7 +170,8 @@ const Layout: React.FC = () => {
                 {isOaPage() ? <OaMenu handleClick={() => null} /> : <ContentMenu />}
               </List>
             </Grid>
-          </React.Fragment>)
+            <FadedPaper style={{position:'absolute', top:0, left:0, minHeight:'100vh', maxHeight:'100vh', width:'100%', padding:0, margin:0, zIndex:0}} />
+          </div>)
         }
 
         <Grid item flexGrow={1}>

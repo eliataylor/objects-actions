@@ -1,6 +1,6 @@
 import React from "react";
 import { alpha, darken, styled } from "@mui/material/styles";
-import { Button, ButtonProps, Drawer } from "@mui/material";
+import {Box, Button, ButtonProps, Drawer} from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
@@ -44,22 +44,24 @@ export const GradientButton = styled(IconButton)(({ theme }) => ({
 
 export const FadedPaper = styled(Paper)(({ theme }) => ({
   background: `linear-gradient(
-    180deg,
-    ${theme.palette.background.default} 0%,
-    ${theme.palette.background.default}B3 70%, /* 70% opacity */
-    ${theme.palette.background.paper}00 100%   /* 0% opacity */
-  )`,
-  "&:hover": {
-    background: `linear-gradient(
-        180deg,
-        ${theme.palette.background.default} 0%,
-        ${theme.palette.background.default}B3 40%, /* 70% opacity */
-        ${theme.palette.background.paper}00 100%   /* 0% opacity */
-    )`
-  }
+    107deg,
+    ${theme.palette.background.paper} 0%,
+    ${theme.palette.background.paper}B3 30%, /* 70% opacity */
+    ${theme.palette.background.default}00 70%   /* 0% opacity */
+  )`
 }));
 
 export const StyledDrawer = styled(Drawer)(({ theme }) => ({
+  "& .MuiDrawer-paper": {
+    background:
+      "linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0))",
+    color: "white", // Optional: set text color to white for better contrast
+    borderRight: "1px solid rgba(255, 255, 255, 0.12)" // Optional: add border for better visibility
+  }
+}));
+
+export const MountedDrawer = styled(Box)(({ theme }) => ({
+  height: "100%",
   "& .MuiDrawer-paper": {
     background:
       "linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0))",
