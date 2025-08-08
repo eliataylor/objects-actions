@@ -19,6 +19,9 @@ EXCLUDE_PATTERNS=(
   ".next"
   "*.log"
   ".git/"
+  ".env.local"
+  ".env.deploy"
+  ".env.private"
   ".DS_Store"
   "vendor"
   "build"
@@ -89,6 +92,7 @@ for dir in "${STACK_DIRS[@]}"; do
                 rm -rf "$STACK_PATH/stack/django/.venv"
                 rm -rf "$STACK_PATH/stack/django/media/uploads"
                 rm -rf "$STACK_PATH/stack/django/oaexample_app/migrations"/*
+                rm -rf "$STACK_PATH/stack/django/oasheets_app/migrations"/*
                 echo "Deleted generated files in $dir"
                 ;;
             "k6")
@@ -114,10 +118,17 @@ done
 for dir in "$STACK_PATH/stack/django"/*; do
     if [[ "$dir" == *"oaexample"* ]]; then
         new_dir=$(echo "$dir" | sed "s/oaexample/$MACHINE_NAME/g")
+        # Remove existing target directory if it exists to prevent nesting
+        if [ -d "$new_dir" ]; then
+            rm -rf "$new_dir"
+            echo "Removed existing directory: $new_dir"
+        fi
         mv "$dir" "$new_dir"
         echo "Renamed $dir to $new_dir"
     fi
 done
+
+# Add this function before the ROOT_FILES section
 
 # Root files to copy (format: "source_file|destination_file" or just "filename" if same)
 ROOT_FILES=(
@@ -152,13 +163,36 @@ for file_spec in "${ROOT_FILES[@]}"; do
     fi
 done
 
+
+# Function to modify docker container names in compose files
+modify_container_names() {
+    local file="$1"
+    if [ -f "$file" ]; then
+        echo "Modifying container names in $file"
+        # Use sed to append MACHINE_NAME to container_name entries
+        if [[ "$(uname -s)" == "Darwin" ]]; then
+            sed -i '' "s/container_name: \(.*\)/container_name: \1-$MACHINE_NAME/" "$file"
+        else
+            sed -i "s/container_name: \(.*\)/container_name: \1-$MACHINE_NAME/" "$file"
+        fi
+    else
+        echo "Warning: $file not found. Skipping container name modification."
+    fi
+}
+
+# Add these lines just before the ROOT_FILES section
+# Modify container names in docker-compose files
+modify_container_names "$STACK_PATH/docker-compose.yml"
+modify_container_names "$STACK_PATH/docker-compose.dev.yml"
+
+
 # SSL certificate creation
-ssl_cert_path="$HOME/.ssl/certificate.crt"
+ssl_cert_path="/app/ssl/certificate.crt"
 if [ ! -f "$ssl_cert_path" ]; then
     echo "SSL certificate not found. Creating one at: $ssl_cert_path"
-    mkdir -p "$HOME/.ssl"
+    mkdir -p "/app/ssl"
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -keyout "$HOME/.ssl/certificate.key" \
+        -keyout "/app/ssl/certificate.key" \
         -out "$ssl_cert_path" \
         -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=localhost"
 fi

@@ -2,59 +2,21 @@ services:
 
   # MySQL Database Service
   mysqlv8:
-    image: mysql:8.0
-    container_name: mysqlv8
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: localdb
-      MYSQL_USER: localuser
-      MYSQL_PASSWORD: localpassword
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    extends:
+      file: docker-compose.yml
+      service: mysqlv8
 
   # Django Service
   django:
-    build:
-      context: ./stack/django
-      dockerfile: Dockerfile
-    container_name: django-service
-    volumes:
-      - $HOME/.ssl:/root/.ssl:ro
-      - ./stack/django:/app/django
-      - ./stack/django/__pycache__:/app/django/__pycache__:cached  # Speed up reloads
-    env_file:
-      - ./stack/django/.env
-    depends_on:
-      mysqlv8:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
-    extra_hosts:
-      - "localapi.oaexample.com:127.0.0.1"
+    extends:
+      file: docker-compose.yml
+      service: django
 
   # ReactJS Frontend Service
   reactjs:
-    build:
-      context: ./stack/reactjs
-      dockerfile: Dockerfile
-    container_name: reactjs-service
-    volumes:
-      - ./stack/reactjs:/app/reactjs
-      - $HOME/.ssl:/root/.ssl:ro
-    depends_on:
-      django:
-        condition: service_started
-    ports:
-      - "3000:3000"
-    extra_hosts:
-      - "localhost.oaexample.com:127.0.0.1"
+    extends:
+      file: docker-compose.yml
+      service: reactjs
 
   # Fake data generator
   databuilder:

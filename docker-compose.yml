@@ -26,7 +26,6 @@ services:
       dockerfile: Dockerfile
     container_name: django-service
     volumes:
-      - $HOME/.ssl:/root/.ssl:ro
       - ./stack/django:/app/django
       - ./stack/django/__pycache__:/app/django/__pycache__:cached  # Speed up reloads
     env_file:
@@ -38,6 +37,22 @@ services:
       - "8080:8080"
     extra_hosts:
       - "localapi.oaexample.com:127.0.0.1"
+
+  # ReactJS Frontend Service
+  reactjs:
+    build:
+      context: ./stack/reactjs
+      dockerfile: Dockerfile
+    container_name: reactjs-service
+    volumes:
+      - ./stack/reactjs:/app/reactjs
+    depends_on:
+      django:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    extra_hosts:
+      - "localhost.oaexample.com:127.0.0.1"
 
 
 networks:

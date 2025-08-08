@@ -277,6 +277,14 @@ urlpatterns += [
 
         inject_generated_code(outpath, "\n".join(viewsets), 'VIEWSETS')
 
+    def remove_permissions(self):
+        apps_file_path = os.path.join(self.output_dir, 'apps.py')
+        permissions_file_path = os.path.join(self.output_dir, 'permissions.py')
+        inject_generated_code(apps_file_path, "# no permission matrix provided", 'PERMISSIONS-ROLE-GROUPS')
+        inject_generated_code(permissions_file_path, "# no permission matrix provided", 'PERMISSIONS-IMPORTS')
+        inject_generated_code(permissions_file_path, "# no permission matrix provided", 'PERMISSIONS')
+        logger.warning("Removing permissions.py and apps.py group initialization code due to no permission matrix provided")
+
     def build_permissions(self, matrix_path):
         """Main permission building method that orchestrates the process"""
 

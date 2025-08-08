@@ -1,11 +1,9 @@
-####OBJECT-ACTIONS-SERIALIZER-IMPORTS-STARTS####
-
-####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
 import logging
 
 from django.db.models import ImageField
 from rest_framework import serializers
 
+####OBJECT-ACTIONS-SERIALIZER-IMPORTS-STARTS####
 from .models import ActionPlans
 from .models import Attendees
 from .models import Cities
@@ -24,11 +22,11 @@ from .models import Subscriptions
 from .models import Topics
 from .models import Users
 from .schema_annotations import custom_serializer_schema
+####OBJECT-ACTIONS-SERIALIZER-IMPORTS-ENDS####
 
 logger = logging.getLogger(__name__)
 from django.core.exceptions import FieldDoesNotExist
 from google.auth.exceptions import DefaultCredentialsError
-
 
 ####OBJECT-ACTIONS-SERIALIZERS-STARTS####
 class CustomUsersSerializer(serializers.ModelSerializer):

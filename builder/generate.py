@@ -46,6 +46,9 @@ if __name__ == "__main__":
         builder.build_django(types_path, matrix_path, default_perm)
         if matrix_path is not None and os.path.exists(matrix_path):
             builder.build_permissions(matrix_path, default_perm)
+        else:
+            builder.remove_permissions()
+
     elif command == 'permissions-ts':
         reactor = TypesBuilder(types_path, matrix_path, output_dir)
         reactor.build_permissions(default_perm)

@@ -34,7 +34,7 @@ export REACT_APP_DEFAULT_PERMS=$DEFAULT_PERMS
 echo "DEFAULT_PERMS: $DEFAULT_PERMS vs $REACT_APP_DEFAULT_PERMS"
 
 # Set SSL certificate paths
-DEFAULT_SSL_DIR="$HOME/.ssl"
+DEFAULT_SSL_DIR="/app/ssl"
 mkdir -p "$DEFAULT_SSL_DIR"
 export SSL_CRT_FILE="${SSL_CRT_FILE:-$DEFAULT_SSL_DIR/certificate.crt}"
 export SSL_KEY_FILE="${SSL_KEY_FILE:-$DEFAULT_SSL_DIR/certificate.key}"
@@ -42,11 +42,65 @@ export SSL_KEY_FILE="${SSL_KEY_FILE:-$DEFAULT_SSL_DIR/certificate.key}"
 # Ensure SSL certificate exists if HTTPS is enabled
 if [[ "$HTTPS" == "true" ]]; then
     if [[ ! -f "$SSL_CRT_FILE" || ! -f "$SSL_KEY_FILE" ]]; then
-        echo "No SSL certificate found. Creating a self-signed certificate..."
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-            -keyout "$SSL_KEY_FILE" \
-            -out "$SSL_CRT_FILE" \
-            -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=$HOST"
+        echo "No SSL certificate found. Creating a certificate with mkcert..."
+        
+        # Try to use mkcert if available
+        if command -v mkcert &> /dev/null; then
+            echo "Using mkcert to generate certificate..."
+            mkcert -install 2>/dev/null || true
+            
+            # Extract base domain for wildcard certificate
+            BASE_DOMAIN=$(echo "$HOST" | sed -E 's|^[^.]+\.(.+)$|\1|')
+            if [[ "$BASE_DOMAIN" == "$HOST" ]]; then
+                BASE_DOMAIN="$HOST"
+            fi
+            
+            if [[ "$BASE_DOMAIN" != "$HOST" ]]; then
+                # Create wildcard certificate for subdomains
+                mkcert -key-file "$SSL_KEY_FILE" \
+                       -cert-file "$SSL_CRT_FILE" \
+                       "*.$BASE_DOMAIN" "$BASE_DOMAIN" "localhost" "127.0.0.1" "::1"
+            else
+                # Create certificate for specific domain
+                mkcert -key-file "$SSL_KEY_FILE" \
+                       -cert-file "$SSL_CRT_FILE" \
+                       "$HOST" "localhost" "127.0.0.1" "::1"
+            fi
+        else
+            echo "mkcert not available, using OpenSSL with SAN..."
+            # Create OpenSSL config with proper SAN
+            cat > /tmp/openssl.cnf << EOF
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+C = US
+ST = State
+L = City
+O = Organization
+OU = Unit
+CN = $HOST
+
+[v3_req]
+keyUsage = keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = $HOST
+DNS.2 = localhost
+IP.1 = 127.0.0.1
+IP.2 = ::1
+EOF
+
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+                -keyout "$SSL_KEY_FILE" \
+                -out "$SSL_CRT_FILE" \
+                -config /tmp/openssl.cnf \
+                -extensions v3_req
+        fi
     else
         echo "Using existing SSL certificate at: $SSL_CRT_FILE"
     fi

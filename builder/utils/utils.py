@@ -252,6 +252,13 @@ def build_permissions_from_csv(csv_path, object_types):
 def build_types_from_csv(csv_file):
     # Initialize an empty dictionary to store JSON object
     json_data = {}
+    
+    # Add memory usage logging
+    import psutil
+    import gc
+    
+    logger.info(f"Starting CSV processing for {csv_file}")
+    logger.info(f"Initial memory usage: {psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB")
 
     # Open the CSV file
     with open(csv_file, 'r') as csvfile:
@@ -259,8 +266,11 @@ def build_types_from_csv(csv_file):
         reader = csv.DictReader(csvfile)
         # Normalize header names
         headers = normalize_headers(reader.fieldnames)
+        
+        logger.info(f"CSV headers: {headers}")
 
         cur_type = None
+        row_count = 0
         # Iterate over each row in the CSV
         for row in reader:
             # Normalize the row for case-insensitive access
@@ -327,7 +337,13 @@ def build_types_from_csv(csv_file):
             else:
                 # Create a new array with the row as its first element
                 json_data[cur_type] = [output_row]
+            
+            row_count += 1
+            if row_count % 100 == 0:
+                logger.info(f"Processed {row_count} rows. Memory usage: {psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB")
+                gc.collect()  # Force garbage collection
 
+    logger.info(f"Finished processing {row_count} rows. Final memory usage: {psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB")
     return json_data
 
 

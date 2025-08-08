@@ -35,7 +35,13 @@ fi
 
 
 echo "Building Django with types $TYPES_PATH and permissions $PERMISSIONS_PATH"
-python -m generate django --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/django/${MACHINE_NAME}_app"
+echo "CSV file size: $(wc -l < "$TYPES_PATH") lines"
+echo "CSV file size: $(du -h "$TYPES_PATH" | cut -f1)"
+timeout 300 python -m generate django --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/django/${MACHINE_NAME}_app" || {
+    echo "Django generation timed out after 5 minutes. This might indicate a memory issue."
+    echo "Consider reducing the size of your CSV file or running with more memory."
+    exit 1
+}
 # TODO: if not first run, sh into docker and run migrations (follow stack/django/readme.md)
 
 echo "Resetting forms folder: $STACK_PATH/stack/reactjs/src/object-actions/forming/forms/*"
@@ -48,6 +54,8 @@ python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/st
 python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/databuilder/src/"
 python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/cypress/cypress/support/"
 python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/k6/"
+python -m generate typescript --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/nextjs/types"
+# TODO: replace stack/k6/NavItems.js or update to use types.ts
 
 echo "creating access.ts and permissions.json with $permissions_arg"
 python -m generate permissions-ts $permissions_arg --types="$TYPES_PATH" --output_dir="$STACK_PATH/stack/reactjs/src/object-actions/types"

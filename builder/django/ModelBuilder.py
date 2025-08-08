@@ -168,7 +168,7 @@ class ModelBuilder:
         if field_type == "id_auto_increment":
             return "models.AutoField(primary_key=True)"
         elif field_type == 'user_profile' or field_type == 'user_account':
-            if field['HowMany'] > 1:
+            if (field['HowMany'] > 1):
                 return f"models.ManyToManyField(get_user_model(), related_name='{field_name}_to_{field_type}')"
             else:
                 return f"models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='+', null=True)"
@@ -176,7 +176,7 @@ class ModelBuilder:
             model_name = create_object_name(field['Relationship'])
             model_name = 'get_user_model()' if model_name == 'User Account' else f"'{model_name}'"
 
-            if field['HowMany'] > 1:
+            if (field['HowMany'] > 1):
                 return f"models.ManyToManyField({model_name}, related_name='{field_name}_to_{create_machine_name(self.class_name)}')"
             else:
                 return f"models.ForeignKey({model_name}, on_delete=models.SET_NULL, related_name='+', null=True)"
@@ -293,9 +293,19 @@ class ModelBuilder:
         elif field_type == "image" or field_type == 'video' or field_type == 'audio' or field_type == 'media':
 
             self.append_import("from django.utils import timezone")
-            self.append_import("import inspect")
-            self.append_import("import sys")
             self.append_import("import os")
+
+            self.functions.append("""\ndef upload_file_path(instance, filename):
+\text = filename.split('.')[-1]  # e.g. "jpg"
+\t# add datetime suffix to avoid collisions
+\tnew_filename = f"{os.path.basename(filename)}_{timezone.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+\t# WARN: watch for overwrites when using DataBuilder or any batch upload
+
+\t# Use strftime to create a "year-month" folder dynamically
+\tdate_folder = timezone.now().strftime('%Y-%m')
+
+\t# Construct the final upload path: "uploads/<yyyy-mm>/<filename>"
+\treturn os.path.join('uploads', date_folder, new_filename)""")
 
             if field_type == "image":
                 fieldType = 'ImageField'
@@ -304,7 +314,7 @@ class ModelBuilder:
 
             prefix = field.get('Example')
             if prefix is None or prefix == '':
-                return f"models.{fieldType}(upload_to=UploadToField('{field_name.lower()}'))"
+                return f"models.{fieldType}(upload_to=upload_file_path)"
             else:
                 return f"models.{fieldType}(upload_to='{prefix}')"
         elif field_type == "flat list":
