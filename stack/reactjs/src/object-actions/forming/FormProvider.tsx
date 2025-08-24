@@ -285,7 +285,7 @@ export const FormProvider = <T extends ModelName>({
             case "date":
                 input = (
                     <DatePicker
-                        {...baseProps}                        
+                        {...baseProps}
                         value={typeof value === "string" ? dayjs(value).local() : value}
                         onChange={(newValue) => handleChange(field, newValue as any, index)}
                         slotProps={{
@@ -382,6 +382,8 @@ export const FormProvider = <T extends ModelName>({
                 break;
 
             case "RelEntity":
+            case "type_reference":
+            case "vocabulary_reference":
                 const rel = field.relationship as ModelName;
                 const subUrl = NAVITEMS.find((nav) => nav.type === rel) as NavItem<T>;
                 input = field.cardinality && field.cardinality > 1 ? (
