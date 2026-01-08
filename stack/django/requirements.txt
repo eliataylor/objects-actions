@@ -23,7 +23,7 @@ spotipy==2.25.1
 mysqlclient==2.2.4
 twilio==9.2.2
 pyOpenSSL==24.1.0
-Werkzeug==3.0.3
+Werkzeug==3.1.5
 
 # for ImageField
 pillow==10.4.0
